@@ -3,7 +3,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "containerize": "docker build --tag home-accounts-app ."
   },
   "dependencies": {
     "next": "latest",
