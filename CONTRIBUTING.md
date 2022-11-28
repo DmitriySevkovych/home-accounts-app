@@ -24,3 +24,9 @@ Frameworks/tools to be used for different kinds of tests:
 ### Unit Tests
 
 Tests should be placed next to the tested file and named as `*.test.ts`.
+
+### Integration Tests
+
+#### Frontend
+
+In order to retrieve components under test, the `data-testid` data attribute should be used. Cf. [this article](https://javascript.plainenglish.io/i-tested-a-react-app-with-jest-testing-library-and-cypress-here-are-the-differences-3192eae03850) form more information.
