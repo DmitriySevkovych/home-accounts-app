@@ -1,21 +1,19 @@
-import { Transaction } from './transactions'
+import {Transaction} from './transactions'
+
 
 describe('Transactions tests', () => {
-    it('should work and currently do nothing', () => {
+
+    it.each`
+        amount | expectedTransactionType
+        ${20} | ${'income'}
+        ${-5} | ${'expense'}
+    `('should return $expectedTransactionType as transaction type when amount is $amount', ({amount, expectedTransactionType}) => {
         // Arrange
-        const transaction: Transaction = {
-            _id: 1,
-            date: new Date(),
-            amount: -1,
-            currency: 'EUR',
-            exchange_rate: 1,
-            source_bank_account: 'DummySourceBank',
-            target_bank_account: 'DummyTargetBank',
-            agent: 'DummyAgent',
-            payment_method: 'TRANSFER',
-        }
+        const transaction = new Transaction(amount)
         // Act
+        const transactionType = transaction.type()
         // Assert
-        expect(transaction).toBeDefined()
+        expect(transactionType).toBe(expectedTransactionType)
     })
+
 })
