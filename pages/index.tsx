@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 
 export default function Home() {
@@ -63,9 +64,11 @@ export default function Home() {
                     rel="noopener noreferrer"
                 >
                     Powered by{' '}
-                    <img
+                    <Image
                         src="/vercel.svg"
                         alt="Vercel Logo"
+                        width={100}
+                        height={100}
                         className={styles.logo}
                     />
                 </a>
