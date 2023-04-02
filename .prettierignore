@@ -3,10 +3,7 @@
 node_modules/ 
 
 # Project folders
-docs/
 public/
-styles/
 
-# Config JS files
-jest.*.js
-next.*.js
+# JS files
+*-lock.json
