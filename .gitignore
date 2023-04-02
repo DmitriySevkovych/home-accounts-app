@@ -16,6 +16,7 @@
 /build
 
 # misc
+.idea/
 .DS_Store
 *.pem
 workbox-*
@@ -35,3 +36,5 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
