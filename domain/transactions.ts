@@ -48,5 +48,4 @@ export type Transaction = {
     receipt_id?: number
 }
 
-
 export type TransactionReceipt = Document

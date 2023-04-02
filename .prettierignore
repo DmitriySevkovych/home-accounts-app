@@ -1,0 +1,9 @@
+# These are ignored anyways by default (any dot-files and dot-folders are implicitly ignored as well as node_modules), but to be explicit
+.next/
+node_modules/ 
+
+# Project folders
+public/
+
+# JS files
+*-lock.json

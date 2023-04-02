@@ -1,8 +1,6 @@
 import { Transaction } from './transactions'
 
-
 describe('Transactions tests', () => {
-
     it('should work and currently do nothing', () => {
         // Arrange
         const transaction: Transaction = {
@@ -14,7 +12,7 @@ describe('Transactions tests', () => {
             source_bank_account: 'DummySourceBank',
             target_bank_account: 'DummyTargetBank',
             agent: 'DummyAgent',
-            payment_method: 'TRANSFER'
+            payment_method: 'TRANSFER',
         }
         // Act
         // Assert

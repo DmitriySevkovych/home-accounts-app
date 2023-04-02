@@ -12,9 +12,9 @@ const hello = (req: NextApiRequest, res: NextApiResponse) => {
         source_bank_account: 'DummySourceBank',
         target_bank_account: 'DummyTargetBank',
         agent: 'DummyAgent',
-        payment_method: 'TRANSFER'
+        payment_method: 'TRANSFER',
     }
-    res.status(200).json(transaction)  
+    res.status(200).json(transaction)
 }
 
 export default hello
