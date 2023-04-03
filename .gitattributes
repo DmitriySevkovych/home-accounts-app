@@ -1,0 +1,6 @@
+* text=auto eol=lf
+
+# binary files
+*.jpg -text -merge -diff
+*.png -text -merge -diff
+*.gif -text -merge -diff
