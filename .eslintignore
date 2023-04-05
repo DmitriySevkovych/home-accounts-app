@@ -10,3 +10,6 @@ styles/
 # Config JS files
 jest.*.js
 next.*.js
+
+# Files
+*.json
