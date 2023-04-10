@@ -28,4 +28,22 @@ describe('Transactions tests', () => {
         // Assert
         expect(transactionEurEquivalent).toBe(8)
     })
+
+    it.each`
+        taxCategory          | expectedTaxRelevant
+        ${'EINKOMMENSTEUER'} | ${true}
+        ${undefined}         | ${false}
+    `(
+        'should return taxRelevant $expectedTaxRelevant when taxCategory is $taxCategory',
+        ({ taxCategory, expectedTaxRelevant }) => {
+            // Arrange
+            const transaction = createTransaction()
+                .withTaxCategory(taxCategory)
+                .build()
+            // Act
+            const isTaxRelevant = transaction.taxRelevant()
+            // Assert
+            expect(isTaxRelevant).toBe(expectedTaxRelevant)
+        }
+    )
 })

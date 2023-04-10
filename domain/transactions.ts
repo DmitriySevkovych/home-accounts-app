@@ -15,7 +15,6 @@ export class Transaction {
     paymentMethod: string = 'EC'
     sourceBankAccount?: string
     targetBankAccount?: string
-    // taxRelevant: boolean
     taxCategory?: string
     comment?: string
 
@@ -28,6 +27,10 @@ export class Transaction {
 
     eurEquivalent = (): number => {
         return this.amount * this.exchangeRate
+    }
+
+    taxRelevant = (): boolean => {
+        return this.taxCategory !== undefined
     }
 }
 
@@ -60,6 +63,11 @@ class TransactionBuilder {
     ): TransactionBuilder => {
         this.transaction.currency = currency
         this.transaction.exchangeRate = exchangeRate
+        return this
+    }
+
+    withTaxCategory = (taxCategory: string): TransactionBuilder => {
+        this.transaction.taxCategory = taxCategory
         return this
     }
     // TODO finish builder
