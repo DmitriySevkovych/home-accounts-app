@@ -70,7 +70,37 @@ class TransactionBuilder {
         this.transaction.taxCategory = taxCategory
         return this
     }
-    // TODO finish builder
+
+    withDate = (date: Date): TransactionBuilder => {
+        this.transaction.date = date
+        return this
+    }
+
+    addTags = (tags: string[]): TransactionBuilder => {
+        this.transaction.tags.push(...tags)
+        return this
+    }
+
+    withPaymentDetails = (
+        paymentMethod: string,
+        sourceBankAccount: string,
+        targetBankAccount: string
+    ): TransactionBuilder => {
+        this.transaction.paymentMethod = paymentMethod
+        this.transaction.sourceBankAccount = sourceBankAccount
+        this.transaction.targetBankAccount = targetBankAccount
+        return this
+    }
+
+    withComment = (comment: string): TransactionBuilder => {
+        this.transaction.comment = comment
+        return this
+    }
+
+    withAgent = (agent: string): TransactionBuilder => {
+        this.transaction.agent = agent
+        return this
+    }
 
     build = (): Transaction => {
         return this.transaction
