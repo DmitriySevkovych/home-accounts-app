@@ -1,4 +1,4 @@
-import { Transaction } from './transactions'
+import { createTransaction } from './transactions'
 
 describe('Transactions tests', () => {
     it.each`
@@ -9,9 +9,7 @@ describe('Transactions tests', () => {
         'should return $expectedTransactionType as transaction type when amount is $amount',
         ({ amount, expectedTransactionType }) => {
             // Arrange
-            const transaction = new Transaction({
-                amount,
-            })
+            const transaction = createTransaction().withAmount(amount).build()
             // Act
             const transactionType = transaction.type()
             // Assert
@@ -21,10 +19,10 @@ describe('Transactions tests', () => {
 
     it('should return right equivalent in EUR', () => {
         // Arrange
-        const transaction = new Transaction({
-            amount: 10,
-            exchangeRate: 0.8,
-        })
+        const transaction = createTransaction()
+            .withAmount(10)
+            .withCurrency('XXX', 0.8)
+            .build()
         // Act
         const transactionEurEquivalent = transaction.eurEquivalent()
         // Assert

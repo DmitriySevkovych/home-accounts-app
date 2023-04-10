@@ -1,30 +1,26 @@
 export type TransactionType = 'income' | 'expense'
 
-export interface TransactionBlueprint {
-    date?: Date
-    amount: number
-    exchangeRate?: number
-    currency?: string
-    sourceBankAccount?: string | undefined
-    targetBankAccount?: string | undefined
-}
+export class Transaction {
+    // Data describing
+    category!: string
+    origin!: string
+    description!: string
+    date: Date = new Date()
+    tags: string[] = []
 
-export class Transaction implements TransactionBlueprint {
-    amount: number
+    // Data describing the money movement
+    amount!: number
     exchangeRate: number = 1
     currency: string = 'EUR'
-    date: Date = new Date()
-    sourceBankAccount?: string | undefined
-    targetBankAccount?: string | undefined
+    paymentMethod: string = 'EC'
+    sourceBankAccount?: string
+    targetBankAccount?: string
+    // taxRelevant: boolean
+    taxCategory?: string
+    comment?: string
 
-    constructor(data: TransactionBlueprint) {
-        this.amount = data.amount
-        this.exchangeRate = data.exchangeRate ? data.exchangeRate : 1
-        this.currency = data.currency ? data.currency : 'EUR'
-        this.date = data.date ? data.date : new Date()
-        this.sourceBankAccount = data.sourceBankAccount
-        this.targetBankAccount = data.targetBankAccount
-    }
+    // Technical helper data
+    agent: string = 'default_agent'
 
     type = (): TransactionType => {
         return this.amount > 0 ? 'income' : 'expense'
@@ -33,4 +29,46 @@ export class Transaction implements TransactionBlueprint {
     eurEquivalent = (): number => {
         return this.amount * this.exchangeRate
     }
+}
+
+class TransactionBuilder {
+    private transaction: Transaction
+
+    constructor() {
+        this.transaction = new Transaction()
+    }
+
+    about = (
+        category: string,
+        origin: string,
+        description: string
+    ): TransactionBuilder => {
+        this.transaction.category = category
+        this.transaction.origin = origin
+        this.transaction.description = description
+        return this
+    }
+
+    withAmount = (amount: number): TransactionBuilder => {
+        this.transaction.amount = amount
+        return this
+    }
+
+    withCurrency = (
+        currency: string,
+        exchangeRate: number
+    ): TransactionBuilder => {
+        this.transaction.currency = currency
+        this.transaction.exchangeRate = exchangeRate
+        return this
+    }
+    // TODO finish builder
+
+    build = (): Transaction => {
+        return this.transaction
+    }
+}
+
+export const createTransaction = (): TransactionBuilder => {
+    return new TransactionBuilder()
 }
