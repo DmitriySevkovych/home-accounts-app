@@ -1,5 +1,14 @@
 export type TransactionType = 'income' | 'expense'
 
+type WorkSpecifics = {
+    country: string
+    vat: number
+}
+
+type InvestmentSpecifics = {
+    investment: string
+}
+
 export class Transaction {
     // Data describing
     category!: string
@@ -18,12 +27,8 @@ export class Transaction {
     taxCategory?: string
     comment?: string
 
-    // Work-related data
-    country?: string
-    vat?: number
-
-    // Investment-related data
-    investment?: string
+    // Work-related or investment-related data
+    specifics?: WorkSpecifics | InvestmentSpecifics
 
     // Technical helper data
     agent: string = 'default_agent'
@@ -127,18 +132,10 @@ class TransactionBuilder {
         return this
     }
 
-    withVat = (vat: number): TransactionBuilder => {
-        this.transaction.vat = vat
-        return this
-    }
-
-    withCountry = (country: string): TransactionBuilder => {
-        this.transaction.country = country
-        return this
-    }
-
-    withInvestment = (investment: string): TransactionBuilder => {
-        this.transaction.investment = investment
+    withSpecifics = (
+        specifics: WorkSpecifics | InvestmentSpecifics
+    ): TransactionBuilder => {
+        this.transaction.specifics = specifics
         return this
     }
 
