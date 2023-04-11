@@ -12,7 +12,7 @@ export class Transaction {
     amount!: number
     exchangeRate: number = 1
     currency: string = 'EUR'
-    paymentMethod: string = 'EC'
+    paymentMethod!: string
     sourceBankAccount?: string
     targetBankAccount?: string
     taxCategory?: string
@@ -85,6 +85,24 @@ class TransactionBuilder {
 
     addTags = (tags: string[]): TransactionBuilder => {
         this.transaction.tags.push(...tags)
+        return this
+    }
+
+    withPaymentFrom = (
+        paymentMethod: string,
+        sourceBankAccount: string
+    ): TransactionBuilder => {
+        this.transaction.paymentMethod = paymentMethod
+        this.transaction.sourceBankAccount = sourceBankAccount
+        return this
+    }
+
+    withPaymentTo = (
+        paymentMethod: string,
+        targetBankAccount: string
+    ): TransactionBuilder => {
+        this.transaction.paymentMethod = paymentMethod
+        this.transaction.targetBankAccount = targetBankAccount
         return this
     }
 
