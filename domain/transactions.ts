@@ -1,51 +1,149 @@
-type BankAccount = string
+export type TransactionType = 'income' | 'expense'
 
-type Document = {
-    _id: number
-    date: Date
-    name: string
-    mimetype: string
-    buffer: BinaryData // TODO is this correct? is this necessary?
-    description: string
-}
-
-//
-
-type Expense = {
-    _id: number
-    type: string
-    origin: string
-    description: string
-    transaction: Transaction
-}
-
-export type HomeExpense = Expense
-
-export type WorkExpense = Expense & {
+type WorkSpecifics = {
     country: string
     vat: number
 }
 
-export type InvestmentExpense = Expense & {
-    investmentObject: string
+type InvestmentSpecifics = {
+    investment: string
 }
 
-//
+export class Transaction {
+    // Data describing
+    category!: string
+    origin!: string
+    description!: string
+    date: Date = new Date()
+    tags: string[] = []
 
-export type Transaction = {
-    _id: number
-    date: Date
-    amount: number
-    currency: string
-    exchange_rate: number
-    source_bank_account: BankAccount
-    target_bank_account: BankAccount
-    agent: string
-    payment_method: string
-    // tax_relevant: boolean
-    tax_category?: string
+    // Data describing the money movement
+    amount!: number
+    exchangeRate: number = 1
+    currency: string = 'EUR'
+    paymentMethod!: string
+    sourceBankAccount?: string
+    targetBankAccount?: string
+    taxCategory?: string
     comment?: string
-    receipt_id?: number
+
+    // Work-related or investment-related data
+    specifics?: WorkSpecifics | InvestmentSpecifics
+
+    // Technical helper data
+    agent: string = 'default_agent'
+
+    type = (): TransactionType => {
+        return this.amount > 0 ? 'income' : 'expense'
+    }
+
+    eurEquivalent = (): number => {
+        return this.amount * this.exchangeRate
+    }
+
+    taxRelevant = (): boolean => {
+        return this.taxCategory !== undefined
+    }
 }
 
-export type TransactionReceipt = Document
+class TransactionBuilder {
+    private transaction: Transaction
+
+    constructor() {
+        this.transaction = new Transaction()
+    }
+
+    about = (
+        category: string,
+        origin: string,
+        description: string
+    ): TransactionBuilder => {
+        this.transaction.category = category
+        this.transaction.origin = origin
+        this.transaction.description = description
+        return this
+    }
+
+    withAmount = (amount: number): TransactionBuilder => {
+        this.transaction.amount = amount
+        return this
+    }
+
+    withCurrency = (
+        currency: string,
+        exchangeRate: number
+    ): TransactionBuilder => {
+        this.transaction.currency = currency
+        this.transaction.exchangeRate = exchangeRate
+        return this
+    }
+
+    withTaxCategory = (taxCategory: string): TransactionBuilder => {
+        this.transaction.taxCategory = taxCategory
+        return this
+    }
+
+    withDate = (date: Date): TransactionBuilder => {
+        this.transaction.date = date
+        return this
+    }
+
+    addTags = (tags: string[]): TransactionBuilder => {
+        this.transaction.tags.push(...tags)
+        return this
+    }
+
+    withPaymentFrom = (
+        paymentMethod: string,
+        sourceBankAccount: string
+    ): TransactionBuilder => {
+        this.transaction.paymentMethod = paymentMethod
+        this.transaction.sourceBankAccount = sourceBankAccount
+        return this
+    }
+
+    withPaymentTo = (
+        paymentMethod: string,
+        targetBankAccount: string
+    ): TransactionBuilder => {
+        this.transaction.paymentMethod = paymentMethod
+        this.transaction.targetBankAccount = targetBankAccount
+        return this
+    }
+
+    withPaymentDetails = (
+        paymentMethod: string,
+        sourceBankAccount: string,
+        targetBankAccount: string
+    ): TransactionBuilder => {
+        this.transaction.paymentMethod = paymentMethod
+        this.transaction.sourceBankAccount = sourceBankAccount
+        this.transaction.targetBankAccount = targetBankAccount
+        return this
+    }
+
+    withComment = (comment: string): TransactionBuilder => {
+        this.transaction.comment = comment
+        return this
+    }
+
+    withAgent = (agent: string): TransactionBuilder => {
+        this.transaction.agent = agent
+        return this
+    }
+
+    withSpecifics = (
+        specifics: WorkSpecifics | InvestmentSpecifics
+    ): TransactionBuilder => {
+        this.transaction.specifics = specifics
+        return this
+    }
+
+    build = (): Transaction => {
+        return this.transaction
+    }
+}
+
+export const createTransaction = (): TransactionBuilder => {
+    return new TransactionBuilder()
+}
