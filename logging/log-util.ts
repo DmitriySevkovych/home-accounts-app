@@ -9,14 +9,16 @@ import pino, { Logger } from 'pino'
 import pinoHttp, { HttpLogger } from 'pino-http'
 import { v4 as uuidv4 } from 'uuid'
 
-export function getLogger(name: string): Logger {
+export type LoggerName = 'api' | 'frontend'
+
+export function getLogger(name: LoggerName): Logger {
     return pino({
         name,
         level: process.env.LOG_LEVEL || 'warn',
     })
 }
 
-export function getHttpLogger(name: string): HttpLogger {
+export function getHttpLogger(name: LoggerName): HttpLogger {
     const logger = getLogger(name)
     return pinoHttp({
         logger: logger,
