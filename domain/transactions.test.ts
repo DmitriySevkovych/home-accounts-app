@@ -1,3 +1,8 @@
+/*
+    @group unit
+    @group domain
+ */
+
 import { createTransaction } from './transactions'
 
 describe('Transactions tests', () => {

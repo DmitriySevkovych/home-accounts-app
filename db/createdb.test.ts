@@ -1,3 +1,6 @@
+/*
+    @group integration
+ */
 describe('Database setup tests', () => {
     it('should do nothing', () => {
         // Arrange
