@@ -4,19 +4,10 @@
 */
 const isCI = require('is-ci')
 const dockerCompose = require('docker-compose')
+const { removeDatabaseContainer } = require('./db/dbTeardown')
 
 module.exports = async () => {
-    console.log('Global teadrown for integration tests')
+    console.log('Global teardown for integration tests')
 
-    if (isCI) {
-        dockerCompose.down()
-        console.log('Running "docker-compose down" for integration tests')
-    } else {
-        console.log(
-            'SKIPPING "docker-compose down" command because not in CI environment! Docker containers will remain running'
-        )
-    }
-
-    // TODO execute SQL statements: drop database
-    console.log('Execute SQL statements: drop test database')
+    removeDatabaseContainer()
 }
