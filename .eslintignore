@@ -12,4 +12,5 @@ jest.*.js
 next.*.js
 
 # Files
+*.yml
 *.json

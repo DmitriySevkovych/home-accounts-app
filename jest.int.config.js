@@ -13,11 +13,15 @@ const createJestConfig = nextJest({
 /** @type {import('jest').Config} */
 const customJestConfig = {
     runner: 'groups',
+    // Exit the integration test suite as soon as any one test fails
+    bail: true,
     // Add more setup options before each test is run
     setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
     // if using TypeScript with a baseUrl set to the root directory then you need the below for alias' to work
     moduleDirectories: ['node_modules', '<rootDir>/'],
     testEnvironment: 'jest-environment-jsdom',
+    globalSetup: '<rootDir>/jest.int.globalSetup.js',
+    globalTeardown: '<rootDir>/jest.int.globalTeardown.js',
 }
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
