@@ -3,6 +3,8 @@
     - https://pdmlab.github.io/docker-compose/
     - https://docs.docker.com/engine/reference/commandline/compose/
 */
+import 'reflect-metadata'
+
 import { upAll } from 'docker-compose'
 import { join } from 'path'
 
