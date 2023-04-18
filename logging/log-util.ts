@@ -9,7 +9,7 @@ import pino, { Logger } from 'pino'
 import pinoHttp, { HttpLogger } from 'pino-http'
 import { v4 as uuidv4 } from 'uuid'
 
-export type LoggerName = 'api' | 'frontend'
+export type LoggerName = 'api' | 'db' | 'frontend'
 
 export function getLogger(name: LoggerName): Logger {
     return pino({
