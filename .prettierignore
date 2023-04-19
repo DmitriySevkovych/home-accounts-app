@@ -7,3 +7,8 @@ public/
 
 # JS files
 *-lock.json
+
+# Other files
+.env*
+.*ignore
+*.sh
