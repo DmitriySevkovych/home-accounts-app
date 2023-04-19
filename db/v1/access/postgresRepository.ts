@@ -41,7 +41,9 @@ export class PostgresRepository implements Repository {
     }
 
     close = async (): Promise<void> => {
+        this.logger.debug('Closing the database connection')
         await this.db.destroy()
+        this.logger.debug('Successfully closed the database connection')
     }
 
     ping = (): boolean => {

@@ -10,7 +10,7 @@ import { join } from 'path'
 
 export const startDatabaseContainer = async () => {
     try {
-        console.log('Running "docker-compose up -f docker-compose.db.yml"')
+        console.log('Running "docker-compose -f docker-compose.db.yml up -d"')
         const upResult = await upAll({
             cwd: join(__dirname),
             config: ['docker-compose.db.yml'],
