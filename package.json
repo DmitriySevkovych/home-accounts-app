@@ -1,9 +1,9 @@
 {
     "private": true,
     "scripts": {
-        "dev": "env FORCE_COLOR=true next dev -p 8080 | pino-pretty --colorize --translateTime",
+        "dev": "bash ./dev.sh",
         "build": "next build",
-        "start": "next start",
+        "start": "NEXT_MANUAL_SIG_HANDLE=true next start",
         "format:check": "prettier --check .",
         "format:fix": "prettier --write .",
         "lint:check": "eslint .",
