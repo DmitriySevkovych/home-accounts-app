@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import 'reflect-metadata'
 
 export function middleware(request: NextRequest) {
     // Clone the request headers and set a new header `x-hello-from-middleware1`
@@ -17,10 +16,4 @@ export function middleware(request: NextRequest) {
     // Set a new response header `x-hello-from-middleware2`
     response.headers.set('x-hello-from-middleware2', 'hello')
     return response
-}
-
-export const config = {
-    unstable_allowDynamic: [
-        '/reflect-metadata/Reflect.js', // use a glob to allow anything in the function-bind 3rd party module
-    ],
 }
