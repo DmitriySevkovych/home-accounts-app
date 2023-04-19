@@ -17,7 +17,7 @@ export class PostgresRepository implements Repository {
             username: process.env.POSTGRES_USER,
             password: process.env.POSTGRES_PASSWORD,
             database: process.env.POSTGRES_DB,
-            // synchronize: true,
+            synchronize: process.env.NODE_ENV !== 'production',
             // logging: true,
             // entities: [Post, Category],
             // subscribers: [],
@@ -38,6 +38,10 @@ export class PostgresRepository implements Repository {
             )
             throw err
         }
+    }
+
+    close = async (): Promise<void> => {
+        await this.db.destroy()
     }
 
     ping = (): boolean => {
