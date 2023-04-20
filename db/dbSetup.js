@@ -3,14 +3,16 @@
     - https://pdmlab.github.io/docker-compose/
     - https://docs.docker.com/engine/reference/commandline/compose/
 */
-import 'reflect-metadata'
+require('reflect-metadata')
 
-import { upAll } from 'docker-compose'
-import { join } from 'path'
+const { upAll } = require('docker-compose')
+const { join } = require('path')
 
-export const startDatabaseContainer = async () => {
+const startDatabaseContainer = async () => {
     try {
-        console.log('Running "docker-compose -f docker-compose.db.yml up -d"')
+        console.log(
+            'Running "docker-compose -f docker-compose.db.yml up -d" via JavaScript'
+        )
         const upResult = await upAll({
             cwd: join(__dirname),
             config: ['docker-compose.db.yml'],
@@ -28,9 +30,14 @@ export const startDatabaseContainer = async () => {
     }
 }
 
-export const runSqlStatements = () => {
+const runSqlStatements = () => {
     // TODO execute SQL statements: create database, create tables and insert data
     console.log(
         'Execute SQL statements: create test database, create tables and insert data'
     )
+}
+
+module.exports = {
+    startDatabaseContainer,
+    runSqlStatements,
 }
