@@ -21,6 +21,7 @@ jobs:
                   node-version: ${{ matrix.node-version }}
                   cache: 'npm'
             - run: npm ci --ignore-scripts
+            - run: npx next telemetry status
             - run: npm run build --if-present
             - run: npm run test:unit -- --ci
             - run: npm run test:int -- --ci
