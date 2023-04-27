@@ -1,6 +1,6 @@
-const { removeDatabaseContainer } = require('./src/db/dbTeardown')
+import { removeDatabaseContainer } from './src/db/dbTeardown.js'
 
-module.exports = async () => {
+export default async () => {
     console.log('Global teardown for integration tests')
     await removeDatabaseContainer()
 }

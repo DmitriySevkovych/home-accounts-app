@@ -1,6 +1,6 @@
-const { startDatabaseContainer, runSqlStatements } = require('./src/db/dbSetup')
+import { startDatabaseContainer, runSqlStatements } from './src/db/dbSetup.js'
 
-module.exports = async () => {
+export default async () => {
     console.log('Global setup for integration tests')
     await startDatabaseContainer()
     runSqlStatements()

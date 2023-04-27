@@ -3,11 +3,15 @@
     - https://pdmlab.github.io/docker-compose/
     - https://docs.docker.com/engine/reference/commandline/compose/
 */
-const isCI = require('is-ci')
-const { down } = require('docker-compose')
-const { join } = require('path')
+import isCI from 'is-ci'
+import { down } from 'docker-compose'
+import { join, dirname } from 'path'
+import { fileURLToPath } from 'url'
 
-const removeDatabaseContainer = async (force = false) => {
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+
+export const removeDatabaseContainer = async (force = false) => {
     if (isCI || force) {
         console.log(
             'Running "docker-compose -f docker-compose.db.yml down" via JavaScript'
@@ -34,8 +38,4 @@ const removeDatabaseContainer = async (force = false) => {
 const dropDatabase = () => {
     // TODO execute SQL statements: drop database
     console.log('Execute SQL statements: drop test database')
-}
-
-module.exports = {
-    removeDatabaseContainer,
 }

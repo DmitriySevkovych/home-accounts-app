@@ -2,7 +2,7 @@
     For details on separating unit and integration tests in Jest, cf:
     - https://medium.com/coding-stones/separating-unit-and-integration-tests-in-jest-f6dd301f399c
 */
-const nextJest = require('next/jest')
+import nextJest from 'next/jest.js'
 
 const createJestConfig = nextJest({
     // Provide the path to your Next.js app to load next.config.js and .env files in your test environment
@@ -25,4 +25,4 @@ const customJestConfig = {
 }
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
-module.exports = createJestConfig(customJestConfig)
+export default createJestConfig(customJestConfig)
