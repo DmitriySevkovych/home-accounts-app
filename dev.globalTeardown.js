@@ -1,9 +1,4 @@
-/*
-    A NODE.js script for running setup tasks, not a module
- */
+import { removeDatabaseContainer } from './src/db/dbTeardown.js'
 
-const { removeDatabaseContainer } = require('./db/dbTeardown.js')
-
-removeDatabaseContainer().then((exitCode) => {
-    process.exit(exitCode)
-})
+const exitCode = await removeDatabaseContainer()
+process.exit(exitCode)

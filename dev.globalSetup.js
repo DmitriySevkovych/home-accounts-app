@@ -1,12 +1,5 @@
-/*
-    A NODE.js script for running setup tasks, not a module
- */
+import { startDatabaseContainer, runSqlStatements } from './src/db/dbSetup.js'
 
-const { startDatabaseContainer, runSqlStatements } = require('./db/dbSetup.js')
-
-startDatabaseContainer().then((exitCode) => {
-    runSqlStatements()
-    process.exit(exitCode)
-})
-
-module.exports = {}
+const exitCode = await startDatabaseContainer()
+runSqlStatements()
+process.exit(exitCode)
