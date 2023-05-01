@@ -3,17 +3,23 @@
     "type": "module",
     "version": "1.0.0",
     "private": true,
-    "scripts": {},
+    "scripts": {
+        "build": "tsc -p .",
+        "test": "jest",
+        "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf build && rm tsconfig.tsbuildinfo"
+    },
+    "jest": {
+        "preset": "jest-config"
+    },
     "dependencies": {
         "pino": "^8.11.0",
-        "pino-http": "^8.3.3"
+        "pino-http": "^8.3.3",
+        "uuid": "^9.0.0"
     },
     "devDependencies": {
+        "@types/uuid": "^9.0.1",
         "pino-pretty": "^10.0.0",
         "ts-config": "*",
         "typescript": "4.5.4"
-    },
-    "publishConfig": {
-        "access": "public"
     }
 }
