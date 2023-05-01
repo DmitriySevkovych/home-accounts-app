@@ -1,13 +1,16 @@
 {
     "name": "home-accounts-app-domain-model",
-    "private": true,
+    "version": "1.0.0",
     "type": "module",
+    "private": true,
     "types": "library",
     "scripts": {
         "build": "tsc -p .",
         "test": "jest"
     },
     "devDependencies": {
+        "jest-config": "*",
+        "ts-config": "*",
         "typescript": "4.5.4"
     }
 }

@@ -1,0 +1,19 @@
+{
+    "name": "utilities",
+    "type": "module",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {},
+    "dependencies": {
+        "pino": "^8.11.0",
+        "pino-http": "^8.3.3"
+    },
+    "devDependencies": {
+        "pino-pretty": "^10.0.0",
+        "ts-config": "*",
+        "typescript": "4.5.4"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}
