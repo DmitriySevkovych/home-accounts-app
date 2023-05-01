@@ -1,5 +1,9 @@
 {
     "extends": "ts-config/nextjs.tsconfig.json",
-    "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+    "compilerOptions": {
+        "lib": ["dom", "ES2015"],
+        "rootDir": "src"
+    },
+    "include": ["next-env.d.ts", "src"],
     "exclude": ["node_modules"]
 }
