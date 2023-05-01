@@ -5,10 +5,9 @@
     "private": true,
     "types": "library",
     "scripts": {
-        "dev": "tsc -w",
         "build": "tsc -p .",
         "test": "jest",
-        "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
+        "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf build && rm tsconfig.tsbuildinfo"
     },
     "jest": {
         "preset": "jest-config"
