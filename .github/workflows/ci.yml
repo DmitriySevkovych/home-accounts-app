@@ -1,27 +1,37 @@
-name: Node.js CI
+name: Home Accounting App - Monorepo CI
 
 on:
-    # push:
+    push:
+        branches: ['main']
     pull_request:
-        branches: ['main', 'feature/**', 'bugfix/**']
+        types: [opened, synchronize]
 
 jobs:
     build:
         runs-on: ubuntu-latest
+        timeout-minutes: 15
 
         strategy:
             matrix:
                 node-version: [16.x, 18.x]
 
         steps:
-            - uses: actions/checkout@v3
-            - name: Use Node.js ${{ matrix.node-version }}
+            - name: Check out code
+              uses: actions/checkout@v3
+              with:
+                  fetch-depth: 2
+
+            - name: Setup Node.js version ${{ matrix.node-version }}
               uses: actions/setup-node@v3
               with:
                   node-version: ${{ matrix.node-version }}
                   cache: 'npm'
-            - run: npm ci --ignore-scripts
-            - run: npx next telemetry status
-            - run: npm run build --if-present
-            - run: npm run test:unit -- --ci
-            - run: npm run test:int -- --ci
+
+            - name: Install dependencies
+              run: npm ci --ignore-scripts
+
+            - name: Build
+              run: npm run build --if-present
+
+            - name: Test
+              run: npm run test -- --ci

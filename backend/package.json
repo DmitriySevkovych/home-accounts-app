@@ -12,6 +12,7 @@
         "containerize": "docker build --tag home-accounts-app-backend ."
     },
     "dependencies": {
+        "domain": "*",
         "keypress": "^0.2.1",
         "pg": "^8.10.0",
         "reflect-metadata": "^0.1.13",
