@@ -3,19 +3,14 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "dev": "bash ./dev.sh",
+        "dev": "next dev",
         "build": "next build",
         "start": "NEXT_MANUAL_SIG_HANDLE=true next start",
-        "format:check": "prettier --check .",
-        "format:fix": "prettier --write .",
-        "lint:check": "eslint .",
-        "lint:fix": "eslint . --fix",
         "test": "npm run test:unit && npm run test:int",
-        "test:int": "jest --config ./jest.int.config.js --group=integration",
+        "test:int": "jest --group=integration",
         "test:unit": "jest --group=unit",
         "test:watch": "npm run test:unit --watch",
-        "containerize": "docker build --tag home-accounts-app .",
-        "prepare": "is-ci || husky install"
+        "containerize": "docker build --tag home-accounts-app-frontend ."
     },
     "dependencies": {
         "next": "latest",

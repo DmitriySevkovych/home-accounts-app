@@ -10,7 +10,7 @@ const customJestConfig = {
     moduleDirectories: ['node_modules', '<rootDir>/'],
     testEnvironment: 'node',
     rootDir: 'src',
-    preset: 'ts-jest',
+    // preset: 'ts-jest',
 }
 
 export default customJestConfig

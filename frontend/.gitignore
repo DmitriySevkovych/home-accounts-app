@@ -1,0 +1,12 @@
+# next.js
+/.next/
+/out/
+
+# vercel
+.vercel
+
+# typescript
+next-env.d.ts
+
+# misc
+workbox-*

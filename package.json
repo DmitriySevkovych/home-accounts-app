@@ -1,21 +1,47 @@
 {
     "name": "home-accounts-app",
+    "workspaces": [
+        "domain",
+        "frontend",
+        "backend"
+    ],
+    "scripts": {
+        "dev": "concurrently --kill-others \"npm run dev -w backend\" \"npm run dev -w frontend\"",
+        "build": "concurrently --kill-others \"npm run build -w backend\" \"npm run build -w frontend\"",
+        "test": "npm test -w domain && npm test -w backend && npm test -w frontend",
+        "format:check": "prettier --check .",
+        "format:fix": "prettier --write .",
+        "lint:check": "eslint .",
+        "lint:fix": "eslint . --fix",
+        "prepare": "is-ci || husky install"
+    },
+    "dependencies": {
+        "pino": "^8.11.0",
+        "pino-http": "^8.3.3"
+    },
+    "devDependencies": {
+        "@typescript-eslint/eslint-plugin": "^5.45.0",
+        "@typescript-eslint/parser": "^5.45.0",
+        "concurrently": "^8.0.1",
+        "eslint": "^8.29.0",
+        "eslint-config-prettier": "^8.8.0",
+        "husky": "^8.0.0",
+        "is-ci": "^3.0.1",
+        "jest": "^29.3.1",
+        "jest-runner-groups": "^2.2.0",
+        "lint-staged": "^13.2.0",
+        "pino-pretty": "^10.0.0",
+        "prettier": "^2.8.7",
+        "typescript": "4.5.4"
+    },
     "version": "1.0.0",
     "private": true,
     "repository": {
         "type": "git",
         "url": "git+https://github.com/DmitriySevkovych/home-accounts-app.git"
     },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
     "bugs": {
         "url": "https://github.com/DmitriySevkovych/home-accounts-app/issues"
     },
-    "homepage": "https://github.com/DmitriySevkovych/home-accounts-app/blob/main/README.md",
-    "workspaces": [
-        "domain",
-        "frontend",
-        "backend"
-    ]
+    "homepage": "https://github.com/DmitriySevkovych/home-accounts-app/blob/main/README.md"
 }

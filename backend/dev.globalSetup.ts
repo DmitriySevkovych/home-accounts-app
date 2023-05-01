@@ -1,7 +1,4 @@
-import {
-    startDatabaseContainer,
-    runSqlStatements,
-} from './backend/db/dbSetup.js'
+import { startDatabaseContainer, runSqlStatements } from './src/db/dbSetup.js'
 
 const exitCode = await startDatabaseContainer()
 runSqlStatements()
