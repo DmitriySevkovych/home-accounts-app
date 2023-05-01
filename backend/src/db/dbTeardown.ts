@@ -5,11 +5,7 @@
 */
 import isCI from 'is-ci'
 import { down } from 'docker-compose'
-import { join, dirname } from 'path'
-import { fileURLToPath } from 'url'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
+import { join } from 'path'
 
 export const removeDatabaseContainer = async (force = false) => {
     if (isCI || force) {

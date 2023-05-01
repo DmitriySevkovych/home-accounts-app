@@ -13,3 +13,4 @@ public/
 .*ignore
 *.sh
 *.http
+Dockerfile*

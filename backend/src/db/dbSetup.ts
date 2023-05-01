@@ -6,11 +6,7 @@
 import 'reflect-metadata'
 
 import { upAll } from 'docker-compose'
-import { join, dirname } from 'path'
-import { fileURLToPath } from 'url'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
+import { join } from 'path'
 
 export const startDatabaseContainer = async () => {
     try {

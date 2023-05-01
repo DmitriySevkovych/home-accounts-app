@@ -18,3 +18,4 @@ next.*.js
 *.json
 *.sh
 *.md
+Dockerfile*
