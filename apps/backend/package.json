@@ -1,32 +1,46 @@
 {
     "name": "home-accounts-app-backend",
-    "private": true,
+    "version": "1.0.0",
     "type": "module",
+    "private": true,
+    "main": "main.ts",
     "scripts": {
-        "dev": "npm run build -- --watch",
+        "dev": "nodemon ./src/main.ts",
         "build": "tsc --build .",
+        "lint": "prettier --write . && eslint --fix \"**/*.ts*\"",
         "test": "npm run test:unit && npm run test:int",
         "test:int": "jest --config ./jest.int.config.js --group=integration",
         "test:unit": "jest --group=unit",
-        "test:watch": "npm run test:unit --watch",
+        "test:watch": "npm run test:unit -- --watch",
         "containerize": "docker build --tag home-accounts-app-backend ."
     },
     "jest": {
         "preset": "jest-config"
     },
     "dependencies": {
+        "body-parser": "^1.20.2",
+        "cors": "^2.8.5",
         "domain": "*",
+        "express": "^4.18.2",
         "keypress": "^0.2.1",
         "pg": "^8.10.0",
         "reflect-metadata": "^0.1.13",
-        "typeorm": "^0.3.15"
+        "typeorm": "^0.3.15",
+        "utilities": "*"
     },
     "devDependencies": {
+        "@types/body-parser": "^1.19.2",
+        "@types/cors": "^2.8.13",
+        "@types/express": "^4.17.17",
+        "@types/is-ci": "^3.0.0",
         "@types/node": "17.0.4",
-        "@types/uuid": "^9.0.1",
+        "@types/supertest": "^2.0.12",
         "docker-compose": "^0.23.19",
+        "is-ci": "^3.0.1",
+        "nodemon": "^2.0.22",
+        "supertest": "^6.3.3",
         "ts-config": "*",
-        "typescript": "^4.5.4",
-        "utilities": "*"
+        "ts-node": "^10.9.1",
+        "typescript": "^4.5.4"
     }
 }

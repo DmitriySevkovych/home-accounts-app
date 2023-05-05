@@ -1,7 +1,7 @@
 import { Logger } from 'pino'
 
 import { DataSource } from 'typeorm'
-import { getLogger } from '../../../logging/log-util'
+import { getLogger } from 'utilities/logging'
 import { Repository } from '../../repository'
 
 export class PostgresRepository implements Repository {

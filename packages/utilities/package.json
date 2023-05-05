@@ -5,6 +5,7 @@
     "private": true,
     "scripts": {
         "build": "tsc -p .",
+        "lint": "prettier --write . && eslint --fix \"**/*.ts*\"",
         "test": "jest",
         "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf build && rm tsconfig.tsbuildinfo"
     },
@@ -21,5 +22,11 @@
         "pino-pretty": "^10.0.0",
         "ts-config": "*",
         "typescript": "4.5.4"
+    },
+    "exports": {
+        "./logging": {
+            "import": "./src/logging/index.ts",
+            "types": "./src/logging/logging.d.ts"
+        }
     }
 }

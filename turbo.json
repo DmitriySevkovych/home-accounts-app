@@ -10,7 +10,7 @@
                 "build/**",
                 "api/**",
                 "public/build/**"
-              ],
+            ],
             "dependsOn": ["^build"]
         },
         "test": {
@@ -20,6 +20,9 @@
         "dev": {
             "cache": false,
             "persistent": true
+        },
+        "lint": {
+            "dependsOn": ["^build"]
         }
     }
 }

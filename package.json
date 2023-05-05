@@ -9,6 +9,7 @@
     "scripts": {
         "dev": "npx turbo dev --no-cache --continue",
         "build": "npx turbo build --filter=frontend --filter=backend",
+        "lint": "npx turbo lint",
         "test": "npx turbo test",
         "prepare": "is-ci || husky install"
     },

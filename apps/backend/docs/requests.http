@@ -1,6 +1,4 @@
 #https://medium.com/refinitiv-developer-community/how-to-test-rest-api-with-visual-studio-code-rest-client-extensions-9f2e061d0299
 
-GET http://localhost:8080/api/hello
-
+GET http://localhost:5001/api/v1/healthz
 ###
-GET http://localhost:8080
