@@ -1,8 +1,7 @@
 {
     "extends": "ts-config/nextjs.tsconfig.json",
     "compilerOptions": {
-        "lib": ["dom", "ES2015"],
-        "rootDir": "src"
+        "lib": ["dom", "ES2015"]
     },
     "include": ["next-env.d.ts", "src"],
     "exclude": ["node_modules"]
