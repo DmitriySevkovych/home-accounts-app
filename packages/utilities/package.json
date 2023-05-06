@@ -1,6 +1,5 @@
 {
     "name": "utilities",
-    "type": "module",
     "version": "1.0.0",
     "private": true,
     "scripts": {
@@ -24,9 +23,6 @@
         "typescript": "4.5.4"
     },
     "exports": {
-        "./logging": {
-            "import": "./src/logging/index.ts",
-            "types": "./src/logging/logging.d.ts"
-        }
+        "./logging": "./src/logging/index.ts"
     }
 }

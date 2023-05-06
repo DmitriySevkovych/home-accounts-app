@@ -1,7 +1,6 @@
 {
     "name": "home-accounts-app-backend",
     "version": "1.0.0",
-    "type": "module",
     "private": true,
     "main": "main.ts",
     "scripts": {
