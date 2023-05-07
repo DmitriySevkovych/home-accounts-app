@@ -3,7 +3,6 @@
     "version": "1.0.0",
     "type": "module",
     "private": true,
-    "types": "library",
     "scripts": {
         "build": "tsc -p .",
         "test": "jest",
@@ -20,5 +19,8 @@
         "jest-config": "*",
         "ts-config": "*",
         "typescript": "4.5.4"
+    },
+    "exports": {
+        "transactions": "./src/transactions.ts"
     }
 }
