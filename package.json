@@ -8,9 +8,9 @@
     ],
     "scripts": {
         "dev": "npx turbo dev --no-cache --continue",
-        "build": "npx turbo build --filter=frontend --filter=backend",
-        "lint": "npx turbo lint",
+        "build": "npx turbo build",
         "test": "npx turbo test",
+        "lint": "npx turbo lint",
         "prepare": "is-ci || husky install"
     },
     "devDependencies": {

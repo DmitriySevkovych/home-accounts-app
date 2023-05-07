@@ -4,7 +4,7 @@
     "private": true,
     "main": "main.ts",
     "scripts": {
-        "dev": "nodemon ./src/main.ts",
+        "dev": "nodemon ./src/main.ts | pino-pretty",
         "build": "tsc --build .",
         "lint": "prettier --write . && eslint --fix \"**/*.ts*\"",
         "test": "npm run test:unit && npm run test:int",
@@ -37,6 +37,7 @@
         "docker-compose": "^0.23.19",
         "is-ci": "^3.0.1",
         "nodemon": "^2.0.22",
+        "pino-pretty": "^10.0.0",
         "supertest": "^6.3.3",
         "ts-config": "*",
         "ts-node": "^10.9.1",

@@ -6,6 +6,5 @@ const server = createServer()
 
 server.listen(port, () => {
     const logger = getLogger('backend')
-    console.log({ logger })
     logger.info(`api running on ${port}`)
 })

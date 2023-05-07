@@ -16,3 +16,4 @@ Further documentation is provided inside the `docs/` folders in the respective `
 ### Typescript
 
 -   https://github.com/TypeStrong/ts-node
+-   https://www.tsmean.com/articles/learn-typescript/typescript-module-compiler-option/

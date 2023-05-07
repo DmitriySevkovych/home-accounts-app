@@ -14,7 +14,7 @@ export type LoggerName = 'backend' | 'setup' | 'db' | 'frontend'
 export function getLogger(name: LoggerName): Logger {
     return pino({
         name,
-        level: process.env.LOG_LEVEL || 'warn',
+        level: process.env.LOG_LEVEL || 'debug',
     })
 }
 
