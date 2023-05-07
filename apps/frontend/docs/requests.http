@@ -1,0 +1,3 @@
+#https://medium.com/refinitiv-developer-community/how-to-test-rest-api-with-visual-studio-code-rest-client-extensions-9f2e061d0299
+
+GET http://localhost:5002/api/hello

@@ -1,7 +1,18 @@
 {
-    "extends": "ts-config/nextjs.tsconfig.json",
+    "extends": "ts-config/tsconfig.json",
     "compilerOptions": {
-        "lib": ["dom", "ES2015"]
+        "declaration": false,
+        "declarationMap": false,
+        "incremental": true,
+        "jsx": "preserve",
+        "lib": ["dom", "dom.iterable", "esnext"],
+        "module": "esnext",
+        "noEmit": true,
+        "target": "es5",
+        "isolatedModules": true
+    },
+    "ts-node": {
+        "esm": true
     },
     "include": ["next-env.d.ts", "src"],
     "exclude": ["node_modules"]

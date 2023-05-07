@@ -1,5 +1,5 @@
 {
-    "name": "home-accounts-app-domain-model",
+    "name": "domain",
     "version": "1.0.0",
     "type": "module",
     "private": true,
@@ -7,6 +7,7 @@
     "scripts": {
         "build": "tsc -p .",
         "test": "jest",
+        "lint": "prettier --write . && eslint --fix \"**/*.ts*\"",
         "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf build && rm tsconfig.tsbuildinfo"
     },
     "jest": {
