@@ -1,4 +1,4 @@
-import { getHttpLogger, getLogger } from '../index'
+import { getHttpLogger, getLogger } from './index'
 
 describe('Logger', () => {
     it('Silly test', () => {

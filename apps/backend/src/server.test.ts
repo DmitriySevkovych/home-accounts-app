@@ -1,5 +1,5 @@
 import supertest from 'supertest'
-import { createServer } from '../server'
+import { createServer } from './server'
 
 /*
     @group integration

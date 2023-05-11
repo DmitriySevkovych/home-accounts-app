@@ -12,7 +12,7 @@ module.exports = {
     },
     overrides: [
         {
-            files: ['**/__tests__/**/*'],
+            files: ['**/__tests__/**/*', '**/*.test.ts'],
             env: {
                 jest: true,
             },
