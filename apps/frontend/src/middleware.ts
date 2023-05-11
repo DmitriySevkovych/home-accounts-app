@@ -15,5 +15,7 @@ export function middleware(request: NextRequest) {
 
     // Set a new response header `x-hello-from-middleware2`
     response.headers.set('x-hello-from-middleware2', 'hello')
+    // response.headers.delete('x-powered-by')
+    // response.headers.delete('Server')
     return response
 }

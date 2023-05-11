@@ -1,7 +1,6 @@
-import { Logger } from 'pino'
-
 import { DataSource } from 'typeorm'
-import { getLogger } from 'utilities/logging'
+import { getLogger, Logger } from 'logger'
+
 import { Repository } from '../../repository'
 
 export class PostgresRepository implements Repository {
@@ -12,11 +11,11 @@ export class PostgresRepository implements Repository {
         this.logger = getLogger('db')
         this.db = new DataSource({
             type: 'postgres',
-            host: process.env.POSTGRES_CONTAINER_HOST,
-            port: Number(process.env.POSTGRES_CONTAINER_PORT),
-            username: process.env.POSTGRES_USER,
-            password: process.env.POSTGRES_PASSWORD,
-            database: process.env.POSTGRES_DB,
+            host: process.env['POSTGRES_CONTAINER_HOST'],
+            port: Number(process.env['POSTGRES_CONTAINER_PORT']),
+            username: process.env['POSTGRES_USER'],
+            password: process.env['POSTGRES_PASSWORD'],
+            database: process.env['POSTGRES_DB'],
             synchronize: process.env.NODE_ENV !== 'production',
             // logging: true,
             // entities: [Post, Category],

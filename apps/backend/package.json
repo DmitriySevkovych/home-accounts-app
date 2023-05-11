@@ -1,46 +1,55 @@
 {
-    "name": "home-accounts-app-backend",
-    "version": "1.0.0",
+    "name": "backend",
+    "version": "0.0.0",
     "private": true,
-    "main": "main.ts",
     "scripts": {
-        "dev": "nodemon ./src/main.ts | pino-pretty",
-        "build": "tsc --build .",
-        "lint": "prettier --write . && eslint --fix \"**/*.ts*\"",
-        "test": "npm run test:unit && npm run test:int",
-        "test:int": "jest --config ./jest.int.config.js --group=integration",
-        "test:unit": "jest --group=unit",
-        "test:watch": "npm run test:unit -- --watch",
-        "containerize": "docker build --tag home-accounts-app-backend ."
+        "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
+        "build": "tsup src/index.ts --format cjs",
+        "dev": "tsup src/index.ts --format cjs --watch --onSuccess \"dotenv -e .env.local -e .env node dist/index.js\" | pino-pretty",
+        "predev": "dotenv -e .env -e .env.local bash ./setup.sh",
+        "postdev": "dotenv -e .env -e .env.local bash ./teardown.sh",
+        "lint": "tsc --noEmit && eslint \"src/**/*.ts*\"",
+        "start": "node dist/index.js",
+        "test": "dotenv -e .env.test jest --detectOpenHandles",
+        "pretest": "dotenv -e .env.test bash ./setup.sh",
+        "posttest": "dotenv -e .env.test bash ./teardown.sh"
     },
     "jest": {
-        "preset": "jest-config"
+        "preset": "jest-presets/jest/node",
+        "runner": "groups"
     },
     "dependencies": {
-        "body-parser": "^1.20.2",
+        "body-parser": "^1.19.0",
         "cors": "^2.8.5",
-        "domain": "*",
-        "express": "^4.18.2",
-        "keypress": "^0.2.1",
+        "domain-model": "*",
+        "dotenv-cli": "^7.2.1",
+        "express": "^4.17.1",
+        "logger": "*",
+        "morgan": "^1.10.0",
         "pg": "^8.10.0",
         "reflect-metadata": "^0.1.13",
-        "typeorm": "^0.3.15",
-        "utilities": "*"
+        "typeorm": "^0.3.15"
     },
     "devDependencies": {
-        "@types/body-parser": "^1.19.2",
-        "@types/cors": "^2.8.13",
-        "@types/express": "^4.17.17",
+        "@types/body-parser": "^1.19.0",
+        "@types/cors": "^2.8.10",
+        "@types/express": "^4.17.12",
         "@types/is-ci": "^3.0.0",
-        "@types/node": "17.0.4",
+        "@types/jest": "^26.0.22",
+        "@types/morgan": "^1.9.2",
+        "@types/node": "^15.12.2",
         "@types/supertest": "^2.0.12",
         "docker-compose": "^0.23.19",
+        "eslint": "^7.32.0",
+        "eslint-config-custom-server": "*",
         "is-ci": "^3.0.1",
-        "nodemon": "^2.0.22",
+        "jest": "^26.6.3",
+        "jest-presets": "*",
+        "jest-runner-groups": "^2.2.0",
         "pino-pretty": "^10.0.0",
-        "supertest": "^6.3.3",
-        "ts-config": "*",
-        "ts-node": "^10.9.1",
-        "typescript": "^4.5.4"
+        "supertest": "^6.2.4",
+        "tsconfig": "*",
+        "tsup": "^6.2.3",
+        "typescript": "^4.8.3"
     }
 }

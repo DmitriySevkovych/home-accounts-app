@@ -1,36 +1,20 @@
 {
-    "name": "home-accounts-app",
-    "version": "1.0.0",
-    "workspaces": [
-        "packages/*",
-        "apps/backend",
-        "apps/frontend"
-    ],
+    "private": true,
     "scripts": {
-        "dev": "npx turbo dev --no-cache --continue",
-        "build": "npx turbo build",
-        "test": "npx turbo test",
-        "lint": "npx turbo lint",
-        "prepare": "is-ci || husky install"
+        "build": "turbo run build",
+        "clean": "turbo run clean",
+        "dev": "turbo run dev --no-cache  --continue",
+        "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+        "lint": "turbo run lint",
+        "test": "turbo run test"
     },
     "devDependencies": {
-        "@typescript-eslint/eslint-plugin": "^5.45.0",
-        "@typescript-eslint/parser": "^5.45.0",
-        "eslint": "^8.29.0",
-        "eslint-config-prettier": "^8.8.0",
-        "husky": "^8.0.0",
-        "is-ci": "^3.0.1",
-        "lint-staged": "^13.2.0",
-        "prettier": "^2.8.7",
-        "turbo": "^1.9.3"
+        "prettier": "^2.7.1",
+        "turbo": "latest"
     },
-    "private": true,
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/DmitriySevkovych/home-accounts-app.git"
-    },
-    "bugs": {
-        "url": "https://github.com/DmitriySevkovych/home-accounts-app/issues"
-    },
-    "homepage": "https://github.com/DmitriySevkovych/home-accounts-app/blob/main/README.md"
+    "packageManager": "npm@9.5.0",
+    "workspaces": [
+        "apps/*",
+        "packages/*"
+    ]
 }

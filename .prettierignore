@@ -4,6 +4,7 @@ node_modules/
 
 # Project folders
 public/
+dist/
 
 # JS files
 *-lock.json
