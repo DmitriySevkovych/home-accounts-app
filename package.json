@@ -1,14 +1,19 @@
 {
     "private": true,
     "scripts": {
-        "build": "turbo run build",
+        "prepare": "is-ci | husky install",
         "clean": "turbo run clean",
+        "build": "turbo run build",
         "dev": "turbo run dev --no-cache  --continue",
-        "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+        "format": "prettier --write .",
         "lint": "turbo run lint",
         "test": "turbo run test"
     },
     "devDependencies": {
+        "@types/is-ci": "^3.0.0",
+        "husky": "^8.0.3",
+        "is-ci": "^3.0.1",
+        "lint-staged": "^13.2.0",
         "prettier": "^2.7.1",
         "turbo": "latest"
     },

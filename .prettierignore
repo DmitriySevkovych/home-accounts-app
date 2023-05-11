@@ -5,6 +5,7 @@ node_modules/
 # Project folders
 public/
 dist/
+.husky/
 
 # JS files
 *-lock.json
