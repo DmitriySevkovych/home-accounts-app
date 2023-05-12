@@ -8,8 +8,12 @@ Further documentation is provided inside the `docs/` folders in the respective `
 
 ### Monorepo
 
--   https://github.com/vercel/turbo/tree/main/examples/kitchen-sink
--   https://turbo.build/repo/docs/reference/configuration
+-   Turborepo
+    -   https://github.com/vercel/turbo/tree/main/examples/kitchen-sink
+    -   https://turbo.build/repo/docs/reference/configuration
+    -   https://turbo.build/repo/docs/handbook/sharing-code/internal-packages
+    -   https://turbo.build/repo/docs/handbook/linting/eslint
+    -   https://turbo.build/repo/docs/handbook/deploying-with-docker
 -   https://www.robinwieruch.de/javascript-monorepos/
 -   https://blog.frankdejonge.nl/setting-up-a-typescript-mono-repo-for-scoped-packages/
 
