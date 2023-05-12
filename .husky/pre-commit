@@ -4,4 +4,6 @@
 # Workaround - without this line the lint-staged output has no colour highlighting (when run via husky, on windows)
 exec >/dev/tty 2>&1
 
+# lint-staged utility is used for formatting staged files, currenty not for linting...
 npx lint-staged
+npm run lint

@@ -1,5 +1,23 @@
-# Progressive Web App Example
+# `home-app` Monorepo
 
-This example uses [`next-pwa`](https://github.com/shadowwalker/next-pwa) to create a progressive web app (PWA) powered by [Workbox](https://developers.google.com/web/tools/workbox/).
+TODO: add documentation
 
-TODO: write docs
+Further documentation is provided inside the `docs/` folders in the respective `app/` or `package/`.
+
+## Helpful resources
+
+### Monorepo
+
+-   Turborepo
+    -   https://github.com/vercel/turbo/tree/main/examples/kitchen-sink
+    -   https://turbo.build/repo/docs/reference/configuration
+    -   https://turbo.build/repo/docs/handbook/sharing-code/internal-packages
+    -   https://turbo.build/repo/docs/handbook/linting/eslint
+    -   https://turbo.build/repo/docs/handbook/deploying-with-docker
+-   https://www.robinwieruch.de/javascript-monorepos/
+-   https://blog.frankdejonge.nl/setting-up-a-typescript-mono-repo-for-scoped-packages/
+
+### Typescript
+
+-   https://github.com/TypeStrong/ts-node
+-   https://www.tsmean.com/articles/learn-typescript/typescript-module-compiler-option/
