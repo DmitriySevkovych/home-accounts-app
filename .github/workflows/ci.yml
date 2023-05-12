@@ -29,7 +29,10 @@ jobs:
                   cache: 'npm'
 
             - name: Install dependencies
-              run: npm install
+              run: npm ci --ignore-scripts
+
+            - name: Disable Next.js telemetry
+              run: npx next telemetry disable
 
             - name: Build
               run: npm run build
