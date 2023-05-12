@@ -4,6 +4,8 @@ import express, { type Express } from 'express'
 import morgan from 'morgan'
 import cors from 'cors'
 
+import getUtilsRouter from './utils'
+
 export const createServer = (): Express => {
     const app = express()
     app.disable('x-powered-by')
@@ -11,6 +13,7 @@ export const createServer = (): Express => {
         .use(urlencoded({ extended: true }))
         .use(json())
         .use(cors())
+        .use('/api/v1/utils', getUtilsRouter())
         .get('/transactions/:origin', (req, res) => {
             return res.json(tempCreateDummyTransaction(req.params.origin))
         })
