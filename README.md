@@ -17,6 +17,10 @@ Further documentation is provided inside the `docs/` folders in the respective `
 -   https://www.robinwieruch.de/javascript-monorepos/
 -   https://blog.frankdejonge.nl/setting-up-a-typescript-mono-repo-for-scoped-packages/
 
+### NPM
+
+-   https://docs.npmjs.com/cli/v9/configuring-npm/package-json
+
 ### Typescript
 
 -   https://github.com/TypeStrong/ts-node
