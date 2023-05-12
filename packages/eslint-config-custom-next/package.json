@@ -5,6 +5,7 @@
     "license": "MIT",
     "main": "index.js",
     "devDependencies": {
+        "eslint": "latest",
         "eslint-config-next": "latest",
         "eslint-config-prettier": "^8.3.0",
         "eslint-plugin-react": "7.28.0",

@@ -5,6 +5,7 @@
     "license": "MIT",
     "main": "index.js",
     "devDependencies": {
+        "eslint": "latest",
         "@typescript-eslint/eslint-plugin": "^5.59.2",
         "@typescript-eslint/parser": "^5.59.2",
         "eslint-config-turbo": "latest"
