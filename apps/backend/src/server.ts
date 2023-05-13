@@ -4,7 +4,7 @@ import express, { type Express } from 'express'
 import morgan from 'morgan'
 import cors from 'cors'
 
-import getUtilsRouter from './utils'
+import getUtilsRouter from './routes/utils'
 
 export const createServer = (): Express => {
     const app = express()

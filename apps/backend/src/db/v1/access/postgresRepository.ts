@@ -27,9 +27,11 @@ export class PostgresRepository implements Repository {
     initialize = async (): Promise<void> => {
         try {
             await this.db.initialize()
-            this.logger.debug(
-                `Successfully initialized a ${process.env.NODE_ENV} database connection`
-            )
+            if (this.db.isInitialized) {
+                this.logger.debug(
+                    `Successfully initialized a ${process.env.NODE_ENV} database connection`
+                )
+            }
         } catch (err) {
             this.logger.error(
                 err,
@@ -47,5 +49,59 @@ export class PostgresRepository implements Repository {
 
     ping = (): boolean => {
         return this.db.isInitialized
+    }
+
+    // Utility data
+    getTransactionCategories = (): Promise<string[]> => {
+        //TODO: #8: load data from a DB
+        return new Promise((resolve) => {
+            resolve([
+                'FOOD',
+                'HOUSEHOLD',
+                'TRANSPORTATION',
+                'BEAUTY',
+                'LEISURE',
+                'VACATION',
+            ])
+        })
+    }
+
+    getTaxCategories = (): Promise<string[]> => {
+        //TODO: #8: load data from a DB
+        return new Promise((resolve) => {
+            resolve([
+                'EINKOMMENSTEUER',
+                'VERMIETUNG_UND_VERPACHTUNG',
+                'WERBUNGSKOSTEN',
+                'AUSSERORDENTLICHE_BELASTUNGEN',
+            ])
+        })
+    }
+
+    getPaymentMethods = (): Promise<string[]> => {
+        //TODO: #8: load data from a DB
+        return new Promise((resolve) => {
+            resolve([
+                'EC',
+                'TRANSFER',
+                'PAYPAL',
+                'CASH',
+                'DIRECT_DEBIT',
+                'SEPA',
+            ])
+        })
+    }
+
+    getBankAccounts = (): Promise<string[]> => {
+        //TODO: #8: load data from a DB
+        return new Promise((resolve) => {
+            resolve([
+                'KSKWN',
+                'CoBa Premium',
+                'CoBa Business',
+                'VoBa Invest',
+                'CASH',
+            ])
+        })
     }
 }
