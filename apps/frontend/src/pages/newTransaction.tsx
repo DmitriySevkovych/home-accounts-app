@@ -1,19 +1,10 @@
-export default function newTransactionPage() {
-    const tempCategories: string[] = ['FOOD', 'TRANSPORTATION', 'VACATION']
+export default function newTransactionPage({
+    transactionCategories,
+    paymentMethods,
+    bankAccounts,
+    taxCategories,
+}) {
     const tags: string[] = []
-    const paymentMethods: string[] = ['PAYPAL', 'CASH', 'EC']
-    const bankAccounts: string[] = [
-        'KSKWN',
-        'CoBa Premium',
-        'CoBa Business',
-        'CoBa Invest Wasen',
-    ]
-    const taxCategories: string[] = [
-        'EINKOMMENSTEUER',
-        'AUSSERORDENTLICHE_BELASTUNGEN',
-        'VERMIETUNG_UND_VERPACHTUNG',
-        'WERBUNGSKOSTEN',
-    ]
     return (
         <>
             <h1>Create Transaction</h1>
@@ -21,7 +12,7 @@ export default function newTransactionPage() {
                 <form action="">
                     <label htmlFor="category">Category</label>
                     <select name="category" id="category">
-                        {tempCategories.map((category) => (
+                        {transactionCategories.map((category) => (
                             <option key={category} value={category}>
                                 {category}
                             </option>
@@ -134,4 +125,33 @@ export default function newTransactionPage() {
             </div>
         </>
     )
+}
+
+export async function getServerSideProps() {
+    const baseUrl = 'http://localhost:8090/api/v1/utils'
+
+    const transactionCategoriesPromise = fetch(
+        `${baseUrl}/transactionCategories`
+    )
+    const paymentMethodsPromise = fetch(`${baseUrl}/paymentMethods`)
+    const bankAccountsPromise = fetch(`${baseUrl}/bankAccounts`)
+    const taxCategoriesPromise = fetch(`${baseUrl}/taxCategories`)
+
+    const responses = await Promise.all([
+        transactionCategoriesPromise,
+        paymentMethodsPromise,
+        bankAccountsPromise,
+        taxCategoriesPromise,
+    ])
+
+    const data = await Promise.all(responses.map((response) => response.json()))
+
+    return {
+        props: {
+            transactionCategories: data[0],
+            paymentMethods: data[1],
+            bankAccounts: data[2],
+            taxCategories: data[3],
+        },
+    }
 }
