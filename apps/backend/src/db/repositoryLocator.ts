@@ -1,14 +1,13 @@
 import { Repository } from './repository'
-import { PostgresRepository } from './v1/access/postgresRepository'
 
 export class RepositoryLocator {
     private static INSTANCE: Repository | undefined
 
-    static getRepository = async (): Promise<Repository> => {
+    static getRepository = (): Repository => {
         if (!RepositoryLocator.INSTANCE) {
-            const repository = await new PostgresRepository()
-            await repository.initialize()
-            RepositoryLocator.INSTANCE = repository
+            throw new Error(
+                'The RepositoryLocator currently does not hold a repository instance. Please create and set a repository first.'
+            )
         }
         return RepositoryLocator.INSTANCE
     }
