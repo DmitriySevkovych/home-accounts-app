@@ -12,7 +12,8 @@
         "start": "node dist/index.js",
         "test": "dotenv -e .env.test jest --detectOpenHandles",
         "pretest": "dotenv -e .env.test bash ./setup.sh",
-        "posttest": "dotenv -e .env.test bash ./teardown.sh"
+        "posttest": "dotenv -e .env.test bash ./teardown.sh",
+        "typeorm": "typeorm-ts-node-commonjs"
     },
     "jest": {
         "preset": "jest-presets/jest/node",
@@ -45,6 +46,7 @@
         "pino-pretty": "^10.0.0",
         "supertest": "^6.2.4",
         "tsconfig": "*",
+        "ts-node": "10.7.0",
         "tsup": "^6.2.3",
         "typescript": "^4.8.3"
     }
