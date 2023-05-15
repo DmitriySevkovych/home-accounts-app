@@ -1,5 +1,5 @@
-import { RepositoryLocator } from './repositoryLocator'
-import { PostgresRepository } from './v1/access/postgresRepository'
+import { RepositoryLocator } from '../../repositoryLocator'
+import { PostgresRepository } from './postgresRepository'
 
 /*
     @group integration
