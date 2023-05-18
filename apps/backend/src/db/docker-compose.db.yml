@@ -2,12 +2,18 @@ version: '3.6'
 services:
     database:
         image: postgres:${POSTGRES_IMAGE_TAG}
+        restart: always
         command: postgres -c fsync=off -c synchronous_commit=off -c full_page_writes=off -c random_page_cost=1.0
         environment:
             - POSTGRES_USER=${POSTGRES_USER}
             - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
             - POSTGRES_DB=${POSTGRES_DB}
+            - PGDATA=/var/lib/postgresql/data
         container_name: '${POSTGRES_CONTAINER_NAME}'
         ports:
             - '${POSTGRES_CONTAINER_PORT}:5432'
+        # Works on Linux. Emulated on Windows?
         tmpfs: /var/lib/postgresql/data
+        # Alternative solution
+        # volumes:
+        #     - ./pgdata:/var/lib/postgresql/data
