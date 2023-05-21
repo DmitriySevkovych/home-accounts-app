@@ -2,9 +2,9 @@ import express, { type Router } from 'express'
 import { getHttpLogger } from 'logger'
 import { RepositoryLocator } from '../db/repositoryLocator'
 
-const getRouter = (): Router => {
+const getRouter = async (): Promise<Router> => {
     const router = express.Router()
-    const repository = RepositoryLocator.getRepository()
+    const repository = await RepositoryLocator.getRepository()
     const httpLogger = getHttpLogger('backend')
 
     router.get('/transactionCategories', async (req, res) => {

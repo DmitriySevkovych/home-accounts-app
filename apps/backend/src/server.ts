@@ -6,14 +6,14 @@ import cors from 'cors'
 
 import getUtilsRouter from './routes/utils'
 
-export const createServer = (): Express => {
+export const createServer = async (): Promise<Express> => {
     const app = express()
     app.disable('x-powered-by')
         .use(morgan('dev'))
         .use(urlencoded({ extended: true }))
         .use(json())
         .use(cors())
-        .use('/api/v1/utils', getUtilsRouter())
+        .use('/api/v1/utils', await getUtilsRouter())
         .get('/transactions/:origin', (req, res) => {
             return res.json(tempCreateDummyTransaction(req.params.origin))
         })

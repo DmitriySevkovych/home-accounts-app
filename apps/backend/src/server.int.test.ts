@@ -1,22 +1,22 @@
 import supertest from 'supertest'
+import { type Express } from 'express'
+
 import { createServer } from './server'
-import { PostgresRepository } from './db/v1/postgresRepository'
 import { RepositoryLocator } from './db/repositoryLocator'
 
 /*
     @group integration
  */
-describe('server', () => {
-    beforeAll(async () => {
-        const repository = new PostgresRepository()
-        await repository.initialize()
-        RepositoryLocator.setRepository(repository)
+describe('Express server tests', () => {
+    let server: Express
+    beforeEach(async () => {
+        server = await createServer()
     })
 
     afterAll(RepositoryLocator.closeRepository)
 
     it('health check returns 200', async () => {
-        await supertest(createServer())
+        await supertest(server)
             .get('/healthz')
             .expect(200)
             .then((res) => {
@@ -25,7 +25,7 @@ describe('server', () => {
     })
 
     it('transactions endpoint says hello', async () => {
-        await supertest(createServer())
+        await supertest(server)
             .get('/transactions/Lidl')
             .expect(200)
             .then((res) => {
