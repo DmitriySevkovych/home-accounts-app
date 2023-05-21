@@ -1,6 +1,6 @@
 import supertest from 'supertest'
 import { createServer } from './server'
-import { PostgresRepository } from './db/v1/access/postgresRepository'
+import { PostgresRepository } from './db/v1/postgresRepository'
 import { RepositoryLocator } from './db/repositoryLocator'
 
 /*

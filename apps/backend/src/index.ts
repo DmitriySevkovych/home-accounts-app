@@ -1,6 +1,6 @@
 import { getLogger } from 'logger'
 
-import { PostgresRepository } from './db/v1/access/postgresRepository'
+import { PostgresRepository } from './db/v1/postgresRepository'
 import { createServer } from './server'
 import { RepositoryLocator } from './db/repositoryLocator'
 

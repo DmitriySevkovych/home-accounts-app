@@ -1,27 +1,27 @@
-import 'reflect-metadata'
-import { DataSource } from 'typeorm'
 import { getLogger, Logger } from 'logger'
+import { type Client } from 'pg'
 
-import PostgresDataSource from './data-source'
-import { Repository } from '../../repository'
+import PostgresClient from '.'
+import { Repository } from '../repository'
 
 export class PostgresRepository implements Repository {
     logger: Logger
-    dataSource: DataSource
+    client: Client
+    isConnected: boolean
 
     constructor() {
         this.logger = getLogger('db')
-        this.dataSource = PostgresDataSource
+        this.client = PostgresClient
+        this.isConnected = false
     }
 
     initialize = async (): Promise<void> => {
         try {
-            await this.dataSource.initialize()
-            if (this.dataSource.isInitialized) {
-                this.logger.debug(
-                    `Successfully initialized a ${process.env.NODE_ENV} database connection`
-                )
-            }
+            await this.client.connect()
+            this.isConnected = true
+            this.logger.debug(
+                `Successfully initialized a ${process.env.NODE_ENV} database connection`
+            )
         } catch (err) {
             this.logger.error(
                 err,
@@ -32,13 +32,17 @@ export class PostgresRepository implements Repository {
     }
 
     close = async (): Promise<void> => {
-        this.logger.debug('Closing the database connection')
-        await this.dataSource.destroy()
-        this.logger.debug('Successfully closed the database connection')
+        try {
+            this.logger.debug('Closing the database connection')
+            await this.client.end()
+            this.logger.debug('Successfully closed the database connection')
+        } catch (err) {
+            this.logger.error(err, 'Error while the database connection')
+        }
     }
 
     ping = (): boolean => {
-        return this.dataSource.isInitialized
+        return this.isConnected
     }
 
     // Utility data

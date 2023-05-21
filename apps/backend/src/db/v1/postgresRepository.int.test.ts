@@ -1,4 +1,4 @@
-import { RepositoryLocator } from '../../repositoryLocator'
+import { RepositoryLocator } from '../repositoryLocator'
 import { PostgresRepository } from './postgresRepository'
 
 /*

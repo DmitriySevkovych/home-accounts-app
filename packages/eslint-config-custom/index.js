@@ -10,6 +10,9 @@ module.exports = {
         ecmaVersion: 'latest',
         sourceType: 'module',
     },
+    rules: {
+        "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+    },
     overrides: [
         {
             files: ['**/__tests__/**/*', '**/*.test.ts'],
