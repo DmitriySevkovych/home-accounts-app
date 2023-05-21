@@ -3,10 +3,8 @@
 # Create DB container (also creates a database)
 docker-compose -f ./src/db/docker-compose.db.yml up -d
 
-# Create DB schemas
-query=''
-for schema in utils transactions home work investments; do
-    query="${query}CREATE SCHEMA IF NOT EXISTS ${schema};"
-done
-# docker exec -it $PGHOST psql -U $PGUSER -W project
-# npm run typeorm query "$query" -- -d $dataSource
+# # Create DB schemas
+# query=''
+# for schema in utils transactions home work investments; do
+#     query="${query}CREATE SCHEMA IF NOT EXISTS ${schema};"
+# done

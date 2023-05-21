@@ -15,5 +15,6 @@ services:
         # Works on Linux. Emulated on Windows?
         tmpfs: /var/lib/postgresql/data
         # Alternative solution
-        # volumes:
+        volumes:
+            - ./init.sql:/docker-entrypoint-initdb.d/init.sql
         #     - ./pgdata:/var/lib/postgresql/data
