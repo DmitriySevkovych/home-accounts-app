@@ -9,9 +9,14 @@ type InvestmentSpecifics = {
     investment: string
 }
 
+export type TransactionCategory = {
+    category: string
+    description?: string
+}
+
 export class Transaction {
     // Data describing
-    category!: string
+    category!: Pick<TransactionCategory, 'category'>
     origin!: string
     description!: string
     date: Date = new Date()
@@ -58,7 +63,7 @@ class TransactionBuilder {
         origin: string,
         description: string
     ): TransactionBuilder => {
-        this.transaction.category = category
+        this.transaction.category = { category }
         this.transaction.origin = origin
         this.transaction.description = description
         return this

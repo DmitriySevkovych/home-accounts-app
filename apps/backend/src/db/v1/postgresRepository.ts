@@ -1,5 +1,6 @@
 import { getLogger, Logger } from 'logger'
 import { type Client } from 'pg'
+import { TransactionCategory } from 'domain-model'
 
 import PostgresClient from '.'
 import { Repository } from '../repository'
@@ -46,18 +47,16 @@ export class PostgresRepository implements Repository {
     }
 
     // Utility data
-    getTransactionCategories = (): Promise<string[]> => {
+    getTransactionCategories = async (): Promise<TransactionCategory[]> => {
         //TODO: #8: load data from a DB
-        return new Promise((resolve) => {
-            resolve([
-                'FOOD',
-                'HOUSEHOLD',
-                'TRANSPORTATION',
-                'BEAUTY',
-                'LEISURE',
-                'VACATION',
-            ])
+        const query = {
+            text: 'SELECT * FROM utils.expense_types UNION SELECT * FROM utils.income_types',
+        }
+        const queryResult = await this.client.query(query)
+        const transactionCategories = queryResult.rows.map((row) => {
+            return { category: row.type, description: row.description }
         })
+        return transactionCategories
     }
 
     getTaxCategories = (): Promise<string[]> => {
