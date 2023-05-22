@@ -6,13 +6,13 @@
         "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
         "build": "tsup src/index.ts --format cjs",
         "dev": "tsup src/index.ts --format cjs --watch --onSuccess \"dotenv -e .env.local -e .env node dist/index.js\" | pino-pretty",
-        "predev": "dotenv -e .env -e .env.local bash ./setup.sh",
-        "postdev": "dotenv -e .env -e .env.local bash ./teardown.sh",
+        "predev": "dotenv -e .env.local -e .env bash ./setup.sh",
+        "postdev": "dotenv -e .env.local -e .env bash ./teardown.sh",
         "lint": "tsc --noEmit && eslint \"src/**/*.ts*\"",
         "start": "node dist/index.js",
-        "test": "dotenv -e .env.test jest --detectOpenHandles",
-        "pretest": "dotenv -e .env.test bash ./setup.sh",
-        "posttest": "dotenv -e .env.test bash ./teardown.sh"
+        "test": "dotenv -e .env.test.local -e .env.test jest --detectOpenHandles",
+        "pretest": "dotenv -e .env.test.local -e .env.test bash ./setup.sh",
+        "posttest": "dotenv -e .env.test.local -e .env.test bash ./teardown.sh"
     },
     "jest": {
         "preset": "jest-presets/jest/node",
