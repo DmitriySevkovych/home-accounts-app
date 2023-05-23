@@ -3,7 +3,6 @@ import { type Express } from 'express'
 
 import { createServer } from '../server'
 import { RepositoryLocator } from '../db/repositoryLocator'
-import { TransactionCategory } from 'domain-model/transactions'
 
 /*
     @group integration
@@ -24,9 +23,7 @@ describe('Utils router tests', () => {
             .get(`${routerBaseUrl}/transactionCategories`)
             .expect(200)
             .then((res) => {
-                const categories = res.body.map(
-                    (item: TransactionCategory) => item.category
-                )
+                const categories = res.body.map((item: any) => item.category)
                 expect(categories).toEqual(
                     expect.arrayContaining(['FOOD', 'PRIVATE_SALE'])
                 )

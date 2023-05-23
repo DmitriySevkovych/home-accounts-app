@@ -1,5 +1,5 @@
 import { json, urlencoded } from 'body-parser'
-import { Transaction, createTransaction } from 'domain-model/transactions'
+import { Transaction, createTransaction } from 'domain-model'
 import express, { type Express } from 'express'
 import morgan from 'morgan'
 import cors from 'cors'

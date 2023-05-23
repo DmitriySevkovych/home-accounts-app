@@ -1,6 +1,6 @@
 import { getLogger, Logger } from 'logger'
 import { type Client } from 'pg'
-import { TransactionCategory } from 'domain-model/transactions'
+import { TransactionCategory } from 'domain-model'
 
 import PostgresClient from '.'
 import { Repository } from '../repository'
