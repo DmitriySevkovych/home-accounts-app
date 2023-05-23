@@ -4,7 +4,7 @@ import express, { type Express } from 'express'
 import morgan from 'morgan'
 import cors from 'cors'
 
-import getUtilsRouter from './routes/utils'
+import mountRoutes from './routes'
 
 export const createServer = async (): Promise<Express> => {
     const app = express()
@@ -13,13 +13,14 @@ export const createServer = async (): Promise<Express> => {
         .use(urlencoded({ extended: true }))
         .use(json())
         .use(cors())
-        .use('/api/v1/utils', await getUtilsRouter())
         .get('/transactions/:origin', (req, res) => {
             return res.json(tempCreateDummyTransaction(req.params.origin))
         })
         .get('/healthz', (req, res) => {
             return res.json({ ok: true })
         })
+
+    await mountRoutes(app)
 
     return app
 }

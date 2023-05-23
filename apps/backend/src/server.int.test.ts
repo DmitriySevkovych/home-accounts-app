@@ -9,7 +9,7 @@ import { RepositoryLocator } from './db/repositoryLocator'
  */
 describe('Express server tests', () => {
     let server: Express
-    beforeEach(async () => {
+    beforeAll(async () => {
         server = await createServer()
     })
 
