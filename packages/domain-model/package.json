@@ -2,12 +2,16 @@
     "name": "domain-model",
     "version": "0.0.0",
     "private": true,
-    "main": "./dist/transactions.js",
-    "source": "./src/transactions.ts",
-    "types": "./dist/transactions.d.ts",
     "files": [
         "dist/**"
     ],
+    "exports": {
+        "./transactions": {
+            "default": "./dist/transactions.js",
+            "import": "./dist/transactions.js",
+            "types": "./dist/transactions.d.ts"
+        }
+    },
     "scripts": {
         "build": "tsc",
         "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",

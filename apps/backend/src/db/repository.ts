@@ -1,4 +1,4 @@
-import { type TransactionCategory } from 'domain-model'
+import { type TransactionCategory } from 'domain-model/transactions'
 
 export interface Repository {
     close: () => Promise<void>
