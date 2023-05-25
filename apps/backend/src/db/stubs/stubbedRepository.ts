@@ -1,3 +1,5 @@
+import { TransactionCategory } from 'domain-model'
+
 import { Repository } from '../repository'
 
 export class StubbedRepository implements Repository {
@@ -5,15 +7,15 @@ export class StubbedRepository implements Repository {
     close = (): Promise<void> => new Promise((resolve) => resolve())
 
     // Utility data
-    getTransactionCategories = (): Promise<string[]> => {
+    getTransactionCategories = (): Promise<TransactionCategory[]> => {
         return new Promise((resolve) => {
             resolve([
-                'FOOD',
-                'HOUSEHOLD',
-                'TRANSPORTATION',
-                'BEAUTY',
-                'LEISURE',
-                'VACATION',
+                { category: 'FOOD', description: 'Stubbed repository' },
+                { category: 'HOUSEHOLD', description: 'Stubbed repository' },
+                { category: 'TRANSPORTATION' },
+                { category: 'BEAUTY', description: 'Stubbed repository' },
+                { category: 'LEISURE' },
+                { category: 'VACATION', description: 'Stubbed repository' },
             ])
         })
     }
