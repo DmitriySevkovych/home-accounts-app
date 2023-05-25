@@ -1,5 +1,12 @@
 #https://medium.com/refinitiv-developer-community/how-to-test-rest-api-with-visual-studio-code-rest-client-extensions-9f2e061d0299
 
-GET http://localhost:5001/healthz
+### Utils routes
+GET http://localhost:8090/api/v1/utils/transactionCategories
 ###
-GET http://localhost:5001/transactions/dummy
+GET http://localhost:8090/api/v1/utils/taxCategories
+###
+GET http://localhost:8090/api/v1/utils/paymentMethods
+###
+GET http://localhost:8090/api/v1/utils/bankAccounts
+### Transactions routes
+GET http://localhost:8090/transactions/dummy

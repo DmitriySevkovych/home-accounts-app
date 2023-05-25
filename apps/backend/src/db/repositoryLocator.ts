@@ -1,16 +1,16 @@
 import { Repository } from './repository'
-import { PostgresRepository } from './v1/access/postgresRepository'
+import { PostgresRepository } from './v1/postgresRepository'
 
 export class RepositoryLocator {
     private static INSTANCE: Repository | undefined
 
     static getRepository = async (): Promise<Repository> => {
         if (!RepositoryLocator.INSTANCE) {
-            const repository = await new PostgresRepository()
+            const repository = new PostgresRepository()
             await repository.initialize()
-            RepositoryLocator.INSTANCE = repository
+            this.INSTANCE = repository
         }
-        return RepositoryLocator.INSTANCE
+        return RepositoryLocator.INSTANCE!
     }
 
     static setRepository = (repository: Repository): void => {

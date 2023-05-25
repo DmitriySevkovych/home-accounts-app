@@ -4,7 +4,9 @@ import express, { type Express } from 'express'
 import morgan from 'morgan'
 import cors from 'cors'
 
-export const createServer = (): Express => {
+import mountRoutes from './routes'
+
+export const createServer = async (): Promise<Express> => {
     const app = express()
     app.disable('x-powered-by')
         .use(morgan('dev'))
@@ -17,6 +19,8 @@ export const createServer = (): Express => {
         .get('/healthz', (req, res) => {
             return res.json({ ok: true })
         })
+
+    await mountRoutes(app)
 
     return app
 }
