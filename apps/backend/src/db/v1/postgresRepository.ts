@@ -48,7 +48,6 @@ export class PostgresRepository implements Repository {
 
     // Utility data
     getTransactionCategories = async (): Promise<TransactionCategory[]> => {
-        //TODO: #8: load data from a DB
         const query = {
             text: 'SELECT * FROM utils.expense_types UNION SELECT * FROM utils.income_types',
         }
