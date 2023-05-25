@@ -7,7 +7,8 @@ db_init_script=$db_root/init.sql
 # Create init.sql script
 mv $db_init_script ${db_init_script}.bak
 
-echo $'-- Initialize database and insert testdata\n' > $db_init_script
+echo $'-- THIS IS A GENERATED SCRIPT\n' > $db_init_script
+echo $'-- Initialize database and insert testdata\n' >> $db_init_script
 
 cat ${db_data}/ddl/schemas.sql >> $db_init_script
 
