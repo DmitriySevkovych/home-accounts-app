@@ -1,4 +1,9 @@
-import { type TransactionCategory } from 'domain-model'
+import type {
+    BankAccount,
+    PaymentMethod,
+    TaxCategory,
+    TransactionCategory,
+} from 'domain-model'
 
 export interface Repository {
     close: () => Promise<void>
@@ -6,7 +11,7 @@ export interface Repository {
 
     // Utility data
     getTransactionCategories: () => Promise<TransactionCategory[]>
-    getTaxCategories: () => Promise<string[]>
-    getPaymentMethods: () => Promise<string[]>
-    getBankAccounts: () => Promise<string[]>
+    getTaxCategories: () => Promise<TaxCategory[]>
+    getPaymentMethods: () => Promise<PaymentMethod[]>
+    getBankAccounts: () => Promise<BankAccount[]>
 }

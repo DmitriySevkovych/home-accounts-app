@@ -14,9 +14,33 @@ export type TransactionCategory = {
     description?: string
 }
 
+export type TaxCategory = {
+    category: string
+    description?: string
+}
+
+export type PaymentMethod = {
+    method: string
+    description?: string
+}
+
+export type BankAccount = {
+    account: string
+    bank: string
+    annualFee: number
+    category: 'private' | 'business' | 'investment'
+    owner?: 'Dmitriy' | 'Ivanna' | 'Dmitriy and Ivanna'
+    purpose?: string
+    iban?: string
+    openingDate?: Date
+    closingDate?: Date
+    contact?: string
+    comment?: string
+}
+
 export class Transaction {
     // Data describing
-    category!: Pick<TransactionCategory, 'category'>
+    category!: string
     origin!: string
     description!: string
     date: Date = new Date()
@@ -63,7 +87,7 @@ class TransactionBuilder {
         origin: string,
         description: string
     ): TransactionBuilder => {
-        this.transaction.category = { category }
+        this.transaction.category = category
         this.transaction.origin = origin
         this.transaction.description = description
         return this

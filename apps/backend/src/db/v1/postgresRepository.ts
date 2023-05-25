@@ -1,6 +1,11 @@
 import { getLogger, Logger } from 'logger'
 import { type Client } from 'pg'
-import { TransactionCategory } from 'domain-model'
+import type {
+    BankAccount,
+    PaymentMethod,
+    TaxCategory,
+    TransactionCategory,
+} from 'domain-model'
 
 import PostgresClient from '.'
 import { Repository } from '../repository'
@@ -49,51 +54,56 @@ export class PostgresRepository implements Repository {
     // Utility data
     getTransactionCategories = async (): Promise<TransactionCategory[]> => {
         const query = {
-            text: 'SELECT * FROM utils.expense_types UNION SELECT * FROM utils.income_types',
+            text: 'SELECT type, description FROM utils.expense_types UNION SELECT type, description FROM utils.income_types',
         }
         const queryResult = await this.client.query(query)
-        const transactionCategories = queryResult.rows.map((row) => {
-            return { category: row.type, description: row.description }
-        })
+        const transactionCategories: TransactionCategory[] =
+            queryResult.rows.map((row) => ({
+                category: row.type,
+                description: row.description,
+            }))
         return transactionCategories
     }
 
-    getTaxCategories = (): Promise<string[]> => {
-        //TODO: #8: load data from a DB
-        return new Promise((resolve) => {
-            resolve([
-                'EINKOMMENSTEUER',
-                'VERMIETUNG_UND_VERPACHTUNG',
-                'WERBUNGSKOSTEN',
-                'AUSSERORDENTLICHE_BELASTUNGEN',
-            ])
-        })
+    getTaxCategories = async (): Promise<TaxCategory[]> => {
+        const queryResult = await this.client.query(
+            'SELECT category, description FROM utils.tax_categories'
+        )
+        const taxCategories: TaxCategory[] = queryResult.rows.map((row) => ({
+            category: row.category,
+            description: row.description,
+        }))
+        return taxCategories
     }
 
-    getPaymentMethods = (): Promise<string[]> => {
-        //TODO: #8: load data from a DB
-        return new Promise((resolve) => {
-            resolve([
-                'EC',
-                'TRANSFER',
-                'PAYPAL',
-                'CASH',
-                'DIRECT_DEBIT',
-                'SEPA',
-            ])
-        })
+    getPaymentMethods = async (): Promise<PaymentMethod[]> => {
+        const queryResult = await this.client.query(
+            'SELECT name, description FROM utils.payment_methods'
+        )
+        const paymentMethods: PaymentMethod[] = queryResult.rows.map((row) => ({
+            method: row.name,
+            description: row.description,
+        }))
+        return paymentMethods
     }
 
-    getBankAccounts = (): Promise<string[]> => {
-        //TODO: #8: load data from a DB
-        return new Promise((resolve) => {
-            resolve([
-                'KSKWN',
-                'CoBa Premium',
-                'CoBa Business',
-                'VoBa Invest',
-                'CASH',
-            ])
-        })
+    getBankAccounts = async (): Promise<BankAccount[]> => {
+        const queryResult = await this.client.query(
+            'SELECT* FROM utils.bank_accounts'
+        )
+        const bankAccounts: BankAccount[] = queryResult.rows.map((row) => ({
+            account: row.account,
+            bank: row.bank,
+            annualFee: row.annual_fee,
+            category: row.type,
+            owner: row.owner,
+            iban: row.iban,
+            purpose: row.purpose,
+            openingDate: row.opening_date,
+            closingDate: row.closing_date,
+            contact: row.contact,
+            comment: row.comment,
+        }))
+        return bankAccounts
     }
 }
