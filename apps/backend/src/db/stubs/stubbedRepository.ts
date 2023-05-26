@@ -2,6 +2,7 @@ import type {
     BankAccount,
     PaymentMethod,
     TaxCategory,
+    Transaction,
     TransactionCategory,
 } from 'domain-model'
 
@@ -75,12 +76,17 @@ export class StubbedRepository implements Repository {
                 },
                 {
                     account: 'CASH',
-                    bank: 'Piggy banke',
+                    bank: 'Piggy bank',
                     owner: 'Dmitriy and Ivanna',
                     category: 'private',
                     annualFee: 0.0,
                 },
             ])
         })
+    }
+
+    // Transactions
+    createTransaction = (_transaction: Transaction) => {
+        return true
     }
 }

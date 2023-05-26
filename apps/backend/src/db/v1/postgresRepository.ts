@@ -4,6 +4,7 @@ import type {
     BankAccount,
     PaymentMethod,
     TaxCategory,
+    Transaction,
     TransactionCategory,
 } from 'domain-model'
 
@@ -89,5 +90,10 @@ export class PostgresRepository implements Repository {
 
     getBankAccounts = async (): Promise<BankAccount[]> => {
         return await utilsQueries.getBankAccounts(this.connectionPool)
+    }
+
+    createTransaction = (transaction: Transaction) => {
+        this.logger.info(transaction)
+        return true
     }
 }

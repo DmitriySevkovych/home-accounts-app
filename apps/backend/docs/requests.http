@@ -9,4 +9,11 @@ GET http://localhost:8090/api/v1/utils/paymentMethods
 ###
 GET http://localhost:8090/api/v1/utils/bankAccounts
 ### Transactions routes
-GET http://localhost:8090/transactions/dummy
+GET http://localhost:8090/api/v1/transactions/dummy
+###
+POST http://localhost:8090/api/v1/transactions
+Content-Type: application/json
+
+{
+    "test": "hello"
+}
