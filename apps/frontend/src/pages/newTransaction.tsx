@@ -1,9 +1,18 @@
+import type { BankAccount, PaymentMethod, TaxCategory, TransactionCategory } from 'domain-model'
+
+type NewTransactionPageProps = {
+    transactionCategories: string[]
+    paymentMethods: string[]
+    bankAccounts: string[]
+    taxCategories: string[]
+}
+
 export default function newTransactionPage({
     transactionCategories,
     paymentMethods,
     bankAccounts,
     taxCategories,
-}) {
+}: NewTransactionPageProps) {
     const tags: string[] = []
     return (
         <>
@@ -146,12 +155,17 @@ export async function getServerSideProps() {
 
     const data = await Promise.all(responses.map((response) => response.json()))
 
+    const transactionCategories: string[] = data[0].map((obj: TransactionCategory) => obj.category)
+    const paymentMethods: string[] = data[1].map((obj: PaymentMethod) => obj.method)
+    const bankAccounts: string[] = data[2].map((obj: BankAccount) => obj.account)
+    const taxCategories: string[] = data[3].map((obj: TaxCategory) => obj.category)
+
     return {
         props: {
-            transactionCategories: data[0],
-            paymentMethods: data[1],
-            bankAccounts: data[2],
-            taxCategories: data[3],
+            transactionCategories,
+            paymentMethods,
+            bankAccounts,
+            taxCategories,
         },
     }
 }
