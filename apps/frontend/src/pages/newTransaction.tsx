@@ -128,7 +128,7 @@ export default function newTransactionPage({
 }
 
 export async function getServerSideProps() {
-    const baseUrl = 'http://localhost:8090/api/v1/utils'
+    const baseUrl = `${process.env['BACKEND_URL']}/${process.env['BACKEND_API_BASE']}/utils`
 
     const transactionCategoriesPromise = fetch(
         `${baseUrl}/transactionCategories`
