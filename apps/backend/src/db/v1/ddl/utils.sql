@@ -1,34 +1,34 @@
----- utils
+-- -- utils
 CREATE TABLE IF NOT EXISTS utils.expense_types (
-    type character varying NOT NULL,
-    description text
+    type CHARACTER VARYING NOT NULL,
+    description TEXT
 );
 
 CREATE TABLE IF NOT EXISTS utils.income_types (
-    type character varying NOT NULL,
-    description text
+    type CHARACTER VARYING NOT NULL,
+    description TEXT
 );
 
 CREATE TABLE IF NOT EXISTS utils.tax_categories (
-    category character varying NOT NULL,
-    description text
+    category CHARACTER VARYING NOT NULL,
+    description TEXT
 );
 
 CREATE TABLE IF NOT EXISTS utils.payment_methods (
-    name character varying NOT NULL,
-    description text
+    name CHARACTER VARYING NOT NULL,
+    description TEXT
 );
 
 CREATE TABLE IF NOT EXISTS utils.bank_accounts (
-    account character varying NOT NULL,
-    bank character varying NOT NULL,
-    owner character varying NOT NULL,
-    type character varying NOT NULL,
-    annual_fee numeric NOT NULL DEFAULT 0.0, 
-    purpose character varying,
-    iban character varying,
-    contact character varying,
-    opening_date date,
-    closing_date date,
-    comment text
+    account CHARACTER VARYING NOT NULL,
+    bank CHARACTER VARYING NOT NULL,
+    owner CHARACTER VARYING NOT NULL,
+    type CHARACTER VARYING NOT NULL,
+    annual_fee NUMERIC NOT NULL DEFAULT 0.0,
+    purpose CHARACTER VARYING,
+    iban CHARACTER VARYING,
+    contact CHARACTER VARYING,
+    opening_date DATE,
+    closing_date DATE,
+    comment TEXT
 );
