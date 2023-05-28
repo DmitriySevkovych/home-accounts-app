@@ -1,10 +1,19 @@
 import { RepositoryLocator } from '../repositoryLocator'
+import { PostgresRepository } from './postgresRepository'
 
 /*
     @group integration
+    @group with-real-database
  */
 describe('Database setup and connection tests', () => {
-    afterAll(RepositoryLocator.closeRepository)
+    beforeAll(async () => {
+        const repository = new PostgresRepository()
+        await repository.initialize()
+        RepositoryLocator.setRepository(repository)
+    })
+    afterAll(async () => {
+        await RepositoryLocator.closeRepository()
+    })
 
     it('should locate a repository with an initialized database connection', async () => {
         // Arrange

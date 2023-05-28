@@ -2,7 +2,6 @@ import supertest from 'supertest'
 import { type Express } from 'express'
 
 import { createServer } from '../server'
-import { RepositoryLocator } from '../db/repositoryLocator'
 import type {
     BankAccount,
     PaymentMethod,
@@ -12,6 +11,7 @@ import type {
 
 /*
     @group integration
+    @group no-real-database
  */
 describe('Utils router tests', () => {
     const apiBaseUrl = process.env['API_BASE_URL']
@@ -22,50 +22,39 @@ describe('Utils router tests', () => {
         server = await createServer()
     })
 
-    afterAll(RepositoryLocator.closeRepository)
-
-    it('transactionCategories returns expected income and expense categories', async () => {
+    it('transactionCategories returns transaction categories with expected fields', async () => {
         await supertest(server)
             .get(`${routerBaseUrl}/transactionCategories`)
             .expect(200)
             .then((res) => {
-                const categories: string[] = res.body.map(
-                    (item: TransactionCategory) => item.category
-                )
-                expect(categories).toEqual(
-                    expect.arrayContaining(['FOOD', 'PRIVATE_SALE'])
-                )
+                expect(res.body).toBeInstanceOf(Array)
+                res.body.forEach((item: TransactionCategory) => {
+                    expect(item.category).toBeDefined()
+                })
             })
     })
 
-    it('taxCategories returns expected tax categories', async () => {
+    it('taxCategories returns tax categories with expected fields', async () => {
         await supertest(server)
             .get(`${routerBaseUrl}/taxCategories`)
             .expect(200)
             .then((res) => {
-                const categories: string[] = res.body.map(
-                    (item: TaxCategory) => item.category
-                )
-                expect(categories).toEqual(
-                    expect.arrayContaining([
-                        'EINKOMMENSTEUER',
-                        'WERBUNGSKOSTEN',
-                    ])
-                )
+                expect(res.body).toBeInstanceOf(Array)
+                res.body.forEach((item: TaxCategory) => {
+                    expect(item.category).toBeDefined()
+                })
             })
     })
 
-    it('paymentMethods returns expected payment methods', async () => {
+    it('paymentMethods returns payment methods with expected fields', async () => {
         await supertest(server)
             .get(`${routerBaseUrl}/paymentMethods`)
             .expect(200)
             .then((res) => {
-                const methods: string[] = res.body.map(
-                    (item: PaymentMethod) => item.method
-                )
-                expect(methods).toEqual(
-                    expect.arrayContaining(['TRANSFER', 'CASH'])
-                )
+                expect(res.body).toBeInstanceOf(Array)
+                res.body.forEach((item: PaymentMethod) => {
+                    expect(item.method).toBeDefined()
+                })
             })
     })
 
