@@ -20,7 +20,7 @@ export const createServer = async (): Promise<Express> => {
             return res.json({ ok: true })
         })
 
-    await mountRoutes(app)
+    mountRoutes(app)
 
     return app
 }

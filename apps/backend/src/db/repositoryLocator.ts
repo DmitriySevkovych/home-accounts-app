@@ -5,14 +5,12 @@ import { PostgresRepository } from './v1/postgresRepository'
 export class RepositoryLocator {
     private static INSTANCE: Repository | undefined
 
-    static getRepository = async (): Promise<Repository> => {
+    static getRepository = (): Repository => {
         if (!RepositoryLocator.INSTANCE) {
             if (process.env.NODE_ENV === 'test') {
                 this.INSTANCE = new StubbedRepository()
             } else {
-                const repository = new PostgresRepository()
-                await repository.initialize()
-                this.INSTANCE = repository
+                this.INSTANCE = new PostgresRepository()
             }
         }
         return RepositoryLocator.INSTANCE!

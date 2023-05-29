@@ -8,7 +8,7 @@ import type {
 import { Repository } from '../repository'
 
 export class StubbedRepository implements Repository {
-    ping = () => true
+    ping = (): Promise<boolean> => new Promise((resolve) => resolve(true))
     close = (): Promise<void> => new Promise((resolve) => resolve())
 
     // Utility data
