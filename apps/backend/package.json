@@ -16,7 +16,8 @@
     },
     "jest": {
         "preset": "jest-presets/jest/node",
-        "runner": "groups"
+        "runner": "groups",
+        "testEnvironment": "node"
     },
     "dependencies": {
         "body-parser": "^1.19.0",

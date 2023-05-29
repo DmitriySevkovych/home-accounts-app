@@ -1,5 +1,5 @@
 import { getLogger, Logger } from 'logger'
-import { type Pool } from 'pg'
+import type { PoolClient, Pool } from 'pg'
 import type {
     BankAccount,
     PaymentMethod,
@@ -13,42 +13,64 @@ import { Repository } from '../repository'
 export class PostgresRepository implements Repository {
     logger: Logger
     connectionPool: Pool
-    isConnected: boolean
 
     constructor() {
         this.logger = getLogger('db')
         this.connectionPool = connectionPool
-        this.isConnected = false
+        // this.initialize()
+        this.logger.debug(
+            `Initialized a new PostgresRepository object. Environment: '${process.env.NODE_ENV}'.`
+        )
     }
 
-    initialize = async (): Promise<void> => {
-        try {
-            await this.connectionPool.connect()
-            this.isConnected = true
+    initialize = () => {
+        this.connectionPool.on('connect', (_client: PoolClient) => {
+            const { totalCount } = this.connectionPool
             this.logger.debug(
-                `Successfully initialized a ${process.env.NODE_ENV} database connection`
+                `Connection pool created a new connected client. Current pool size: ${totalCount}.`
             )
-        } catch (err) {
-            this.logger.error(
-                err,
-                `Could not initialize a ${process.env.NODE_ENV} database connection`
+        })
+
+        this.connectionPool.on('acquire', (_client: PoolClient) => {
+            const { totalCount, idleCount } = this.connectionPool
+            this.logger.debug(
+                `A client has been checked out from the pool. Current pool size: ${totalCount}. Currently idle clients: ${idleCount}.`
             )
-            throw err
-        }
+        })
     }
 
     close = async (): Promise<void> => {
         try {
-            this.logger.debug('Closing the database connection')
+            this.logger.debug('Ending all database connection clients')
             await this.connectionPool.end()
-            this.logger.debug('Successfully closed the database connection')
+            this.logger.debug(
+                'Successfully ended all database connection clients'
+            )
         } catch (err) {
-            this.logger.error(err, 'Error while the database connection')
+            this.logger.error(
+                err,
+                'Error while ending the database connection clients'
+            )
         }
     }
 
-    ping = (): boolean => {
-        return this.isConnected
+    ping = async (): Promise<boolean> => {
+        try {
+            this.logger.debug('Database ping.')
+            const result = await this.connectionPool.query(
+                'SELECT NOW() as now'
+            )
+            this.logger.debug(
+                `Database ping. Successfully queried timestamp '${result.rows[0].now}' from ${process.env.NODE_ENV} database.`
+            )
+            return true
+        } catch (err) {
+            this.logger.error(
+                err,
+                `Database ping. Querying the ${process.env.NODE_ENV} database failed with and error.`
+            )
+            return false
+        }
     }
 
     // Utility data
