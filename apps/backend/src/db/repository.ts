@@ -7,7 +7,7 @@ import type {
 
 export interface Repository {
     close: () => Promise<void>
-    ping: () => boolean
+    ping: () => Promise<boolean>
 
     // Utility data
     getTransactionCategories: () => Promise<TransactionCategory[]>

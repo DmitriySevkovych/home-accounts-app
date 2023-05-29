@@ -1,5 +1,5 @@
 import { getLogger, Logger } from 'logger'
-import { type Client } from 'pg'
+import type { PoolClient, Pool } from 'pg'
 import type {
     BankAccount,
     PaymentMethod,
@@ -7,48 +7,70 @@ import type {
     TransactionCategory,
 } from 'domain-model'
 
-import PostgresClient from '.'
+import connectionPool from '.'
 import { Repository } from '../repository'
 
 export class PostgresRepository implements Repository {
     logger: Logger
-    client: Client
-    isConnected: boolean
+    connectionPool: Pool
 
     constructor() {
         this.logger = getLogger('db')
-        this.client = PostgresClient
-        this.isConnected = false
+        this.connectionPool = connectionPool
+        // this.initialize()
+        this.logger.debug(
+            `Initialized a new PostgresRepository object. Environment: '${process.env.NODE_ENV}'.`
+        )
     }
 
-    initialize = async (): Promise<void> => {
-        try {
-            await this.client.connect()
-            this.isConnected = true
+    initialize = () => {
+        this.connectionPool.on('connect', (_client: PoolClient) => {
+            const { totalCount } = this.connectionPool
             this.logger.debug(
-                `Successfully initialized a ${process.env.NODE_ENV} database connection`
+                `Connection pool created a new connected client. Current pool size: ${totalCount}.`
             )
-        } catch (err) {
-            this.logger.error(
-                err,
-                `Could not initialize a ${process.env.NODE_ENV} database connection`
+        })
+
+        this.connectionPool.on('acquire', (_client: PoolClient) => {
+            const { totalCount, idleCount } = this.connectionPool
+            this.logger.debug(
+                `A client has been checked out from the pool. Current pool size: ${totalCount}. Currently idle clients: ${idleCount}.`
             )
-            throw err
-        }
+        })
     }
 
     close = async (): Promise<void> => {
         try {
-            this.logger.debug('Closing the database connection')
-            await this.client.end()
-            this.logger.debug('Successfully closed the database connection')
+            this.logger.debug('Ending all database connection clients')
+            await this.connectionPool.end()
+            this.logger.debug(
+                'Successfully ended all database connection clients'
+            )
         } catch (err) {
-            this.logger.error(err, 'Error while the database connection')
+            this.logger.error(
+                err,
+                'Error while ending the database connection clients'
+            )
         }
     }
 
-    ping = (): boolean => {
-        return this.isConnected
+    ping = async (): Promise<boolean> => {
+        try {
+            this.logger.debug('Database ping.')
+            const result = await this.connectionPool.query(
+                'SELECT NOW() as now'
+            )
+            this.logger.debug(
+                `Database ping. Successfully queried timestamp '${result.rows[0].now}' from ${process.env.NODE_ENV} database.`
+            )
+            return true
+        } catch (err) {
+            this.logger.error(
+                err,
+                `Database ping. Querying the ${process.env.NODE_ENV} database failed with and error.`
+            )
+            return false
+        }
     }
 
     // Utility data
@@ -56,7 +78,7 @@ export class PostgresRepository implements Repository {
         const query = {
             text: 'SELECT type, description FROM utils.expense_types UNION SELECT type, description FROM utils.income_types',
         }
-        const queryResult = await this.client.query(query)
+        const queryResult = await this.connectionPool.query(query)
         const transactionCategories: TransactionCategory[] =
             queryResult.rows.map((row) => ({
                 category: row.type,
@@ -66,7 +88,7 @@ export class PostgresRepository implements Repository {
     }
 
     getTaxCategories = async (): Promise<TaxCategory[]> => {
-        const queryResult = await this.client.query(
+        const queryResult = await this.connectionPool.query(
             'SELECT category, description FROM utils.tax_categories'
         )
         const taxCategories: TaxCategory[] = queryResult.rows.map((row) => ({
@@ -77,7 +99,7 @@ export class PostgresRepository implements Repository {
     }
 
     getPaymentMethods = async (): Promise<PaymentMethod[]> => {
-        const queryResult = await this.client.query(
+        const queryResult = await this.connectionPool.query(
             'SELECT name, description FROM utils.payment_methods'
         )
         const paymentMethods: PaymentMethod[] = queryResult.rows.map((row) => ({
@@ -88,7 +110,7 @@ export class PostgresRepository implements Repository {
     }
 
     getBankAccounts = async (): Promise<BankAccount[]> => {
-        const queryResult = await this.client.query(
+        const queryResult = await this.connectionPool.query(
             'SELECT* FROM utils.bank_accounts'
         )
         const bankAccounts: BankAccount[] = queryResult.rows.map((row) => ({
