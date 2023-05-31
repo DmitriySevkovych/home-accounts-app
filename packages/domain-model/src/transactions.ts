@@ -51,6 +51,9 @@ type InvestmentSpecifics = {
 }
 
 export class Transaction {
+    // Unique identifier, to be provided by a DB sequence
+    id?: number
+
     // Data describing
     category!: PickAndFlatten<TransactionCategory, 'category'>
     origin!: string
@@ -102,6 +105,11 @@ class TransactionBuilder {
         this.transaction.category = category
         this.transaction.origin = origin
         this.transaction.description = description
+        return this
+    }
+
+    withId = (id: number): TransactionBuilder => {
+        this.transaction.id = id
         return this
     }
 
