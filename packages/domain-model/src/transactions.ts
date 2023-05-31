@@ -1,16 +1,14 @@
 import { TransactionDate } from './dates'
 
-export type TransactionType = 'income' | 'expense'
+// TODO extract these helper types to somewhere else...
+type UnionToIntersection<U> = (
+    U extends any ? (_k: U) => void : never
+) extends (_k: infer I) => void
+    ? I
+    : never
+export type PickAndFlatten<T, K extends keyof T> = UnionToIntersection<T[K]>
 
-type WorkSpecifics = {
-    country: string
-    vat: number
-}
-
-type InvestmentSpecifics = {
-    investment: string
-}
-
+// Types for utility data - TODO extract to somewhere else...
 export type TransactionCategory = {
     category: string
     description?: string
@@ -40,9 +38,21 @@ export type BankAccount = {
     comment?: string
 }
 
+// Transactions-related types
+export type TransactionType = 'income' | 'expense'
+
+type WorkSpecifics = {
+    country: string
+    vat: number
+}
+
+type InvestmentSpecifics = {
+    investment: string
+}
+
 export class Transaction {
     // Data describing
-    category!: string
+    category!: PickAndFlatten<TransactionCategory, 'category'>
     origin!: string
     description!: string
     date: TransactionDate = TransactionDate.today()
@@ -52,10 +62,10 @@ export class Transaction {
     amount!: number
     exchangeRate: number = 1
     currency: string = 'EUR'
-    paymentMethod!: string
-    sourceBankAccount?: string
-    targetBankAccount?: string
-    taxCategory?: string
+    paymentMethod!: PickAndFlatten<PaymentMethod, 'method'>
+    sourceBankAccount?: PickAndFlatten<BankAccount, 'account'>
+    targetBankAccount?: PickAndFlatten<BankAccount, 'account'>
+    taxCategory?: PickAndFlatten<TaxCategory, 'category'>
     comment?: string
 
     // Work-related or investment-related data
