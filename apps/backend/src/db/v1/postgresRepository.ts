@@ -34,7 +34,7 @@ export class PostgresRepository implements Repository {
 
         this.connectionPool.on('acquire', (_client: PoolClient) => {
             const { totalCount, idleCount } = this.connectionPool
-            this.logger.debug(
+            this.logger.trace(
                 `A client has been checked out from the pool. Current pool size: ${totalCount}. Currently idle clients: ${idleCount}.`
             )
         })
