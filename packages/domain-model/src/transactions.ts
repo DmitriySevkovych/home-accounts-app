@@ -1,3 +1,5 @@
+import { TransactionDate } from './dates'
+
 export type TransactionType = 'income' | 'expense'
 
 type WorkSpecifics = {
@@ -43,7 +45,7 @@ export class Transaction {
     category!: string
     origin!: string
     description!: string
-    date: Date = new Date()
+    date: TransactionDate = TransactionDate.today()
     tags: string[] = []
 
     // Data describing the money movement
@@ -112,7 +114,7 @@ class TransactionBuilder {
         return this
     }
 
-    withDate = (date: Date): TransactionBuilder => {
+    withDate = (date: TransactionDate): TransactionBuilder => {
         this.transaction.date = date
         return this
     }
