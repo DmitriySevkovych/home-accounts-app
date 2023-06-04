@@ -2,9 +2,9 @@
     "name": "domain-model",
     "version": "0.0.0",
     "private": true,
-    "main": "./dist/transactions.js",
-    "source": "./src/transactions.ts",
-    "types": "./dist/transactions.d.ts",
+    "main": "./dist/index.js",
+    "source": "./src/index.ts",
+    "types": "./dist/index.d.ts",
     "files": [
         "dist/**"
     ],
