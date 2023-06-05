@@ -53,22 +53,25 @@ describe('Database queries targeting the transactions schema', () => {
         const transaction = await getTransactionById(id, connectionPool)
         // Assert
         expect(transaction).toBeDefined()
-        expect(transaction?.id).toBe(id)
-        expect(transaction?.amount).toBe(amount)
-        expect(transaction?.date.toString()).toEqual(transactionDate.toString())
-        expect(transaction?.exchangeRate).toBe(0.95) // value comes from dummyTransaction()
+        expect(transaction.id).toBe(id)
+        expect(transaction.amount).toBe(amount)
+        expect(transaction.date.toString()).toEqual(transactionDate.toString())
+        expect(transaction.exchangeRate).toBe(0.95) // value comes from dummyTransaction()
     })
 
-    it('getTransactionDAOById should return null if no matching id exists', async () => {
+    it('getTransactionDAOById should throw an error if no matching id exists', async () => {
         // Arrange
         const fakeId = 1234
         // Act
-        const queriedTransaction = await _getTransactionDAOById(
-            fakeId,
-            connectionPool
-        )
+        const queryFakeId = async () => {
+            await _getTransactionDAOById(fakeId, connectionPool)
+        }
         // Assert
-        expect(queriedTransaction).toBeNull()
+        await expect(queryFakeId).rejects.toThrow(
+            new Error(
+                `Found no rows in transactions.transactions with id=${fakeId}.`
+            )
+        )
     })
 
     it('insertTransactionDAO should create a new entry in the database and getTransactionDAOById should retrieve it', async () => {

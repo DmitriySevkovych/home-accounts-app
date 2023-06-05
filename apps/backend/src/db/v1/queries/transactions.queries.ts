@@ -1,5 +1,8 @@
 import { Transaction, TransactionDate, createTransaction } from 'domain-model'
+import { getLogger } from 'logger'
 import type { Pool, PoolClient } from 'pg'
+
+const logger = getLogger('db')
 
 /* Types */
 
@@ -21,19 +24,21 @@ export type TransactionDetailsDAO = Pick<
 
 /* 'database-specific' CRUD methods */
 
-// TODO -> think about what is better suited here: return null if id is not found or throw an error? The user should never be able to query random/non-existing ids anyway
 export const _getTransactionDAOById = async (
     id: number,
     connectionPool: Pool
-): Promise<TransactionDAO | null> => {
+): Promise<TransactionDAO> => {
     const query = {
         name: 'select-from-transactions.transactions-where-id',
-        text: 'SELECT * FROM transactions.transactions WHERE id = $1',
+        text: 'SELECT * FROM transactions.transactions WHERE id = $1;',
         values: [id],
     }
     const queryResult = await connectionPool.query<TransactionDAO>(query)
     if (queryResult.rowCount === 0) {
-        return null
+        logger.warn(`Found no rows in transactions.transactions with id=${id}.`)
+        throw new Error(
+            `Found no rows in transactions.transactions with id=${id}.`
+        )
     }
     return queryResult.rows[0]
 }
@@ -44,7 +49,10 @@ export const _insertTransactionDAO = async (
 ): Promise<number> => {
     const query = {
         name: 'insert-into-transactions.transactions',
-        text: 'INSERT INTO transactions.transactions(date, amount, source_bank_account, target_bank_account, currency, exchange_rate, agent) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id;',
+        text: `
+        INSERT INTO transactions.transactions(date, amount, source_bank_account, target_bank_account, currency, exchange_rate, agent) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7) 
+        RETURNING id;`,
         values: [
             transactionDAO.date.toString(),
             transactionDAO.amount,
@@ -59,6 +67,9 @@ export const _insertTransactionDAO = async (
     if (queryResult.rowCount === 0) {
         // TODO throw error
     }
+    logger.info(
+        `Inserted a new row in transactions.transactions with primary key id=${queryResult.rows[0].id}.`
+    )
     return queryResult.rows[0].id
 }
 
@@ -81,6 +92,9 @@ export const _insertTransactionDetailsDAO = async (
     if (queryResult.rowCount === 0) {
         // TODO throw error
     }
+    logger.trace(
+        `Inserted a new row in transactions.transaction_details with foreign key transaction_id=${transactionDetailsDAO.transaction_id}.`
+    )
 }
 
 /* CRUD methods for domain-model transactions */
@@ -88,7 +102,7 @@ export const _insertTransactionDetailsDAO = async (
 export const getTransactionById = async (
     id: number,
     connectionPool: Pool
-): Promise<Transaction | null> => {
+): Promise<Transaction> => {
     const query = {
         name: 'select-transaction-by-id-using-joins',
         text: `
@@ -97,12 +111,15 @@ export const getTransactionById = async (
             td.payment_method, td.tax_category, td.comment
         FROM transactions.transactions tr 
         JOIN transactions.transaction_details td ON tr.id = td.transaction_id
-        WHERE tr.id = $1`,
+        WHERE tr.id = $1;`,
         values: [id],
     }
     const queryResult = await connectionPool.query(query)
     if (queryResult.rowCount === 0) {
-        return null
+        logger.warn(`The database does not hold a transaction with id=${id}.`)
+        throw new Error(
+            `The database does not hold a transaction with id=${id}.`
+        )
     }
     const {
         amount,
@@ -142,15 +159,22 @@ export const insertTransaction = async (
         await client.query('BEGIN')
 
         const id = await _insertTransactionDAO(transaction, client)
+
         await _insertTransactionDetailsDAO(
             { ...transaction, transaction_id: id },
             client
         )
 
         await client.query('COMMIT')
+        logger.trace(
+            `Committed the database transaction for inserting a new domain-model transaction with id=${id}.`
+        )
         return id
     } catch (e) {
         await client.query('ROLLBACK')
+        logger.trace(
+            `Something went wrong while inserting a new domain-model transaction. Database transaction has been rolled back.`
+        )
         throw e
     } finally {
         client.release()
