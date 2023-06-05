@@ -4,7 +4,9 @@ import type { Pool, PoolClient } from 'pg'
 
 const logger = getLogger('db')
 
-/* Types */
+/* 
+    Types 
+ */
 
 export type TransactionDAO = Pick<
     Transaction,
@@ -22,7 +24,9 @@ export type TransactionDetailsDAO = Pick<
     'paymentMethod' | 'taxCategory' | 'comment'
 > & { transaction_id: number }
 
-/* 'database-specific' CRUD methods */
+/* 
+    'database-specific' CRUD methods 
+ */
 
 export const _getTransactionDAOById = async (
     id: number,
@@ -97,7 +101,9 @@ export const _insertTransactionDetailsDAO = async (
     )
 }
 
-/* CRUD methods for domain-model transactions */
+/* 
+    CRUD methods for domain-model transactions 
+*/
 
 export const getTransactionById = async (
     id: number,
@@ -107,7 +113,9 @@ export const getTransactionById = async (
         name: 'select-transaction-by-id-using-joins',
         text: `
         SELECT 
-            tr.amount, TO_CHAR(tr.date::date, 'yyyy-mm-dd') as date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
+            tr.amount, ${TransactionDate.formatDateColumn(
+                'tr.date'
+            )} as date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
             td.payment_method, td.tax_category, td.comment
         FROM transactions.transactions tr 
         JOIN transactions.transaction_details td ON tr.id = td.transaction_id
