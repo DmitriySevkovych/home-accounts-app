@@ -7,20 +7,44 @@ import {
     _insertTransactionDetailsDAO,
 } from './transactions.queries'
 
+type HomeTransactionTable = 'expenses' | 'income'
+
+type HomeDAO = Pick<Transaction, 'category' | 'origin' | 'description'> & {
+    transaction_id: number
+    table: HomeTransactionTable
+}
+
 const logger = getLogger('db')
 
-export const getTransactionById = async (
+export const getHomeExpenseById = async (
     id: number,
+    connectionPool: Pool
+): Promise<Transaction> => {
+    return await _getTransactionById(id, 'expenses', connectionPool)
+}
+
+export const getHomeIncomeById = async (
+    id: number,
+    connectionPool: Pool
+): Promise<Transaction> => {
+    return await _getTransactionById(id, 'income', connectionPool)
+}
+
+const _getTransactionById = async (
+    id: number,
+    table: HomeTransactionTable,
     connectionPool: Pool
 ): Promise<Transaction> => {
     const dateColumn = TransactionDate.formatDateColumn('tr.date')
     const query = {
-        name: 'select-transaction-by-id-using-joins',
+        name: `select-home-${table}`,
         text: `
-        SELECT 
+        SELECT
+            h.type, h.origin, h.description,
             tr.amount, ${dateColumn} as date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
             td.payment_method, td.tax_category, td.comment
-        FROM transactions.transactions tr 
+        FROM home.${table} h
+        JOIN transactions.transactions tr ON h.transaction_id = tr.id
         JOIN transactions.transaction_details td ON tr.id = td.transaction_id
         WHERE tr.id = $1;`,
         values: [id],
@@ -33,6 +57,9 @@ export const getTransactionById = async (
         )
     }
     const {
+        type: category,
+        origin,
+        description,
         amount,
         date,
         currency,
@@ -45,7 +72,7 @@ export const getTransactionById = async (
         comment,
     } = queryResult.rows[0]
     const transaction = createTransaction()
-        //.about()
+        .about(category, origin, description)
         .withId(id)
         .withDate(TransactionDate.fromDatabase(date))
         .withAmount(parseFloat(amount))
@@ -65,6 +92,10 @@ export const insertTransaction = async (
     transaction: Transaction,
     connectionPool: Pool
 ): Promise<number> => {
+    if (transaction.type().specificTo !== 'home') {
+        // TODO throw exception!
+    }
+
     const client: PoolClient = await connectionPool.connect()
     try {
         await client.query('BEGIN')
@@ -73,6 +104,13 @@ export const insertTransaction = async (
 
         await _insertTransactionDetailsDAO(
             { ...transaction, transaction_id: id },
+            client
+        )
+
+        const table =
+            transaction.type().cashflow === 'expense' ? 'expenses' : 'income'
+        await _insertHomeDAO(
+            { ...transaction, transaction_id: id, table },
             client
         )
 
@@ -90,4 +128,23 @@ export const insertTransaction = async (
     } finally {
         client.release()
     }
+}
+
+const _insertHomeDAO = async (
+    home: HomeDAO,
+    client: PoolClient
+): Promise<void> => {
+    const { table, category: type, origin, description, transaction_id } = home
+    const query = {
+        name: `insert-into-home.${table}`,
+        text: `INSERT INTO home.${table}(type, origin, description, transaction_id) VALUES ($1, $2, $3, $4) RETURNING id;`,
+        values: [type, origin, description, transaction_id],
+    }
+    const queryResult = await client.query(query)
+    if (queryResult.rowCount === 0) {
+        // TODO throw error
+    }
+    logger.trace(
+        `Inserted a new row in home.${table} with id=${queryResult.rows[0].id} and foreign key transaction_id=${transaction_id}.`
+    )
 }
