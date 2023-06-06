@@ -39,7 +39,10 @@ export type BankAccount = {
 }
 
 // Transactions-related types
-export type TransactionType = 'income' | 'expense'
+export type TransactionType = {
+    cashflow: 'income' | 'expense'
+    specificTo: 'home' | 'work' | 'investment'
+}
 
 type WorkSpecifics = {
     country: string
@@ -78,7 +81,14 @@ export class Transaction {
     agent: string = 'default_agent'
 
     type = (): TransactionType => {
-        return this.amount > 0 ? 'income' : 'expense'
+        const cashflow = this.amount > 0 ? 'income' : 'expense'
+        if (this.specifics) {
+            if ('investment' in this.specifics) {
+                return { cashflow, specificTo: 'investment' }
+            }
+            return { cashflow, specificTo: 'work' }
+        }
+        return { cashflow, specificTo: 'home' }
     }
 
     eurEquivalent = (): number => {
