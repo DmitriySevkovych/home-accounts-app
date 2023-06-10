@@ -1,48 +1,44 @@
 ---- utils
+--
 CREATE TABLE IF NOT EXISTS
   utils.expense_types (
-    type CHARACTER VARYING NOT NULL,
+    type CHARACTER VARYING PRIMARY KEY,
     description TEXT
   );
 
-ALTER TABLE ONLY utils.expense_types
-ADD CONSTRAINT u_expense_types_pkey PRIMARY KEY (
-  type
-);
+
 
 --
 CREATE TABLE IF NOT EXISTS
   utils.income_types (
-    type CHARACTER VARYING NOT NULL,
+    type CHARACTER VARYING PRIMARY KEY,
     description TEXT
   );
 
-ALTER TABLE ONLY utils.income_types
-ADD CONSTRAINT income_types_pkey PRIMARY KEY (
-  type
-);
+
 
 --
 CREATE TABLE IF NOT EXISTS
   utils.tax_categories (
-    category CHARACTER VARYING NOT NULL,
+    category CHARACTER VARYING PRIMARY KEY,
     description TEXT
   );
 
-ALTER TABLE ONLY utils.tax_categories
-ADD CONSTRAINT tax_categories_pkey PRIMARY KEY (category);
+
 
 --
 CREATE TABLE IF NOT EXISTS
-  utils.payment_methods (name CHARACTER VARYING NOT NULL, description TEXT);
+  utils.payment_methods (
+    name CHARACTER VARYING PRIMARY KEY, 
+    description TEXT
+  );
 
-ALTER TABLE ONLY utils.payment_methods
-ADD CONSTRAINT payment_methods_pkey PRIMARY KEY (name);
+
 
 --
 CREATE TABLE IF NOT EXISTS
   utils.bank_accounts (
-    account CHARACTER VARYING NOT NULL,
+    account CHARACTER VARYING PRIMARY KEY,
     iban CHARACTER VARYING(27),
     bank CHARACTER VARYING NOT NULL,
     owner CHARACTER VARYING NOT NULL,
@@ -55,5 +51,10 @@ CREATE TABLE IF NOT EXISTS
     comment TEXT
   );
 
-ALTER TABLE ONLY utils.bank_accounts
-ADD CONSTRAINT bank_accounts_pkey PRIMARY KEY (account);
+
+--
+CREATE TABLE IF NOT EXISTS 
+  utils.tags (
+    tag character varying PRIMARY KEY
+  );
+
