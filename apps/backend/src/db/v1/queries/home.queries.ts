@@ -30,6 +30,48 @@ export const getHomeIncomeById = async (
     return await _getTransactionById(id, 'income', connectionPool)
 }
 
+export const insertTransaction = async (
+    transaction: Transaction,
+    connectionPool: Pool
+): Promise<number> => {
+    if (transaction.type().specificTo !== 'home') {
+        // TODO throw exception!
+    }
+
+    const client: PoolClient = await connectionPool.connect()
+    try {
+        await client.query('BEGIN')
+
+        const id = await _insertTransactionDAO(transaction, client)
+
+        await _insertTransactionDetailsDAO(
+            { ...transaction, transaction_id: id },
+            client
+        )
+
+        const table =
+            transaction.type().cashflow === 'expense' ? 'expenses' : 'income'
+        await _insertHomeDAO(
+            { ...transaction, transaction_id: id, table },
+            client
+        )
+
+        await client.query('COMMIT')
+        logger.trace(
+            `Committed the database transaction for inserting a new domain-model transaction with id=${id}.`
+        )
+        return id
+    } catch (e) {
+        await client.query('ROLLBACK')
+        logger.trace(
+            `Something went wrong while inserting a new domain-model transaction. Database transaction has been rolled back.`
+        )
+        throw e
+    } finally {
+        client.release()
+    }
+}
+
 const _getTransactionById = async (
     id: number,
     table: HomeTransactionTable,
@@ -86,48 +128,6 @@ const _getTransactionById = async (
         .build()
 
     return transaction
-}
-
-export const insertTransaction = async (
-    transaction: Transaction,
-    connectionPool: Pool
-): Promise<number> => {
-    if (transaction.type().specificTo !== 'home') {
-        // TODO throw exception!
-    }
-
-    const client: PoolClient = await connectionPool.connect()
-    try {
-        await client.query('BEGIN')
-
-        const id = await _insertTransactionDAO(transaction, client)
-
-        await _insertTransactionDetailsDAO(
-            { ...transaction, transaction_id: id },
-            client
-        )
-
-        const table =
-            transaction.type().cashflow === 'expense' ? 'expenses' : 'income'
-        await _insertHomeDAO(
-            { ...transaction, transaction_id: id, table },
-            client
-        )
-
-        await client.query('COMMIT')
-        logger.trace(
-            `Committed the database transaction for inserting a new domain-model transaction with id=${id}.`
-        )
-        return id
-    } catch (e) {
-        await client.query('ROLLBACK')
-        logger.trace(
-            `Something went wrong while inserting a new domain-model transaction. Database transaction has been rolled back.`
-        )
-        throw e
-    } finally {
-        client.release()
-    }
 }
 
 const _insertHomeDAO = async (
