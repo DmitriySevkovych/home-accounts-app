@@ -11,10 +11,10 @@ ALTER TABLE ONLY home.expenses
     ADD CONSTRAINT expenses_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY home.expenses
-    ADD CONSTRAINT fk_expense_types FOREIGN KEY (type) REFERENCES utils.expense_types(type) ON UPDATE CASCADE;
+    ADD CONSTRAINT fk_expense_types FOREIGN KEY (type) REFERENCES utils.expense_types(type);
 
 ALTER TABLE ONLY home.expenses
-    ADD CONSTRAINT fk_transaction_id FOREIGN KEY (transaction_id) REFERENCES transactions.transactions(id) NOT VALID;
+    ADD CONSTRAINT fk_transaction_id FOREIGN KEY (transaction_id) REFERENCES transactions.transactions(id);
 
 CREATE SEQUENCE home.expenses_id_seq
     AS integer
@@ -45,7 +45,7 @@ ALTER TABLE ONLY home.income
     ADD CONSTRAINT fk_income_type FOREIGN KEY (type) REFERENCES utils.income_types(type);
 
 ALTER TABLE ONLY home.income
-    ADD CONSTRAINT fk_transaction_id FOREIGN KEY (transaction_id) REFERENCES transactions.transactions(id) NOT VALID;
+    ADD CONSTRAINT fk_transaction_id FOREIGN KEY (transaction_id) REFERENCES transactions.transactions(id);
 
 CREATE SEQUENCE home.income_id_seq
     AS integer
