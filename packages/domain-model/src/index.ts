@@ -4,3 +4,5 @@
  */
 export * from './transactions'
 export * from './dates'
+
+export * from './test-fixtures'

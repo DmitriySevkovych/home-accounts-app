@@ -7,7 +7,7 @@ import {
     getHomeIncomeById,
     insertTransaction,
 } from './home.queries'
-import { Transaction, TransactionDate, createTransaction } from 'domain-model'
+import { Transaction, TransactionDate, dummyTransaction } from 'domain-model'
 
 /*
     @group integration
@@ -32,7 +32,7 @@ describe('Database queries targeting the home schema', () => {
         'insertTransaction should return a new transaction ID after successfully inserting into multiple tables',
         async ({ amount, category }) => {
             // Arrange
-            const transaction: Transaction = _dummyTransaction(
+            const transaction: Transaction = dummyTransaction(
                 category,
                 amount,
                 TransactionDate.fromString('2020-01-15')
@@ -53,7 +53,7 @@ describe('Database queries targeting the home schema', () => {
         const amount = -5.99
         const transactionDate = TransactionDate.fromString('2020-02-16')
         const id = await insertTransaction(
-            _dummyTransaction(category, amount, transactionDate),
+            dummyTransaction(category, amount, transactionDate),
             connectionPool
         )
         // Act
@@ -77,7 +77,7 @@ describe('Database queries targeting the home schema', () => {
         const amount = 19.99
         const transactionDate = TransactionDate.fromString('2020-05-05')
         const id = await insertTransaction(
-            _dummyTransaction(category, amount, transactionDate),
+            dummyTransaction(category, amount, transactionDate),
             connectionPool
         )
         // Act
@@ -95,24 +95,3 @@ describe('Database queries targeting the home schema', () => {
         expect(transaction.exchangeRate).toBe(0.95) // value comes from dummyTransaction()
     })
 })
-
-const _dummyTransaction = (
-    category: string,
-    amount: number,
-    date: TransactionDate
-): Transaction => {
-    const transactionBuilder = createTransaction()
-        .about(category, 'Test origin', 'A lengthy test description')
-        .withAmount(amount)
-        .withDate(date)
-        .withCurrency('USD', 0.95)
-        .withAgent('IntegrationTest-Agent')
-
-    if (amount > 0) {
-        transactionBuilder.withPaymentTo('TRANSFER', 'BUSINESS_ACCOUNT')
-    } else {
-        transactionBuilder.withPaymentFrom('EC', 'HOME_ACCOUNT')
-    }
-
-    return transactionBuilder.build()
-}
