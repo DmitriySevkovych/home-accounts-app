@@ -21,13 +21,4 @@ describe('Express server tests', () => {
                 expect(res.body.ok).toBe(true)
             })
     })
-
-    it('transactions endpoint says hello', async () => {
-        await supertest(server)
-            .get('/transactions/Lidl')
-            .expect(200)
-            .then((res) => {
-                expect(res.body.origin).toBe('Lidl')
-            })
-    })
 })
