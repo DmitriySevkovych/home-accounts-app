@@ -3,6 +3,7 @@
     @group domain
  */
 
+import { TransactionDate } from '../dates'
 import { createTransaction } from '../transactions'
 
 describe('Transactions tests', () => {
@@ -71,6 +72,66 @@ describe('Transactions tests', () => {
             const isTaxRelevant = transaction.taxRelevant()
             // Assert
             expect(isTaxRelevant).toBe(expectedTaxRelevant)
+        }
+    )
+
+    it('should successfully validate and build a Transaction object with minimum required data', () => {
+        // Arrange
+        const transactionBuilder = createTransaction()
+            .about('FOOD', 'Test origin', '')
+            .withAmount(3.0)
+            .withDate(TransactionDate.today())
+            .withPaymentTo('TRANSFER', 'HOME_ACCOUNT')
+        // Act
+        const transaction = transactionBuilder.validate().build()
+        // Assert
+        expect(transaction).toBeDefined()
+    })
+
+    it.each`
+        amount
+        ${0}
+        ${undefined}
+    `('should fail validation and throw if amount is $amount', ({ amount }) => {
+        // Arrange
+        const transactionBuilder = createTransaction()
+            .about('FOOD', 'Test origin', '')
+            .withAmount(amount)
+            .withDate(TransactionDate.today())
+            .withPaymentTo('TRANSFER', 'HOME_ACCOUNT')
+        // Act
+        const validation = () => {
+            transactionBuilder.validate()
+        }
+        // Assert
+        expect(validation).toThrowError()
+    })
+
+    it.each`
+        amount | sourceBankAccount | targetBankAccount
+        ${100} | ${undefined}      | ${undefined}
+        ${100} | ${'IRRELEVANT'}   | ${undefined}
+        ${-99} | ${undefined}      | ${undefined}
+        ${-99} | ${undefined}      | ${'IRRELEVANT'}
+    `(
+        'should fail validation and throw if amount does not match bank accounts',
+        ({ amount, sourceBankAccount, targetBankAccount }) => {
+            // Arrange
+            const transactionBuilder = createTransaction()
+                .about('FOOD', 'Test origin', '')
+                .withAmount(amount)
+                .withDate(TransactionDate.today())
+                .withPaymentDetails(
+                    'TRANSFER',
+                    sourceBankAccount,
+                    targetBankAccount
+                )
+            // Act
+            const validation = () => {
+                transactionBuilder.validate()
+            }
+            // Assert
+            expect(validation).toThrowError()
         }
     )
 })

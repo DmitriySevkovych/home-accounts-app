@@ -198,11 +198,93 @@ class TransactionBuilder {
         return this
     }
 
+    validate = (): TransactionBuilder => {
+        const {
+            category,
+            origin,
+            amount,
+            date,
+            paymentMethod,
+            sourceBankAccount,
+            targetBankAccount,
+        } = this.transaction
+
+        this._throwIfFalsy('category', category)
+        this._throwIfFalsy('origin', origin)
+        this._throwIfFalsy('amount', amount)
+        this._throwIfFalsy('date', date)
+        this._throwIfFalsy('payment method', paymentMethod)
+        this._throwIfFalsy(
+            'bank accounts',
+            sourceBankAccount || targetBankAccount
+        )
+
+        this._throwIfAmountInconsistentWithBankAccounts()
+
+        return this
+    }
+
     build = (): Transaction => {
         return this.transaction
+    }
+
+    private _throwIfFalsy = (property: string, value: any): void => {
+        // throw an error, if input is undefined, null, '', 0 and so on
+        if (!value) {
+            throw new Error(
+                `The data on ${property} is falsy. Can not build a valid Transaction object.`
+            )
+        }
+    }
+
+    private _throwIfAmountInconsistentWithBankAccounts = (): void => {
+        const { amount, sourceBankAccount, targetBankAccount } =
+            this.transaction
+
+        if (amount < 0 && !sourceBankAccount) {
+            throw new Error(
+                `A Transaction with amount < 0 should have a source (outgoing) bank account set`
+            )
+        } else if (amount > 0 && !targetBankAccount) {
+            throw new Error(
+                `A Transaction with amount > 0 should have a target (incoming) bank account set`
+            )
+        }
     }
 }
 
 export const createTransaction = (): TransactionBuilder => {
     return new TransactionBuilder()
+}
+
+export const deserializeTransaction = (data: any) => {
+    const {
+        category,
+        origin,
+        description,
+        amount,
+        currency,
+        exchangeRate,
+        date,
+        paymentMethod,
+        sourceBankAccount,
+        targetBankAccount,
+        comment,
+        agent,
+        tags,
+    } = data
+
+    const transaction: Transaction = createTransaction()
+        .about(category, origin, description)
+        .withAmount(amount)
+        .withCurrency(currency, exchangeRate)
+        .withDate(date)
+        .withPaymentDetails(paymentMethod, sourceBankAccount, targetBankAccount)
+        .withComment(comment)
+        .withAgent(agent)
+        .addTags(tags)
+        .validate()
+        .build()
+
+    return transaction
 }
