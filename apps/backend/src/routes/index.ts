@@ -1,7 +1,7 @@
 import { type Express } from 'express'
 
-import utils from './utils'
-import transactions from './transactions'
+import utils from './utils.routes'
+import transactions from './transactions.routes'
 
 const mountRoutes = (app: Express) => {
     const baseUrl = process.env['API_BASE_URL']

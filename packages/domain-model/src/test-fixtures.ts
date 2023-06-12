@@ -1,5 +1,5 @@
-import { TransactionDate } from './dates'
-import { Transaction, createTransaction } from './transactions'
+import { TransactionDate } from './dates.model'
+import { Transaction, createTransaction } from './transactions.model'
 
 export const dummyTransaction = (
     category: string,

@@ -1,5 +1,5 @@
-import { TransactionDate } from './dates'
-import { TransactionValidationError } from './exceptions'
+import { TransactionDate } from './dates.model'
+import { TransactionValidationError } from './errors.model'
 
 // TODO extract these helper types to somewhere else...
 type UnionToIntersection<U> = (

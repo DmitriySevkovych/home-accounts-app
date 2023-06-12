@@ -3,9 +3,9 @@
     @group domain
  */
 
-import { TransactionDate } from '../dates'
-import { TransactionValidationError } from '../exceptions'
-import { createTransaction } from '../transactions'
+import { TransactionDate } from '../dates.model'
+import { TransactionValidationError } from '../errors.model'
+import { createTransaction } from '../transactions.model'
 
 describe('Transactions tests', () => {
     it.each`
