@@ -5,4 +5,6 @@
 export * from './transactions'
 export * from './dates'
 
+export * from './exceptions'
+
 export * from './test-fixtures'

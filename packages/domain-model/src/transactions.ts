@@ -1,4 +1,5 @@
 import { TransactionDate } from './dates'
+import { TransactionValidationError } from './exceptions'
 
 // TODO extract these helper types to somewhere else...
 type UnionToIntersection<U> = (
@@ -231,7 +232,7 @@ class TransactionBuilder {
     private _throwIfFalsy = (property: string, value: any): void => {
         // throw an error, if input is undefined, null, '', 0 and so on
         if (!value) {
-            throw new Error(
+            throw new TransactionValidationError(
                 `The data on ${property} is falsy. Can not build a valid Transaction object.`
             )
         }
@@ -242,11 +243,11 @@ class TransactionBuilder {
             this.transaction
 
         if (amount < 0 && !sourceBankAccount) {
-            throw new Error(
+            throw new TransactionValidationError(
                 `A Transaction with amount < 0 should have a source (outgoing) bank account set`
             )
         } else if (amount > 0 && !targetBankAccount) {
-            throw new Error(
+            throw new TransactionValidationError(
                 `A Transaction with amount > 0 should have a target (incoming) bank account set`
             )
         }

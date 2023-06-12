@@ -4,6 +4,7 @@
  */
 
 import { TransactionDate } from '../dates'
+import { TransactionValidationError } from '../exceptions'
 import { createTransaction } from '../transactions'
 
 describe('Transactions tests', () => {
@@ -104,7 +105,7 @@ describe('Transactions tests', () => {
             transactionBuilder.validate()
         }
         // Assert
-        expect(validation).toThrowError()
+        expect(validation).toThrow(TransactionValidationError)
     })
 
     it.each`
@@ -131,7 +132,7 @@ describe('Transactions tests', () => {
                 transactionBuilder.validate()
             }
             // Assert
-            expect(validation).toThrowError()
+            expect(validation).toThrow(TransactionValidationError)
         }
     )
 })
