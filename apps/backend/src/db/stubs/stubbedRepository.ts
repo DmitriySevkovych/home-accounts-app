@@ -9,6 +9,8 @@ import type {
 import { Repository } from '../repository'
 
 export class StubbedRepository implements Repository {
+    static CREATED_TRANSACTION_ID = 1234
+
     ping = (): Promise<boolean> => new Promise((resolve) => resolve(true))
     close = (): Promise<void> => new Promise((resolve) => resolve())
 
@@ -87,6 +89,6 @@ export class StubbedRepository implements Repository {
 
     // Transactions
     createTransaction = (_transaction: Transaction) => {
-        return true
+        return Promise.resolve(StubbedRepository.CREATED_TRANSACTION_ID)
     }
 }

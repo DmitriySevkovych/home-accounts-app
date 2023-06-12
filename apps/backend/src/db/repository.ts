@@ -17,5 +17,5 @@ export interface Repository {
     getBankAccounts: () => Promise<BankAccount[]>
 
     // Transactions data
-    createTransaction: (_transaction: Transaction) => boolean
+    createTransaction: (_transaction: Transaction) => Promise<number>
 }

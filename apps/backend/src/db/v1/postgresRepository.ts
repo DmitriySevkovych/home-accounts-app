@@ -10,6 +10,7 @@ import type {
 
 import connectionPool from '.'
 import * as utilsQueries from './queries/utils.queries'
+import { insertTransaction } from './queries/home.queries'
 import { Repository } from '../repository'
 
 export class PostgresRepository implements Repository {
@@ -92,8 +93,11 @@ export class PostgresRepository implements Repository {
         return await utilsQueries.getBankAccounts(this.connectionPool)
     }
 
-    createTransaction = (transaction: Transaction) => {
+    // Transactions
+    createTransaction = async (transaction: Transaction): Promise<number> => {
+        // TODO to log or not to log?
         this.logger.info(transaction)
-        return true
+        const id = await insertTransaction(transaction, this.connectionPool)
+        return id
     }
 }
