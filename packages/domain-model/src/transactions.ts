@@ -148,8 +148,10 @@ class TransactionBuilder {
         return this
     }
 
-    addTags = (tags: string[]): TransactionBuilder => {
-        this.transaction.tags.push(...tags)
+    addTags = (tags: string[] | undefined): TransactionBuilder => {
+        if (tags) {
+            this.transaction.tags.push(...tags)
+        }
         return this
     }
 
