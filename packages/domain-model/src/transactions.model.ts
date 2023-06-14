@@ -210,6 +210,7 @@ class TransactionBuilder {
             paymentMethod,
             sourceBankAccount,
             targetBankAccount,
+            agent,
         } = this.transaction
 
         this._throwIfFalsy('category', category)
@@ -217,6 +218,7 @@ class TransactionBuilder {
         this._throwIfFalsy('amount', amount)
         this._throwIfFalsy('date', date)
         this._throwIfFalsy('payment method', paymentMethod)
+        this._throwIfFalsy('agent', agent)
         this._throwIfFalsy(
             'bank accounts',
             sourceBankAccount || targetBankAccount
