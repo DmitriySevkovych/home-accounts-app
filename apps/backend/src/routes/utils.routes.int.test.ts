@@ -63,6 +63,7 @@ describe('Utils router tests', () => {
             .get(`${routerBaseUrl}/bankAccounts`)
             .expect(200)
             .then((res) => {
+                expect(res.body).toBeInstanceOf(Array)
                 res.body.forEach((item: BankAccount) => {
                     expect(item.account).toBeDefined()
                     expect(item.bank).toBeDefined()

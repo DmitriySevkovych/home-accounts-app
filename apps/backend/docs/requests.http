@@ -8,5 +8,28 @@ GET http://localhost:8090/api/v1/utils/taxCategories
 GET http://localhost:8090/api/v1/utils/paymentMethods
 ###
 GET http://localhost:8090/api/v1/utils/bankAccounts
+
 ### Transactions routes
-GET http://localhost:8090/transactions/dummy
+GET http://localhost:8090/api/v1/transactions/1
+###
+POST http://localhost:8090/api/v1/transactions
+Content-Type: application/json
+
+{
+    "test": "hello"
+}
+###
+POST http://localhost:8090/api/v1/transactions
+Content-Type: application/json
+
+{
+    "category": "FOOD",
+    "origin": "Grocery store",
+    "description": "Some tasty food",
+    "amount": -45.67,
+    "date": "2023-06-14",
+    "paymentMethod": "EC",
+    "sourceBankAccount": "HOME_ACCOUNT",
+    "tags": ["Test", "Tag"],
+    "agent": "Testbot"
+}

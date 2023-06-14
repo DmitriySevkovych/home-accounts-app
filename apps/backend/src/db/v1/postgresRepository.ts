@@ -4,10 +4,13 @@ import type {
     BankAccount,
     PaymentMethod,
     TaxCategory,
+    Transaction,
     TransactionCategory,
 } from 'domain-model'
 
 import connectionPool from '.'
+import * as utilsQueries from './queries/utils.queries'
+import { insertTransaction } from './queries/home.queries'
 import { Repository } from '../repository'
 
 export class PostgresRepository implements Repository {
@@ -17,7 +20,7 @@ export class PostgresRepository implements Repository {
     constructor() {
         this.logger = getLogger('db')
         this.connectionPool = connectionPool
-        // this.initialize()
+        this.initialize()
         this.logger.debug(
             `Initialized a new PostgresRepository object. Environment: '${process.env.NODE_ENV}'.`
         )
@@ -33,7 +36,7 @@ export class PostgresRepository implements Repository {
 
         this.connectionPool.on('acquire', (_client: PoolClient) => {
             const { totalCount, idleCount } = this.connectionPool
-            this.logger.debug(
+            this.logger.trace(
                 `A client has been checked out from the pool. Current pool size: ${totalCount}. Currently idle clients: ${idleCount}.`
             )
         })
@@ -41,15 +44,15 @@ export class PostgresRepository implements Repository {
 
     close = async (): Promise<void> => {
         try {
-            this.logger.debug('Ending all database connection clients')
+            this.logger.debug('Ending all database connection clients.')
             await this.connectionPool.end()
             this.logger.debug(
-                'Successfully ended all database connection clients'
+                'Successfully ended all database connection clients.'
             )
         } catch (err) {
             this.logger.error(
                 err,
-                'Error while ending the database connection clients'
+                'Error while ending the database connection clients.'
             )
         }
     }
@@ -75,57 +78,26 @@ export class PostgresRepository implements Repository {
 
     // Utility data
     getTransactionCategories = async (): Promise<TransactionCategory[]> => {
-        const query = {
-            text: 'SELECT type, description FROM utils.expense_types UNION SELECT type, description FROM utils.income_types',
-        }
-        const queryResult = await this.connectionPool.query(query)
-        const transactionCategories: TransactionCategory[] =
-            queryResult.rows.map((row) => ({
-                category: row.type,
-                description: row.description,
-            }))
-        return transactionCategories
+        return await utilsQueries.getTransactionCategories(this.connectionPool)
     }
 
     getTaxCategories = async (): Promise<TaxCategory[]> => {
-        const queryResult = await this.connectionPool.query(
-            'SELECT category, description FROM utils.tax_categories'
-        )
-        const taxCategories: TaxCategory[] = queryResult.rows.map((row) => ({
-            category: row.category,
-            description: row.description,
-        }))
-        return taxCategories
+        return await utilsQueries.getTaxCategories(this.connectionPool)
     }
 
     getPaymentMethods = async (): Promise<PaymentMethod[]> => {
-        const queryResult = await this.connectionPool.query(
-            'SELECT name, description FROM utils.payment_methods'
-        )
-        const paymentMethods: PaymentMethod[] = queryResult.rows.map((row) => ({
-            method: row.name,
-            description: row.description,
-        }))
-        return paymentMethods
+        return await utilsQueries.getPaymentMethods(this.connectionPool)
     }
 
     getBankAccounts = async (): Promise<BankAccount[]> => {
-        const queryResult = await this.connectionPool.query(
-            'SELECT* FROM utils.bank_accounts'
-        )
-        const bankAccounts: BankAccount[] = queryResult.rows.map((row) => ({
-            account: row.account,
-            bank: row.bank,
-            annualFee: row.annual_fee,
-            category: row.type,
-            owner: row.owner,
-            iban: row.iban,
-            purpose: row.purpose,
-            openingDate: row.opening_date,
-            closingDate: row.closing_date,
-            contact: row.contact,
-            comment: row.comment,
-        }))
-        return bankAccounts
+        return await utilsQueries.getBankAccounts(this.connectionPool)
+    }
+
+    // Transactions
+    createTransaction = async (transaction: Transaction): Promise<number> => {
+        // TODO to log or not to log?
+        this.logger.info(transaction)
+        const id = await insertTransaction(transaction, this.connectionPool)
+        return id
     }
 }

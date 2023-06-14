@@ -2,5 +2,8 @@
     Resources
         - https://jamesknelson.com/re-exporting-es6-modules/
  */
-export * from './transactions'
-export * from './dates'
+export * from './transactions.model'
+export * from './dates.model'
+export * from './errors.model'
+
+export * from './test-fixtures'

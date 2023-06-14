@@ -1,4 +1,4 @@
-import { TransactionDate } from '../dates'
+import { TransactionDate } from '../dates.model'
 
 /*
     @group unit

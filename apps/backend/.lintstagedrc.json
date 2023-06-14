@@ -2,6 +2,5 @@
     "*.(js|ts)": ["prettier --write", "eslint"],
     "*.md": "prettier --list-different",
     "*.json": "prettier --write",
-    "*.{html,css}": "prettier --write",
-    "*.sql": "prettier --write --plugin=prettier-plugin-sql-cst"
+    "*.{html,css}": "prettier --write"
 }

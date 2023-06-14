@@ -2,12 +2,15 @@ import type {
     BankAccount,
     PaymentMethod,
     TaxCategory,
+    Transaction,
     TransactionCategory,
 } from 'domain-model'
 
 import { Repository } from '../repository'
 
 export class StubbedRepository implements Repository {
+    static CREATED_TRANSACTION_ID = 1234
+
     ping = (): Promise<boolean> => new Promise((resolve) => resolve(true))
     close = (): Promise<void> => new Promise((resolve) => resolve())
 
@@ -75,12 +78,17 @@ export class StubbedRepository implements Repository {
                 },
                 {
                     account: 'CASH',
-                    bank: 'Piggy banke',
+                    bank: 'Piggy bank',
                     owner: 'Dmitriy and Ivanna',
                     category: 'private',
                     annualFee: 0.0,
                 },
             ])
         })
+    }
+
+    // Transactions
+    createTransaction = (_transaction: Transaction) => {
+        return Promise.resolve(StubbedRepository.CREATED_TRANSACTION_ID)
     }
 }

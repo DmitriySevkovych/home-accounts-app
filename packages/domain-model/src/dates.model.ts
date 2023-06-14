@@ -23,6 +23,10 @@ export class TransactionDate {
         return new TransactionDate(DateTime.fromISO(dateString))
     }
 
+    static formatDateColumn = (column: string): string => {
+        return `TO_CHAR(${column}::date, 'yyyy-mm-dd')`
+    }
+
     private datetime: DateTime
 
     private constructor(datetime: DateTime) {
