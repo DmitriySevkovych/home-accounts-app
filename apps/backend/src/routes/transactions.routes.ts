@@ -22,7 +22,7 @@ const getRouter = (): Router => {
                 message: `Created new entry with id: ${id}`,
             })
         } catch (err) {
-            //TODO log
+            req.log.error(err)
             if (err instanceof TransactionValidationError) {
                 res.status(400).json({
                     message:
