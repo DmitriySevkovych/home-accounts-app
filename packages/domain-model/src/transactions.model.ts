@@ -133,8 +133,11 @@ class TransactionBuilder {
         currency: string,
         exchangeRate: number
     ): TransactionBuilder => {
-        this.transaction.currency = currency
-        this.transaction.exchangeRate = exchangeRate
+        // TODO maybe remove the default values and remove this if statement
+        if (currency && exchangeRate) {
+            this.transaction.currency = currency
+            this.transaction.exchangeRate = exchangeRate
+        }
         return this
     }
 
@@ -144,7 +147,10 @@ class TransactionBuilder {
     }
 
     withDate = (date: TransactionDate): TransactionBuilder => {
-        this.transaction.date = date
+        // TODO maybe remove the default date value and remove this if statement
+        if (date) {
+            this.transaction.date = date
+        }
         return this
     }
 
