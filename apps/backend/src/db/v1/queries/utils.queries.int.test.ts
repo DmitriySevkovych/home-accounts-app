@@ -73,4 +73,41 @@ describe('Database queries targeting the utils schema', () => {
             expect(item.category).toBeDefined()
         })
     })
+
+    it('should return false if a tag does not yet exist in the database', async () => {
+        // Arrange
+        // Act
+        const tagExists = await utilsQueries.tagExists(
+            connectionPool,
+            'unknownTag'
+        )
+        // Assert
+        expect(tagExists).toBe(false)
+    })
+
+    it('should create a new tag in the database and return true when checking that it exists', async () => {
+        // Arrange
+        const tag = 'VacationSomewhere'
+
+        // Act & Assert
+        let tagExists = await utilsQueries.tagExists(connectionPool, tag)
+        expect(tagExists).toBe(false)
+
+        await utilsQueries.insertTag(connectionPool, tag)
+
+        tagExists = await utilsQueries.tagExists(connectionPool, tag)
+        expect(tagExists).toBe(true)
+    })
+
+    it('should throw an error when trying to create the same tag twice', async () => {
+        // Arrange
+        const tag = 'UniqueTag'
+        await utilsQueries.insertTag(connectionPool, tag)
+        // Act
+        const secondInsertion = async () => {
+            await utilsQueries.insertTag(connectionPool, tag)
+        }
+        // Assert
+        await expect(secondInsertion).rejects.toThrowError()
+    })
 })
