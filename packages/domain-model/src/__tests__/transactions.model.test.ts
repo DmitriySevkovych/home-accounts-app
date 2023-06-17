@@ -5,7 +5,10 @@
 
 import { TransactionDate } from '../dates.model'
 import { TransactionValidationError } from '../errors.model'
-import { createTransaction } from '../transactions.model'
+import {
+    createTransaction,
+    deserializeTransaction,
+} from '../transactions.model'
 
 describe('Transactions tests', () => {
     it.each`
@@ -135,4 +138,49 @@ describe('Transactions tests', () => {
             expect(validation).toThrow(TransactionValidationError)
         }
     )
+
+    it('should deserialize a Transaction object from a POST request body', () => {
+        // Arrange
+        const receivedRequestBody = {
+            category: 'FOOD',
+            origin: 'Grocery store',
+            description: 'Some tasty food',
+            amount: -45.67,
+            date: {
+                datetime: '2023-06-14T14:48:00.000Z',
+            },
+            paymentMethod: 'EC',
+            sourceBankAccount: 'HOME_ACCOUNT',
+            tags: ['Test', 'Tag'],
+            agent: 'Testbot',
+        }
+        // Act
+        const transaction = deserializeTransaction(receivedRequestBody)
+        // Assert
+        expect(transaction).toBeDefined()
+        expect(transaction.date.toString()).toBe('2023-06-14')
+    })
+
+    it('should throw a TransactionValidationError because of an incorrect date', () => {
+        // Arrange
+        const malformedRequestBody = {
+            // malformed date field
+            date: {
+                bla: '2023-06-14T14:48:00.000Z',
+            },
+            // mandatory information
+            category: 'FOOD',
+            origin: 'Grocery store',
+            amount: -45.67,
+            paymentMethod: 'EC',
+            sourceBankAccount: 'HOME_ACCOUNT',
+            agent: 'Testbot',
+        }
+        // Act
+        const deserialization = () => {
+            deserializeTransaction(malformedRequestBody)
+        }
+        // Assert
+        expect(deserialization).toThrow(TransactionValidationError)
+    })
 })

@@ -222,13 +222,14 @@ class TransactionBuilder {
         this._throwIfFalsy('category', category)
         this._throwIfFalsy('origin', origin)
         this._throwIfFalsy('amount', amount)
-        this._throwIfFalsy('date', date)
         this._throwIfFalsy('payment method', paymentMethod)
         this._throwIfFalsy('agent', agent)
         this._throwIfFalsy(
             'bank accounts',
             sourceBankAccount || targetBankAccount
         )
+
+        this._throwIfDateInvalid(date)
 
         this._throwIfAmountInconsistentWithBankAccounts()
 
@@ -262,6 +263,16 @@ class TransactionBuilder {
             )
         }
     }
+
+    private _throwIfDateInvalid = (date: TransactionDate): void => {
+        this._throwIfFalsy('date', date)
+
+        if (date.toString() === 'Invalid DateTime') {
+            throw new TransactionValidationError(
+                'The Transaction has an invalid date'
+            )
+        }
+    }
 }
 
 export const createTransaction = (): TransactionBuilder => {
@@ -289,7 +300,7 @@ export const deserializeTransaction = (data: any) => {
         .about(category, origin, description)
         .withAmount(amount)
         .withCurrency(currency, exchangeRate)
-        .withDate(date)
+        .withDate(TransactionDate.deserialize(date))
         .withPaymentDetails(paymentMethod, sourceBankAccount, targetBankAccount)
         .withComment(comment)
         .withAgent(agent)
