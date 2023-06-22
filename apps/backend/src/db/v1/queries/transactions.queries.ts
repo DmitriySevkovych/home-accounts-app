@@ -28,7 +28,7 @@ export type TransactionDetailsDAO = Pick<
     'database-specific' CRUD methods 
  */
 
-export const _getTransactionDAOById = async (
+export const getTransactionDAOById = async (
     id: number,
     connectionPool: Pool
 ): Promise<TransactionDAO> => {
@@ -47,7 +47,7 @@ export const _getTransactionDAOById = async (
     return queryResult.rows[0]
 }
 
-export const _insertTransactionDAO = async (
+export const insertTransactionDAO = async (
     transactionDAO: TransactionDAO,
     client: PoolClient
 ): Promise<number> => {
@@ -77,7 +77,7 @@ export const _insertTransactionDAO = async (
     return queryResult.rows[0].id
 }
 
-export const _insertTransactionDetailsDAO = async (
+export const insertTransactionDetailsDAO = async (
     transactionDetailsDAO: TransactionDetailsDAO,
     client: PoolClient
 ): Promise<void> => {
