@@ -42,7 +42,7 @@ export type BankAccount = {
 // Transactions-related types
 export type TransactionType = {
     cashflow: 'income' | 'expense'
-    specificTo: 'home' | 'work' | 'investment'
+    specificTo: 'home' | 'work' | 'investments'
 }
 
 type WorkSpecifics = {
@@ -85,7 +85,7 @@ export class Transaction {
         const cashflow = this.amount > 0 ? 'income' : 'expense'
         if (this.specifics) {
             if ('investment' in this.specifics) {
-                return { cashflow, specificTo: 'investment' }
+                return { cashflow, specificTo: 'investments' }
             }
             return { cashflow, specificTo: 'work' }
         }

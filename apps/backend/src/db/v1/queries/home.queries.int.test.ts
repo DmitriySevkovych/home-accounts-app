@@ -69,6 +69,7 @@ describe('Database queries targeting the home schema', () => {
         expect(transaction.origin).toBe('Test origin') // value comes from dummyTransaction()
         expect(transaction.description).toBe('A lengthy test description') // value comes from dummyTransaction()
         expect(transaction.exchangeRate).toBe(0.95) // value comes from dummyTransaction()
+        expect(transaction.tags).toEqual(['Dummy', 'Test', 'ExpenseTag']) // value comes from dummyTransaction()
     })
 
     it('getHomeIncomeById should return a Transaction representing a home income', async () => {
@@ -93,5 +94,6 @@ describe('Database queries targeting the home schema', () => {
         expect(transaction.origin).toBe('Test origin') // value comes from dummyTransaction()
         expect(transaction.description).toBe('A lengthy test description') // value comes from dummyTransaction()
         expect(transaction.exchangeRate).toBe(0.95) // value comes from dummyTransaction()
+        expect(transaction.tags).toEqual(['Dummy', 'Test', 'IncomeTag']) // value comes from dummyTransaction()
     })
 })

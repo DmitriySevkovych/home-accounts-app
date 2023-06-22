@@ -13,12 +13,14 @@ export const dummyTransaction = (
         .withCurrency('USD', 0.95)
         .withComment('A dummy transaction, what else')
         .withAgent('IntegrationTest-Agent')
-        .addTags(['Dummy', 'Test', 'Tags'])
+        .addTags(['Dummy', 'Test'])
 
     if (amount > 0) {
         transactionBuilder.withPaymentTo('TRANSFER', 'BUSINESS_ACCOUNT')
+        transactionBuilder.addTags(['IncomeTag'])
     } else {
         transactionBuilder.withPaymentFrom('EC', 'HOME_ACCOUNT')
+        transactionBuilder.addTags(['ExpenseTag'])
     }
 
     return transactionBuilder.build()
