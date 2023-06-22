@@ -92,10 +92,7 @@ export const insertTransactionDetailsDAO = async (
             transactionDetailsDAO.transaction_id,
         ],
     }
-    const queryResult = await client.query(query)
-    if (queryResult.rowCount === 0) {
-        // TODO throw error
-    }
+    await client.query(query)
     logger.trace(
         `Inserted a new row in transactions.transaction_details with foreign key transaction_id=${transactionDetailsDAO.transaction_id}.`
     )

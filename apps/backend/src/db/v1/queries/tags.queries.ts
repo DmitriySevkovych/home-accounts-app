@@ -45,10 +45,7 @@ export const insertTagDAO = async (
         insertTag(client, tag)
     }
     // Insert tag to transaction mapping
-    const queryResult = await client.query(query)
-    if (queryResult.rowCount === 0) {
-        // TODO throw error
-    }
+    await client.query(query)
 }
 
 // TECHNICAL DEBT: persistence of tags in DB needs to be refactored and simplified, cf. GitHub Issue #41

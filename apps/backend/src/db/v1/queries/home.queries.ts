@@ -66,7 +66,7 @@ export const insertTransaction = async (
         )
 
         for (let i = 0; i < transaction.tags.length; i++) {
-            // TODO: replace home_id with transaction_id once DB has been adjusted
+            // TODO: replace expense_or_income_id with transaction_id once DB has been adjusted
             const tagDAO: TagDAO = {
                 type: transaction.type(),
                 tag: transaction.tags[i],
@@ -177,9 +177,6 @@ const _insertHomeDAO = async (
         values: [type, origin, description, transaction_id],
     }
     const queryResult = await client.query(query)
-    if (queryResult.rowCount === 0) {
-        // TODO throw error
-    }
     const home_id = queryResult.rows[0].id
     logger.trace(
         `Inserted a new row in home.${table} with id=${home_id} and foreign key transaction_id=${transaction_id}.`
