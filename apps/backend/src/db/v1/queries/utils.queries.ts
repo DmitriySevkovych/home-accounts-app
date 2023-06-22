@@ -4,10 +4,7 @@ import {
     TaxCategory,
     TransactionCategory,
 } from 'domain-model'
-import { getLogger } from 'logger'
-import type { Pool, PoolClient } from 'pg'
-
-const logger = getLogger('db')
+import type { Pool } from 'pg'
 
 export const getTransactionCategories = async (
     connectionPool: Pool
@@ -71,28 +68,4 @@ export const getBankAccounts = async (
         comment: row.comment,
     }))
     return bankAccounts
-}
-
-export const tagExists = async (
-    dbConnection: Pool | PoolClient,
-    tag: string
-): Promise<boolean> => {
-    const query = {
-        text: 'SELECT * FROM utils.tags WHERE tag=$1',
-        values: [tag],
-    }
-    const queryResult = await dbConnection.query(query)
-    return queryResult.rowCount === 1
-}
-
-export const insertTag = async (
-    dbConnection: Pool | PoolClient,
-    tag: string
-): Promise<void> => {
-    const query = {
-        text: 'INSERT INTO utils.tags(tag) VALUES ($1)',
-        values: [tag],
-    }
-    await dbConnection.query(query)
-    logger.trace(`Inserted a new tag '${tag}' in utils.tags`)
 }

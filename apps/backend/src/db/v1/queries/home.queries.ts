@@ -3,31 +3,22 @@ import { getLogger } from 'logger'
 import type { Pool, PoolClient } from 'pg'
 
 import {
-    _insertTransactionDAO,
-    _insertTransactionDetailsDAO,
+    insertTransactionDAO,
+    insertTransactionDetailsDAO,
 } from './transactions.queries'
-import { insertTag, tagExists } from './utils.queries'
+import {
+    TagDAO,
+    getTagsByExpenseOrIncomeId,
+    insertTagDAO,
+} from './tags.queries'
 
 type HomeTransactionTable = 'expenses' | 'income'
 
 type TransactionCashflow = 'expense' | 'income'
 
-// TECHNICAL DEBT: persistence of tags in DB needs to be refactored and simplified, cf. GitHub Issue #41
-// TODO: remove cashflow argument once DB has been adjusted
-type HomeTagTable = 'tags2expenses' | 'tags2income'
-
 type HomeDAO = Pick<Transaction, 'category' | 'origin' | 'description'> & {
     transaction_id: number
     cashflow: TransactionCashflow
-}
-
-// TECHNICAL DEBT: persistence of tags in DB needs to be refactored and simplified, cf. GitHub Issue #41
-// TODO: remove cashflow argument once DB has been adjusted
-// TODO: replace home_id with transaction_id once DB has been adjusted
-type HomeTagDAO = {
-    cashflow: TransactionCashflow
-    tag: string
-    home_id: number
 }
 
 const logger = getLogger('db')
@@ -58,9 +49,9 @@ export const insertTransaction = async (
     try {
         await client.query('BEGIN')
 
-        const id = await _insertTransactionDAO(transaction, client)
+        const id = await insertTransactionDAO(transaction, client)
 
-        await _insertTransactionDetailsDAO(
+        await insertTransactionDetailsDAO(
             { ...transaction, transaction_id: id },
             client
         )
@@ -76,12 +67,12 @@ export const insertTransaction = async (
 
         for (let i = 0; i < transaction.tags.length; i++) {
             // TODO: replace home_id with transaction_id once DB has been adjusted
-            const tagDAO: HomeTagDAO = {
-                cashflow: transaction.type().cashflow,
+            const tagDAO: TagDAO = {
+                type: transaction.type(),
                 tag: transaction.tags[i],
-                home_id: home_id,
+                expense_or_income_id: home_id,
             }
-            await _insertHomeTagDAO(tagDAO, client)
+            await insertTagDAO(tagDAO, client)
         }
 
         await client.query('COMMIT')
@@ -152,25 +143,18 @@ const _getTransactionById = async (
         .withComment(comment)
         .withTaxCategory(taxCategory)
         .withAgent(agent)
-    // .withSpecifics
 
     // TECHNICAL DEBT: persistence of tags in DB needs to be refactored and simplified, cf. GitHub Issue #41
     // TODO remove differentiation income/expense once DB is adjusted
-    if (table === 'income') {
-        const incomeTags = await _getHomeTagsByHomeId(
-            home_id,
-            'income',
-            connectionPool
-        )
-        transactionBuilder.addTags(incomeTags)
-    } else {
-        const expenseTags = await _getHomeTagsByHomeId(
-            home_id,
-            'expense',
-            connectionPool
-        )
-        transactionBuilder.addTags(expenseTags)
-    }
+    const tags = await getTagsByExpenseOrIncomeId(
+        home_id,
+        {
+            cashflow: table === 'income' ? 'income' : 'expense',
+            specificTo: 'home',
+        },
+        connectionPool
+    )
+    transactionBuilder.addTags(tags)
 
     return transactionBuilder.build()
 }
@@ -201,58 +185,4 @@ const _insertHomeDAO = async (
         `Inserted a new row in home.${table} with id=${home_id} and foreign key transaction_id=${transaction_id}.`
     )
     return home_id
-}
-
-// TECHNICAL DEBT: persistence of tags in DB needs to be refactored and simplified, cf. GitHub Issue #41
-const _insertHomeTagDAO = async (
-    tagDAO: HomeTagDAO,
-    client: PoolClient
-): Promise<void> => {
-    // TODO: replace home_id with transaction_id once DB has been adjusted
-    const { tag, home_id, cashflow } = tagDAO
-
-    // TODO: remove once DB has been adjusted
-    const table: HomeTagTable =
-        cashflow === 'income' ? 'tags2income' : 'tags2expenses'
-    const idColumn = `${cashflow}_id`
-
-    const query = {
-        name: `insert-into-home.${table}`,
-        text: `INSERT INTO home.${table}(tag, ${idColumn}) VALUES ($1, $2);`,
-        values: [tag, home_id],
-    }
-
-    // Create new tag if necessary
-    if (!(await tagExists(client, tag))) {
-        insertTag(client, tag)
-    }
-    // Insert tag to transaction mapping
-    const queryResult = await client.query(query)
-    if (queryResult.rowCount === 0) {
-        // TODO throw error
-    }
-}
-
-// TECHNICAL DEBT: persistence of tags in DB needs to be refactored and simplified, cf. GitHub Issue #41
-// TODO: remove cashflow argument once DB has been adjusted
-// TODO: replace home_id with transaction_id once DB has been adjusted
-const _getHomeTagsByHomeId = async (
-    home_id: number,
-    cashflow: 'expense' | 'income',
-    connectionPool: Pool
-): Promise<string[]> => {
-    // TODO: remove once DB has been adjusted
-    const table: HomeTagTable =
-        cashflow === 'income' ? 'tags2income' : 'tags2expenses'
-    const idColumn = `${cashflow}_id`
-
-    const query = {
-        name: `select-home.${table}`,
-        text: `SELECT tag from home.${table} WHERE ${idColumn} = $1;`,
-        values: [home_id],
-    }
-    const queryResult = await connectionPool.query(query)
-    return queryResult.rowCount > 0
-        ? queryResult.rows.map((row) => row.tag)
-        : []
 }
