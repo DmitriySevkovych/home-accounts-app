@@ -7,7 +7,12 @@ import {
     getHomeIncomeById,
     insertTransaction,
 } from './home.queries'
-import { Transaction, TransactionDate, dummyTransaction } from 'domain-model'
+import {
+    Transaction,
+    TransactionDate,
+    dummyTransaction,
+    minimalDummyTransaction,
+} from 'domain-model'
 
 /*
     @group integration
@@ -68,8 +73,41 @@ describe('Database queries targeting the home schema', () => {
         expect(transaction.type().specificTo).toBe('home')
         expect(transaction.origin).toBe('Test origin') // value comes from dummyTransaction()
         expect(transaction.description).toBe('A lengthy test description') // value comes from dummyTransaction()
+        expect(transaction.currency).toBe('USD') // value comes from dummyTransaction()
         expect(transaction.exchangeRate).toBe(0.95) // value comes from dummyTransaction()
+        expect(transaction.agent).toBe('IntegrationTest-Agent') // value comes from dummyTransaction()
         expect(transaction.tags).toEqual(['Dummy', 'Test', 'ExpenseTag']) // value comes from dummyTransaction()
+    })
+
+    it('getHomeExpenseById should return a Transaction with correct defaults', async () => {
+        // Arrange
+        const category = 'FOOD'
+        const amount = -15.99
+        const id = await insertTransaction(
+            minimalDummyTransaction(category, amount),
+            connectionPool
+        )
+        // Act
+        const transaction = await getHomeExpenseById(id, connectionPool)
+        // Assert
+        expect(transaction).toBeDefined()
+        expect(transaction.id).toBe(id)
+        expect(transaction.amount).toBe(amount)
+        expect(transaction.category).toBe(category)
+        expect(transaction.type().cashflow).toBe('expense')
+        expect(transaction.type().specificTo).toBe('home')
+        expect(transaction.date.toString()).toEqual(
+            TransactionDate.today().toString()
+        ) // default value!
+        expect(transaction.currency).toBe('EUR') // default value!
+        expect(transaction.exchangeRate).toBe(1) // default value!
+        expect(transaction.tags).toEqual([]) // default value!
+        expect(transaction.origin).toBe('Test origin') // value comes from dummyTransaction()
+        expect(transaction.description).toBe('A lengthy test description') // value comes from dummyTransaction()
+        expect(transaction.agent).toBe('IntegrationTest-Agent') // value comes from dummyTransaction()
+        expect(transaction.paymentMethod).toBe('EC') // value comes from dummyTransaction()
+        expect(transaction.sourceBankAccount).toBe('HOME_ACCOUNT') // value comes from dummyTransaction()
+        expect(transaction.targetBankAccount).toBeNull()
     })
 
     it('getHomeIncomeById should return a Transaction representing a home income', async () => {
@@ -95,5 +133,36 @@ describe('Database queries targeting the home schema', () => {
         expect(transaction.description).toBe('A lengthy test description') // value comes from dummyTransaction()
         expect(transaction.exchangeRate).toBe(0.95) // value comes from dummyTransaction()
         expect(transaction.tags).toEqual(['Dummy', 'Test', 'IncomeTag']) // value comes from dummyTransaction()
+    })
+
+    it('getHomeIncomeById should return a Transaction with correct defaults', async () => {
+        // Arrange
+        const category = 'SALARY'
+        const amount = 123.99
+        const id = await insertTransaction(
+            minimalDummyTransaction(category, amount),
+            connectionPool
+        )
+        // Act
+        const transaction = await getHomeIncomeById(id, connectionPool)
+        // Assert
+        expect(transaction).toBeDefined()
+        expect(transaction.id).toBe(id)
+        expect(transaction.amount).toBe(amount)
+        expect(transaction.category).toBe(category)
+        expect(transaction.type().cashflow).toBe('income')
+        expect(transaction.type().specificTo).toBe('home')
+        expect(transaction.date.toString()).toEqual(
+            TransactionDate.today().toString()
+        ) // default value!
+        expect(transaction.currency).toBe('EUR') // default value!
+        expect(transaction.exchangeRate).toBe(1) // default value!
+        expect(transaction.tags).toEqual([]) // default value!
+        expect(transaction.origin).toBe('Test origin') // value comes from dummyTransaction()
+        expect(transaction.description).toBe('A lengthy test description') // value comes from dummyTransaction()
+        expect(transaction.agent).toBe('IntegrationTest-Agent') // value comes from dummyTransaction()
+        expect(transaction.paymentMethod).toBe('TRANSFER') // value comes from dummyTransaction()
+        expect(transaction.sourceBankAccount).toBeNull()
+        expect(transaction.targetBankAccount).toBe('BUSINESS_ACCOUNT') // value comes from dummyTransaction()
     })
 })

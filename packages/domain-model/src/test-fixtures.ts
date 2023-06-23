@@ -25,3 +25,21 @@ export const dummyTransaction = (
 
     return transactionBuilder.build()
 }
+
+export const minimalDummyTransaction = (
+    category: string,
+    amount: number
+): Transaction => {
+    const transactionBuilder = createTransaction()
+        .about(category, 'Test origin', 'A lengthy test description')
+        .withAmount(amount)
+        .withAgent('IntegrationTest-Agent')
+
+    if (amount > 0) {
+        transactionBuilder.withPaymentTo('TRANSFER', 'BUSINESS_ACCOUNT')
+    } else {
+        transactionBuilder.withPaymentFrom('EC', 'HOME_ACCOUNT')
+    }
+
+    return transactionBuilder.build()
+}
