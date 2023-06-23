@@ -9,6 +9,7 @@ import {
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Select from '../components/Select'
+import TagInput from '../components/TagInput'
 
 type NewTransactionPageProps = {
     transactionCategories: string[]
@@ -238,22 +239,7 @@ export default function NewTransactionPage({
                         InvestmentSpecifics
                     </label>
 
-                    <label htmlFor="newTag">New tag</label>
-                    <input
-                        id="newTag"
-                        type="text"
-                        placeholder="new tag"
-                        value={tags} // TODO: introduce newTag as state ... currently we are using the wrong variable here
-                        onChange={(e) => {
-                            // TODO: implement the following
-                            // setNewTag(e.target.value)
-
-                            // TODO: this action should happen when a 'add new tag' button is clicked
-                            const updatedTags = [...tags, e.target.value]
-                            setTags(updatedTags)
-                        }}
-                    />
-                    {/* TODO add a button for 'add new tag' here */}
+                    <TagInput tags={tags} setTags={setTags} />
                     <div>
                         {tags.map((tag) => (
                             <div key={tag}>{tag}</div>
