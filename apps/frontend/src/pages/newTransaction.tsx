@@ -4,8 +4,10 @@ import {
     TaxCategory,
     TransactionCategory,
     TransactionDate,
+    createTransaction,
 } from 'domain-model'
-import { ChangeEvent, useState } from 'react'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 type NewTransactionPageProps = {
     transactionCategories: string[]
@@ -14,7 +16,7 @@ type NewTransactionPageProps = {
     taxCategories: string[]
 }
 
-const baseUrl = `${process.env['BACKEND_URL']}/${process.env['BACKEND_API_BASE']}`
+const baseUrl = `${process.env['NEXT_PUBLIC_BACKEND_URL']}/${process.env['NEXT_PUBLIC_BACKEND_API_BASE']}`
 
 export default function NewTransactionPage({
     transactionCategories,
@@ -22,6 +24,8 @@ export default function NewTransactionPage({
     bankAccounts,
     taxCategories,
 }: NewTransactionPageProps) {
+    const router = useRouter()
+
     const [selectedCategory, setSelectedCategory] = useState<
         string | undefined
     >(undefined)
@@ -48,6 +52,26 @@ export default function NewTransactionPage({
     const [comment, setComment] = useState<string | undefined>(undefined)
     const [tags, setTags] = useState<string[]>([])
 
+    const newTransaction = () => {
+        const transaction = createTransaction()
+            .about(selectedCategory!, origin!, description!)
+            .withAmount(amount)
+            .withCurrency(currency, exchangeRate)
+            .withDate(date)
+            .withPaymentDetails(
+                selectedPaymentMethod!,
+                selectedSourceBankAccount!,
+                selectedTargetBankAccount!
+            )
+            .withComment(comment!)
+            .withAgent('development-agent')
+            .addTags(tags)
+            // .withSpecifics(selectedCategory!)
+            .validate()
+            .build()
+        return transaction
+    }
+
     const postNewTransaction = async (event: React.SyntheticEvent) => {
         event.preventDefault()
         const response = await fetch(`${baseUrl}/transactions`, {
@@ -60,8 +84,13 @@ export default function NewTransactionPage({
             },
             // redirect: "follow", // manual, *follow, error
             // referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-            body: JSON.stringify({ state: 'TODO' }), // body data type must match "Content-Type" header
+            body: JSON.stringify(newTransaction()), // body data type must match "Content-Type" header
         })
+        if (response.status !== 201) {
+            alert('Transaction was not created')
+        } else {
+            router.push('/')
+        }
     }
 
     return (
@@ -274,6 +303,8 @@ export default function NewTransactionPage({
                             <div key={tag}>{tag}</div>
                         ))}
                     </div>
+
+                    <button type="submit">Create</button>
                 </form>
             </div>
         </>
