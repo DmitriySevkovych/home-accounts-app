@@ -8,6 +8,7 @@ import {
 } from 'domain-model'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Select from '../components/Select'
 
 type NewTransactionPageProps = {
     transactionCategories: string[]
@@ -98,22 +99,13 @@ export default function NewTransactionPage({
             <h1>Create Transaction</h1>
             <div>
                 <form onSubmit={postNewTransaction}>
-                    <label htmlFor="category">Category</label>
-                    <select
-                        name="category"
+                    <Select
+                        label="Category"
                         id="category"
-                        defaultValue={'FOOD'}
-                        value={selectedCategory}
-                        onChange={(e) => {
-                            setSelectedCategory(e.target.value)
-                        }}
-                    >
-                        {transactionCategories.map((category) => (
-                            <option key={category} value={category}>
-                                {category}
-                            </option>
-                        ))}
-                    </select>
+                        selectedState={selectedCategory}
+                        setSelectedState={setSelectedCategory}
+                        options={transactionCategories}
+                    />
 
                     <label htmlFor="origin">Origin</label>
                     <input
@@ -178,73 +170,37 @@ export default function NewTransactionPage({
                         }}
                     />
 
-                    <label htmlFor="paymentMethod">Payment Method</label>
-                    <select
-                        name="paymentMethod"
+                    <Select
+                        label="Payment Method"
                         id="paymentMethod"
-                        value={selectedPaymentMethod}
-                        onChange={(e) => {
-                            setSelectedPaymentMethod(e.target.value)
-                        }}
-                    >
-                        {paymentMethods.map((paymentMethod) => (
-                            <option key={paymentMethod} value={paymentMethod}>
-                                {paymentMethod}
-                            </option>
-                        ))}
-                    </select>
+                        selectedState={selectedPaymentMethod}
+                        setSelectedState={setSelectedPaymentMethod}
+                        options={paymentMethods}
+                    />
 
-                    <label htmlFor="sourceBankAccount">
-                        Source Bank Account
-                    </label>
-                    <select
-                        name="sourceBankAccount"
+                    <Select
+                        label="Source Bank Account"
                         id="sourceBankAccount"
-                        value={selectedSourceBankAccount}
-                        onChange={(e) => {
-                            setSelectedSourceBankAccount(e.target.value)
-                        }}
-                    >
-                        {bankAccounts.map((bankAccount) => (
-                            <option key={bankAccount} value={bankAccount}>
-                                {bankAccount}
-                            </option>
-                        ))}
-                    </select>
+                        selectedState={selectedSourceBankAccount}
+                        setSelectedState={setSelectedSourceBankAccount}
+                        options={bankAccounts}
+                    />
 
-                    <label htmlFor="targetBankAccount">
-                        Target Bank Account
-                    </label>
-                    <select
-                        name="targetBankAccount"
+                    <Select
+                        label="Target Bank Account"
                         id="targetBankAccount"
-                        value={selectedTargetBankAccount}
-                        onChange={(e) => {
-                            setSelectedTargetBankAccount(e.target.value)
-                        }}
-                    >
-                        {bankAccounts.map((bankAccount) => (
-                            <option key={bankAccount} value={bankAccount}>
-                                {bankAccount}
-                            </option>
-                        ))}
-                    </select>
+                        selectedState={selectedTargetBankAccount}
+                        setSelectedState={setSelectedTargetBankAccount}
+                        options={bankAccounts}
+                    />
 
-                    <label htmlFor="taxCategory">Tax Category</label>
-                    <select
-                        name="taxCategory"
+                    <Select
+                        label="Tax Category"
                         id="taxCategory"
-                        value={selectedTaxCategory}
-                        onChange={(e) => {
-                            setSelectedTaxCategory(e.target.value)
-                        }}
-                    >
-                        {taxCategories.map((taxCategory) => (
-                            <option key={taxCategory} value={taxCategory}>
-                                {taxCategory}
-                            </option>
-                        ))}
-                    </select>
+                        selectedState={selectedTaxCategory}
+                        setSelectedState={setSelectedTaxCategory}
+                        options={taxCategories}
+                    />
 
                     <label htmlFor="comment">Comment</label>
                     <textarea
