@@ -29,7 +29,7 @@ describe('Transactions tests', () => {
         specifics                        | expectedSpecificTo
         ${undefined}                     | ${'home'}
         ${{ vat: 0.19, country: 'UA' }}  | ${'work'}
-        ${{ investment: 'Real Estate' }} | ${'investment'}
+        ${{ investment: 'Real Estate' }} | ${'investments'}
     `(
         'transaction should be recognized as specific to $expectedSpecificTo when specifics is $specifics',
         ({ specifics, expectedSpecificTo }) => {

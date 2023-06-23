@@ -4,8 +4,8 @@ import { RepositoryLocator } from '../../repositoryLocator'
 import { PostgresRepository } from '../postgresRepository'
 import {
     TransactionDAO,
-    _getTransactionDAOById,
-    _insertTransactionDAO,
+    getTransactionDAOById,
+    insertTransactionDAO,
 } from './transactions.queries'
 import { TransactionDate } from 'domain-model'
 
@@ -29,7 +29,7 @@ describe('Database queries targeting only the transactions schema', () => {
         const fakeId = 1234
         // Act
         const queryFakeId = async () => {
-            await _getTransactionDAOById(fakeId, connectionPool)
+            await getTransactionDAOById(fakeId, connectionPool)
         }
         // Assert
         await expect(queryFakeId).rejects.toThrow(
@@ -53,7 +53,7 @@ describe('Database queries targeting only the transactions schema', () => {
         // Act
         let insertedTransactionId
         try {
-            insertedTransactionId = await _insertTransactionDAO(
+            insertedTransactionId = await insertTransactionDAO(
                 transaction,
                 client
             )
@@ -62,7 +62,7 @@ describe('Database queries targeting only the transactions schema', () => {
         }
         // Assert
         expect(insertedTransactionId).toBeDefined()
-        const queriedTransaction = await _getTransactionDAOById(
+        const queriedTransaction = await getTransactionDAOById(
             insertedTransactionId,
             connectionPool
         )

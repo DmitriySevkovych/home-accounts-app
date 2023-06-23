@@ -28,7 +28,7 @@ export type TransactionDetailsDAO = Pick<
     'database-specific' CRUD methods 
  */
 
-export const _getTransactionDAOById = async (
+export const getTransactionDAOById = async (
     id: number,
     connectionPool: Pool
 ): Promise<TransactionDAO> => {
@@ -47,7 +47,7 @@ export const _getTransactionDAOById = async (
     return queryResult.rows[0]
 }
 
-export const _insertTransactionDAO = async (
+export const insertTransactionDAO = async (
     transactionDAO: TransactionDAO,
     client: PoolClient
 ): Promise<number> => {
@@ -77,7 +77,7 @@ export const _insertTransactionDAO = async (
     return queryResult.rows[0].id
 }
 
-export const _insertTransactionDetailsDAO = async (
+export const insertTransactionDetailsDAO = async (
     transactionDetailsDAO: TransactionDetailsDAO,
     client: PoolClient
 ): Promise<void> => {
@@ -92,10 +92,7 @@ export const _insertTransactionDetailsDAO = async (
             transactionDetailsDAO.transaction_id,
         ],
     }
-    const queryResult = await client.query(query)
-    if (queryResult.rowCount === 0) {
-        // TODO throw error
-    }
+    await client.query(query)
     logger.trace(
         `Inserted a new row in transactions.transaction_details with foreign key transaction_id=${transactionDetailsDAO.transaction_id}.`
     )

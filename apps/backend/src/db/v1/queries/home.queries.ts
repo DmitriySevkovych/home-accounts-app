@@ -3,15 +3,22 @@ import { getLogger } from 'logger'
 import type { Pool, PoolClient } from 'pg'
 
 import {
-    _insertTransactionDAO,
-    _insertTransactionDetailsDAO,
+    insertTransactionDAO,
+    insertTransactionDetailsDAO,
 } from './transactions.queries'
+import {
+    TagDAO,
+    getTagsByExpenseOrIncomeId,
+    insertTagDAO,
+} from './tags.queries'
 
 type HomeTransactionTable = 'expenses' | 'income'
 
+type TransactionCashflow = 'expense' | 'income'
+
 type HomeDAO = Pick<Transaction, 'category' | 'origin' | 'description'> & {
     transaction_id: number
-    table: HomeTransactionTable
+    cashflow: TransactionCashflow
 }
 
 const logger = getLogger('db')
@@ -42,19 +49,31 @@ export const insertTransaction = async (
     try {
         await client.query('BEGIN')
 
-        const id = await _insertTransactionDAO(transaction, client)
+        const id = await insertTransactionDAO(transaction, client)
 
-        await _insertTransactionDetailsDAO(
+        await insertTransactionDetailsDAO(
             { ...transaction, transaction_id: id },
             client
         )
 
-        const table =
-            transaction.type().cashflow === 'expense' ? 'expenses' : 'income'
-        await _insertHomeDAO(
-            { ...transaction, transaction_id: id, table },
+        const home_id = await _insertHomeDAO(
+            {
+                ...transaction,
+                transaction_id: id,
+                cashflow: transaction.type().cashflow,
+            },
             client
         )
+
+        for (let i = 0; i < transaction.tags.length; i++) {
+            // TODO: replace expense_or_income_id with transaction_id once DB has been adjusted
+            const tagDAO: TagDAO = {
+                type: transaction.type(),
+                tag: transaction.tags[i],
+                expense_or_income_id: home_id,
+            }
+            await insertTagDAO(tagDAO, client)
+        }
 
         await client.query('COMMIT')
         logger.trace(
@@ -79,10 +98,10 @@ const _getTransactionById = async (
 ): Promise<Transaction> => {
     const dateColumn = TransactionDate.formatDateColumn('tr.date')
     const query = {
-        name: `select-home-${table}`,
+        name: `select-home.${table}`,
         text: `
         SELECT
-            h.type, h.origin, h.description,
+            h.id as home_id, h.type, h.origin, h.description,
             tr.amount, ${dateColumn} as date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
             td.payment_method, td.tax_category, td.comment
         FROM home.${table} h
@@ -99,6 +118,7 @@ const _getTransactionById = async (
         )
     }
     const {
+        home_id,
         type: category,
         origin,
         description,
@@ -113,7 +133,7 @@ const _getTransactionById = async (
         tax_category: taxCategory,
         comment,
     } = queryResult.rows[0]
-    const transaction = createTransaction()
+    const transactionBuilder = createTransaction()
         .about(category, origin, description)
         .withId(id)
         .withDate(TransactionDate.fromDatabase(date))
@@ -123,28 +143,43 @@ const _getTransactionById = async (
         .withComment(comment)
         .withTaxCategory(taxCategory)
         .withAgent(agent)
-        // .withSpecifics
-        //.addTags
-        .build()
 
-    return transaction
+    // TECHNICAL DEBT: persistence of tags in DB needs to be refactored and simplified, cf. GitHub Issue #41
+    // TODO remove differentiation income/expense once DB is adjusted
+    const tags = await getTagsByExpenseOrIncomeId(
+        home_id,
+        {
+            cashflow: table === 'income' ? 'income' : 'expense',
+            specificTo: 'home',
+        },
+        connectionPool
+    )
+    transactionBuilder.addTags(tags)
+
+    return transactionBuilder.build()
 }
 
 const _insertHomeDAO = async (
     home: HomeDAO,
     client: PoolClient
-): Promise<void> => {
-    const { table, category: type, origin, description, transaction_id } = home
+): Promise<number> => {
+    const {
+        cashflow,
+        category: type,
+        origin,
+        description,
+        transaction_id,
+    } = home
+    const table = cashflow === 'expense' ? 'expenses' : 'income'
     const query = {
         name: `insert-into-home.${table}`,
         text: `INSERT INTO home.${table}(type, origin, description, transaction_id) VALUES ($1, $2, $3, $4) RETURNING id;`,
         values: [type, origin, description, transaction_id],
     }
     const queryResult = await client.query(query)
-    if (queryResult.rowCount === 0) {
-        // TODO throw error
-    }
+    const home_id = queryResult.rows[0].id
     logger.trace(
-        `Inserted a new row in home.${table} with id=${queryResult.rows[0].id} and foreign key transaction_id=${transaction_id}.`
+        `Inserted a new row in home.${table} with id=${home_id} and foreign key transaction_id=${transaction_id}.`
     )
+    return home_id
 }
