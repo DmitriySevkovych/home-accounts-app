@@ -1,4 +1,9 @@
 import React from 'react'
+import {
+    FormControl,
+    FormLabel,
+    Select as ChakraSelect,
+} from '@chakra-ui/react'
 
 type SelectProps = {
     label: string
@@ -6,30 +11,30 @@ type SelectProps = {
     selectedState: string | undefined
     setSelectedState: (newState: string) => void
     options: string[]
+    isRequired?: boolean
 }
 
 export default function Select(props: SelectProps) {
-    const { label, id, selectedState, setSelectedState, options } = props
+    const { label, id, selectedState, setSelectedState, options, isRequired } =
+        props
     return (
-        <>
-            <label htmlFor={id}>{label}</label>
-            <select
-                name={id}
-                id={id}
+        <FormControl id={id}>
+            <FormLabel>{label}</FormLabel>
+            <ChakraSelect
+                placeholder={`Select ${label}`}
+                isRequired={isRequired}
                 value={selectedState}
+                defaultValue=""
                 onChange={(e) => {
                     setSelectedState(e.target.value)
                 }}
             >
-                <option disabled selected>
-                    {' -- select an option -- '}
-                </option>
                 {options.map((option) => (
                     <option key={option} value={option}>
                         {option}
                     </option>
                 ))}
-            </select>
-        </>
+            </ChakraSelect>
+        </FormControl>
     )
 }

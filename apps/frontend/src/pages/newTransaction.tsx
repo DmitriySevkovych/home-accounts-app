@@ -10,6 +10,14 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Select from '../components/Select'
 import TagInput from '../components/TagInput'
+import {
+    Input,
+    FormControl,
+    FormLabel,
+    Radio,
+    RadioGroup,
+    Stack,
+} from '@chakra-ui/react'
 
 type NewTransactionPageProps = {
     transactionCategories: string[]
@@ -101,6 +109,7 @@ export default function NewTransactionPage({
             <div>
                 <form onSubmit={postNewTransaction}>
                     <Select
+                        isRequired
                         label="Category"
                         id="category"
                         selectedState={selectedCategory}
@@ -108,70 +117,80 @@ export default function NewTransactionPage({
                         options={transactionCategories}
                     />
 
-                    <label htmlFor="origin">Origin</label>
-                    <input
-                        id="origin"
-                        type="text"
-                        placeholder="origin"
-                        value={origin}
-                        onChange={(e) => {
-                            setOrigin(e.target.value)
-                        }}
-                    />
+                    {/* TODO abstract chakra */}
+                    <FormControl id="origin">
+                        <FormLabel>Origin</FormLabel>
+                        <Input
+                            type="text"
+                            placeholder="origin"
+                            value={origin}
+                            onChange={(e) => {
+                                setOrigin(e.target.value)
+                            }}
+                        />
+                    </FormControl>
 
-                    <label htmlFor="description">Description</label>
-                    <input
-                        id="description"
-                        type="text"
-                        placeholder="description"
-                        value={description}
-                        onChange={(e) => {
-                            setDescription(e.target.value)
-                        }}
-                    />
+                    <FormControl id="description">
+                        <FormLabel>Description</FormLabel>
+                        <Input
+                            type="text"
+                            placeholder="description"
+                            value={description}
+                            onChange={(e) => {
+                                setDescription(e.target.value)
+                            }}
+                        />
+                    </FormControl>
 
-                    <label htmlFor="transactionDate">Transaction date:</label>
-                    <input
-                        type="date"
-                        id="transactionDate"
-                        name="transactionDate"
-                        value={date.toString()}
-                        onChange={(e) => {
-                            setDate(TransactionDate.fromString(e.target.value))
-                        }}
-                    />
+                    <FormControl id="transactionDate">
+                        <FormLabel>Transaction date:</FormLabel>
+                        <Input
+                            type="date"
+                            name="transactionDate"
+                            value={date.toString()}
+                            onChange={(e) => {
+                                setDate(
+                                    TransactionDate.fromString(e.target.value)
+                                )
+                            }}
+                        />
+                    </FormControl>
 
-                    <label htmlFor="amount">Amount</label>
-                    <input
-                        type="number"
-                        id="amount"
-                        value={amount}
-                        onChange={(e) => {
-                            setAmount(parseFloat(e.target.value))
-                        }}
-                    />
+                    <FormControl id="amount">
+                        <FormLabel>Amount</FormLabel>
+                        <Input
+                            type="number"
+                            value={amount}
+                            onChange={(e) => {
+                                setAmount(parseFloat(e.target.value))
+                            }}
+                        />
+                    </FormControl>
 
-                    <label htmlFor="currency">Currency</label>
-                    <input
-                        type="text"
-                        id="currency"
-                        value={currency}
-                        onChange={(e) => {
-                            setCurrency(e.target.value)
-                        }}
-                    />
+                    <FormControl id="currency">
+                        <FormLabel>Currency</FormLabel>
+                        <Input
+                            type="text"
+                            value={currency}
+                            onChange={(e) => {
+                                setCurrency(e.target.value)
+                            }}
+                        />
+                    </FormControl>
 
-                    <label htmlFor="exchangeRate">Exchange Rate</label>
-                    <input
-                        type="number"
-                        id="exchangeRate"
-                        value={exchangeRate}
-                        onChange={(e) => {
-                            setExchangeRate(parseFloat(e.target.value))
-                        }}
-                    />
+                    <FormControl id="exchangeRate">
+                        <FormLabel>Exchange Rate</FormLabel>
+                        <Input
+                            type="number"
+                            value={exchangeRate}
+                            onChange={(e) => {
+                                setExchangeRate(parseFloat(e.target.value))
+                            }}
+                        />
+                    </FormControl>
 
                     <Select
+                        isRequired
                         label="Payment Method"
                         id="paymentMethod"
                         selectedState={selectedPaymentMethod}
@@ -179,7 +198,9 @@ export default function NewTransactionPage({
                         options={paymentMethods}
                     />
 
+                    {/* TODO merge to one bank account component */}
                     <Select
+                        isRequired
                         label="Source Bank Account"
                         id="sourceBankAccount"
                         selectedState={selectedSourceBankAccount}
@@ -213,31 +234,20 @@ export default function NewTransactionPage({
                         }}
                     />
 
-                    <p>Select specifics</p>
-                    <input
-                        type="radio"
-                        id="NoSpecifics"
-                        name="specifics"
-                        value="NoSpecifics"
-                        defaultChecked
-                    />
-                    <label htmlFor="NoSpecifics">None</label>
-                    <input
-                        type="radio"
-                        id="WorkSpecifics"
-                        name="specifics"
-                        value="WorkSpecifics"
-                    />
-                    <label htmlFor="WorkSpecifics">WorkSpecifics</label>
-                    <input
-                        type="radio"
-                        id="InvestmentSpecifics"
-                        name="specifics"
-                        value="InvestmentSpecifics"
-                    />
-                    <label htmlFor="InvestmentSpecifics">
-                        InvestmentSpecifics
-                    </label>
+                    <FormControl>
+                        <FormLabel>Select specifics</FormLabel>
+                        <RadioGroup
+                        // onChange={setValue} value={value}
+                        >
+                            <Stack direction="row">
+                                <Radio value="NoSpecifics">None</Radio>
+                                <Radio value="WorkSpecifics">Work</Radio>
+                                <Radio value="InvestmentSpecifics">
+                                    Investment
+                                </Radio>
+                            </Stack>
+                        </RadioGroup>
+                    </FormControl>
 
                     <TagInput tags={tags} setTags={setTags} />
                     <div>
