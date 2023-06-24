@@ -8,16 +8,17 @@ import {
 } from 'domain-model'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Select from '../components/Select'
-import TagInput from '../components/TagInput'
 import {
-    Input,
     FormControl,
     FormLabel,
     Radio,
     RadioGroup,
     Stack,
 } from '@chakra-ui/react'
+
+import Select from '../components/Select'
+import TagInput from '../components/TagInput'
+import { TextInput, NumberInput, DateInput } from '../components/Inputs'
 
 type NewTransactionPageProps = {
     transactionCategories: string[]
@@ -117,77 +118,52 @@ export default function NewTransactionPage({
                         options={transactionCategories}
                     />
 
-                    {/* TODO abstract chakra */}
-                    <FormControl id="origin">
-                        <FormLabel>Origin</FormLabel>
-                        <Input
-                            type="text"
-                            placeholder="origin"
-                            value={origin}
-                            onChange={(e) => {
-                                setOrigin(e.target.value)
-                            }}
-                        />
-                    </FormControl>
+                    <TextInput
+                        isRequired
+                        label="Origin"
+                        id="origin"
+                        placeholder="origin"
+                        state={origin}
+                        setState={setOrigin}
+                    />
 
-                    <FormControl id="description">
-                        <FormLabel>Description</FormLabel>
-                        <Input
-                            type="text"
-                            placeholder="description"
-                            value={description}
-                            onChange={(e) => {
-                                setDescription(e.target.value)
-                            }}
-                        />
-                    </FormControl>
+                    <TextInput
+                        label="Description"
+                        id="description"
+                        placeholder="description"
+                        state={description}
+                        setState={setDescription}
+                    />
 
-                    <FormControl id="transactionDate">
-                        <FormLabel>Transaction date:</FormLabel>
-                        <Input
-                            type="date"
-                            name="transactionDate"
-                            value={date.toString()}
-                            onChange={(e) => {
-                                setDate(
-                                    TransactionDate.fromString(e.target.value)
-                                )
-                            }}
-                        />
-                    </FormControl>
+                    <DateInput
+                        isRequired
+                        label="Transaction date"
+                        id="transactionDate"
+                        state={date}
+                        setState={setDate}
+                    />
 
-                    <FormControl id="amount">
-                        <FormLabel>Amount</FormLabel>
-                        <Input
-                            type="number"
-                            value={amount}
-                            onChange={(e) => {
-                                setAmount(parseFloat(e.target.value))
-                            }}
-                        />
-                    </FormControl>
+                    <NumberInput
+                        label="Amount"
+                        id="amount"
+                        state={amount}
+                        setState={setAmount}
+                    />
 
-                    <FormControl id="currency">
-                        <FormLabel>Currency</FormLabel>
-                        <Input
-                            type="text"
-                            value={currency}
-                            onChange={(e) => {
-                                setCurrency(e.target.value)
-                            }}
-                        />
-                    </FormControl>
+                    <TextInput
+                        label="Currency"
+                        id="currency"
+                        placeholder="description"
+                        state={currency}
+                        setState={setCurrency}
+                    />
 
-                    <FormControl id="exchangeRate">
-                        <FormLabel>Exchange Rate</FormLabel>
-                        <Input
-                            type="number"
-                            value={exchangeRate}
-                            onChange={(e) => {
-                                setExchangeRate(parseFloat(e.target.value))
-                            }}
-                        />
-                    </FormControl>
+                    <NumberInput
+                        label="Exchange Rate"
+                        id="exchangeRate"
+                        state={exchangeRate}
+                        setState={setExchangeRate}
+                    />
 
                     <Select
                         isRequired
