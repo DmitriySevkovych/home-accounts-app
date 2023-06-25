@@ -1,6 +1,5 @@
 import type { Pool } from 'pg'
 
-import { RepositoryLocator } from '../../repositoryLocator'
 import { PostgresRepository } from '../postgresRepository'
 import {
     getHomeExpenseById,
@@ -23,10 +22,9 @@ describe('Database queries targeting the home schema', () => {
     beforeAll(() => {
         const repository = new PostgresRepository()
         connectionPool = repository.connectionPool
-        RepositoryLocator.setRepository(repository)
     })
     afterAll(async () => {
-        await RepositoryLocator.closeRepository()
+        await connectionPool.end()
     })
 
     it.each`
