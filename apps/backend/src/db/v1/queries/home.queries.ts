@@ -11,8 +11,7 @@ import {
     getTagsByExpenseOrIncomeId,
     insertTagDAO,
 } from './tags.queries'
-
-type HomeTransactionTable = 'expenses' | 'income'
+import { PaginationOptions } from '../../../helpers/pagination'
 
 type TransactionCashflow = 'expense' | 'income'
 
@@ -23,18 +22,77 @@ type HomeDAO = Pick<Transaction, 'category' | 'origin' | 'description'> & {
 
 const logger = getLogger('db')
 
-export const getHomeExpenseById = async (
-    id: number,
-    connectionPool: Pool
-): Promise<Transaction> => {
-    return await _getTransactionById(id, 'expenses', connectionPool)
+export const getTransactions = async (
+    connectionPool: Pool,
+    paginationOptions: PaginationOptions
+): Promise<Transaction[]> => {
+    const dateColumn = TransactionDate.formatDateColumn('tr.date')
+
+    //TODO extract logic to DB view?
+    const query = {
+        name: `select-home-transactions`,
+        text: `
+            SELECT 
+                h.id as home_id, h.type as category, h.origin, h.description,
+                tr.id, tr.amount, ${dateColumn} as date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
+                td.payment_method, td.tax_category, td.comment 
+            FROM 
+            (
+                SELECT * FROM home.expenses 
+                UNION ALL 
+                SELECT * FROM home.income
+            ) h 
+            JOIN transactions.transactions tr ON h.transaction_id = tr.id
+            JOIN transactions.transaction_details td ON tr.id = td.transaction_id
+            ORDER by tr.id desc
+            LIMIT $1
+            OFFSET $2;`,
+        values: [paginationOptions.limit, paginationOptions.offset],
+    }
+    const queryResult = await connectionPool.query(query)
+
+    // TODO remove connectionPool argument once the issue with the tags is corrected
+    const transactionsFromRows = queryResult.rows.map((row) =>
+        _mapToTransaction(row, connectionPool)
+    )
+
+    // TODO remove Promise.all once the issue with the tags is corrected -> mapping will be synchronous
+    return await Promise.all(transactionsFromRows)
 }
 
-export const getHomeIncomeById = async (
+export const getTransactionById = async (
     id: number,
     connectionPool: Pool
 ): Promise<Transaction> => {
-    return await _getTransactionById(id, 'income', connectionPool)
+    const dateColumn = TransactionDate.formatDateColumn('tr.date')
+    const query = {
+        name: `select-home-transaction-by-id`,
+        //TODO extract logic to DB view?
+        text: `
+        SELECT
+            h.id as home_id, h.type as category, h.origin, h.description,
+            tr.id, tr.amount, ${dateColumn} as date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
+            td.payment_method, td.tax_category, td.comment
+        FROM 
+        (
+            SELECT * FROM home.expenses 
+            UNION ALL 
+            SELECT * FROM home.income
+        ) h 
+        JOIN transactions.transactions tr ON h.transaction_id = tr.id
+        JOIN transactions.transaction_details td ON tr.id = td.transaction_id
+        WHERE tr.id = $1;`,
+        values: [id],
+    }
+    const queryResult = await connectionPool.query(query)
+    if (queryResult.rowCount === 0) {
+        logger.warn(`The database does not hold a transaction with id=${id}.`)
+        throw new Error(
+            `The database does not hold a transaction with id=${id}.`
+        )
+    }
+
+    return await _mapToTransaction(queryResult.rows[0], connectionPool)
 }
 
 export const insertTransaction = async (
@@ -91,74 +149,6 @@ export const insertTransaction = async (
     }
 }
 
-const _getTransactionById = async (
-    id: number,
-    table: HomeTransactionTable,
-    connectionPool: Pool
-): Promise<Transaction> => {
-    const dateColumn = TransactionDate.formatDateColumn('tr.date')
-    const query = {
-        name: `select-home.${table}`,
-        text: `
-        SELECT
-            h.id as home_id, h.type, h.origin, h.description,
-            tr.amount, ${dateColumn} as date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
-            td.payment_method, td.tax_category, td.comment
-        FROM home.${table} h
-        JOIN transactions.transactions tr ON h.transaction_id = tr.id
-        JOIN transactions.transaction_details td ON tr.id = td.transaction_id
-        WHERE tr.id = $1;`,
-        values: [id],
-    }
-    const queryResult = await connectionPool.query(query)
-    if (queryResult.rowCount === 0) {
-        logger.warn(`The database does not hold a transaction with id=${id}.`)
-        throw new Error(
-            `The database does not hold a transaction with id=${id}.`
-        )
-    }
-    const {
-        home_id,
-        type: category,
-        origin,
-        description,
-        amount,
-        date,
-        currency,
-        exchange_rate: exchangeRate,
-        source_bank_account: sourceBankAccount,
-        target_bank_account: targetBankAccount,
-        agent,
-        payment_method: paymentMethod,
-        tax_category: taxCategory,
-        comment,
-    } = queryResult.rows[0]
-    const transactionBuilder = createTransaction()
-        .about(category, origin, description)
-        .withId(id)
-        .withDate(TransactionDate.fromDatabase(date))
-        .withAmount(parseFloat(amount))
-        .withCurrency(currency, parseFloat(exchangeRate))
-        .withPaymentDetails(paymentMethod, sourceBankAccount, targetBankAccount)
-        .withComment(comment)
-        .withTaxCategory(taxCategory)
-        .withAgent(agent)
-
-    // TECHNICAL DEBT: persistence of tags in DB needs to be refactored and simplified, cf. GitHub Issue #41
-    // TODO remove differentiation income/expense once DB is adjusted
-    const tags = await getTagsByExpenseOrIncomeId(
-        home_id,
-        {
-            cashflow: table === 'income' ? 'income' : 'expense',
-            specificTo: 'home',
-        },
-        connectionPool
-    )
-    transactionBuilder.addTags(tags)
-
-    return transactionBuilder.build()
-}
-
 const _insertHomeDAO = async (
     home: HomeDAO,
     client: PoolClient
@@ -182,4 +172,53 @@ const _insertHomeDAO = async (
         `Inserted a new row in home.${table} with id=${home_id} and foreign key transaction_id=${transaction_id}.`
     )
     return home_id
+}
+
+// TECHNICAL DEBT: persistence of tags in DB needs to be refactored and simplified, cf. GitHub Issue #41
+// TODO remove connectionPool argument once the issue with the tags is corrected
+const _mapToTransaction = async (
+    row: any,
+    connectionPool: Pool
+): Promise<Transaction> => {
+    const {
+        id,
+        home_id,
+        category,
+        origin,
+        description,
+        amount,
+        date,
+        currency,
+        exchange_rate: exchangeRate,
+        source_bank_account: sourceBankAccount,
+        target_bank_account: targetBankAccount,
+        agent,
+        payment_method: paymentMethod,
+        tax_category: taxCategory,
+        comment,
+    } = row
+    const transactionBuilder = createTransaction()
+        .about(category, origin, description)
+        .withId(id)
+        .withDate(TransactionDate.fromDatabase(date))
+        .withAmount(parseFloat(amount))
+        .withCurrency(currency, parseFloat(exchangeRate))
+        .withPaymentDetails(paymentMethod, sourceBankAccount, targetBankAccount)
+        .withComment(comment)
+        .withTaxCategory(taxCategory)
+        .withAgent(agent)
+
+    // TECHNICAL DEBT: persistence of tags in DB needs to be refactored and simplified, cf. GitHub Issue #41
+    // TODO remove differentiation income/expense once DB is adjusted
+    // TODO remove this function call from here!!! This is unclean and bad for performance
+    const tags = await getTagsByExpenseOrIncomeId(
+        home_id,
+        {
+            cashflow: parseFloat(amount) >= 0.0 ? 'income' : 'expense',
+            specificTo: 'home',
+        },
+        connectionPool
+    )
+    transactionBuilder.addTags(tags)
+    return transactionBuilder.build()
 }

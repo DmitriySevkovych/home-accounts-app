@@ -6,11 +6,30 @@ import {
     TransactionValidationError,
     deserializeTransaction,
 } from 'domain-model'
+import { BadQueryParameterInRequestError } from '../helpers/errors'
 
 const getRouter = (): Router => {
     const router = express.Router()
     const repository = RepositoryLocator.getRepository()
     const httpLogger = getHttpLogger('backend')
+
+    router.get('/', async (req, res) => {
+        httpLogger(req, res)
+
+        try {
+            const transactions = await repository.getTransactions()
+            return res.status(200).json(transactions)
+        } catch (err) {
+            req.log.error(err)
+            if (err instanceof BadQueryParameterInRequestError) {
+                res.status(400).json({
+                    message: err.message,
+                })
+            } else {
+                res.status(500).json({ message: 'Something went wrong' })
+            }
+        }
+    })
 
     router.post('/', async (req, res) => {
         httpLogger(req, res)

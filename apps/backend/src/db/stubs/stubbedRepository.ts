@@ -1,12 +1,14 @@
-import type {
-    BankAccount,
-    PaymentMethod,
-    TaxCategory,
-    Transaction,
-    TransactionCategory,
+import {
+    minimalDummyTransaction,
+    type BankAccount,
+    type PaymentMethod,
+    type TaxCategory,
+    type Transaction,
+    type TransactionCategory,
 } from 'domain-model'
 
 import { Repository } from '../repository'
+import { PaginationOptions } from '../../helpers/pagination'
 
 export class StubbedRepository implements Repository {
     static CREATED_TRANSACTION_ID = 1234
@@ -90,5 +92,29 @@ export class StubbedRepository implements Repository {
     // Transactions
     createTransaction = (_transaction: Transaction) => {
         return Promise.resolve(StubbedRepository.CREATED_TRANSACTION_ID)
+    }
+
+    getTransactions = (
+        paginationOptions: PaginationOptions
+    ): Promise<Transaction[]> => {
+        const transactions = []
+
+        const offset = paginationOptions?.offset
+        const limit = paginationOptions?.limit
+
+        for (let i = 0; i < 10; i++) {
+            const amount = Math.pow(-1, i) * (i + 1)
+            const category =
+                amount < 0
+                    ? 'EXPENSE_CATEGORY_PLACEHOLDER'
+                    : 'INCOME_CATEGORY_PLACEHOLDER'
+            const transaction = minimalDummyTransaction(category, amount)
+            transaction.id = i
+            transactions.push(transaction)
+        }
+
+        const start = offset
+        const end = offset && limit ? offset + limit : undefined
+        return Promise.resolve(transactions.slice(start, end))
     }
 }
