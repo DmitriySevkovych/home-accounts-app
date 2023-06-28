@@ -7,6 +7,7 @@ import {
     deserializeTransaction,
 } from 'domain-model'
 import { BadQueryParameterInRequestError } from '../helpers/errors'
+import { getPaginationOptionsFromRequest } from '../helpers/pagination'
 
 const getRouter = (): Router => {
     const router = express.Router()
@@ -17,7 +18,10 @@ const getRouter = (): Router => {
         httpLogger(req, res)
 
         try {
-            const transactions = await repository.getTransactions()
+            const paginationOptions = getPaginationOptionsFromRequest(req)
+            const transactions = await repository.getTransactions(
+                paginationOptions
+            )
             return res.status(200).json(transactions)
         } catch (err) {
             req.log.error(err)

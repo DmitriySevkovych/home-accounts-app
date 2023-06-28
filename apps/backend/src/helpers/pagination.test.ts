@@ -1,6 +1,8 @@
 import { Request } from 'express'
 import {
+    DEFAULT_LIMIT,
     DEFAULT_PAGE_SIZE,
+    DEFAULT_OFFSET,
     getPaginationOptionsFromRequest,
 } from './pagination'
 import { BadQueryParameterInRequestError } from './errors'
@@ -13,42 +15,61 @@ describe('Helpers: pagination tests', () => {
         expect(DEFAULT_PAGE_SIZE).toBe(50)
     })
 
-    it('should return an empty PaginationOptions object if no query paramers are present', () => {
+    it('default offset should be 0', () => {
+        expect(DEFAULT_OFFSET).toBe(0)
+    })
+
+    it('should return a default PaginationOptions object if no query paramers are present', () => {
         // Arrange
         const reqMock = {} as Request
         // Act
         const paginationOptions = getPaginationOptionsFromRequest(reqMock)
         // Assert
         expect(paginationOptions).toBeDefined()
-        expect(paginationOptions.limit).toBeUndefined()
-        expect(paginationOptions.offset).toBeUndefined()
+        expect(paginationOptions.limit).toBe(DEFAULT_LIMIT)
+        expect(paginationOptions.offset).toBe(DEFAULT_OFFSET)
     })
 
     it.each`
-        limit        | page
-        ${100}       | ${3}
-        ${undefined} | ${3}
-        ${100}       | ${undefined}
-        ${undefined} | ${undefined}
+        limitParam   | expectedLimit
+        ${100}       | ${100}
+        ${undefined} | ${DEFAULT_LIMIT}
     `(
-        'should return correct PaginationOptions if query has the parameters limit=$limit and page=$page',
-        ({ limit, page }) => {
+        'should return correct PaginationOptions.limit if query has the parameter limit=$limitParam',
+        ({ limitParam, expectedLimit }) => {
             // Arrange
             const reqMock = {
                 query: {
-                    limit: limit,
-                    page: page,
+                    limit: limitParam,
                 },
             } as any as Request
             // Act
             const paginationOptions = getPaginationOptionsFromRequest(reqMock)
             // Assert
-            expect(paginationOptions.limit).toBe(limit)
-            if (page) {
-                expect(paginationOptions.offset).toBe(page * DEFAULT_PAGE_SIZE)
-            } else {
-                expect(paginationOptions.offset).toBeUndefined()
-            }
+            expect(paginationOptions.limit).toBe(expectedLimit)
+            expect(paginationOptions.offset).toBe(DEFAULT_OFFSET)
+        }
+    )
+
+    it.each`
+        pageParam    | expectedOffset
+        ${3}         | ${DEFAULT_PAGE_SIZE * (3 - 1)}
+        ${1}         | ${0}
+        ${undefined} | ${0}
+    `(
+        'should return correct PaginationOptions.offset if query has the parameters page=$pageParam',
+        ({ pageParam, expectedOffset }) => {
+            // Arrange
+            const reqMock = {
+                query: {
+                    page: pageParam,
+                },
+            } as any as Request
+            // Act
+            const paginationOptions = getPaginationOptionsFromRequest(reqMock)
+            // Assert
+            expect(paginationOptions.limit).toBe(DEFAULT_LIMIT)
+            expect(paginationOptions.offset).toBe(expectedOffset)
         }
     )
 
