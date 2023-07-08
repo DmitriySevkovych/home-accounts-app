@@ -10,15 +10,15 @@ GET http://localhost:8090/api/v1/utils/paymentMethods
 GET http://localhost:8090/api/v1/utils/bankAccounts
 
 ### Transactions routes
-GET http://localhost:8090/api/v1/transactions/1
+### Batch get
+GET http://localhost:8090/api/v1/transactions
 ###
-POST http://localhost:8090/api/v1/transactions
-Content-Type: application/json
+GET http://localhost:8090/api/v1/transactions?limit=5&page=2
 
-{
-    "test": "hello"
-}
-###
+### Get by id
+GET http://localhost:8090/api/v1/transactions/1
+
+### Post
 POST http://localhost:8090/api/v1/transactions
 Content-Type: application/json
 
@@ -27,9 +27,18 @@ Content-Type: application/json
     "origin": "Grocery store",
     "description": "Some tasty food",
     "amount": -45.67,
-    "date": "2023-06-14",
+    "date": {
+        "datetime":"2023-06-14T11:38:00.000Z"
+    },
     "paymentMethod": "EC",
     "sourceBankAccount": "HOME_ACCOUNT",
     "tags": ["Test", "Tag"],
     "agent": "Testbot"
+}
+### Post to provoke error
+POST http://localhost:8090/api/v1/transactions
+Content-Type: application/json
+
+{
+    "test": "hello"
 }
