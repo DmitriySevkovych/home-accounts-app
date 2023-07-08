@@ -24,5 +24,5 @@ export interface Repository {
         _paginationOptions: PaginationOptions
     ) => Promise<Transaction[]>
 
-    // getTransactionById: (_id: number) => Promise<Transaction>
+    getTransactionById: (_id: number) => Promise<Transaction>
 }

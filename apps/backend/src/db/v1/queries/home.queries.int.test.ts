@@ -56,7 +56,7 @@ describe('Database queries targeting the home schema', () => {
             connectionPool
         )
         // Act
-        const transaction = await getTransactionById(id, connectionPool)
+        const transaction = await getTransactionById(connectionPool, id)
         // Assert
         expect(transaction).toBeDefined()
         expect(transaction.id).toBe(id)
@@ -82,7 +82,7 @@ describe('Database queries targeting the home schema', () => {
             connectionPool
         )
         // Act
-        const transaction = await getTransactionById(id, connectionPool)
+        const transaction = await getTransactionById(connectionPool, id)
         // Assert
         expect(transaction).toBeDefined()
         expect(transaction.id).toBe(id)
@@ -114,7 +114,7 @@ describe('Database queries targeting the home schema', () => {
             connectionPool
         )
         // Act
-        const transaction = await getTransactionById(id, connectionPool)
+        const transaction = await getTransactionById(connectionPool, id)
         // Assert
         expect(transaction).toBeDefined()
         expect(transaction.id).toBe(id)
@@ -138,7 +138,7 @@ describe('Database queries targeting the home schema', () => {
             connectionPool
         )
         // Act
-        const transaction = await getTransactionById(id, connectionPool)
+        const transaction = await getTransactionById(connectionPool, id)
         // Assert
         expect(transaction).toBeDefined()
         expect(transaction.id).toBe(id)

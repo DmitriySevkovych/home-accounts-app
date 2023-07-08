@@ -1,14 +1,15 @@
 import {
     minimalDummyTransaction,
-    type BankAccount,
-    type PaymentMethod,
-    type TaxCategory,
-    type Transaction,
-    type TransactionCategory,
+    BankAccount,
+    PaymentMethod,
+    TaxCategory,
+    Transaction,
+    TransactionCategory,
 } from 'domain-model'
 
 import { Repository } from '../repository'
 import { PaginationOptions } from '../../helpers/pagination'
+import { NoRecordFoundInDatabaseError } from '../../helpers/errors'
 
 export class StubbedRepository implements Repository {
     static CREATED_TRANSACTION_ID = 1234
@@ -99,9 +100,6 @@ export class StubbedRepository implements Repository {
     ): Promise<Transaction[]> => {
         const transactions = []
 
-        const offset = paginationOptions?.offset
-        const limit = paginationOptions?.limit
-
         for (let i = 0; i < 10; i++) {
             const amount = Math.pow(-1, i) * (i + 1)
             const category =
@@ -113,8 +111,23 @@ export class StubbedRepository implements Repository {
             transactions.push(transaction)
         }
 
+        const offset = paginationOptions?.offset ? paginationOptions?.offset : 0
+        const limit = paginationOptions?.limit
+
         const start = offset
-        const end = offset && limit ? offset + limit : undefined
+        const end = offset + limit
         return Promise.resolve(transactions.slice(start, end))
+    }
+
+    getTransactionById = (id: number): Promise<Transaction> => {
+        if (id === 404) {
+            throw new NoRecordFoundInDatabaseError(
+                `The database does not hold a transaction with id=${id}.`
+            )
+        }
+
+        const transaction = minimalDummyTransaction('FOOD', -33.33)
+        transaction.id = id
+        return Promise.resolve(transaction)
     }
 }

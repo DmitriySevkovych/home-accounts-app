@@ -12,6 +12,7 @@ import {
     insertTagDAO,
 } from './tags.queries'
 import { PaginationOptions } from '../../../helpers/pagination'
+import { NoRecordFoundInDatabaseError } from '../../../helpers/errors'
 
 type TransactionCashflow = 'expense' | 'income'
 
@@ -61,8 +62,8 @@ export const getTransactions = async (
 }
 
 export const getTransactionById = async (
-    id: number,
-    connectionPool: Pool
+    connectionPool: Pool,
+    id: number
 ): Promise<Transaction> => {
     const dateColumn = TransactionDate.formatDateColumn('tr.date')
     const query = {
@@ -87,7 +88,7 @@ export const getTransactionById = async (
     const queryResult = await connectionPool.query(query)
     if (queryResult.rowCount === 0) {
         logger.warn(`The database does not hold a transaction with id=${id}.`)
-        throw new Error(
+        throw new NoRecordFoundInDatabaseError(
             `The database does not hold a transaction with id=${id}.`
         )
     }

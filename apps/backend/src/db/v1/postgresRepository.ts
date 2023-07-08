@@ -113,4 +113,8 @@ export class PostgresRepository implements Repository {
             paginationOptions
         )
     }
+
+    getTransactionById = async (id: number): Promise<Transaction> => {
+        return await homeQueries.getTransactionById(this.connectionPool, id)
+    }
 }

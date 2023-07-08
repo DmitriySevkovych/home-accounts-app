@@ -6,7 +6,10 @@ import {
     TransactionValidationError,
     deserializeTransaction,
 } from 'domain-model'
-import { BadQueryParameterInRequestError } from '../helpers/errors'
+import {
+    BadQueryParameterInRequestError,
+    NoRecordFoundInDatabaseError,
+} from '../helpers/errors'
 import { getPaginationOptionsFromRequest } from '../helpers/pagination'
 
 const getRouter = (): Router => {
@@ -49,7 +52,34 @@ const getRouter = (): Router => {
             if (err instanceof TransactionValidationError) {
                 res.status(400).json({
                     message:
-                        'Data sent in the request body is not a valid transaction',
+                        'Data sent in the request body is not a valid transaction.',
+                })
+            } else {
+                res.status(500).json({ message: 'Something went wrong' })
+            }
+        }
+    })
+
+    router.get('/:id', async (req, res) => {
+        httpLogger(req, res)
+
+        const id = parseInt(req.params.id)
+
+        if (isNaN(id)) {
+            const message = `The request contains a malformed id in path (id=${id}).`
+            req.log.error({ message })
+            res.status(400).json({ message })
+            return
+        }
+
+        try {
+            const transaction = await repository.getTransactionById(id)
+            return res.status(200).json(transaction)
+        } catch (err) {
+            req.log.error(err)
+            if (err instanceof NoRecordFoundInDatabaseError) {
+                res.status(404).json({
+                    message: err.message,
                 })
             } else {
                 res.status(500).json({ message: 'Something went wrong' })
