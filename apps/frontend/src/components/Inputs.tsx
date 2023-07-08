@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ChangeEvent } from 'react'
 import { FormControl, FormLabel, Input as ChakraInput } from '@chakra-ui/react'
 import { TransactionDate } from 'domain-model'
 
@@ -34,7 +34,7 @@ export const TextInput = (props: TextInputProps) => {
                 type="text"
                 placeholder={placeholder}
                 value={state}
-                onChange={(e) => {
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
                     setState(e.target.value)
                 }}
             />
@@ -52,7 +52,7 @@ export const NumberInput = (props: NumberInputProps) => {
                 type="number"
                 placeholder={placeholder}
                 value={state}
-                onChange={(e) => {
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
                     setState(parseFloat(e.target.value))
                 }}
             />
@@ -61,7 +61,7 @@ export const NumberInput = (props: NumberInputProps) => {
 }
 
 export const DateInput = (props: DateInputProps) => {
-    const { label, id, placeholder, state, setState, isRequired } = props
+    const { label, id, state, setState, isRequired } = props
     return (
         <FormControl id={id}>
             <FormLabel>{label}</FormLabel>
@@ -69,7 +69,7 @@ export const DateInput = (props: DateInputProps) => {
                 isRequired={isRequired}
                 type="date"
                 value={state.toString()}
-                onChange={(e) => {
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
                     setState(TransactionDate.fromString(e.target.value))
                 }}
             />

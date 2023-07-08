@@ -8,17 +8,12 @@ import {
 } from 'domain-model'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-    FormControl,
-    FormLabel,
-    Radio,
-    RadioGroup,
-    Stack,
-} from '@chakra-ui/react'
 
 import Select from '../components/Select'
 import TagInput from '../components/TagInput'
 import { TextInput, NumberInput, DateInput } from '../components/Inputs'
+import Radio from '../components/Radio'
+import { Heading } from '../components/Typography'
 
 type NewTransactionPageProps = {
     transactionCategories: string[]
@@ -62,6 +57,8 @@ export default function NewTransactionPage({
     >(undefined)
     const [comment, setComment] = useState<string | undefined>(undefined)
     const [tags, setTags] = useState<string[]>([])
+    const [specifics, setSpecifics] = useState<string>('NoSpecifics')
+    const [cashflow, setCashflow] = useState<string>('expense')
 
     const newTransaction = () => {
         const transaction = createTransaction()
@@ -106,9 +103,20 @@ export default function NewTransactionPage({
 
     return (
         <>
-            <h1>Create Transaction</h1>
+            <Heading label="Create Transaction" />
             <div>
                 <form onSubmit={postNewTransaction}>
+                    <Radio
+                        label="Select transaction cashflow"
+                        id="cashflow"
+                        selectedOption={cashflow}
+                        setSelectedOption={setCashflow}
+                        options={[
+                            { label: 'Expense', value: 'expense' },
+                            { label: 'Income', value: 'income' },
+                        ]}
+                    />
+
                     <Select
                         isRequired
                         label="Category"
@@ -200,6 +208,7 @@ export default function NewTransactionPage({
                         options={taxCategories}
                     />
 
+                    {/* TODO Extract into new TextArea component */}
                     <label htmlFor="comment">Comment</label>
                     <textarea
                         name="comment"
@@ -210,20 +219,20 @@ export default function NewTransactionPage({
                         }}
                     />
 
-                    <FormControl>
-                        <FormLabel>Select specifics</FormLabel>
-                        <RadioGroup
-                        // onChange={setValue} value={value}
-                        >
-                            <Stack direction="row">
-                                <Radio value="NoSpecifics">None</Radio>
-                                <Radio value="WorkSpecifics">Work</Radio>
-                                <Radio value="InvestmentSpecifics">
-                                    Investment
-                                </Radio>
-                            </Stack>
-                        </RadioGroup>
-                    </FormControl>
+                    <Radio
+                        label="Select specifics"
+                        id="transaction-specifics"
+                        selectedOption={specifics}
+                        setSelectedOption={setSpecifics}
+                        options={[
+                            { label: 'None', value: 'NoSpecifics' },
+                            { label: 'Work', value: 'WorkSpecifics' },
+                            {
+                                label: 'Investment',
+                                value: 'InvestmentSpecifics',
+                            },
+                        ]}
+                    />
 
                     <TagInput tags={tags} setTags={setTags} />
                     <div>
