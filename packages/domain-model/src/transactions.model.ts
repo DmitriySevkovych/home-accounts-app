@@ -281,6 +281,7 @@ export const createTransaction = (): TransactionBuilder => {
 
 export const deserializeTransaction = (data: any) => {
     const {
+        id,
         category,
         origin,
         description,
@@ -304,6 +305,7 @@ export const deserializeTransaction = (data: any) => {
         .withPaymentDetails(paymentMethod, sourceBankAccount, targetBankAccount)
         .withComment(comment)
         .withAgent(agent)
+        .withId(id)
         .addTags(tags)
         .validate()
         .build()
