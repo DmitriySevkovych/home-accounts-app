@@ -1,6 +1,5 @@
 import type { Pool } from 'pg'
 
-import { RepositoryLocator } from '../../repositoryLocator'
 import { PostgresRepository } from '../postgresRepository'
 import {
     TransactionDAO,
@@ -18,10 +17,9 @@ describe('Database queries targeting only the transactions schema', () => {
     beforeAll(() => {
         const repository = new PostgresRepository()
         connectionPool = repository.connectionPool
-        RepositoryLocator.setRepository(repository)
     })
     afterAll(async () => {
-        await RepositoryLocator.closeRepository()
+        await connectionPool.end()
     })
 
     it('getTransactionDAOById should throw an error if no matching id exists', async () => {

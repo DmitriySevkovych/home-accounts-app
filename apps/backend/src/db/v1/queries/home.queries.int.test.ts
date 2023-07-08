@@ -1,12 +1,7 @@
 import type { Pool } from 'pg'
 
-import { RepositoryLocator } from '../../repositoryLocator'
 import { PostgresRepository } from '../postgresRepository'
-import {
-    getHomeExpenseById,
-    getHomeIncomeById,
-    insertTransaction,
-} from './home.queries'
+import { getTransactionById, insertTransaction } from './home.queries'
 import {
     Transaction,
     TransactionDate,
@@ -23,10 +18,9 @@ describe('Database queries targeting the home schema', () => {
     beforeAll(() => {
         const repository = new PostgresRepository()
         connectionPool = repository.connectionPool
-        RepositoryLocator.setRepository(repository)
     })
     afterAll(async () => {
-        await RepositoryLocator.closeRepository()
+        await connectionPool.end()
     })
 
     it.each`
@@ -52,7 +46,7 @@ describe('Database queries targeting the home schema', () => {
         }
     )
 
-    it('getHomeExpenseById should return a Transaction representing a home expense', async () => {
+    it('getTransactionById should return a home expense', async () => {
         // Arrange
         const category = 'FOOD'
         const amount = -5.99
@@ -62,7 +56,7 @@ describe('Database queries targeting the home schema', () => {
             connectionPool
         )
         // Act
-        const transaction = await getHomeExpenseById(id, connectionPool)
+        const transaction = await getTransactionById(connectionPool, id)
         // Assert
         expect(transaction).toBeDefined()
         expect(transaction.id).toBe(id)
@@ -79,7 +73,7 @@ describe('Database queries targeting the home schema', () => {
         expect(transaction.tags).toEqual(['Dummy', 'Test', 'ExpenseTag']) // value comes from dummyTransaction()
     })
 
-    it('getHomeExpenseById should return a Transaction with correct defaults', async () => {
+    it('getTransactionById should return a home expense with correct defaults', async () => {
         // Arrange
         const category = 'FOOD'
         const amount = -15.99
@@ -88,7 +82,7 @@ describe('Database queries targeting the home schema', () => {
             connectionPool
         )
         // Act
-        const transaction = await getHomeExpenseById(id, connectionPool)
+        const transaction = await getTransactionById(connectionPool, id)
         // Assert
         expect(transaction).toBeDefined()
         expect(transaction.id).toBe(id)
@@ -110,7 +104,7 @@ describe('Database queries targeting the home schema', () => {
         expect(transaction.targetBankAccount).toBeNull()
     })
 
-    it('getHomeIncomeById should return a Transaction representing a home income', async () => {
+    it('getTransactionById should return a home income', async () => {
         // Arrange
         const category = 'SALARY'
         const amount = 19.99
@@ -120,7 +114,7 @@ describe('Database queries targeting the home schema', () => {
             connectionPool
         )
         // Act
-        const transaction = await getHomeIncomeById(id, connectionPool)
+        const transaction = await getTransactionById(connectionPool, id)
         // Assert
         expect(transaction).toBeDefined()
         expect(transaction.id).toBe(id)
@@ -135,7 +129,7 @@ describe('Database queries targeting the home schema', () => {
         expect(transaction.tags).toEqual(['Dummy', 'Test', 'IncomeTag']) // value comes from dummyTransaction()
     })
 
-    it('getHomeIncomeById should return a Transaction with correct defaults', async () => {
+    it('getHomeIncomeById should return a home income with correct defaults', async () => {
         // Arrange
         const category = 'SALARY'
         const amount = 123.99
@@ -144,7 +138,7 @@ describe('Database queries targeting the home schema', () => {
             connectionPool
         )
         // Act
-        const transaction = await getHomeIncomeById(id, connectionPool)
+        const transaction = await getTransactionById(connectionPool, id)
         // Assert
         expect(transaction).toBeDefined()
         expect(transaction.id).toBe(id)

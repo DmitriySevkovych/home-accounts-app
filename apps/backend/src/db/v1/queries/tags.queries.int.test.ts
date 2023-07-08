@@ -1,6 +1,5 @@
 import type { Pool } from 'pg'
 
-import { RepositoryLocator } from '../../repositoryLocator'
 import { PostgresRepository } from '../postgresRepository'
 import * as tagsQueries from './tags.queries'
 
@@ -9,10 +8,9 @@ describe('', () => {
     beforeAll(() => {
         const repository = new PostgresRepository()
         connectionPool = repository.connectionPool
-        RepositoryLocator.setRepository(repository)
     })
     afterAll(async () => {
-        await RepositoryLocator.closeRepository()
+        await connectionPool.end()
     })
 
     it('should return false if a tag does not yet exist in the database', async () => {

@@ -1,5 +1,10 @@
 import supertest from 'supertest'
-import { TransactionDate, dummyTransaction } from 'domain-model'
+import {
+    TransactionDate,
+    TransactionValidationError,
+    deserializeTransaction,
+    dummyTransaction,
+} from 'domain-model'
 import { type Express } from 'express'
 
 import { createServer } from '../server'
@@ -37,7 +42,57 @@ describe('Transactions router tests', () => {
             .expect(400)
             .then((res) => {
                 expect(res.body.message).toBe(
-                    'Data sent in the request body is not a valid transaction'
+                    'Data sent in the request body is not a valid transaction.'
+                )
+            })
+    })
+
+    it('GET should return an array of Transaction objects', async () => {
+        await supertest(server)
+            .get(routerBaseUrl)
+            .query({ limit: 5 })
+            .expect(200)
+            .then((res) => {
+                expect(res.body.length).toBe(5)
+
+                res.body.forEach((element: object) => {
+                    expect(() => deserializeTransaction(element)).not.toThrow(
+                        TransactionValidationError
+                    )
+                })
+            })
+    })
+
+    it('GET with a valid id should return a Transaction object', async () => {
+        await supertest(server)
+            .get(`${routerBaseUrl}/1`)
+            .expect(200)
+            .then((res) => {
+                const transaction = deserializeTransaction(res.body)
+                expect(transaction.id).toBe(1)
+                expect(transaction.category).toBe('FOOD') // set in the stubbedRepository
+                expect(transaction.amount).toBe(-33.33) // set in the stubbedRepository
+            })
+    })
+
+    it('GET with malformed id should return with status 400 Bad Request', async () => {
+        await supertest(server)
+            .get(`${routerBaseUrl}/abc`)
+            .expect(400)
+            .then((res) => {
+                expect(res.body.message).toBe(
+                    'The request contains a malformed id in path (id=NaN).'
+                )
+            })
+    })
+
+    it('GET with unknown id should return with status 404 Not Found', async () => {
+        await supertest(server)
+            .get(`${routerBaseUrl}/404`)
+            .expect(404)
+            .then((res) => {
+                expect(res.body.message).toBe(
+                    'The database does not hold a transaction with id=404.'
                 )
             })
     })

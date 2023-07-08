@@ -10,8 +10,9 @@ import type {
 
 import connectionPool from '.'
 import * as utilsQueries from './queries/utils.queries'
-import { insertTransaction } from './queries/home.queries'
+import * as homeQueries from './queries/home.queries'
 import { Repository } from '../repository'
+import { PaginationOptions } from '../../helpers/pagination'
 
 export class PostgresRepository implements Repository {
     logger: Logger
@@ -97,7 +98,23 @@ export class PostgresRepository implements Repository {
     createTransaction = async (transaction: Transaction): Promise<number> => {
         // TODO to log or not to log?
         this.logger.info(transaction)
-        const id = await insertTransaction(transaction, this.connectionPool)
+        const id = await homeQueries.insertTransaction(
+            transaction,
+            this.connectionPool
+        )
         return id
+    }
+
+    getTransactions = async (
+        paginationOptions: PaginationOptions
+    ): Promise<Transaction[]> => {
+        return await homeQueries.getTransactions(
+            this.connectionPool,
+            paginationOptions
+        )
+    }
+
+    getTransactionById = async (id: number): Promise<Transaction> => {
+        return await homeQueries.getTransactionById(this.connectionPool, id)
     }
 }
