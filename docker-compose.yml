@@ -1,0 +1,13 @@
+version: "3"
+
+services:
+  backend:
+    container_name: home-app-backend
+    build:
+      context: .
+      dockerfile: ./apps/backend/Dockerfile
+  # frontend:
+  #   container_name: home-app-frontend
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/frontend/Dockerfile
