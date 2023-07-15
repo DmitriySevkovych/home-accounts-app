@@ -10,7 +10,7 @@
         "postdev": "dotenv -e .env.local -e .env bash ./teardown.sh",
         "lint": "tsc --noEmit && eslint \"src/**/*.ts*\"",
         "lint:sql": "npx sql-formatter --language postgresql --fix",
-        "start": "node dist/index.js",
+        "start": "dotenv -e .env node dist/index.js",
         "test": "dotenv -e .env.test.local -e .env.test jest --detectOpenHandles",
         "pretest": "dotenv -e .env.test.local -e .env.test bash ./setup.sh",
         "posttest": "dotenv -e .env.test.local -e .env.test bash ./teardown.sh"
