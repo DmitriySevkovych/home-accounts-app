@@ -207,11 +207,13 @@ class TransactionBuilder {
             sourceBankAccount,
             targetBankAccount,
             agent,
+            type,
         } = this.transaction
 
         this._throwIfFalsy('category', category)
         this._throwIfFalsy('origin', origin)
         this._throwIfFalsy('amount', amount)
+        this._throwIfFalsy('type', type)
         this._throwIfFalsy('payment method', paymentMethod)
         this._throwIfFalsy('agent', agent)
         this._throwIfFalsy(
@@ -222,6 +224,8 @@ class TransactionBuilder {
         this._throwIfDateInvalid(date)
 
         this._throwIfAmountInconsistentWithBankAccounts()
+
+        this._throwIfAmountInconsistentWithType(amount, type)
 
         return this
     }
@@ -234,7 +238,7 @@ class TransactionBuilder {
         // throw an error, if input is undefined, null, '', 0 and so on
         if (!value) {
             throw new TransactionValidationError(
-                `The data on ${property} is falsy. Can not build a valid Transaction object.`
+                `The transaction attribute '${property}' is falsy. Can not build a valid Transaction object.`
             )
         }
     }
@@ -263,6 +267,20 @@ class TransactionBuilder {
             )
         }
     }
+
+    private _throwIfAmountInconsistentWithType = (
+        amount: number,
+        type: TransactionType
+    ): void => {
+        if (
+            (amount < 0 && type === 'income') ||
+            (amount > 0 && type === 'expense')
+        ) {
+            throw new TransactionValidationError(
+                `The transaction type '${type}' is inconsistent with transaction amount of '${amount}'`
+            )
+        }
+    }
 }
 
 export const createTransaction = (): TransactionBuilder => {
@@ -285,6 +303,7 @@ export const deserializeTransaction = (data: any) => {
         comment,
         agent,
         tags,
+        type,
     } = data
 
     const transaction: Transaction = createTransaction()
@@ -296,6 +315,7 @@ export const deserializeTransaction = (data: any) => {
         .withComment(comment)
         .withAgent(agent)
         .withId(id)
+        .withType(type)
         .addTags(tags)
         .validate()
         .build()

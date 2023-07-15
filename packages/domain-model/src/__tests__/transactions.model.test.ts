@@ -48,6 +48,7 @@ describe('Transactions tests', () => {
             .withAmount(3.0)
             .withDate(TransactionDate.today())
             .withPaymentTo('TRANSFER', 'HOME_ACCOUNT')
+            .withType('income')
         // Act
         const transaction = transactionBuilder.validate().build()
         // Assert
@@ -115,6 +116,7 @@ describe('Transactions tests', () => {
             sourceBankAccount: 'HOME_ACCOUNT',
             tags: ['Test', 'Tag'],
             agent: 'Testbot',
+            type: 'expense',
         }
         // Act
         const transaction = deserializeTransaction(receivedRequestBody)
