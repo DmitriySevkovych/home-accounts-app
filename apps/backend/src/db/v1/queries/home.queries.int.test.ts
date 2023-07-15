@@ -63,8 +63,8 @@ describe('Database queries targeting the home schema', () => {
         expect(transaction.amount).toBe(amount)
         expect(transaction.date.toString()).toEqual(transactionDate.toString())
         expect(transaction.category).toBe(category)
-        expect(transaction.type().cashflow).toBe('expense')
-        expect(transaction.type().specificTo).toBe('home')
+        expect(transaction.type).toBe('expense')
+        expect(transaction.context).toBe('home')
         expect(transaction.origin).toBe('Test origin') // value comes from dummyTransaction()
         expect(transaction.description).toBe('A lengthy test description') // value comes from dummyTransaction()
         expect(transaction.currency).toBe('USD') // value comes from dummyTransaction()
@@ -88,8 +88,8 @@ describe('Database queries targeting the home schema', () => {
         expect(transaction.id).toBe(id)
         expect(transaction.amount).toBe(amount)
         expect(transaction.category).toBe(category)
-        expect(transaction.type().cashflow).toBe('expense')
-        expect(transaction.type().specificTo).toBe('home')
+        expect(transaction.type).toBe('expense')
+        expect(transaction.context).toBe('home')
         expect(transaction.date.toString()).toEqual(
             TransactionDate.today().toString()
         ) // default value!
@@ -121,8 +121,8 @@ describe('Database queries targeting the home schema', () => {
         expect(transaction.amount).toBe(amount)
         expect(transaction.date.toString()).toEqual(transactionDate.toString())
         expect(transaction.category).toBe(category)
-        expect(transaction.type().cashflow).toBe('income')
-        expect(transaction.type().specificTo).toBe('home')
+        expect(transaction.type).toBe('income')
+        expect(transaction.context).toBe('home')
         expect(transaction.origin).toBe('Test origin') // value comes from dummyTransaction()
         expect(transaction.description).toBe('A lengthy test description') // value comes from dummyTransaction()
         expect(transaction.exchangeRate).toBe(0.95) // value comes from dummyTransaction()
@@ -144,8 +144,8 @@ describe('Database queries targeting the home schema', () => {
         expect(transaction.id).toBe(id)
         expect(transaction.amount).toBe(amount)
         expect(transaction.category).toBe(category)
-        expect(transaction.type().cashflow).toBe('income')
-        expect(transaction.type().specificTo).toBe('home')
+        expect(transaction.type).toBe('income')
+        expect(transaction.context).toBe('home')
         expect(transaction.date.toString()).toEqual(
             TransactionDate.today().toString()
         ) // default value!

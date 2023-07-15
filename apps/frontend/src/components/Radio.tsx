@@ -8,11 +8,11 @@ import {
 
 import React, { ChangeEvent } from 'react'
 
-type RadioProps = {
+type RadioProps<T> = {
     label: string
     id: string
-    selectedOption: string | undefined
-    setSelectedOption: (newOption: string) => void
+    selectedOption: T | undefined
+    setSelectedOption: (newOption: T) => void
     options: RadioOption[]
 }
 
@@ -21,7 +21,7 @@ type RadioOption = {
     value: string
 }
 
-const Radio = (props: RadioProps) => {
+const Radio = <T extends string>(props: RadioProps<T>) => {
     const { label, options, selectedOption, setSelectedOption, id } = props
     return (
         <FormControl id={id}>

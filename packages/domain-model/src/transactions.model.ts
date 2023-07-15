@@ -40,25 +40,24 @@ export type BankAccount = {
 }
 
 // Transactions-related types
-export type TransactionType = {
-    cashflow: 'income' | 'expense'
-    specificTo: 'home' | 'work' | 'investments'
-}
+export type TransactionType = 'income' | 'expense'
 
-type WorkSpecifics = {
-    country: string
-    vat: number
-}
+export type TransactionContext = 'home' | 'work' | 'investments'
 
-type InvestmentSpecifics = {
-    investment: string
-}
+// type WorkContext = {
+//     country: string
+//     vat: number
+// }
+
+// type InvestmentContext = {
+//     investment: string
+// }
 
 export class Transaction {
     // Unique identifier, to be provided by a DB sequence
     id?: number
 
-    // Data describing
+    // Data describing ...
     category!: PickAndFlatten<TransactionCategory, 'category'>
     origin!: string
     description!: string
@@ -66,6 +65,8 @@ export class Transaction {
     tags: string[] = []
 
     // Data describing the money movement
+    type!: TransactionType
+    context!: TransactionContext
     amount!: number
     exchangeRate: number = 1
     currency: string = 'EUR'
@@ -75,22 +76,8 @@ export class Transaction {
     taxCategory?: PickAndFlatten<TaxCategory, 'category'>
     comment?: string
 
-    // Work-related or investment-related data
-    specifics?: WorkSpecifics | InvestmentSpecifics
-
     // Technical helper data
     agent: string = 'default_agent'
-
-    type = (): TransactionType => {
-        const cashflow = this.amount > 0 ? 'income' : 'expense'
-        if (this.specifics) {
-            if ('investment' in this.specifics) {
-                return { cashflow, specificTo: 'investments' }
-            }
-            return { cashflow, specificTo: 'work' }
-        }
-        return { cashflow, specificTo: 'home' }
-    }
 
     eurEquivalent = (): number => {
         return this.amount * this.exchangeRate
@@ -121,6 +108,16 @@ class TransactionBuilder {
 
     withId = (id: number): TransactionBuilder => {
         this.transaction.id = id
+        return this
+    }
+
+    withType = (type: TransactionType): TransactionBuilder => {
+        this.transaction.type = type
+        return this
+    }
+
+    withContext = (context: TransactionContext): TransactionBuilder => {
+        this.transaction.context = context
         return this
     }
 
@@ -197,13 +194,6 @@ class TransactionBuilder {
 
     withAgent = (agent: string): TransactionBuilder => {
         this.transaction.agent = agent
-        return this
-    }
-
-    withSpecifics = (
-        specifics: WorkSpecifics | InvestmentSpecifics
-    ): TransactionBuilder => {
-        this.transaction.specifics = specifics
         return this
     }
 

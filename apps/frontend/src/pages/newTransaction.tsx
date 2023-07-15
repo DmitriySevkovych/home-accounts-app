@@ -3,7 +3,9 @@ import {
     PaymentMethod,
     TaxCategory,
     TransactionCategory,
+    TransactionContext,
     TransactionDate,
+    TransactionType,
     createTransaction,
 } from 'domain-model'
 import { useState } from 'react'
@@ -57,13 +59,20 @@ export default function NewTransactionPage({
     >(undefined)
     const [comment, setComment] = useState<string | undefined>(undefined)
     const [tags, setTags] = useState<string[]>([])
-    const [specifics, setSpecifics] = useState<string>('NoSpecifics')
-    const [cashflow, setCashflow] = useState<string>('expense')
+    const [context, setContext] = useState<TransactionContext>('home')
+    const [transactionType, setTransactionType] =
+        useState<TransactionType>('expense')
+
+    const determineAmount = (): number => {
+        return transactionType === 'expense' ? -1 * amount : amount
+    }
 
     const newTransaction = () => {
         const transaction = createTransaction()
             .about(selectedCategory!, origin!, description!)
-            .withAmount(amount)
+            .withContext(context)
+            .withType(transactionType)
+            .withAmount(determineAmount())
             .withCurrency(currency, exchangeRate)
             .withDate(date)
             .withPaymentDetails(
@@ -106,11 +115,11 @@ export default function NewTransactionPage({
             <Heading label="Create Transaction" />
             <div>
                 <form onSubmit={postNewTransaction}>
-                    <Radio
+                    <Radio<TransactionType>
                         label="Select transaction cashflow"
                         id="cashflow"
-                        selectedOption={cashflow}
-                        setSelectedOption={setCashflow}
+                        selectedOption={transactionType}
+                        setSelectedOption={setTransactionType}
                         options={[
                             { label: 'Expense', value: 'expense' },
                             { label: 'Income', value: 'income' },
@@ -182,7 +191,7 @@ export default function NewTransactionPage({
                         options={paymentMethods}
                     />
 
-                    {cashflow === 'expense' && (
+                    {transactionType === 'expense' && (
                         <Select
                             isRequired
                             label="Source Bank Account"
@@ -193,7 +202,7 @@ export default function NewTransactionPage({
                         />
                     )}
 
-                    {cashflow === 'income' && (
+                    {transactionType === 'income' && (
                         <Select
                             label="Target Bank Account"
                             id="targetBankAccount"
@@ -222,17 +231,17 @@ export default function NewTransactionPage({
                         }}
                     />
 
-                    <Radio
-                        label="Select specifics"
-                        id="transaction-specifics"
-                        selectedOption={specifics}
-                        setSelectedOption={setSpecifics}
+                    <Radio<TransactionContext>
+                        label="Select transaction context"
+                        id="transaction-context"
+                        selectedOption={context}
+                        setSelectedOption={setContext}
                         options={[
-                            { label: 'None', value: 'NoSpecifics' },
-                            { label: 'Work', value: 'WorkSpecifics' },
+                            { label: 'None', value: 'home' },
+                            { label: 'Work', value: 'work' },
                             {
                                 label: 'Investment',
-                                value: 'InvestmentSpecifics',
+                                value: 'investment',
                             },
                         ]}
                     />
