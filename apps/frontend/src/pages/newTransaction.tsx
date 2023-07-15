@@ -182,23 +182,26 @@ export default function NewTransactionPage({
                         options={paymentMethods}
                     />
 
-                    {/* TODO merge to one bank account component */}
-                    <Select
-                        isRequired
-                        label="Source Bank Account"
-                        id="sourceBankAccount"
-                        selectedState={selectedSourceBankAccount}
-                        setSelectedState={setSelectedSourceBankAccount}
-                        options={bankAccounts}
-                    />
+                    {cashflow === 'expense' && (
+                        <Select
+                            isRequired
+                            label="Source Bank Account"
+                            id="sourceBankAccount"
+                            selectedState={selectedSourceBankAccount}
+                            setSelectedState={setSelectedSourceBankAccount}
+                            options={bankAccounts}
+                        />
+                    )}
 
-                    <Select
-                        label="Target Bank Account"
-                        id="targetBankAccount"
-                        selectedState={selectedTargetBankAccount}
-                        setSelectedState={setSelectedTargetBankAccount}
-                        options={bankAccounts}
-                    />
+                    {cashflow === 'income' && (
+                        <Select
+                            label="Target Bank Account"
+                            id="targetBankAccount"
+                            selectedState={selectedTargetBankAccount}
+                            setSelectedState={setSelectedTargetBankAccount}
+                            options={bankAccounts}
+                        />
+                    )}
 
                     <Select
                         label="Tax Category"
