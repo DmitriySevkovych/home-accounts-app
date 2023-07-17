@@ -1,6 +1,6 @@
 import { getLogger } from 'logger'
 
-import { createServer } from './server'
+import { createSecureServer } from './server'
 
 const logger = getLogger('backend')
 
@@ -13,7 +13,7 @@ if (!PORT || !API_BASE_URL) {
     process.exit(1)
 }
 
-createServer()
+createSecureServer()
     .then((server) => {
         server.listen(PORT, () => {
             logger.info(

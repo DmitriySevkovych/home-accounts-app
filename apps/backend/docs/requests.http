@@ -1,25 +1,25 @@
 #https://medium.com/refinitiv-developer-community/how-to-test-rest-api-with-visual-studio-code-rest-client-extensions-9f2e061d0299
 
 ### Utils routes
-GET http://localhost:8090/api/v1/utils/transactionCategories
+GET https://localhost:8090/api/v1/utils/transactionCategories
 ###
-GET http://localhost:8090/api/v1/utils/taxCategories
+GET https://localhost:8090/api/v1/utils/taxCategories
 ###
-GET http://localhost:8090/api/v1/utils/paymentMethods
+GET https://localhost:8090/api/v1/utils/paymentMethods
 ###
-GET http://localhost:8090/api/v1/utils/bankAccounts
+GET https://localhost:8090/api/v1/utils/bankAccounts
 
 ### Transactions routes
 ### Batch get
-GET http://localhost:8090/api/v1/transactions
+GET https://localhost:8090/api/v1/transactions
 ###
-GET http://localhost:8090/api/v1/transactions?limit=5&page=2
+GET https://localhost:8090/api/v1/transactions?limit=5&page=2
 
 ### Get by id
-GET http://localhost:8090/api/v1/transactions/1
+GET https://localhost:8090/api/v1/transactions/1
 
 ### Post
-POST http://localhost:8090/api/v1/transactions
+POST https://localhost:8090/api/v1/transactions
 Content-Type: application/json
 
 {
@@ -36,7 +36,7 @@ Content-Type: application/json
     "agent": "Testbot"
 }
 ### Post to provoke error
-POST http://localhost:8090/api/v1/transactions
+POST https://localhost:8090/api/v1/transactions
 Content-Type: application/json
 
 {
