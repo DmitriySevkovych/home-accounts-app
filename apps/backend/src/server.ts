@@ -1,10 +1,10 @@
 import { json, urlencoded } from 'body-parser'
+import cors from 'cors'
+import { readFileSync } from 'fs'
+import https from 'https'
 import express, { type Express } from 'express'
 import morgan from 'morgan'
-import cors from 'cors'
-import https from 'https'
 import path from 'path'
-import { readFileSync } from 'fs'
 
 import mountRoutes from './routes'
 
