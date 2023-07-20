@@ -1,5 +1,5 @@
 # For documentation, cf. https://turbo.build/repo/docs/handbook/deploying-with-docker
-FROM node:18-alpine AS base
+FROM node:18.17.0-alpine AS base
 
 
 FROM base AS turbosetup
@@ -13,6 +13,7 @@ RUN turbo prune --scope=backend --docker
 
 
 FROM base AS installer
+RUN apk add dumb-init
 RUN apk add --no-cache libc6-compat
 RUN apk update
 WORKDIR /app
@@ -28,13 +29,15 @@ RUN npx turbo run build --filter=backend
 
 
 # Production image, copy all the files and run next
-FROM node:18-alpine AS runner
-WORKDIR /app
+# cf. https://snyk.io/blog/10-best-practices-to-containerize-nodejs-web-applications-with-docker/ for infos on dumb-init and the CMD statement
+FROM base AS runner
+COPY --from=installer /usr/bin/dumb-init /usr/bin/dumb-init
 ENV NODE_ENV production
+WORKDIR /app
 RUN addgroup --system --gid 1001 homeapp
 RUN adduser --system --uid 1001 backend
 USER backend
 COPY --from=installer --chown=backend:homeapp /app .
 EXPOSE 8090
-CMD node apps/backend/dist/index.js
+CMD ["dumb-init", "node", "apps/backend/dist/index.js"]
 

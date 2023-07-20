@@ -8,7 +8,7 @@
         "format": "prettier --write .",
         "lint": "turbo run lint",
         "test": "turbo run test",
-        "containerize": "docker-compose -f docker-compose.yml build"
+        "containerize": "docker-compose build"
     },
     "devDependencies": {
         "@types/is-ci": "^3.0.0",
