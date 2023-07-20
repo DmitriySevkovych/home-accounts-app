@@ -20,8 +20,9 @@ export class RepositoryLocator {
         RepositoryLocator.INSTANCE = repository
     }
 
-    static closeRepository = async (): Promise<void> => {
+    static closeRepository = async (callback?: () => void): Promise<void> => {
         await RepositoryLocator.INSTANCE?.close()
         RepositoryLocator.INSTANCE = undefined
+        if (callback) callback()
     }
 }

@@ -1,6 +1,6 @@
 {
     "$schema": "https://turbo.build/schema.json",
-    "globalEnv": ["PORT","API_BASE_URL"],
+    "globalEnv": ["NODE_ENV", "PORT", "API_BASE_URL"],
     "pipeline": {
         "build": {
             "outputs": [
