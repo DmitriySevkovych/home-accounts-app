@@ -1,9 +1,12 @@
 import React from 'react'
 import {
-    FormControl,
-    FormLabel,
-    Select as ChakraSelect,
-} from '@chakra-ui/react'
+    Select as ShadcnSelect,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '../lib/shadcn/Select'
+import { Label } from '../lib/shadcn/Label'
 
 type SelectProps = {
     label: string
@@ -17,24 +20,25 @@ type SelectProps = {
 export default function Select(props: SelectProps) {
     const { label, id, selectedState, setSelectedState, options, isRequired } =
         props
+
     return (
-        <FormControl id={id}>
-            <FormLabel>{label}</FormLabel>
-            <ChakraSelect
-                placeholder={`Select ${label}`}
-                isRequired={isRequired}
-                value={selectedState}
-                defaultValue=""
-                onChange={(e) => {
-                    setSelectedState(e.target.value)
-                }}
-            >
+        <ShadcnSelect
+            value={selectedState}
+            onValueChange={setSelectedState}
+            required={isRequired}
+            className="flex"
+        >
+            <Label htmlFor={id}>{label}</Label>
+            <SelectTrigger id={id} className="w-[180px]">
+                <SelectValue placeholder={`Select ${label}`} />
+            </SelectTrigger>
+            <SelectContent>
                 {options.map((option) => (
-                    <option key={option} value={option}>
+                    <SelectItem key={option} value={option}>
                         {option}
-                    </option>
+                    </SelectItem>
                 ))}
-            </ChakraSelect>
-        </FormControl>
+            </SelectContent>
+        </ShadcnSelect>
     )
 }

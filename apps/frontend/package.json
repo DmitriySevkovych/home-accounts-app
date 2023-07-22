@@ -10,15 +10,12 @@
         "start": "next start "
     },
     "dependencies": {
-        "@chakra-ui/react": "^2.7.1",
-        "@emotion/react": "^11.11.1",
-        "@emotion/styled": "^11.11.0",
         "@radix-ui/react-icons": "^1.3.0",
+        "@radix-ui/react-label": "^2.0.2",
         "@radix-ui/react-select": "^1.2.2",
         "class-variance-authority": "^0.7.0",
         "clsx": "^2.0.0",
         "domain-model": "*",
-        "framer-motion": "^10.12.17",
         "logger": "*",
         "lucide-react": "^0.262.0",
         "next": "latest",
