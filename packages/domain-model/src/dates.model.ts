@@ -17,6 +17,10 @@ export class TransactionDate {
         return new TransactionDate(DateTime.now())
     }
 
+    static fromISO = (isoDateString: string): TransactionDate => {
+        return new TransactionDate(DateTime.fromISO(isoDateString))
+    }
+
     static fromString = (
         dateString: string,
         format: string = TransactionDate.format
@@ -34,7 +38,7 @@ export class TransactionDate {
     }
 
     static fromDatabase = (dateString: string): TransactionDate => {
-        return new TransactionDate(DateTime.fromISO(dateString))
+        return TransactionDate.fromISO(dateString)
     }
 
     static formatDateColumn = (column: string): string => {
