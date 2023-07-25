@@ -32,11 +32,11 @@ import { cn } from '../../helpers/utils'
 import { format } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
 import { Calendar } from '../../lib/shadcn/Calendar'
-import { RadioGroup, RadioGroupItem } from '../../lib/shadcn/Radio'
 
 // Debug tool
 import { DevTool } from '@hookform/devtools'
 import { Textarea } from '../../lib/shadcn/Textarea'
+import Radio from '../../components/Radio'
 
 // For backend fetch
 const baseUrl = `${process.env['NEXT_PUBLIC_BACKEND_URL']}/${process.env['NEXT_PUBLIC_BACKEND_API_BASE']}`
@@ -100,47 +100,20 @@ export default function NewTransaction({
 
     return (
         <div className="p-3">
-            {typeValue === 'expense' && <h2>expense</h2>}
             <h1 className="font-bold text-xl mb-6">Create Transaction</h1>
             <Form {...form}>
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}
                     className="w-full space-y-6"
                 >
-                    {/* Type */}
-                    <FormField
-                        control={form.control}
-                        name="type"
-                        render={({ field }) => (
-                            <FormItem className="space-y-3">
-                                <FormControl>
-                                    <RadioGroup
-                                        onValueChange={field.onChange}
-                                        // TODO handle default value
-                                        defaultValue="expense"
-                                        className="flex space-x-3"
-                                    >
-                                        <FormItem className="flex items-center space-x-3 space-y-0">
-                                            <FormControl>
-                                                <RadioGroupItem value="expense" />
-                                            </FormControl>
-                                            <FormLabel className="font-normal">
-                                                Expense
-                                            </FormLabel>
-                                        </FormItem>
-                                        <FormItem className="flex items-center space-x-3 space-y-0">
-                                            <FormControl>
-                                                <RadioGroupItem value="income" />
-                                            </FormControl>
-                                            <FormLabel className="font-normal">
-                                                Income
-                                            </FormLabel>
-                                        </FormItem>
-                                    </RadioGroup>
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
+                    <Radio
+                        id="type"
+                        form={form}
+                        defaultValue="expense"
+                        options={[
+                            { label: 'Expense', value: 'expense' },
+                            { label: 'Income', value: 'income' },
+                        ]}
                     />
 
                     {/* Category */}
@@ -471,49 +444,19 @@ export default function NewTransaction({
                         )}
                     />
 
-                    {/* Transaction context */}
-                    <FormField
-                        control={form.control}
-                        name="context"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>
-                                    Select transaction context
-                                </FormLabel>
-                                <RadioGroup
-                                    onValueChange={field.onChange}
-                                    // TODO handle default value
-                                    defaultValue="home"
-                                    className="flex space-x-3"
-                                >
-                                    <FormItem className="flex items-center space-x-3 space-y-0">
-                                        <FormControl>
-                                            <RadioGroupItem value="home" />
-                                        </FormControl>
-                                        <FormLabel className="font-normal">
-                                            None
-                                        </FormLabel>
-                                    </FormItem>
-                                    <FormItem className="flex items-center space-x-3 space-y-0">
-                                        <FormControl>
-                                            <RadioGroupItem value="work" />
-                                        </FormControl>
-                                        <FormLabel className="font-normal">
-                                            Work
-                                        </FormLabel>
-                                    </FormItem>
-                                    <FormItem className="flex items-center space-x-3 space-y-0">
-                                        <FormControl>
-                                            <RadioGroupItem value="investment" />
-                                        </FormControl>
-                                        <FormLabel className="font-normal">
-                                            Investment
-                                        </FormLabel>
-                                    </FormItem>
-                                </RadioGroup>
-                                <FormMessage />
-                            </FormItem>
-                        )}
+                    <Radio
+                        id="context"
+                        form={form}
+                        defaultValue="home"
+                        options={[
+                            { label: 'None', value: 'home' },
+                            { label: 'Work', value: 'work' },
+                            {
+                                label: 'Investment',
+                                value: 'investment',
+                            },
+                        ]}
+                        label="Select transaction context"
                     />
 
                     {/* TODO Tags */}

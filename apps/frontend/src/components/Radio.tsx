@@ -1,11 +1,20 @@
-import React, { ChangeEvent } from 'react'
+import React from 'react'
+import { UseFormReturn } from 'react-hook-form'
+import {
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from '../lib/shadcn/Form'
+import { RadioGroup, RadioGroupItem } from '../lib/shadcn/Radio'
 
-type RadioProps<T> = {
-    label: string
+type RadioProps = {
+    form: UseFormReturn<FormData>
     id: string
-    selectedOption: T | undefined
-    setSelectedOption: (newOption: T) => void
+    defaultValue: string
     options: RadioOption[]
+    label?: string
 }
 
 type RadioOption = {
@@ -13,22 +22,41 @@ type RadioOption = {
     value: string
 }
 
-const Radio = <T extends string>(props: RadioProps<T>) => {
-    const { label, options, selectedOption, setSelectedOption, id } = props
+const Radio: React.FC<RadioProps> = (props: RadioProps) => {
+    const { form, id, defaultValue, options, label } = props
     return (
-        <p>Radio under development</p>
-        // <FormControl id={id}>
-        //     <FormLabel>{label}</FormLabel>
-        //     <RadioGroup onChange={setSelectedOption} value={selectedOption}>
-        //         <Stack direction="row">
-        //             {options.map((option) => (
-        //                 <ChakraRadio key={option.value} value={option.value}>
-        //                     {option.label}
-        //                 </ChakraRadio>
-        //             ))}
-        //         </Stack>
-        //     </RadioGroup>
-        // </FormControl>
+        <FormField
+            control={form.control}
+            name={id}
+            render={({ field }) => (
+                <FormItem className="space-y-3">
+                    {label && <FormLabel>Select transaction context</FormLabel>}
+                    <FormControl>
+                        <RadioGroup
+                            onValueChange={field.onChange}
+                            // TODO handle default value
+                            defaultValue={defaultValue}
+                            className="flex space-x-3"
+                        >
+                            {options.map((option) => (
+                                <FormItem
+                                    key={option.value}
+                                    className="flex items-center space-x-3 space-y-0"
+                                >
+                                    <FormControl>
+                                        <RadioGroupItem value={option.value} />
+                                    </FormControl>
+                                    <FormLabel className="font-normal">
+                                        {option.label}
+                                    </FormLabel>
+                                </FormItem>
+                            ))}
+                        </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            )}
+        />
     )
 }
 
