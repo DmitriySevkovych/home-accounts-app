@@ -14,11 +14,12 @@ import {
     FormMessage,
 } from '../lib/shadcn/Form'
 import { UseFormReturn } from 'react-hook-form'
+import { Transaction } from 'domain-model'
 
 type SelectProps = {
-    form: UseFormReturn<FormData>
+    form: UseFormReturn<Transaction, any, undefined>
     label: string
-    id: string
+    id: keyof Transaction
     defaultValue?: string | undefined
     options: string[]
     isRequired?: boolean

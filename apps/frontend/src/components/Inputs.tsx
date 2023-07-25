@@ -1,17 +1,16 @@
 import React from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { TransactionDate } from 'domain-model'
+import { Transaction, TransactionDate } from 'domain-model'
 import { FormField, FormItem, FormLabel, FormMessage } from '../lib/shadcn/Form'
 import { Input } from '../lib/shadcn/Input'
 import { Textarea } from '../lib/shadcn/Textarea'
 
 type InputProps = {
-    form: UseFormReturn<FormData>
+    form: UseFormReturn<Transaction, any, undefined>
     label: string
-    id: string
+    id: keyof Transaction
     placeholder?: string
     isRequired?: boolean
-    defaultValue?: string
 }
 
 type TextInputProps = InputProps & {
@@ -56,15 +55,14 @@ export const NumberInput = (props: NumberInputProps) => {
         <FormField
             control={form.control}
             name={id}
-            defaultValue={defaultValue || ''}
-            placeholder={placeholder || ''}
             render={({ field }) => (
                 <FormItem>
                     <FormLabel>{label}</FormLabel>
                     <Input
                         onChange={field.onChange}
                         type="number"
-                        placeholder={placeholder}
+                        defaultValue={defaultValue}
+                        placeholder={placeholder || ''}
                         required={isRequired}
                     />
                     <FormMessage />

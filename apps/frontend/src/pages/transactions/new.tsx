@@ -3,16 +3,17 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 import { Button } from '../../lib/shadcn/Button'
+import { Form } from '../../lib/shadcn/Form'
 import {
-    Form,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from '../../lib/shadcn/Form'
-import { Transaction, TransactionDate, dummyTransaction } from 'domain-model'
+    BankAccount,
+    PaymentMethod,
+    TaxCategory,
+    Transaction,
+    TransactionCategory,
+    TransactionDate,
+    dummyTransaction,
+} from 'domain-model'
 import { Toast } from '../../lib/shadcn/Toast'
-import { Input } from '../../lib/shadcn/Input'
 
 // Debug tool
 import { DevTool } from '@hookform/devtools'
@@ -36,12 +37,6 @@ const FormSchema = z.instanceof(Transaction)
 
 // FormSchema.refine()
 
-console.log(
-    FormSchema.safeParse(
-        dummyTransaction('FOOD', -12.34, TransactionDate.today())
-    )
-)
-
 export default function NewTransaction({
     transactionCategories,
     paymentMethods,
@@ -52,20 +47,6 @@ export default function NewTransaction({
         resolver: zodResolver(FormSchema),
     })
 
-    // const form = () => {
-    //     const {
-    //       control,
-    //       handleSubmit,
-    //       watch,
-    //       formState: { errors },
-    //     } = useForm<z.infer<typeof FormSchema>>({
-    //       resolver: zodResolver(FormSchema),
-    //     });
-
-    // const onSubmit = (data: z.infer<typeof FormSchema>) => {
-    //     console.log(data);
-    //     alert('Data was submitted!')
-    // }
     const onSubmit = (data: z.infer<typeof FormSchema>) => {
         Toast({
             title: 'You submitted the following values:',
@@ -78,6 +59,8 @@ export default function NewTransaction({
             ),
         })
     }
+
+    console.log('form.formState', form.formState)
 
     const typeValue = form.watch('type') ? form.watch('type') : 'expense'
 

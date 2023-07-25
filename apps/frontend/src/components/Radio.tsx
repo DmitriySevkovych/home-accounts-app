@@ -8,10 +8,11 @@ import {
     FormMessage,
 } from '../lib/shadcn/Form'
 import { RadioGroup, RadioGroupItem } from '../lib/shadcn/Radio'
+import { Transaction } from 'domain-model'
 
 type RadioProps = {
-    form: UseFormReturn<FormData>
-    id: string
+    form: UseFormReturn<Transaction, any, undefined>
+    id: keyof Transaction
     defaultValue: string
     options: RadioOption[]
     label?: string

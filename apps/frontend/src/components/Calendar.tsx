@@ -1,6 +1,6 @@
 import React from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { TransactionDate } from 'domain-model'
+import { Transaction, TransactionDate } from 'domain-model'
 import {
     FormControl,
     FormField,
@@ -16,9 +16,9 @@ import { CalendarIcon } from 'lucide-react'
 import { Calendar } from '../lib/shadcn/Calendar'
 
 type DateInputProps = {
-    form: UseFormReturn<FormData>
+    form: UseFormReturn<Transaction, any, undefined>
     label: string
-    id: string
+    id: keyof Transaction
 }
 
 export const DateInput = (props: DateInputProps) => {
