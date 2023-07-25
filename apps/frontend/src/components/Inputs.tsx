@@ -1,21 +1,25 @@
-import React, { ChangeEvent } from 'react'
+import React from 'react'
+import { UseFormReturn } from 'react-hook-form'
 import { TransactionDate } from 'domain-model'
+import { FormField, FormItem, FormLabel, FormMessage } from '../lib/shadcn/Form'
+import { Input } from '../lib/shadcn/Input'
+import { Textarea } from '../lib/shadcn/Textarea'
 
 type InputProps = {
+    form: UseFormReturn<FormData>
     label: string
     id: string
     placeholder?: string
     isRequired?: boolean
+    defaultValue?: string
 }
 
 type TextInputProps = InputProps & {
-    state: string | undefined
-    setState: (newState: string) => void
+    defaultValue?: string
 }
 
 type NumberInputProps = InputProps & {
-    state: number | undefined
-    setState: (newState: number) => void
+    defaultValue?: number
 }
 
 type DateInputProps = InputProps & {
@@ -24,40 +28,49 @@ type DateInputProps = InputProps & {
 }
 
 export const TextInput = (props: TextInputProps) => {
-    const { label, id, placeholder, state, setState, isRequired } = props
+    const { form, label, id, placeholder, isRequired, defaultValue } = props
     return (
-        <p>Text input under development</p>
-        // <FormControl id={id}>
-        //     <FormLabel>{label}</FormLabel>
-        //     <ChakraInput
-        //         isRequired={isRequired}
-        //         type="text"
-        //         placeholder={placeholder}
-        //         value={state}
-        //         onChange={(e: ChangeEvent<HTMLInputElement>) => {
-        //             setState(e.target.value)
-        //         }}
-        //     />
-        // </FormControl>
+        <FormField
+            control={form.control}
+            name={id}
+            render={({ field }) => (
+                <FormItem>
+                    <FormLabel>{label}</FormLabel>
+                    <Input
+                        onChange={field.onChange}
+                        type="text"
+                        placeholder={placeholder}
+                        required={isRequired}
+                        defaultValue={defaultValue || ''}
+                    />
+                    <FormMessage />
+                </FormItem>
+            )}
+        />
     )
 }
 
 export const NumberInput = (props: NumberInputProps) => {
-    const { label, id, placeholder, state, setState, isRequired } = props
+    const { form, label, id, placeholder, isRequired, defaultValue } = props
     return (
-        <p>Text input under development</p>
-        // <FormControl id={id}>
-        //     <FormLabel>{label}</FormLabel>
-        //     <ChakraInput
-        //         isRequired={isRequired}
-        //         type="number"
-        //         placeholder={placeholder}
-        //         value={state}
-        //         onChange={(e: ChangeEvent<HTMLInputElement>) => {
-        //             setState(parseFloat(e.target.value))
-        //         }}
-        //     />
-        // </FormControl>
+        <FormField
+            control={form.control}
+            name={id}
+            defaultValue={defaultValue || ''}
+            placeholder={placeholder || ''}
+            render={({ field }) => (
+                <FormItem>
+                    <FormLabel>{label}</FormLabel>
+                    <Input
+                        onChange={field.onChange}
+                        type="number"
+                        placeholder={placeholder}
+                        required={isRequired}
+                    />
+                    <FormMessage />
+                </FormItem>
+            )}
+        />
     )
 }
 
@@ -76,5 +89,25 @@ export const DateInput = (props: DateInputProps) => {
         //         }}
         //     />
         // </FormControl>
+    )
+}
+
+export const TextAreaInput = (props: TextInputProps) => {
+    const { form, label, id, placeholder, isRequired, defaultValue } = props
+    return (
+        <FormField
+            control={form.control}
+            name={id}
+            render={({ field }) => (
+                <FormItem>
+                    <FormLabel>{label}</FormLabel>
+                    <Textarea
+                        onChange={field.onChange}
+                        placeholder={placeholder}
+                    />
+                    <FormMessage />
+                </FormItem>
+            )}
+        />
     )
 }

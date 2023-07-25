@@ -1,12 +1,10 @@
 import React from 'react'
-import Link from 'next/link'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 import { Button } from '../../lib/shadcn/Button'
 import {
     Form,
-    FormControl,
     FormField,
     FormItem,
     FormLabel,
@@ -15,21 +13,13 @@ import {
 import { Transaction, TransactionDate, dummyTransaction } from 'domain-model'
 import { Toast } from '../../lib/shadcn/Toast'
 import { Input } from '../../lib/shadcn/Input'
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from '../../lib/shadcn/Popover'
-import { cn } from '../../helpers/utils'
-import { format } from 'date-fns'
-import { CalendarIcon } from 'lucide-react'
-import { Calendar } from '../../lib/shadcn/Calendar'
 
 // Debug tool
 import { DevTool } from '@hookform/devtools'
-import { Textarea } from '../../lib/shadcn/Textarea'
 import Radio from '../../components/Radio'
 import Select from '../../components/Select'
+import { NumberInput, TextAreaInput, TextInput } from '../../components/Inputs'
+import { DateInput } from '../../components/Calendar'
 
 // For backend fetch
 const baseUrl = `${process.env['NEXT_PUBLIC_BACKEND_URL']}/${process.env['NEXT_PUBLIC_BACKEND_API_BASE']}`
@@ -118,143 +108,43 @@ export default function NewTransaction({
                         defaultValue={transactionCategories[2]}
                     />
 
-                    {/* Origin */}
-                    <FormField
-                        control={form.control}
-                        name="origin"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Origin</FormLabel>
-                                <Input
-                                    onChange={field.onChange}
-                                    type="text"
-                                    placeholder="Origin"
-                                />
-                                <FormMessage />
-                            </FormItem>
-                        )}
+                    <TextInput
+                        id="origin"
+                        form={form}
+                        label="Origin"
+                        placeholder="Origin"
                     />
 
-                    {/* Description */}
-                    <FormField
-                        control={form.control}
-                        name="description"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Description</FormLabel>
-                                <Input
-                                    onChange={field.onChange}
-                                    type="text"
-                                    placeholder="Description"
-                                />
-                                <FormMessage />
-                            </FormItem>
-                        )}
+                    <TextInput
+                        id="description"
+                        form={form}
+                        label="Description"
+                        placeholder="Description"
                     />
 
-                    {/* Date */}
-                    <FormField
-                        control={form.control}
-                        name="date"
-                        render={({ field }) => (
-                            <FormItem className="flex flex-col">
-                                <FormLabel>Date</FormLabel>
-                                <Popover>
-                                    <PopoverTrigger asChild>
-                                        <FormControl>
-                                            <Button
-                                                variant={'outline'}
-                                                className={cn(
-                                                    'w-full pl-3 text-left font-normal',
-                                                    !field.value &&
-                                                        'text-muted-foreground'
-                                                )}
-                                            >
-                                                {field.value ? (
-                                                    format(field.value, 'PPP')
-                                                ) : (
-                                                    <span>Pick a date</span>
-                                                )}
-                                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                            </Button>
-                                        </FormControl>
-                                    </PopoverTrigger>
-                                    <PopoverContent
-                                        className="w-auto p-0"
-                                        align="start"
-                                    >
-                                        <Calendar
-                                            mode="single"
-                                            selected={field.value}
-                                            onSelect={field.onChange}
-                                            disabled={(date) =>
-                                                date > new Date() ||
-                                                date < new Date('1900-01-01')
-                                            }
-                                            initialFocus
-                                        />
-                                    </PopoverContent>
-                                </Popover>
-                                <FormMessage />
-                            </FormItem>
-                        )}
+                    <DateInput id="date" form={form} label="Pick a date" />
+
+                    <NumberInput
+                        id="amount"
+                        form={form}
+                        label="Amount"
+                        placeholder="Manual minus value!"
                     />
 
-                    {/* Amount */}
-                    <FormField
-                        control={form.control}
-                        name="amount"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Amount</FormLabel>
-                                <Input
-                                    onChange={field.onChange}
-                                    type="number"
-                                    // TODO handle minus value
-                                    placeholder="Manual minus value!"
-                                />
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
-                    {/* Currency */}
-                    <FormField
-                        control={form.control}
-                        name="currency"
+                    <TextInput
+                        id="currency"
+                        form={form}
+                        label="Currency"
                         defaultValue="EUR"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Currency</FormLabel>
-                                <Input
-                                    onChange={field.onChange}
-                                    type="text"
-                                    placeholder="Currency"
-                                />
-                                <FormMessage />
-                            </FormItem>
-                        )}
                     />
 
-                    {/* Exchange Rate */}
-                    <FormField
-                        control={form.control}
-                        name="exchangeRate"
+                    <NumberInput
+                        id="exchangeRate"
+                        form={form}
+                        label="Exchange Rate"
                         defaultValue={1}
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Exchange Rate</FormLabel>
-                                <Input
-                                    onChange={field.onChange}
-                                    type="number"
-                                    placeholder="Exchange Rate"
-                                />
-                                <FormMessage />
-                            </FormItem>
-                        )}
                     />
 
-                    {/* Payment Method */}
                     <Select
                         id="paymentMethod"
                         form={form}
@@ -264,7 +154,6 @@ export default function NewTransaction({
                         defaultValue={paymentMethods[1]}
                     />
 
-                    {/* Source Bank Account */}
                     {typeValue === 'expense' && (
                         <Select
                             id="sourceBankAccount"
@@ -276,7 +165,6 @@ export default function NewTransaction({
                         />
                     )}
 
-                    {/* Target Bank Account */}
                     {typeValue === 'income' && (
                         <Select
                             id="targetBankAccount"
@@ -288,7 +176,6 @@ export default function NewTransaction({
                         />
                     )}
 
-                    {/* Tax Category */}
                     <Select
                         id="taxCategory"
                         form={form}
@@ -296,20 +183,11 @@ export default function NewTransaction({
                         options={taxCategories}
                     />
 
-                    {/* Comment */}
-                    <FormField
-                        control={form.control}
-                        name="comment"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Comment</FormLabel>
-                                <Textarea
-                                    onChange={field.onChange}
-                                    placeholder="Comment"
-                                />
-                                <FormMessage />
-                            </FormItem>
-                        )}
+                    <TextAreaInput
+                        id="comment"
+                        form={form}
+                        label="Comment"
+                        placeholder="Comment"
                     />
 
                     <Radio
