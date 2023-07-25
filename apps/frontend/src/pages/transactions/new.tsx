@@ -7,19 +7,11 @@ import { Button } from '../../lib/shadcn/Button'
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
     FormMessage,
 } from '../../lib/shadcn/Form'
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '../../lib/shadcn/Select'
 import { Transaction, TransactionDate, dummyTransaction } from 'domain-model'
 import { Toast } from '../../lib/shadcn/Toast'
 import { Input } from '../../lib/shadcn/Input'
@@ -37,6 +29,7 @@ import { Calendar } from '../../lib/shadcn/Calendar'
 import { DevTool } from '@hookform/devtools'
 import { Textarea } from '../../lib/shadcn/Textarea'
 import Radio from '../../components/Radio'
+import Select from '../../components/Select'
 
 // For backend fetch
 const baseUrl = `${process.env['NEXT_PUBLIC_BACKEND_URL']}/${process.env['NEXT_PUBLIC_BACKEND_API_BASE']}`
@@ -116,41 +109,13 @@ export default function NewTransaction({
                         ]}
                     />
 
-                    {/* Category */}
-                    <FormField
-                        control={form.control}
-                        name="category"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Category</FormLabel>
-                                <Select
-                                    onValueChange={field.onChange}
-                                    // TODO find another solution to set FOOD as a default value
-                                    defaultValue={transactionCategories[2]}
-                                    required
-                                >
-                                    <FormControl>
-                                        <SelectTrigger>
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        {/* TODO */}
-                                        {transactionCategories.map(
-                                            (category) => (
-                                                <SelectItem
-                                                    key={category}
-                                                    value={category}
-                                                >
-                                                    {category}
-                                                </SelectItem>
-                                            )
-                                        )}
-                                    </SelectContent>
-                                </Select>
-                                <FormMessage />
-                            </FormItem>
-                        )}
+                    <Select
+                        id="category"
+                        form={form}
+                        label="Category"
+                        options={transactionCategories}
+                        isRequired
+                        defaultValue={transactionCategories[2]}
                     />
 
                     {/* Origin */}
@@ -290,142 +255,45 @@ export default function NewTransaction({
                     />
 
                     {/* Payment Method */}
-                    <FormField
-                        control={form.control}
-                        name="paymentMethod"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Payment Method</FormLabel>
-                                <Select
-                                    onValueChange={field.onChange}
-                                    // TODO find another solution to set EC as a default value
-                                    defaultValue={paymentMethods[1]}
-                                    required
-                                >
-                                    <FormControl>
-                                        <SelectTrigger>
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        {/* TODO */}
-                                        {paymentMethods.map((method) => (
-                                            <SelectItem
-                                                key={method}
-                                                value={method}
-                                            >
-                                                {method}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <FormMessage />
-                            </FormItem>
-                        )}
+                    <Select
+                        id="paymentMethod"
+                        form={form}
+                        label="Payment Method"
+                        options={paymentMethods}
+                        isRequired
+                        defaultValue={paymentMethods[1]}
                     />
 
                     {/* Source Bank Account */}
                     {typeValue === 'expense' && (
-                        <FormField
-                            control={form.control}
-                            name="sourceBankAccount"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Source Bank Account</FormLabel>
-                                    <Select
-                                        onValueChange={field.onChange}
-                                        // TODO find another solution to set HOME_ACCOUNT as a default value
-                                        defaultValue={bankAccounts[0]}
-                                        required
-                                    >
-                                        <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            {/* TODO */}
-                                            {bankAccounts.map((account) => (
-                                                <SelectItem
-                                                    key={account}
-                                                    value={account}
-                                                >
-                                                    {account}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
+                        <Select
+                            id="sourceBankAccount"
+                            form={form}
+                            label="Source Bank Account"
+                            options={bankAccounts}
+                            isRequired
+                            defaultValue={bankAccounts[0]}
                         />
                     )}
 
                     {/* Target Bank Account */}
                     {typeValue === 'income' && (
-                        <FormField
-                            control={form.control}
-                            name="targetBankAccount"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Target Bank Account</FormLabel>
-                                    <Select
-                                        onValueChange={field.onChange}
-                                        // TODO find another solution to set HOME_ACCOUNT as a default value
-                                        defaultValue={bankAccounts[0]}
-                                        required
-                                    >
-                                        <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            {/* TODO */}
-                                            {bankAccounts.map((account) => (
-                                                <SelectItem
-                                                    key={account}
-                                                    value={account}
-                                                >
-                                                    {account}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
+                        <Select
+                            id="targetBankAccount"
+                            form={form}
+                            label="Target Bank Account"
+                            options={bankAccounts}
+                            isRequired
+                            defaultValue={bankAccounts[0]}
                         />
                     )}
 
                     {/* Tax Category */}
-                    <FormField
-                        control={form.control}
-                        name="taxCategory"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Tax Category</FormLabel>
-                                <Select onValueChange={field.onChange}>
-                                    <FormControl>
-                                        <SelectTrigger>
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        {/* TODO */}
-                                        {taxCategories.map((category) => (
-                                            <SelectItem
-                                                key={category}
-                                                value={category}
-                                            >
-                                                {category}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <FormMessage />
-                            </FormItem>
-                        )}
+                    <Select
+                        id="taxCategory"
+                        form={form}
+                        label="Tax Category"
+                        options={taxCategories}
                     />
 
                     {/* Comment */}

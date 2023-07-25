@@ -6,39 +6,55 @@ import {
     SelectTrigger,
     SelectValue,
 } from '../lib/shadcn/Select'
-import { Label } from '../lib/shadcn/Label'
+import {
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from '../lib/shadcn/Form'
+import { UseFormReturn } from 'react-hook-form'
 
 type SelectProps = {
+    form: UseFormReturn<FormData>
     label: string
     id: string
-    selectedState: string | undefined
-    setSelectedState: (newState: string) => void
+    defaultValue?: string | undefined
     options: string[]
     isRequired?: boolean
 }
 
 export default function Select(props: SelectProps) {
-    const { label, id, selectedState, setSelectedState, options, isRequired } =
-        props
+    const { form, label, id, defaultValue, options, isRequired } = props
 
     return (
-        <ShadcnSelect
-            value={selectedState}
-            onValueChange={setSelectedState}
-            required={isRequired}
-            className="flex"
-        >
-            <Label htmlFor={id}>{label}</Label>
-            <SelectTrigger id={id} className="w-[180px]">
-                <SelectValue placeholder={`Select ${label}`} />
-            </SelectTrigger>
-            <SelectContent>
-                {options.map((option) => (
-                    <SelectItem key={option} value={option}>
-                        {option}
-                    </SelectItem>
-                ))}
-            </SelectContent>
-        </ShadcnSelect>
+        <FormField
+            control={form.control}
+            name={id}
+            render={({ field }) => (
+                <FormItem>
+                    <FormLabel>{label}</FormLabel>
+                    <ShadcnSelect
+                        onValueChange={field.onChange}
+                        defaultValue={defaultValue || ''}
+                        required={isRequired}
+                    >
+                        <FormControl>
+                            <SelectTrigger>
+                                <SelectValue />
+                            </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                            {options.map((option) => (
+                                <SelectItem key={option} value={option}>
+                                    {option}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </ShadcnSelect>
+                    <FormMessage />
+                </FormItem>
+            )}
+        />
     )
 }
