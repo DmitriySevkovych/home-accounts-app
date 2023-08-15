@@ -28,15 +28,14 @@ export const DateInput = (props: DateInputProps) => {
             control={form.control}
             name={id}
             render={({ field }) => (
-                <FormItem className="flex flex-col">
+                <FormItem>
                     <FormLabel>{label}</FormLabel>
                     <Popover>
                         <PopoverTrigger asChild>
                             <FormControl>
                                 <Button
-                                    variant={'outline'}
                                     className={cn(
-                                        'w-full pl-3 text-left font-normal',
+                                        'w-full pl-3 text-left font-normal bg-background-overlay hover:bg-background-overlay',
                                         !field.value && 'text-muted-foreground'
                                     )}
                                 >

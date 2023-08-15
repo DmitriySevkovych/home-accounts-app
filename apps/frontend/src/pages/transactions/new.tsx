@@ -65,22 +65,26 @@ export default function NewTransaction({
     const typeValue = form.watch('type') ? form.watch('type') : 'expense'
 
     return (
-        <div className="p-3">
-            <h1 className="font-bold text-xl mb-6">Create Transaction</h1>
+        <div className="p-3 md:py-8 bg-background text-darkest max-w-4xl mx-auto">
+            <h1 className="font-bold text-xl lg:text-2xl mb-6 lg:mb-12 text-primary">
+                Create Transaction
+            </h1>
             <Form {...form}>
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}
-                    className="w-full space-y-6"
+                    className="w-full space-y-6 lg:grid grid-cols-2 gap-4"
                 >
-                    <Radio
-                        id="type"
-                        form={form}
-                        defaultValue="expense"
-                        options={[
-                            { label: 'Expense', value: 'expense' },
-                            { label: 'Income', value: 'income' },
-                        ]}
-                    />
+                    <div className="lg:col-span-2">
+                        <Radio
+                            id="type"
+                            form={form}
+                            defaultValue="expense"
+                            options={[
+                                { label: 'Expense', value: 'expense' },
+                                { label: 'Income', value: 'income' },
+                            ]}
+                        />
+                    </div>
 
                     <Select
                         id="category"
@@ -166,34 +170,44 @@ export default function NewTransaction({
                         options={taxCategories}
                     />
 
-                    <TextAreaInput
-                        id="comment"
-                        form={form}
-                        label="Comment"
-                        placeholder="Comment"
-                    />
+                    <div className="lg:col-span-2">
+                        <TextAreaInput
+                            id="comment"
+                            form={form}
+                            label="Comment"
+                            placeholder="Comment"
+                        />
+                    </div>
 
-                    <Radio
-                        id="context"
-                        form={form}
-                        defaultValue="home"
-                        options={[
-                            { label: 'None', value: 'home' },
-                            { label: 'Work', value: 'work' },
-                            {
-                                label: 'Investment',
-                                value: 'investment',
-                            },
-                        ]}
-                        label="Select transaction context"
-                    />
+                    <div className="lg:col-span-2">
+                        <Radio
+                            id="context"
+                            form={form}
+                            defaultValue="home"
+                            options={[
+                                { label: 'None', value: 'home' },
+                                { label: 'Work', value: 'work' },
+                                {
+                                    label: 'Investment',
+                                    value: 'investment',
+                                },
+                            ]}
+                            label="Select transaction context"
+                        />
+                    </div>
 
                     {/* TODO Tags */}
 
-                    <Button type="submit">Submit</Button>
+                    <Button
+                        className="flex w-full md:w-auto md:mr-0 md:ml-auto lg:col-span-2"
+                        type="submit"
+                        size={'lg'}
+                    >
+                        Submit
+                    </Button>
                 </form>
             </Form>
-            <DevTool control={form.control} />
+            {/* <DevTool control={form.control} /> */}
         </div>
     )
 }

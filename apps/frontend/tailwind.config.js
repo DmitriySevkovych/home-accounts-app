@@ -14,15 +14,25 @@ module.exports = {
         },
         extend: {
             colors: {
-                border: 'hsl(var(--border))',
-                input: 'hsl(var(--input))',
-                ring: 'hsl(var(--ring))',
-                background: 'hsl(var(--background))',
-                foreground: 'hsl(var(--foreground))',
+                background: {
+                    DEFAULT: 'hsl(var(--background))',
+                    overlay: 'hsl(var(--background-overlay))',
+                },
+                accent: {
+                    DEFAULT: 'hsl(var(--accent))',
+                    secondary: 'hsl(var(--accent-secondary))',
+                },
+                darkest: 'hsl(var(--darkest))',
                 primary: {
                     DEFAULT: 'hsl(var(--primary))',
                     foreground: 'hsl(var(--primary-foreground))',
                 },
+
+                border: 'hsl(var(--border))',
+                input: 'hsl(var(--input))',
+                ring: 'hsl(var(--ring))',
+                foreground: 'hsl(var(--foreground))',
+
                 secondary: {
                     DEFAULT: 'hsl(var(--secondary))',
                     foreground: 'hsl(var(--secondary-foreground))',
@@ -34,10 +44,6 @@ module.exports = {
                 muted: {
                     DEFAULT: 'hsl(var(--muted))',
                     foreground: 'hsl(var(--muted-foreground))',
-                },
-                accent: {
-                    DEFAULT: 'hsl(var(--accent))',
-                    foreground: 'hsl(var(--accent-foreground))',
                 },
                 popover: {
                     DEFAULT: 'hsl(var(--popover))',
