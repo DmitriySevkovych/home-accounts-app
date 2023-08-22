@@ -35,7 +35,7 @@ export const DateInput = (props: DateInputProps) => {
                             <FormControl>
                                 <Button
                                     className={cn(
-                                        'w-full pl-3 text-left font-normal bg-background-overlay hover:bg-background-overlay',
+                                        'w-full pl-3 text-left font-normal bg-background-overlay hover:bg-background-overlay text-darkest',
                                         !field.value && 'text-muted-foreground'
                                     )}
                                 >
