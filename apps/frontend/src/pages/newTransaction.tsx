@@ -1,3 +1,4 @@
+// Types imports from domain-model
 import {
     BankAccount,
     PaymentMethod,
@@ -8,15 +9,19 @@ import {
     TransactionType,
     createTransaction,
 } from 'domain-model'
+
+// React imports
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
+// Components imports
 import Select from '../components/Select'
 import TagInput from '../components/TagInput'
 import { TextInput, NumberInput, DateInput } from '../components/Inputs'
 import Radio from '../components/Radio'
 import { Heading } from '../components/Typography'
 
+// Type of arguments for export function (from getServerSideProps)
 type NewTransactionPageProps = {
     transactionCategories: string[]
     paymentMethods: string[]
@@ -24,6 +29,7 @@ type NewTransactionPageProps = {
     taxCategories: string[]
 }
 
+// For backend fetch
 const baseUrl = `${process.env['NEXT_PUBLIC_BACKEND_URL']}/${process.env['NEXT_PUBLIC_BACKEND_API_BASE']}`
 
 export default function NewTransactionPage({

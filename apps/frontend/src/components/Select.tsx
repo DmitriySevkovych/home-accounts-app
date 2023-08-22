@@ -20,13 +20,12 @@ type SelectProps = {
     form: UseFormReturn<Transaction, any, undefined>
     label: string
     id: keyof Transaction
-    defaultValue?: string | undefined
     options: string[]
     isRequired?: boolean
 }
 
 export default function Select(props: SelectProps) {
-    const { form, label, id, defaultValue, options, isRequired } = props
+    const { form, label, id, options, isRequired } = props
 
     return (
         <FormField
@@ -37,7 +36,7 @@ export default function Select(props: SelectProps) {
                     <FormLabel>{label}</FormLabel>
                     <ShadcnSelect
                         onValueChange={field.onChange}
-                        defaultValue={defaultValue || ''}
+                        value={field.value?.toString()}
                         required={isRequired}
                     >
                         <FormControl>

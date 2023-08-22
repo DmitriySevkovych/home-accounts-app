@@ -45,9 +45,18 @@ export default function NewTransaction({
 }: NewTransactionPageProps) {
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
+        defaultValues: {
+            category: 'HOUSEHOLD',
+            date: new Date(),
+            currency: 'EUR',
+            exchangeRate: 1,
+            paymentMethod: 'EC',
+            context: 'home',
+        },
     })
 
     const onSubmit = (data: z.infer<typeof FormSchema>) => {
+        form
         Toast({
             title: 'You submitted the following values:',
             description: (
@@ -92,7 +101,6 @@ export default function NewTransaction({
                         label="Category"
                         options={transactionCategories}
                         isRequired
-                        defaultValue={transactionCategories[2]}
                     />
 
                     <TextInput
@@ -109,7 +117,7 @@ export default function NewTransaction({
                         placeholder="Description"
                     />
 
-                    <DateInput id="date" form={form} label="Pick a date" />
+                    <DateInput id="date" form={form} label="Transaction date" />
 
                     <NumberInput
                         id="amount"
@@ -138,7 +146,6 @@ export default function NewTransaction({
                         label="Payment Method"
                         options={paymentMethods}
                         isRequired
-                        defaultValue={paymentMethods[1]}
                     />
 
                     {typeValue === 'expense' && (
@@ -148,7 +155,6 @@ export default function NewTransaction({
                             label="Source Bank Account"
                             options={bankAccounts}
                             isRequired
-                            defaultValue={bankAccounts[0]}
                         />
                     )}
 
@@ -159,7 +165,6 @@ export default function NewTransaction({
                             label="Target Bank Account"
                             options={bankAccounts}
                             isRequired
-                            defaultValue={bankAccounts[0]}
                         />
                     )}
 
@@ -207,7 +212,7 @@ export default function NewTransaction({
                     </Button>
                 </form>
             </Form>
-            {/* <DevTool control={form.control} /> */}
+            <DevTool control={form.control} />
         </div>
     )
 }
