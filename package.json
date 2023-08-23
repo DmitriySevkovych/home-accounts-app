@@ -8,9 +8,13 @@
         "format": "prettier --write .",
         "lint": "turbo run lint",
         "test": "turbo run test",
+        "version-packages": "turbo run build lint test && changeset version",
         "containerize": "docker-compose build"
     },
     "devDependencies": {
+        "@changesets/cli": "^2.26.2",
+        "@commitlint/cli": "^17.6.7",
+        "@commitlint/config-conventional": "^17.6.7",
         "@types/is-ci": "^3.0.0",
         "husky": "^8.0.3",
         "is-ci": "^3.0.1",

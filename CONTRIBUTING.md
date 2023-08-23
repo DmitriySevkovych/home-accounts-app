@@ -6,6 +6,7 @@ TODO
 
 ## Version Control (`git` Workflow)
 
+- https://levelup.gitconnected.com/improve-your-commits-and-versioning-in-javascript-56f72c0ab761
 TODO
 
 ## Styleguide (Code Formatting, etc.)
