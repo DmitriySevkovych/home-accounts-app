@@ -218,41 +218,48 @@ export default function NewTransaction({
 }
 
 export async function getServerSideProps() {
-    const transactionCategoriesPromise = fetch(
-        `${baseUrl}/utils/transactionCategories`
-    )
-    const paymentMethodsPromise = fetch(`${baseUrl}/utils/paymentMethods`)
-    const bankAccountsPromise = fetch(`${baseUrl}/utils/bankAccounts`)
-    const taxCategoriesPromise = fetch(`${baseUrl}/utils/taxCategories`)
+    try {
+        // TODO check this for a refactoring: https://dev.to/davidbell_xyz/using-promise-all-with-async-await-to-get-data-from-multiple-endpoints-5baj
+        const transactionCategoriesPromise = fetch(
+            `${baseUrl}/utils/transactionCategories`
+        )
+        const paymentMethodsPromise = fetch(`${baseUrl}/utils/paymentMethods`)
+        const bankAccountsPromise = fetch(`${baseUrl}/utils/bankAccounts`)
+        const taxCategoriesPromise = fetch(`${baseUrl}/utils/taxCategories`)
 
-    const responses = await Promise.all([
-        transactionCategoriesPromise,
-        paymentMethodsPromise,
-        bankAccountsPromise,
-        taxCategoriesPromise,
-    ])
+        const responses = await Promise.all([
+            transactionCategoriesPromise,
+            paymentMethodsPromise,
+            bankAccountsPromise,
+            taxCategoriesPromise,
+        ])
 
-    const data = await Promise.all(responses.map((response) => response.json()))
+        const data = await Promise.all(
+            responses.map((response) => response.json())
+        )
 
-    const transactionCategories: string[] = data[0].map(
-        (obj: TransactionCategory) => obj.category
-    )
-    const paymentMethods: string[] = data[1].map(
-        (obj: PaymentMethod) => obj.method
-    )
-    const bankAccounts: string[] = data[2].map(
-        (obj: BankAccount) => obj.account
-    )
-    const taxCategories: string[] = data[3].map(
-        (obj: TaxCategory) => obj.category
-    )
+        const transactionCategories: string[] = data[0].map(
+            (obj: TransactionCategory) => obj.category
+        )
+        const paymentMethods: string[] = data[1].map(
+            (obj: PaymentMethod) => obj.method
+        )
+        const bankAccounts: string[] = data[2].map(
+            (obj: BankAccount) => obj.account
+        )
+        const taxCategories: string[] = data[3].map(
+            (obj: TaxCategory) => obj.category
+        )
 
-    return {
-        props: {
-            transactionCategories,
-            paymentMethods,
-            bankAccounts,
-            taxCategories,
-        },
+        return {
+            props: {
+                transactionCategories,
+                paymentMethods,
+                bankAccounts,
+                taxCategories,
+            },
+        }
+    } catch (err) {
+        console.log(err)
     }
 }
