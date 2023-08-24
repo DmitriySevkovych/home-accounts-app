@@ -2,21 +2,20 @@ import React from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
-import { Button } from '../../lib/shadcn/Button'
-import { Form } from '../../lib/shadcn/Form'
 import {
     BankAccount,
     PaymentMethod,
     TaxCategory,
     Transaction,
     TransactionCategory,
-    TransactionDate,
-    dummyTransaction,
 } from 'domain-model'
-import { Toast } from '../../lib/shadcn/Toast'
-
 // Debug tool
 import { DevTool } from '@hookform/devtools'
+
+import { Button } from '../../lib/shadcn/Button'
+import { Form } from '../../lib/shadcn/Form'
+import { Toast } from '../../lib/shadcn/Toast'
+
 import Radio from '../../components/Radio'
 import Select from '../../components/Select'
 import { NumberInput, TextAreaInput, TextInput } from '../../components/Inputs'
@@ -126,18 +125,12 @@ export default function NewTransaction({
                         placeholder="Manual minus value!"
                     />
 
-                    <TextInput
-                        id="currency"
-                        form={form}
-                        label="Currency"
-                        defaultValue="EUR"
-                    />
+                    <TextInput id="currency" form={form} label="Currency" />
 
                     <NumberInput
                         id="exchangeRate"
                         form={form}
                         label="Exchange Rate"
-                        defaultValue={1}
                     />
 
                     <Select

@@ -1,6 +1,6 @@
 import React from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { Transaction, TransactionDate } from 'domain-model'
+import { Transaction } from 'domain-model'
 import { FormField, FormItem, FormLabel, FormMessage } from '../lib/shadcn/Form'
 import { Input } from '../lib/shadcn/Input'
 import { Textarea } from '../lib/shadcn/Textarea'
@@ -11,11 +11,6 @@ type InputProps = {
     id: keyof Transaction
     placeholder?: string
     isRequired?: boolean
-}
-
-type DateInputProps = InputProps & {
-    state: TransactionDate
-    setState: (newState: TransactionDate) => void
 }
 
 export const TextInput = (props: InputProps) => {
