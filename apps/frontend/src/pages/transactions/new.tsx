@@ -45,6 +45,7 @@ export default function NewTransaction({
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
+            type: 'expense',
             category: 'HOUSEHOLD',
             date: new Date(),
             currency: 'EUR',
@@ -55,7 +56,7 @@ export default function NewTransaction({
     })
 
     const onSubmit = (data: z.infer<typeof FormSchema>) => {
-        form
+        // TODO shadcn seems to have updated the Toast (and Toaster) component, cf. https://ui.shadcn.com/docs/components/toast
         Toast({
             title: 'You submitted the following values:',
             description: (
@@ -67,10 +68,6 @@ export default function NewTransaction({
             ),
         })
     }
-
-    console.log('form.formState', form.formState)
-
-    const typeValue = form.watch('type') ? form.watch('type') : 'expense'
 
     return (
         <div className="p-3 md:py-8 bg-background text-darkest max-w-4xl mx-auto">
@@ -86,7 +83,6 @@ export default function NewTransaction({
                         <Radio
                             id="type"
                             form={form}
-                            defaultValue="expense"
                             options={[
                                 { label: 'Expense', value: 'expense' },
                                 { label: 'Income', value: 'income' },
@@ -141,7 +137,7 @@ export default function NewTransaction({
                         isRequired
                     />
 
-                    {typeValue === 'expense' && (
+                    {form.watch('type') === 'expense' && (
                         <Select
                             id="sourceBankAccount"
                             form={form}
@@ -151,7 +147,7 @@ export default function NewTransaction({
                         />
                     )}
 
-                    {typeValue === 'income' && (
+                    {form.watch('type') === 'income' && (
                         <Select
                             id="targetBankAccount"
                             form={form}
@@ -181,9 +177,8 @@ export default function NewTransaction({
                         <Radio
                             id="context"
                             form={form}
-                            defaultValue="home"
                             options={[
-                                { label: 'None', value: 'home' },
+                                { label: 'Home', value: 'home' },
                                 { label: 'Work', value: 'work' },
                                 {
                                     label: 'Investment',

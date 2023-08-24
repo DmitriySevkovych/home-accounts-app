@@ -13,7 +13,6 @@ import { Transaction } from 'domain-model'
 type RadioProps = {
     form: UseFormReturn<Transaction, any, undefined>
     id: keyof Transaction
-    defaultValue: string
     options: RadioOption[]
     label?: string
 }
@@ -24,7 +23,7 @@ type RadioOption = {
 }
 
 const Radio: React.FC<RadioProps> = (props: RadioProps) => {
-    const { form, id, defaultValue, options, label } = props
+    const { form, id, options, label } = props
     return (
         <FormField
             control={form.control}
@@ -35,8 +34,7 @@ const Radio: React.FC<RadioProps> = (props: RadioProps) => {
                     <FormControl>
                         <RadioGroup
                             onValueChange={field.onChange}
-                            // TODO handle default value
-                            defaultValue={defaultValue}
+                            value={field.value}
                             className="flex space-x-3"
                         >
                             {options.map((option) => (
