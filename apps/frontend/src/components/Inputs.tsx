@@ -60,6 +60,44 @@ export const NumberInput = (props: InputProps) => {
     )
 }
 
+export const AmountInput = (
+    props: InputProps & { transactionType: 'income' | 'expense' }
+) => {
+    const { form, label, id, placeholder, isRequired, transactionType } = props
+    return (
+        <FormField
+            control={form.control}
+            name={id}
+            render={({ field }) => (
+                <FormItem>
+                    <FormLabel>{label}</FormLabel>
+                    <Input
+                        onChange={(e) => {
+                            if (transactionType === 'expense') {
+                                if (field.value > 0) {
+                                    field.onChange(-1 * e.target.value)
+                                }
+                            }
+                            if (transactionType === 'income') {
+                                if (field.value < 0) {
+                                    field.onChange(-1 * e.target.value)
+                                }
+                            }
+                            field.onChange(e.target.value)
+                        }}
+                        type="number"
+                        // TODO fix type mismatch warning
+                        value={field.value}
+                        placeholder={placeholder || ''}
+                        required={isRequired}
+                    />
+                    <FormMessage />
+                </FormItem>
+            )}
+        />
+    )
+}
+
 export const TextAreaInput = (props: InputProps) => {
     const { form, label, id, placeholder } = props
     return (

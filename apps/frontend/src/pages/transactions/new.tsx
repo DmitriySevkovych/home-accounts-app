@@ -13,7 +13,12 @@ import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 
 import { DateInput } from '../../components/Calendar'
-import { NumberInput, TextAreaInput, TextInput } from '../../components/Inputs'
+import {
+    AmountInput,
+    NumberInput,
+    TextAreaInput,
+    TextInput,
+} from '../../components/Inputs'
 import Radio from '../../components/Radio'
 import Select from '../../components/Select'
 import Tags from '../../components/Tags'
@@ -48,6 +53,7 @@ export default function NewTransaction({
             type: 'expense',
             category: 'HOUSEHOLD',
             date: new Date(),
+            amount: '', //TODO fix this
             currency: 'EUR',
             exchangeRate: 1,
             paymentMethod: 'EC',
@@ -118,11 +124,14 @@ export default function NewTransaction({
 
                     <DateInput id="date" form={form} label="Transaction date" />
 
-                    <NumberInput
+                    <AmountInput
                         id="amount"
                         form={form}
                         label="Amount"
-                        placeholder="Manual minus value!"
+                        transactionType={form.watch('type')}
+                        placeholder={`Please enter ${form.watch(
+                            'type'
+                        )} amount`}
                     />
 
                     <TextInput id="currency" form={form} label="Currency" />
