@@ -26,7 +26,9 @@ a {
         --background-overlay: 223, 16%, 88%;
         --popover: 223, 16%, 88%;
         --accent: 356, 95%, 73%;
-        --accent-secondary: 223, 22%, 62%;
+        --secondary: 223, 22%, 62%;
+        --secondary-lighter: 223, 22%, 76%;
+        --secondary-foreground: 210 40% 98%;
         --darkest: 221, 30%, 41%;
         --primary: 356, 100%, 67%;
         --primary-foreground: 210 40% 98%;
@@ -44,9 +46,6 @@ a {
 
         --card: 0 0% 100%;
         --card-foreground: 222.2 47.4% 11.2%;
-
-        --secondary: 210 40% 96.1%;
-        --secondary-foreground: 222.2 47.4% 11.2%;
 
         --accent-foreground: 222.2 47.4% 11.2%;
 

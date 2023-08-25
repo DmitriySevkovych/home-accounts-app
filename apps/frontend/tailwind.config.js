@@ -20,7 +20,6 @@ module.exports = {
                 },
                 accent: {
                     DEFAULT: 'hsl(var(--accent))',
-                    secondary: 'hsl(var(--accent-secondary))',
                 },
                 darkest: 'hsl(var(--darkest))',
                 primary: {
@@ -36,6 +35,7 @@ module.exports = {
                 secondary: {
                     DEFAULT: 'hsl(var(--secondary))',
                     foreground: 'hsl(var(--secondary-foreground))',
+                    lighter: 'hsl(var(--secondary-lighter))',
                 },
                 destructive: {
                     DEFAULT: 'hsl(var(--destructive))',

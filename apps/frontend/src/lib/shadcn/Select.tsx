@@ -1,8 +1,8 @@
 'use client'
 
-import * as React from 'react'
 import * as SelectPrimitive from '@radix-ui/react-select'
 import { Check, ChevronDown } from 'lucide-react'
+import * as React from 'react'
 
 import { cn } from '../../helpers/utils'
 
@@ -19,7 +19,7 @@ const SelectTrigger = React.forwardRef<
     <SelectPrimitive.Trigger
         ref={ref}
         className={cn(
-            'flex h-10 w-full items-center justify-between rounded-md border border-input bg-background-overlay px-3 py-2 text-sm ring-offset-background placeholder:text-darkest focus:outline-none focus:ring-accent-secondary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+            'flex h-10 w-full items-center justify-between rounded-md border border-input bg-background-overlay px-3 py-2 text-sm ring-offset-background placeholder:text-darkest focus:outline-none focus:ring-secondary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
             className
         )}
         {...props}
