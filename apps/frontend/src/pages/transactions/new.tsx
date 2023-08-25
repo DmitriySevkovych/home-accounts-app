@@ -1,7 +1,6 @@
-import React from 'react'
+// Debug tool
+import { DevTool } from '@hookform/devtools'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import * as z from 'zod'
 import {
     BankAccount,
     PaymentMethod,
@@ -9,17 +8,18 @@ import {
     Transaction,
     TransactionCategory,
 } from 'domain-model'
-// Debug tool
-import { DevTool } from '@hookform/devtools'
+import React from 'react'
+import { useForm } from 'react-hook-form'
+import * as z from 'zod'
 
+import { DateInput } from '../../components/Calendar'
+import { NumberInput, TextAreaInput, TextInput } from '../../components/Inputs'
+import Radio from '../../components/Radio'
+import Select from '../../components/Select'
+import Tags from '../../components/Tags'
 import { Button } from '../../lib/shadcn/Button'
 import { Form } from '../../lib/shadcn/Form'
 import { Toast } from '../../lib/shadcn/Toast'
-
-import Radio from '../../components/Radio'
-import Select from '../../components/Select'
-import { NumberInput, TextAreaInput, TextInput } from '../../components/Inputs'
-import { DateInput } from '../../components/Calendar'
 
 // For backend fetch
 const baseUrl = `${process.env['NEXT_PUBLIC_BACKEND_URL']}/${process.env['NEXT_PUBLIC_BACKEND_API_BASE']}`
@@ -52,6 +52,7 @@ export default function NewTransaction({
             exchangeRate: 1,
             paymentMethod: 'EC',
             context: 'home',
+            tags: [],
         },
     })
 
@@ -76,7 +77,10 @@ export default function NewTransaction({
             </h1>
             <Form {...form}>
                 <form
-                    onSubmit={form.handleSubmit(onSubmit)}
+                    onSubmit={(e) => {
+                        e.preventDefault()
+                        form.handleSubmit(onSubmit)
+                    }}
                     className="w-full space-y-6 lg:grid grid-cols-2 gap-4"
                 >
                     <div className="lg:col-span-2">
@@ -189,7 +193,9 @@ export default function NewTransaction({
                         />
                     </div>
 
-                    {/* TODO Tags */}
+                    <div className="lg:col-span-2">
+                        <Tags id="tags" form={form} label="Tags" />
+                    </div>
 
                     <Button
                         className="flex w-full md:w-auto md:mr-0 md:ml-auto lg:col-span-2"
@@ -200,7 +206,7 @@ export default function NewTransaction({
                     </Button>
                 </form>
             </Form>
-            <DevTool control={form.control} />
+            {/* <DevTool control={form.control} /> */}
         </div>
     )
 }
