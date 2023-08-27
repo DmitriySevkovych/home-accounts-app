@@ -5,8 +5,9 @@ import {
     BankAccount,
     PaymentMethod,
     TaxCategory,
-    Transaction,
     TransactionCategory,
+    TransactionDate,
+    createTransaction,
 } from 'domain-model'
 import React from 'react'
 import { useForm } from 'react-hook-form'
@@ -69,7 +70,7 @@ export default function NewTransaction({
             type: 'expense',
             category: 'HOUSEHOLD',
             date: new Date(),
-            amount: '', //TODO fix this
+            // amount: undefined, //TODO fix this
             currency: 'EUR',
             exchangeRate: 1,
             paymentMethod: 'EC',
@@ -79,30 +80,72 @@ export default function NewTransaction({
     })
 
     const onSubmit = async (data: z.infer<typeof TransactionFormSchema>) => {
+        const {
+            type,
+            category,
+            origin,
+            description,
+            amount,
+            tags,
+            date,
+            comment,
+            currency,
+            exchangeRate,
+            context,
+            paymentMethod,
+            sourceBankAccount,
+            targetBankAccount,
+            taxCategory,
+        } = data
+        const builder = createTransaction()
+            .about(category, origin, description)
+            .withType(type)
+            .withAmount(amount)
+            .withCurrency(currency, exchangeRate)
+            .withDate(TransactionDate.fromISO(date.toISOString())) // TODO cleanup
+            .withContext(context)
+            .withAgent('test-agent') // TODO agent should be the logged in user, once there is a login
+            .addTags(tags)
 
-        const response = await fetch(`${baseUrl}/transactions`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        })
-        if (response.status === 201) {
-            // TODO shadcn seems to have updated the Toast (and Toaster) component, cf. https://ui.shadcn.com/docs/components/toast
-            Toast({
-                title: 'A new transaction has been created! You submitted the following values:',
-                description: (
-                    <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-                        <code className="text-white">
-                            {JSON.stringify(data, null, 2)}
-                        </code>
-                    </pre>
-                ),
+        if (comment) builder.withComment(comment)
+        if (taxCategory) builder.withTaxCategory(taxCategory)
+        if (type === 'expense' && sourceBankAccount) {
+            builder.withPaymentFrom(paymentMethod, sourceBankAccount)
+        } else if (type === 'income' && targetBankAccount) {
+            builder.withPaymentTo(paymentMethod, targetBankAccount)
+        }
+
+        const transaction = builder.validate().build()
+
+        try {
+            const response = await fetch(`${baseUrl}/transactions`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(transaction),
             })
-            // router.push('/')
-        } else {
-            // TODO shadcn seems to have updated the Toast (and Toaster) component, cf. https://ui.shadcn.com/docs/components/toast
-            Toast({ title: `Something when wrong! Received ${response.status} ${response.statusText}` })
+            if (response.status === 201) {
+                // TODO shadcn seems to have updated the Toast (and Toaster) component, cf. https://ui.shadcn.com/docs/components/toast
+                Toast({
+                    title: 'A new transaction has been created! You submitted the following values:',
+                    description: (
+                        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+                            <code className="text-white">
+                                {JSON.stringify(data, null, 2)}
+                            </code>
+                        </pre>
+                    ),
+                })
+                // router.push('/')
+            } else {
+                // TODO shadcn seems to have updated the Toast (and Toaster) component, cf. https://ui.shadcn.com/docs/components/toast
+                Toast({
+                    title: `Something when wrong! Received ${response.status} ${response.statusText}`,
+                })
+            }
+        } catch (error) {
+            console.log(error)
         }
     }
 
@@ -221,8 +264,8 @@ export default function NewTransaction({
                                 { label: 'Home', value: 'home' },
                                 { label: 'Work', value: 'work' },
                                 {
-                                    label: 'Investment',
-                                    value: 'investment',
+                                    label: 'Investments',
+                                    value: 'investments',
                                 },
                             ]}
                             label="Select transaction context"
