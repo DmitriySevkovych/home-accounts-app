@@ -6,7 +6,7 @@ import { Input } from '../lib/shadcn/Input'
 import { Textarea } from '../lib/shadcn/Textarea'
 
 type InputProps = {
-    form: UseFormReturn<Transaction, any, undefined>
+    form: UseFormReturn<any, any, undefined>
     label: string
     id: keyof Transaction
     placeholder?: string

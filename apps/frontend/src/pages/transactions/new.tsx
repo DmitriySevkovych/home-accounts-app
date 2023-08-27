@@ -37,9 +37,25 @@ type NewTransactionPageProps = {
     taxCategories: string[]
 }
 
-const FormSchema = z.instanceof(Transaction)
-
-// FormSchema.refine()
+// TODO add validation texts
+const TransactionFormSchema = z.object({
+    type: z.enum(['expense', 'income']),
+    category: z.string(),
+    origin: z.string(),
+    description: z.string(),
+    date: z.date(),
+    // date: z.string().datetime(),
+    amount: z.coerce.number(),
+    currency: z.string().length(3),
+    exchangeRate: z.coerce.number(),
+    paymentMethod: z.string(),
+    sourceBankAccount: z.optional(z.string()),
+    targetBankAccount: z.optional(z.string()),
+    taxCategory: z.optional(z.string()),
+    comment: z.optional(z.string()),
+    context: z.enum(['home', 'work', 'investments']),
+    tags: z.string().array(),
+})
 
 export default function NewTransaction({
     transactionCategories,
@@ -47,8 +63,8 @@ export default function NewTransaction({
     bankAccounts,
     taxCategories,
 }: NewTransactionPageProps) {
-    const form = useForm<z.infer<typeof FormSchema>>({
-        resolver: zodResolver(FormSchema),
+    const form = useForm<z.infer<typeof TransactionFormSchema>>({
+        resolver: zodResolver(TransactionFormSchema),
         defaultValues: {
             type: 'expense',
             category: 'HOUSEHOLD',
@@ -62,8 +78,7 @@ export default function NewTransaction({
         },
     })
 
-    const onSubmit = async (data: z.infer<typeof FormSchema>) => {
-        alert('hi')
+    const onSubmit = async (data: z.infer<typeof TransactionFormSchema>) => {
 
         const response = await fetch(`${baseUrl}/transactions`, {
             method: 'POST',
@@ -98,10 +113,7 @@ export default function NewTransaction({
             </h1>
             <Form {...form}>
                 <form
-                    onSubmit={(e) => {
-                        e.preventDefault()
-                        form.handleSubmit(onSubmit)
-                    }}
+                    onSubmit={form.handleSubmit(onSubmit)}
                     className="w-full space-y-6 lg:grid grid-cols-2 gap-4"
                 >
                     <div className="lg:col-span-2">

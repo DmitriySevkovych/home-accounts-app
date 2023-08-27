@@ -16,7 +16,7 @@ import { CalendarIcon } from 'lucide-react'
 import { Calendar } from '../lib/shadcn/Calendar'
 
 type DateInputProps = {
-    form: UseFormReturn<Transaction, any, undefined>
+    form: UseFormReturn<any, any, undefined>
     label: string
     id: keyof Transaction
 }

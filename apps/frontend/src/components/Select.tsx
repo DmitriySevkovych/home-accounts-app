@@ -17,7 +17,7 @@ import { UseFormReturn } from 'react-hook-form'
 import { Transaction } from 'domain-model'
 
 type SelectProps = {
-    form: UseFormReturn<Transaction, any, undefined>
+    form: UseFormReturn<any, any, undefined>
     label: string
     id: keyof Transaction
     options: string[]

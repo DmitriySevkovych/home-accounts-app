@@ -11,7 +11,7 @@ import { RadioGroup, RadioGroupItem } from '../lib/shadcn/Radio'
 import { Transaction } from 'domain-model'
 
 type RadioProps = {
-    form: UseFormReturn<Transaction, any, undefined>
+    form: UseFormReturn<any, any, undefined>
     id: keyof Transaction
     options: RadioOption[]
     label?: string

@@ -8,7 +8,7 @@ import { FormField, FormItem, FormLabel } from '../lib/shadcn/Form'
 import { Input } from '../lib/shadcn/Input'
 
 type TagsProps = {
-    form: UseFormReturn<Transaction, any, undefined>
+    form: UseFormReturn<any, any, undefined>
     label: string
     id: keyof Transaction
 }
