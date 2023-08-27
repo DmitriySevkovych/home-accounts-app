@@ -62,18 +62,33 @@ export default function NewTransaction({
         },
     })
 
-    const onSubmit = (data: z.infer<typeof FormSchema>) => {
-        // TODO shadcn seems to have updated the Toast (and Toaster) component, cf. https://ui.shadcn.com/docs/components/toast
-        Toast({
-            title: 'You submitted the following values:',
-            description: (
-                <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-                    <code className="text-white">
-                        {JSON.stringify(data, null, 2)}
-                    </code>
-                </pre>
-            ),
+    const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+        alert('hi')
+
+        const response = await fetch(`${baseUrl}/transactions`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
         })
+        if (response.status === 201) {
+            // TODO shadcn seems to have updated the Toast (and Toaster) component, cf. https://ui.shadcn.com/docs/components/toast
+            Toast({
+                title: 'A new transaction has been created! You submitted the following values:',
+                description: (
+                    <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+                        <code className="text-white">
+                            {JSON.stringify(data, null, 2)}
+                        </code>
+                    </pre>
+                ),
+            })
+            // router.push('/')
+        } else {
+            // TODO shadcn seems to have updated the Toast (and Toaster) component, cf. https://ui.shadcn.com/docs/components/toast
+            Toast({ title: `Something when wrong! Received ${response.status} ${response.statusText}` })
+        }
     }
 
     return (
