@@ -2,17 +2,17 @@ import { Transaction, TransactionDate, createTransaction } from 'domain-model'
 import { getLogger } from 'logger'
 import type { Pool, PoolClient } from 'pg'
 
-import {
-    insertTransactionDAO,
-    insertTransactionDetailsDAO,
-} from './transactions.queries'
+import { NoRecordFoundInDatabaseError } from '../../../helpers/errors'
+import { PaginationOptions } from '../../../helpers/pagination'
 import {
     TagDAO,
     getTagsByExpenseOrIncomeId,
     insertTagDAO,
 } from './tags.queries'
-import { PaginationOptions } from '../../../helpers/pagination'
-import { NoRecordFoundInDatabaseError } from '../../../helpers/errors'
+import {
+    insertTransactionDAO,
+    insertTransactionDetailsDAO,
+} from './transactions.queries'
 
 type TransactionCashflow = 'expense' | 'income'
 
@@ -142,7 +142,7 @@ export const insertTransaction = async (
         return id
     } catch (e) {
         await client.query('ROLLBACK')
-        logger.trace(
+        logger.warn(
             `Something went wrong while inserting a new domain-model transaction. Database transaction has been rolled back.`
         )
         throw e
