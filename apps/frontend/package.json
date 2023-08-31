@@ -6,6 +6,7 @@
         "build": "next build",
         "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf .next",
         "dev": "next dev -p 8080",
+        "dev:https": "next dev -p 8081 | npx local-ssl-proxy --key cert/localhost-key.pem --cert cert/localhost-cert.pem --source 8080 --target 8081",
         "lint": "next lint",
         "start": "next start "
     },
