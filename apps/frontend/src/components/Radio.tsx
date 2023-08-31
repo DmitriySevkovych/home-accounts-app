@@ -1,5 +1,7 @@
+import { Transaction } from 'domain-model'
 import React from 'react'
 import { UseFormReturn } from 'react-hook-form'
+
 import {
     FormControl,
     FormField,
@@ -8,7 +10,6 @@ import {
     FormMessage,
 } from '../lib/shadcn/Form'
 import { RadioGroup, RadioGroupItem } from '../lib/shadcn/Radio'
-import { Transaction } from 'domain-model'
 
 type RadioProps = {
     form: UseFormReturn<any, any, undefined>
@@ -30,7 +31,7 @@ const Radio: React.FC<RadioProps> = (props: RadioProps) => {
             name={id}
             render={({ field }) => (
                 <FormItem className="space-y-3">
-                    {label && <FormLabel>Select transaction context</FormLabel>}
+                    {label && <FormLabel>{label}</FormLabel>}
                     <FormControl>
                         <RadioGroup
                             onValueChange={field.onChange}

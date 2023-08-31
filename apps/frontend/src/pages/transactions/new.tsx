@@ -68,15 +68,17 @@ export default function NewTransaction({
         resolver: zodResolver(TransactionFormSchema),
         defaultValues: {
             type: 'expense',
+            context: 'home',
             category: 'HOUSEHOLD',
             date: new Date(),
             currency: 'EUR',
             exchangeRate: 1,
             paymentMethod: 'EC',
-            context: 'home',
             tags: [],
         },
     })
+
+    const transactionType = form.watch('type')
 
     const onSubmit = async (data: z.infer<typeof TransactionFormSchema>) => {
         const {
@@ -166,6 +168,23 @@ export default function NewTransaction({
                                 { label: 'Expense', value: 'expense' },
                                 { label: 'Income', value: 'income' },
                             ]}
+                            label="Transaction type"
+                        />
+                    </div>
+
+                    <div className="lg:col-span-2">
+                        <Radio
+                            id="context"
+                            form={form}
+                            options={[
+                                { label: 'Home', value: 'home' },
+                                { label: 'Work', value: 'work' },
+                                {
+                                    label: 'Investments',
+                                    value: 'investments',
+                                },
+                            ]}
+                            label="Transaction context"
                         />
                     </div>
 
@@ -181,14 +200,14 @@ export default function NewTransaction({
                         id="origin"
                         form={form}
                         label="Origin"
-                        placeholder="Origin"
+                        placeholder={`Where did the ${transactionType} occur?`}
                     />
 
                     <TextInput
                         id="description"
                         form={form}
                         label="Description"
-                        placeholder="Description"
+                        placeholder={`What characterizes the ${transactionType}?`}
                     />
 
                     <DateInput id="date" form={form} label="Transaction date" />
@@ -198,9 +217,7 @@ export default function NewTransaction({
                         form={form}
                         label="Amount"
                         transactionType={form.watch('type')}
-                        placeholder={`Please enter ${form.watch(
-                            'type'
-                        )} amount`}
+                        placeholder={`Please enter ${transactionType} amount`}
                     />
 
                     <TextInput id="currency" form={form} label="Currency" />
@@ -219,7 +236,7 @@ export default function NewTransaction({
                         isRequired
                     />
 
-                    {form.watch('type') === 'expense' && (
+                    {transactionType === 'expense' && (
                         <Select
                             id="sourceBankAccount"
                             form={form}
@@ -229,7 +246,7 @@ export default function NewTransaction({
                         />
                     )}
 
-                    {form.watch('type') === 'income' && (
+                    {transactionType === 'income' && (
                         <Select
                             id="targetBankAccount"
                             form={form}
@@ -251,23 +268,7 @@ export default function NewTransaction({
                             id="comment"
                             form={form}
                             label="Comment"
-                            placeholder="Comment"
-                        />
-                    </div>
-
-                    <div className="lg:col-span-2">
-                        <Radio
-                            id="context"
-                            form={form}
-                            options={[
-                                { label: 'Home', value: 'home' },
-                                { label: 'Work', value: 'work' },
-                                {
-                                    label: 'Investments',
-                                    value: 'investments',
-                                },
-                            ]}
-                            label="Select transaction context"
+                            placeholder="Comment on why the money is moving, e.g. 'Verwendungszweck'"
                         />
                     </div>
 
