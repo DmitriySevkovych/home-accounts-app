@@ -70,7 +70,6 @@ export default function NewTransaction({
             type: 'expense',
             category: 'HOUSEHOLD',
             date: new Date(),
-            // amount: undefined, //TODO fix this
             currency: 'EUR',
             exchangeRate: 1,
             paymentMethod: 'EC',

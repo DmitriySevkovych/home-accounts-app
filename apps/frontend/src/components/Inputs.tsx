@@ -1,6 +1,7 @@
+import { Transaction } from 'domain-model'
 import React from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { Transaction } from 'domain-model'
+
 import { FormField, FormItem, FormLabel, FormMessage } from '../lib/shadcn/Form'
 import { Input } from '../lib/shadcn/Input'
 import { Textarea } from '../lib/shadcn/Textarea'
@@ -24,7 +25,7 @@ export const TextInput = (props: InputProps) => {
                     <FormLabel>{label}</FormLabel>
                     <Input
                         onChange={field.onChange}
-                        value={field.value?.toString()}
+                        value={field.value?.toString() || ''}
                         type="text"
                         placeholder={placeholder}
                         required={isRequired}
@@ -48,9 +49,8 @@ export const NumberInput = (props: InputProps) => {
                     <Input
                         onChange={field.onChange}
                         type="number"
-                        // TODO fix type mismatch warning
-                        value={field.value}
-                        placeholder={placeholder || ''}
+                        value={field.value || ''}
+                        placeholder={placeholder}
                         required={isRequired}
                     />
                     <FormMessage />
@@ -86,9 +86,8 @@ export const AmountInput = (
                             field.onChange(e.target.value)
                         }}
                         type="number"
-                        // TODO fix type mismatch warning
-                        value={field.value}
-                        placeholder={placeholder || ''}
+                        value={field.value || ''}
+                        placeholder={placeholder}
                         required={isRequired}
                     />
                     <FormMessage />
