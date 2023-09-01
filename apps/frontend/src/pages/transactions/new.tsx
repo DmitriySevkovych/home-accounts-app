@@ -14,12 +14,7 @@ import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 
 import { DateInput } from '../../components/Calendar'
-import {
-    AmountInput,
-    NumberInput,
-    TextAreaInput,
-    TextInput,
-} from '../../components/Inputs'
+import { NumberInput, TextAreaInput, TextInput } from '../../components/Inputs'
 import Radio from '../../components/Radio'
 import Select from '../../components/Select'
 import Tags from '../../components/Tags'
@@ -82,6 +77,16 @@ export default function NewTransaction({
 
     const { toast } = useToast()
 
+    const withSign = (amount: number): number => {
+        if (transactionType === 'expense' && amount > 0) {
+            return -1 * amount
+        }
+        if (transactionType === 'income' && amount < 0) {
+            return -1 * amount
+        }
+        return amount
+    }
+
     const onSubmit = async (data: z.infer<typeof TransactionFormSchema>) => {
         const {
             type,
@@ -103,7 +108,7 @@ export default function NewTransaction({
         const builder = createTransaction()
             .about(category, origin, description)
             .withType(type)
-            .withAmount(amount)
+            .withAmount(withSign(amount))
             .withCurrency(currency, exchangeRate)
             .withDate(TransactionDate.fromISO(date.toISOString())) // TODO cleanup
             .withContext(context)
@@ -212,11 +217,10 @@ export default function NewTransaction({
 
                     <DateInput id="date" form={form} label="Transaction date" />
 
-                    <AmountInput
+                    <NumberInput
                         id="amount"
                         form={form}
                         label="Amount"
-                        transactionType={form.watch('type')}
                         placeholder={`Please enter ${transactionType} amount`}
                     />
 
