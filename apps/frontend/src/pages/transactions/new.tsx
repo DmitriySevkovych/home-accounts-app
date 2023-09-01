@@ -25,7 +25,7 @@ import Select from '../../components/Select'
 import Tags from '../../components/Tags'
 import { Button } from '../../lib/shadcn/Button'
 import { Form } from '../../lib/shadcn/Form'
-import { Toast } from '../../lib/shadcn/Toast'
+import { useToast } from '../../lib/shadcn/use-toast'
 
 // For backend fetch
 const baseUrl = `${process.env['NEXT_PUBLIC_BACKEND_URL']}/${process.env['NEXT_PUBLIC_BACKEND_API_BASE']}`
@@ -80,6 +80,8 @@ export default function NewTransaction({
 
     const transactionType = form.watch('type')
 
+    const { toast } = useToast()
+
     const onSubmit = async (data: z.infer<typeof TransactionFormSchema>) => {
         const {
             type,
@@ -127,8 +129,7 @@ export default function NewTransaction({
                 body: JSON.stringify(transaction),
             })
             if (response.status === 201) {
-                // TODO shadcn seems to have updated the Toast (and Toaster) component, cf. https://ui.shadcn.com/docs/components/toast
-                Toast({
+                toast({
                     title: 'A new transaction has been created! You submitted the following values:',
                     description: (
                         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
@@ -140,8 +141,7 @@ export default function NewTransaction({
                 })
                 // router.push('/')
             } else {
-                // TODO shadcn seems to have updated the Toast (and Toaster) component, cf. https://ui.shadcn.com/docs/components/toast
-                Toast({
+                toast({
                     title: `Something when wrong! Received ${response.status} ${response.statusText}`,
                 })
             }
