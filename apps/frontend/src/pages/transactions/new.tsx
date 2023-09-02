@@ -26,7 +26,7 @@ import { Form } from '../../lib/shadcn/Form'
 import { useToast } from '../../lib/shadcn/use-toast'
 
 // For backend fetch
-const baseUrl = `${process.env['NEXT_PUBLIC_BACKEND_URL']}/${process.env['NEXT_PUBLIC_BACKEND_API_BASE']}`
+const backendBaseUrl = `${process.env['NEXT_PUBLIC_BACKEND_URL']}/${process.env['NEXT_PUBLIC_BACKEND_API_BASE']}`
 
 // Type of arguments for export function (from getServerSideProps)
 type NewTransactionPageProps = {
@@ -109,7 +109,7 @@ const NewTransactionPage = ({
         const transaction = builder.validate().build()
 
         try {
-            const response = await fetch(`${baseUrl}/transactions`, {
+            const response = await fetch(`${backendBaseUrl}/transactions`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -281,11 +281,17 @@ export async function getServerSideProps() {
     try {
         // TODO check this for a refactoring: https://dev.to/davidbell_xyz/using-promise-all-with-async-await-to-get-data-from-multiple-endpoints-5baj
         const transactionCategoriesPromise = fetch(
-            `${baseUrl}/utils/transactionCategories`
+            `${backendBaseUrl}/utils/transactionCategories`
         )
-        const paymentMethodsPromise = fetch(`${baseUrl}/utils/paymentMethods`)
-        const bankAccountsPromise = fetch(`${baseUrl}/utils/bankAccounts`)
-        const taxCategoriesPromise = fetch(`${baseUrl}/utils/taxCategories`)
+        const paymentMethodsPromise = fetch(
+            `${backendBaseUrl}/utils/paymentMethods`
+        )
+        const bankAccountsPromise = fetch(
+            `${backendBaseUrl}/utils/bankAccounts`
+        )
+        const taxCategoriesPromise = fetch(
+            `${backendBaseUrl}/utils/taxCategories`
+        )
 
         const responses = await Promise.all([
             transactionCategoriesPromise,
