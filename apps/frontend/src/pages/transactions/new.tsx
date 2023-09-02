@@ -11,13 +11,16 @@ import {
 } from 'domain-model'
 import React from 'react'
 import { useForm } from 'react-hook-form'
-import * as z from 'zod'
 
 import { DateInput } from '../../components/Calendar'
 import { NumberInput, TextAreaInput, TextInput } from '../../components/Inputs'
 import Radio from '../../components/Radio'
 import Select from '../../components/Select'
 import Tags from '../../components/Tags'
+import {
+    type NewTransactionForm,
+    NewTransactionFormSchema,
+} from '../../helpers/zod-form-schemas'
 import { Button } from '../../lib/shadcn/Button'
 import { Form } from '../../lib/shadcn/Form'
 import { useToast } from '../../lib/shadcn/use-toast'
@@ -33,34 +36,14 @@ type NewTransactionPageProps = {
     taxCategories: string[]
 }
 
-// TODO add validation texts
-const TransactionFormSchema = z.object({
-    type: z.enum(['expense', 'income']),
-    category: z.string(),
-    origin: z.string(),
-    description: z.string(),
-    date: z.date(),
-    // date: z.string().datetime(),
-    amount: z.coerce.number(),
-    currency: z.string().length(3),
-    exchangeRate: z.coerce.number(),
-    paymentMethod: z.string(),
-    sourceBankAccount: z.optional(z.string()),
-    targetBankAccount: z.optional(z.string()),
-    taxCategory: z.optional(z.string()),
-    comment: z.optional(z.string()),
-    context: z.enum(['home', 'work', 'investments']),
-    tags: z.string().array(),
-})
-
-export default function NewTransaction({
+const NewTransactionPage = ({
     transactionCategories,
     paymentMethods,
     bankAccounts,
     taxCategories,
-}: NewTransactionPageProps) {
-    const form = useForm<z.infer<typeof TransactionFormSchema>>({
-        resolver: zodResolver(TransactionFormSchema),
+}: NewTransactionPageProps) => {
+    const form = useForm<NewTransactionForm>({
+        resolver: zodResolver(NewTransactionFormSchema),
         defaultValues: {
             type: 'expense',
             context: 'home',
@@ -87,7 +70,7 @@ export default function NewTransaction({
         return amount
     }
 
-    const onSubmit = async (data: z.infer<typeof TransactionFormSchema>) => {
+    const onSubmit = async (data: NewTransactionForm) => {
         const {
             type,
             category,
@@ -340,3 +323,5 @@ export async function getServerSideProps() {
         console.log(err)
     }
 }
+
+export default NewTransactionPage
