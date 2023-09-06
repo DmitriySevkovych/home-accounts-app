@@ -16,7 +16,7 @@ import { DateInput } from '../../components/Calendar'
 import { NumberInput, TextAreaInput, TextInput } from '../../components/Inputs'
 import Radio from '../../components/Radio'
 import Select from '../../components/Select'
-import Tags from '../../components/Tags'
+import TagsManager from '../../components/TagsManager'
 import {
     type NewTransactionForm,
     NewTransactionFormSchema,
@@ -260,7 +260,7 @@ const NewTransactionPage = ({
                     </div>
 
                     <div className="lg:col-span-2">
-                        <Tags id="tags" form={form} label="Tags" />
+                        <TagsManager id="tags" form={form} label="Tags" />
                     </div>
 
                     <Button

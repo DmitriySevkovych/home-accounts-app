@@ -7,13 +7,13 @@ import { Button } from '../lib/shadcn/Button'
 import { FormField, FormItem, FormLabel } from '../lib/shadcn/Form'
 import { Input } from '../lib/shadcn/Input'
 
-type TagsProps = {
+type TagsManagerProps = {
     id: keyof NewTransactionForm
     form: UseFormReturn<any, any, undefined>
     label: string
 }
 
-const Tags = (props: TagsProps) => {
+const TagsManager = (props: TagsManagerProps) => {
     const [newTag, setNewTag] = useState<string>('')
 
     const { form, label, id } = props
@@ -91,4 +91,4 @@ const Tags = (props: TagsProps) => {
     )
 }
 
-export default Tags
+export default TagsManager
