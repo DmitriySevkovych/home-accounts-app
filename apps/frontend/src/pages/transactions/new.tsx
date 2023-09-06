@@ -10,7 +10,7 @@ import {
     createTransaction,
 } from 'domain-model'
 import React from 'react'
-import { useForm } from 'react-hook-form'
+import { type SubmitHandler, useForm } from 'react-hook-form'
 
 import { DateInput } from '../../components/Calendar'
 import { NumberInput, TextAreaInput, TextInput } from '../../components/Inputs'
@@ -42,18 +42,20 @@ const NewTransactionPage = ({
     bankAccounts,
     taxCategories,
 }: NewTransactionPageProps) => {
+    const formDefaultValues: Partial<NewTransactionForm> = {
+        type: 'expense',
+        context: 'home',
+        category: 'HOUSEHOLD',
+        date: new Date(),
+        currency: 'EUR',
+        exchangeRate: 1,
+        paymentMethod: 'EC',
+        tags: [],
+    }
+
     const form = useForm<NewTransactionForm>({
         resolver: zodResolver(NewTransactionFormSchema),
-        defaultValues: {
-            type: 'expense',
-            context: 'home',
-            category: 'HOUSEHOLD',
-            date: new Date(),
-            currency: 'EUR',
-            exchangeRate: 1,
-            paymentMethod: 'EC',
-            tags: [],
-        },
+        defaultValues: formDefaultValues,
     })
 
     const transactionType = form.watch('type')
@@ -70,7 +72,7 @@ const NewTransactionPage = ({
         return amount
     }
 
-    const onSubmit = async (data: NewTransactionForm) => {
+    const onSubmit: SubmitHandler<NewTransactionForm> = async (data) => {
         const {
             type,
             category,
@@ -127,6 +129,7 @@ const NewTransactionPage = ({
                         </pre>
                     ),
                 })
+                form.reset(formDefaultValues)
                 // router.push('/')
             } else {
                 toast({
