@@ -1,16 +1,16 @@
-import { Transaction } from 'domain-model'
 import React, { useState } from 'react'
-import { UseFormReturn } from 'react-hook-form'
+import { ControllerRenderProps, UseFormReturn } from 'react-hook-form'
 
+import { NewTransactionForm } from '../helpers/zod-form-schemas'
 import { Badge } from '../lib/shadcn/Badge'
 import { Button } from '../lib/shadcn/Button'
 import { FormField, FormItem, FormLabel } from '../lib/shadcn/Form'
 import { Input } from '../lib/shadcn/Input'
 
 type TagsProps = {
+    id: keyof NewTransactionForm
     form: UseFormReturn<any, any, undefined>
     label: string
-    id: keyof Transaction
 }
 
 const Tags = (props: TagsProps) => {
@@ -20,7 +20,9 @@ const Tags = (props: TagsProps) => {
 
     const resetInput = () => setNewTag('')
 
-    const addTag = (field) => {
+    const addTag = (
+        field: ControllerRenderProps<any, keyof NewTransactionForm>
+    ) => {
         if (!newTag) return
 
         if (field.value.includes(newTag)) {
