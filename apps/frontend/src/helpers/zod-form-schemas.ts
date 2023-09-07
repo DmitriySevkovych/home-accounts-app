@@ -20,4 +20,28 @@ export const NewTransactionFormSchema = z.object({
     tags: z.string().array(),
 })
 
+// TransactionFormSchema.transform(t => {
+//     if (t.amount > 0 && t.type === "expense") {
+//         t.amount = -1 * t.amount
+//     } else if (t.amount < 0 && t.type === "income") {
+//         t.amount = -1 * t.amount
+//     }
+//     return t
+// })
+NewTransactionFormSchema.superRefine((form, ctx) => {
+    // Amount check
+    // TODO
+
+    // Bank accounts checks
+    // TODO
+
+    // Currency and exchange rate check
+    if (form.currency === 'EUR' && form.exchangeRate !== 1) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'The currency EUR should always have exchange rate 1.',
+        })
+    }
+})
+
 export type NewTransactionForm = z.infer<typeof NewTransactionFormSchema>
