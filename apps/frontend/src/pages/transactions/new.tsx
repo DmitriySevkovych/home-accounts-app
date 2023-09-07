@@ -30,10 +30,10 @@ const backendBaseUrl = `${process.env['NEXT_PUBLIC_BACKEND_URL']}/${process.env[
 
 // Type of arguments for export function (from getServerSideProps)
 type NewTransactionPageProps = {
-    transactionCategories: string[]
-    paymentMethods: string[]
-    bankAccounts: string[]
-    taxCategories: string[]
+    transactionCategories: TransactionCategory[]
+    taxCategories: TaxCategory[]
+    paymentMethods: PaymentMethod[]
+    bankAccounts: BankAccount[]
 }
 
 const NewTransactionPage = ({
@@ -183,7 +183,9 @@ const NewTransactionPage = ({
                         id="category"
                         form={form}
                         label="Category"
-                        options={transactionCategories}
+                        options={transactionCategories.map(
+                            (obj) => obj.category
+                        )}
                         isRequired
                     />
 
@@ -222,7 +224,7 @@ const NewTransactionPage = ({
                         id="paymentMethod"
                         form={form}
                         label="Payment Method"
-                        options={paymentMethods}
+                        options={paymentMethods.map((obj) => obj.method)}
                         isRequired
                     />
 
@@ -231,7 +233,7 @@ const NewTransactionPage = ({
                             id="sourceBankAccount"
                             form={form}
                             label="Source Bank Account"
-                            options={bankAccounts}
+                            options={bankAccounts.map((obj) => obj.account)}
                             isRequired
                         />
                     )}
@@ -241,7 +243,7 @@ const NewTransactionPage = ({
                             id="targetBankAccount"
                             form={form}
                             label="Target Bank Account"
-                            options={bankAccounts}
+                            options={bankAccounts.map((obj) => obj.account)}
                             isRequired
                         />
                     )}
@@ -250,7 +252,7 @@ const NewTransactionPage = ({
                         id="taxCategory"
                         form={form}
                         label="Tax Category"
-                        options={taxCategories}
+                        options={taxCategories.map((obj) => obj.category)}
                     />
 
                     <div className="lg:col-span-2">
@@ -282,50 +284,15 @@ const NewTransactionPage = ({
 
 export async function getServerSideProps() {
     try {
-        // TODO check this for a refactoring: https://dev.to/davidbell_xyz/using-promise-all-with-async-await-to-get-data-from-multiple-endpoints-5baj
-        const transactionCategoriesPromise = fetch(
-            `${backendBaseUrl}/utils/transactionCategories`
-        )
-        const paymentMethodsPromise = fetch(
-            `${backendBaseUrl}/utils/paymentMethods`
-        )
-        const bankAccountsPromise = fetch(
-            `${backendBaseUrl}/utils/bankAccounts`
-        )
-        const taxCategoriesPromise = fetch(
-            `${backendBaseUrl}/utils/taxCategories`
+        const response = await fetch(
+            `${backendBaseUrl}/utils/constants/transactions`
         )
 
-        const responses = await Promise.all([
-            transactionCategoriesPromise,
-            paymentMethodsPromise,
-            bankAccountsPromise,
-            taxCategoriesPromise,
-        ])
-
-        const data = await Promise.all(
-            responses.map((response) => response.json())
-        )
-
-        const transactionCategories: string[] = data[0].map(
-            (obj: TransactionCategory) => obj.category
-        )
-        const paymentMethods: string[] = data[1].map(
-            (obj: PaymentMethod) => obj.method
-        )
-        const bankAccounts: string[] = data[2].map(
-            (obj: BankAccount) => obj.account
-        )
-        const taxCategories: string[] = data[3].map(
-            (obj: TaxCategory) => obj.category
-        )
+        const constants = await response.json()
 
         return {
             props: {
-                transactionCategories,
-                paymentMethods,
-                bankAccounts,
-                taxCategories,
+                ...constants,
             },
         }
     } catch (err) {

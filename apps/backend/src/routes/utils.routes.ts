@@ -1,5 +1,6 @@
 import express, { type Router } from 'express'
 import { getHttpLogger } from 'logger'
+
 import { RepositoryLocator } from '../db/repositoryLocator'
 
 const getRouter = (): Router => {
@@ -28,6 +29,17 @@ const getRouter = (): Router => {
     router.get('/bankAccounts', async (req, res) => {
         httpLogger(req, res)
         const data = await repository.getBankAccounts()
+        res.status(200).json(data)
+    })
+
+    router.get('/constants/transactions', async (req, res) => {
+        httpLogger(req, res)
+        const data = {
+            transactionCategories: await repository.getTransactionCategories(),
+            taxCategories: await repository.getTaxCategories(),
+            paymentMethods: await repository.getPaymentMethods(),
+            bankAccounts: await repository.getBankAccounts(),
+        }
         res.status(200).json(data)
     })
 

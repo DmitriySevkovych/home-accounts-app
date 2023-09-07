@@ -8,6 +8,8 @@ GET https://localhost:8090/api/v1/utils/taxCategories
 GET https://localhost:8090/api/v1/utils/paymentMethods
 ###
 GET https://localhost:8090/api/v1/utils/bankAccounts
+###
+GET https://localhost:8090/api/v1/utils/constants/transactions
 
 ### Transactions routes
 ### Batch get
