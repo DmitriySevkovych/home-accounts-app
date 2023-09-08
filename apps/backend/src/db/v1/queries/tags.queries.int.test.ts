@@ -3,7 +3,7 @@ import type { Pool } from 'pg'
 import { PostgresRepository } from '../postgresRepository'
 import * as tagsQueries from './tags.queries'
 
-describe('', () => {
+describe('Database queries for handling tags', () => {
     let connectionPool: Pool
     beforeAll(() => {
         const repository = new PostgresRepository()
