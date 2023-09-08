@@ -208,12 +208,14 @@ class TransactionBuilder {
             targetBankAccount,
             agent,
             type,
+            context,
         } = this.transaction
 
         this._throwIfFalsy('category', category)
         this._throwIfFalsy('origin', origin)
         this._throwIfFalsy('amount', amount)
         this._throwIfFalsy('type', type)
+        this._throwIfFalsy('context', context)
         this._throwIfFalsy('payment method', paymentMethod)
         this._throwIfFalsy('agent', agent)
         this._throwIfFalsy(
@@ -304,10 +306,13 @@ export const deserializeTransaction = (data: any) => {
         agent,
         tags,
         type,
+        context,
     } = data
 
     const transaction: Transaction = createTransaction()
         .about(category, origin, description)
+        .withType(type)
+        .withContext(context)
         .withAmount(amount)
         .withCurrency(currency, exchangeRate)
         .withDate(TransactionDate.deserialize(date))
@@ -315,7 +320,6 @@ export const deserializeTransaction = (data: any) => {
         .withComment(comment)
         .withAgent(agent)
         .withId(id)
-        .withType(type)
         .addTags(tags)
         .validate()
         .build()

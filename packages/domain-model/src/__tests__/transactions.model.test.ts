@@ -2,7 +2,6 @@
     @group unit
     @group domain
  */
-
 import { TransactionDate } from '../dates.model'
 import { TransactionValidationError } from '../errors.model'
 import {
@@ -49,6 +48,7 @@ describe('Transactions tests', () => {
             .withDate(TransactionDate.today())
             .withPaymentTo('TRANSFER', 'HOME_ACCOUNT')
             .withType('income')
+            .withContext('home')
         // Act
         const transaction = transactionBuilder.validate().build()
         // Assert
@@ -117,6 +117,7 @@ describe('Transactions tests', () => {
             tags: ['Test', 'Tag'],
             agent: 'Testbot',
             type: 'expense',
+            context: 'home',
         }
         // Act
         const transaction = deserializeTransaction(receivedRequestBody)
@@ -139,6 +140,8 @@ describe('Transactions tests', () => {
             paymentMethod: 'EC',
             sourceBankAccount: 'HOME_ACCOUNT',
             agent: 'Testbot',
+            type: 'expense',
+            context: 'home',
         }
         // Act
         const deserialization = () => {
