@@ -1,11 +1,7 @@
+import { Transaction } from 'domain-model'
 import React from 'react'
-import {
-    Select as ShadcnSelect,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '../lib/shadcn/Select'
+import { UseFormReturn } from 'react-hook-form'
+
 import {
     FormControl,
     FormField,
@@ -13,19 +9,23 @@ import {
     FormLabel,
     FormMessage,
 } from '../lib/shadcn/Form'
-import { UseFormReturn } from 'react-hook-form'
-import { Transaction } from 'domain-model'
+import {
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+    Select as ShadcnSelect,
+} from '../lib/shadcn/Select'
 
 type SelectProps = {
     form: UseFormReturn<any, any, undefined>
     label: string
     id: keyof Transaction
     options: string[]
-    isRequired?: boolean
 }
 
 export default function Select(props: SelectProps) {
-    const { form, label, id, options, isRequired } = props
+    const { form, label, id, options } = props
 
     return (
         <FormField
@@ -37,7 +37,6 @@ export default function Select(props: SelectProps) {
                     <ShadcnSelect
                         onValueChange={field.onChange}
                         value={field.value?.toString()}
-                        required={isRequired}
                     >
                         <FormControl>
                             <SelectTrigger>

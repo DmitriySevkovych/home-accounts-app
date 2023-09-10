@@ -186,7 +186,6 @@ const NewTransactionPage = ({
                         options={transactionCategories.map(
                             (obj) => obj.category
                         )}
-                        isRequired
                     />
 
                     <TextInput
@@ -225,7 +224,6 @@ const NewTransactionPage = ({
                         form={form}
                         label="Payment Method"
                         options={paymentMethods.map((obj) => obj.method)}
-                        isRequired
                     />
 
                     {transactionType === 'expense' && (
@@ -234,7 +232,6 @@ const NewTransactionPage = ({
                             form={form}
                             label="Source Bank Account"
                             options={bankAccounts.map((obj) => obj.account)}
-                            isRequired
                         />
                     )}
 
@@ -244,7 +241,6 @@ const NewTransactionPage = ({
                             form={form}
                             label="Target Bank Account"
                             options={bankAccounts.map((obj) => obj.account)}
-                            isRequired
                         />
                     )}
 
