@@ -14,7 +14,10 @@ export const NewTransactionFormSchema = z
         amount: z.coerce
             .number()
             .refine((val) => val !== 0, { message: 'Amount cannot be 0' }),
-        currency: z.string().length(3),
+        currency: z
+            .string()
+            .length(3)
+            .transform((val) => val.toUpperCase()),
         exchangeRate: z.coerce.number(),
         paymentMethod: z.string(),
         sourceBankAccount: z.optional(z.string()),
