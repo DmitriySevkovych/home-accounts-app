@@ -23,7 +23,7 @@ const Congrats = () => {
                 {heading}
             </h1>
             <Image
-                className="rounded-full"
+                className="rounded-full border-4 border-primary-foreground"
                 width="480"
                 height="480"
                 alt="Money well spent!"
