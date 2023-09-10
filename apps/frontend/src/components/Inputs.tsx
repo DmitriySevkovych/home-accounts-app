@@ -1,21 +1,21 @@
-import { Transaction } from 'domain-model'
 import React from 'react'
-import { UseFormReturn } from 'react-hook-form'
+import { type UseFormReturn } from 'react-hook-form'
 
+import { NewTransactionForm } from '../helpers/zod-form-schemas'
 import { FormField, FormItem, FormLabel, FormMessage } from '../lib/shadcn/Form'
 import { Input } from '../lib/shadcn/Input'
 import { Textarea } from '../lib/shadcn/Textarea'
 
 type InputProps = {
-    form: UseFormReturn<any, any, undefined>
+    id: keyof NewTransactionForm
+    form: UseFormReturn<any>
     label: string
-    id: keyof Transaction
     placeholder?: string
-    isRequired?: boolean
 }
 
-export const TextInput = (props: InputProps) => {
-    const { form, label, id, placeholder, isRequired } = props
+export const TextInput: React.FC<InputProps> = (props) => {
+    const { form, label, id, placeholder } = props
+
     return (
         <FormField
             control={form.control}
@@ -28,7 +28,6 @@ export const TextInput = (props: InputProps) => {
                         value={field.value?.toString() || ''}
                         type="text"
                         placeholder={placeholder}
-                        required={isRequired}
                     />
                     <FormMessage />
                 </FormItem>
@@ -37,8 +36,8 @@ export const TextInput = (props: InputProps) => {
     )
 }
 
-export const NumberInput = (props: InputProps) => {
-    const { form, label, id, placeholder, isRequired } = props
+export const NumberInput: React.FC<InputProps> = (props) => {
+    const { form, label, id, placeholder } = props
     return (
         <FormField
             control={form.control}
@@ -51,7 +50,6 @@ export const NumberInput = (props: InputProps) => {
                         type="number"
                         value={field.value || ''}
                         placeholder={placeholder}
-                        required={isRequired}
                     />
                     <FormMessage />
                 </FormItem>
@@ -60,7 +58,7 @@ export const NumberInput = (props: InputProps) => {
     )
 }
 
-export const TextAreaInput = (props: InputProps) => {
+export const TextAreaInput: React.FC<InputProps> = (props) => {
     const { form, label, id, placeholder } = props
     return (
         <FormField

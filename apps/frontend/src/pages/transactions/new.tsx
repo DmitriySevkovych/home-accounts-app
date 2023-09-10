@@ -62,16 +62,6 @@ const NewTransactionPage = ({
 
     const { toast } = useToast()
 
-    const withSign = (amount: number): number => {
-        if (transactionType === 'expense' && amount > 0) {
-            return -1 * amount
-        }
-        if (transactionType === 'income' && amount < 0) {
-            return -1 * amount
-        }
-        return amount
-    }
-
     const onSubmit: SubmitHandler<NewTransactionForm> = async (data) => {
         const {
             type,
@@ -93,7 +83,7 @@ const NewTransactionPage = ({
         const builder = createTransaction()
             .about(category, origin, description)
             .withType(type)
-            .withAmount(withSign(amount))
+            .withAmount(amount)
             .withCurrency(currency, exchangeRate)
             .withDate(date)
             .withContext(context)

@@ -17,7 +17,7 @@ describe('Zod NewTransactionFormSchema tests', () => {
         // Arrange
         const data = minimalDummyTransaction('FOOD', 0)
         // Act
-        const validation = () => NewTransactionFormSchema.safeParse(data)
+        const validation = () => NewTransactionFormSchema.parse(data)
         // Assert
         expect(validation).toThrow(ZodError)
     })
@@ -30,6 +30,7 @@ describe('Zod NewTransactionFormSchema tests', () => {
         // Arrange
         const data = minimalDummyTransaction('FOOD', amount)
         data.type = 'expense'
+        data.sourceBankAccount = 'VALID_ACCOUNT'
         // Act
         const transaction = NewTransactionFormSchema.parse(data)
         // Assert
@@ -44,6 +45,7 @@ describe('Zod NewTransactionFormSchema tests', () => {
         // Arrange
         const data = minimalDummyTransaction('FOOD', amount)
         data.type = 'income'
+        data.targetBankAccount = 'VALID_ACCOUNT'
         // Act
         const transaction = NewTransactionFormSchema.parse(data)
         // Assert
