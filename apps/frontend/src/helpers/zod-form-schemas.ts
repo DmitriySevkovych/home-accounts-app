@@ -5,6 +5,7 @@ import { z } from 'zod'
 export const NewTransactionFormSchema = z
     .object({
         type: z.enum(['expense', 'income']),
+        context: z.enum(['home', 'work', 'investments']),
         category: z.string(),
         origin: z.string(),
         description: z.string(),
@@ -24,7 +25,6 @@ export const NewTransactionFormSchema = z
         targetBankAccount: z.optional(z.string()),
         taxCategory: z.optional(z.string()),
         comment: z.optional(z.string()),
-        context: z.enum(['home', 'work', 'investments']),
         tags: z.string().array(),
     })
     .transform((form) => {
