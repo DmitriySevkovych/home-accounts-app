@@ -1,13 +1,13 @@
-import type { Pool } from 'pg'
-
-import { PostgresRepository } from '../postgresRepository'
-import * as utilsQueries from './utils.queries'
 import {
     BankAccount,
     PaymentMethod,
     TaxCategory,
     TransactionCategory,
 } from 'domain-model'
+import type { Pool } from 'pg'
+
+import { PostgresRepository } from '../postgresRepository'
+import * as utilsQueries from './utils.queries'
 
 /*
     @group integration
@@ -33,6 +33,7 @@ describe('Database queries targeting the utils schema', () => {
         expect(result).toBeInstanceOf(Array)
         result.forEach((item: TransactionCategory) => {
             expect(item.category).toBeDefined()
+            expect(item.allowedTypes.length).toBeGreaterThan(0)
         })
     })
 

@@ -1,15 +1,15 @@
 import {
-    minimalDummyTransaction,
     BankAccount,
     PaymentMethod,
     TaxCategory,
     Transaction,
     TransactionCategory,
+    minimalDummyTransaction,
 } from 'domain-model'
 
-import { Repository } from '../repository'
-import { PaginationOptions } from '../../helpers/pagination'
 import { NoRecordFoundInDatabaseError } from '../../helpers/errors'
+import { PaginationOptions } from '../../helpers/pagination'
+import { Repository } from '../repository'
 
 export class StubbedRepository implements Repository {
     static CREATED_TRANSACTION_ID = 1234
@@ -21,12 +21,33 @@ export class StubbedRepository implements Repository {
     getTransactionCategories = (): Promise<TransactionCategory[]> => {
         return new Promise((resolve) => {
             resolve([
-                { category: 'FOOD', description: 'Stubbed repository' },
-                { category: 'HOUSEHOLD', description: 'Stubbed repository' },
-                { category: 'TRANSPORTATION' },
-                { category: 'BEAUTY', description: 'Stubbed repository' },
-                { category: 'LEISURE' },
-                { category: 'VACATION', description: 'Stubbed repository' },
+                {
+                    category: 'FOOD',
+                    allowedTypes: ['expense'],
+                    description: 'Stubbed repository',
+                },
+                {
+                    category: 'HOUSEHOLD',
+                    allowedTypes: ['expense'],
+                    description: 'Stubbed repository',
+                },
+                { category: 'TRANSPORTATION', allowedTypes: ['expense'] },
+                {
+                    category: 'BEAUTY',
+                    allowedTypes: ['expense'],
+                    description: 'Stubbed repository',
+                },
+                { category: 'LEISURE', allowedTypes: ['expense'] },
+                {
+                    category: 'VACATION',
+                    allowedTypes: ['expense'],
+                    description: 'Stubbed repository',
+                },
+                {
+                    category: 'SALARY',
+                    allowedTypes: ['income', 'expense'],
+                    description: 'Stubbed repository',
+                },
             ])
         })
     }

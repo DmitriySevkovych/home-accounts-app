@@ -12,6 +12,7 @@ export type PickAndFlatten<T, K extends keyof T> = UnionToIntersection<T[K]>
 // Types for utility data - TODO extract to somewhere else...
 export type TransactionCategory = {
     category: string
+    allowedTypes: TransactionType[]
     description?: string
 }
 
