@@ -9,6 +9,7 @@ import {
     TransactionDate,
     createTransaction,
 } from 'domain-model'
+import { useRouter } from 'next/router'
 import React from 'react'
 import { type SubmitHandler, useForm } from 'react-hook-form'
 
@@ -17,6 +18,7 @@ import { NumberInput, TextAreaInput, TextInput } from '../../components/Inputs'
 import Radio from '../../components/Radio'
 import Select from '../../components/Select'
 import TagsManager from '../../components/TagsManager'
+import { PAGES } from '../../helpers/pages'
 import {
     type NewTransactionForm,
     NewTransactionFormSchema,
@@ -61,6 +63,8 @@ const NewTransactionPage = ({
     const transactionType = form.watch('type')
 
     const { toast } = useToast()
+
+    const router = useRouter()
 
     const onSubmit: SubmitHandler<NewTransactionForm> = async (data) => {
         const {
@@ -118,9 +122,12 @@ const NewTransactionPage = ({
                             </code>
                         </pre>
                     ),
+                    duration: 3000,
                 })
-                form.reset(formDefaultValues)
-                // router.push('/')
+                // form.reset()
+                router.push(
+                    `${PAGES.transactions.success}?transactionType=${transactionType}`
+                )
             } else {
                 toast({
                     title: `Something when wrong! Received ${response.status} ${response.statusText}`,
@@ -263,7 +270,7 @@ const NewTransactionPage = ({
                     </Button>
                 </form>
             </Form>
-            {/* <DevTool control={form.control} /> */}
+            <DevTool control={form.control} />
         </div>
     )
 }

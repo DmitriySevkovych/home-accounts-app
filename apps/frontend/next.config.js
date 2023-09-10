@@ -17,4 +17,7 @@ module.exports = withPWA({
     // Next.js config
     reactStrictMode: true,
     output: 'standalone',
+    images: {
+        domains: ['media1.giphy.com', 'media4.giphy.com'],
+    },
 })
