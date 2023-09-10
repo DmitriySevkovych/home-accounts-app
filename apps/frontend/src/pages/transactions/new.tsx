@@ -180,9 +180,11 @@ const NewTransactionPage = ({
                         id="category"
                         form={form}
                         label="Category"
-                        options={transactionCategories.map(
-                            (obj) => obj.category
-                        )}
+                        options={transactionCategories
+                            .filter((cat) =>
+                                cat.allowedTypes.includes(transactionType)
+                            )
+                            .map((obj) => obj.category)}
                     />
 
                     <TextInput
