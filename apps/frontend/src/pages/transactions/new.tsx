@@ -12,7 +12,7 @@ import {
 import React from 'react'
 import { type SubmitHandler, useForm } from 'react-hook-form'
 
-import { DateInput } from '../../components/Calendar'
+import { Calendar } from '../../components/Calendar'
 import { NumberInput, TextAreaInput, TextInput } from '../../components/Inputs'
 import Radio from '../../components/Radio'
 import Select from '../../components/Select'
@@ -46,7 +46,7 @@ const NewTransactionPage = ({
         type: 'expense',
         context: 'home',
         category: 'HOUSEHOLD',
-        date: new Date(),
+        date: TransactionDate.today(),
         currency: 'EUR',
         exchangeRate: 1,
         paymentMethod: 'EC',
@@ -95,7 +95,7 @@ const NewTransactionPage = ({
             .withType(type)
             .withAmount(withSign(amount))
             .withCurrency(currency, exchangeRate)
-            .withDate(TransactionDate.fromISO(date.toISOString())) // TODO cleanup
+            .withDate(date)
             .withContext(context)
             .withAgent('test-agent') // TODO agent should be the logged in user, once there is a login
             .addTags(tags)
@@ -202,7 +202,7 @@ const NewTransactionPage = ({
                         placeholder={`What characterizes the ${transactionType}?`}
                     />
 
-                    <DateInput id="date" form={form} label="Transaction date" />
+                    <Calendar id="date" form={form} label="Transaction date" />
 
                     <NumberInput
                         id="amount"

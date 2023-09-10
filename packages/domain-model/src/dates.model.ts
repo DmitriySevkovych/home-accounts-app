@@ -59,4 +59,8 @@ export class TransactionDate {
     toString = (): string => {
         return this.datetime.toFormat(TransactionDate.format)
     }
+
+    toWords = (): string => {
+        return this.datetime.toFormat('dd LLL yyyy')
+    }
 }

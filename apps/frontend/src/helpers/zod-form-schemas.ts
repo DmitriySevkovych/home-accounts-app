@@ -1,3 +1,4 @@
+import { TransactionDate } from 'domain-model'
 import { z } from 'zod'
 
 // TODO add validation texts
@@ -6,9 +7,10 @@ export const NewTransactionFormSchema = z.object({
     category: z.string(),
     origin: z.string(),
     description: z.string(),
-    date: z.date(),
-    // date: z.string().datetime(),
-    amount: z.coerce.number(),
+    date: z.coerce.date().transform((val) => TransactionDate.fromJsDate(val)),
+    amount: z.coerce
+        .number()
+        .refine((val) => val !== 0, { message: 'Amount cannot be 0' }),
     currency: z.string().length(3),
     exchangeRate: z.coerce.number(),
     paymentMethod: z.string(),
