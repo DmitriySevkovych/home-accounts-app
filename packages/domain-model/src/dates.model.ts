@@ -1,4 +1,5 @@
 import { DateTime } from 'luxon'
+
 import { TransactionValidationError } from './errors.model'
 
 /* Resources:
@@ -19,6 +20,10 @@ export class TransactionDate {
 
     static fromISO = (isoDateString: string): TransactionDate => {
         return new TransactionDate(DateTime.fromISO(isoDateString))
+    }
+
+    static fromJsDate(date: Date) {
+        return TransactionDate.fromISO(date.toISOString())
     }
 
     static fromString = (
