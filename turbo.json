@@ -29,6 +29,12 @@
             "persistent": true,
             "dotEnv": [".env.local", ".env"]
         },
+        "dev:stage": {
+            "dependsOn": ["^build"],
+            "cache": false,
+            "persistent": true,
+            "dotEnv": [".env.stage.local", ".env"]
+        },
         "clean": {
             "cache": false
         }
