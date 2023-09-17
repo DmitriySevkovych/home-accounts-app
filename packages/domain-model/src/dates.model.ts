@@ -1,4 +1,5 @@
 import { DateTime } from 'luxon'
+
 import { TransactionValidationError } from './errors.model'
 
 /* Resources:
@@ -15,6 +16,14 @@ export class TransactionDate {
 
     static today = (): TransactionDate => {
         return new TransactionDate(DateTime.now())
+    }
+
+    static fromISO = (isoDateString: string): TransactionDate => {
+        return new TransactionDate(DateTime.fromISO(isoDateString))
+    }
+
+    static fromJsDate(date: Date) {
+        return TransactionDate.fromISO(date.toISOString())
     }
 
     static fromString = (
@@ -34,7 +43,7 @@ export class TransactionDate {
     }
 
     static fromDatabase = (dateString: string): TransactionDate => {
-        return new TransactionDate(DateTime.fromISO(dateString))
+        return TransactionDate.fromISO(dateString)
     }
 
     static formatDateColumn = (column: string): string => {
@@ -49,5 +58,9 @@ export class TransactionDate {
 
     toString = (): string => {
         return this.datetime.toFormat(TransactionDate.format)
+    }
+
+    toWords = (): string => {
+        return this.datetime.toFormat('dd LLL yyyy')
     }
 }

@@ -5,7 +5,7 @@ import { TransactionDate } from '../dates.model'
     @group domain
  */
 describe('Tests for dealing with dates', () => {
-    it("should create today's date sting in YYYY-MM-DD format", () => {
+    it("should create today's date string in YYYY-MM-DD format", () => {
         // Arrange
         const expectedDateString = new Date().toISOString().split('T')[0]
         // Act
@@ -15,7 +15,7 @@ describe('Tests for dealing with dates', () => {
         expect(todayDateString).toBe(expectedDateString)
     })
 
-    it('should not change a date sting in YYYY-MM-DD format', () => {
+    it('should not change a date string in YYYY-MM-DD format', () => {
         // Arrange
         const expectedDateString = '2023-06-04'
         // Act
@@ -24,7 +24,7 @@ describe('Tests for dealing with dates', () => {
         expect(date.toString()).toBe(expectedDateString)
     })
 
-    it('should create a date sting in YYYY-MM-DD format from a date string in a different format', () => {
+    it('should create a date string in YYYY-MM-DD format from a date string in a different format', () => {
         // Arrange
         const expectedDateString = '2023-06-04'
         // Act
@@ -33,11 +33,30 @@ describe('Tests for dealing with dates', () => {
         expect(date.toString()).toBe(expectedDateString)
     })
 
-    it('should create a date sting in YYYY-MM-DD format when date is queried from a database table', () => {
+    it('should create a date string in YYYY-MM-DD format when date is queried from a database table', () => {
         // Arrange
         const expectedDateString = '2023-06-04'
         // Act
         const date = TransactionDate.fromDatabase('2023-06-04')
+        // Assert
+        expect(date.toString()).toBe(expectedDateString)
+    })
+
+    it('should create a date string in YYYY-MM-DD format from a JS Date object', () => {
+        // Arrange
+        const jsDate = new Date('1995-12-17T03:24:00')
+        const expectedDateString = '1995-12-17'
+        // Act
+        const date = TransactionDate.fromJsDate(jsDate)
+        // Assert
+        expect(date.toString()).toBe(expectedDateString)
+    })
+
+    it('should create a date string in YYYY-MM-DD format from an ISO String', () => {
+        // Arrange
+        const expectedDateString = '2023-09-10'
+        // Act
+        const date = TransactionDate.fromISO('2023-09-10T04:10:22.258Z')
         // Assert
         expect(date.toString()).toBe(expectedDateString)
     })

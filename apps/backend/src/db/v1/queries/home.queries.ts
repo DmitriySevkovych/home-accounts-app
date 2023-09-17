@@ -2,17 +2,17 @@ import { Transaction, TransactionDate, createTransaction } from 'domain-model'
 import { getLogger } from 'logger'
 import type { Pool, PoolClient } from 'pg'
 
-import {
-    insertTransactionDAO,
-    insertTransactionDetailsDAO,
-} from './transactions.queries'
+import { NoRecordFoundInDatabaseError } from '../../../helpers/errors'
+import { PaginationOptions } from '../../../helpers/pagination'
 import {
     TagDAO,
     getTagsByExpenseOrIncomeId,
     insertTagDAO,
 } from './tags.queries'
-import { PaginationOptions } from '../../../helpers/pagination'
-import { NoRecordFoundInDatabaseError } from '../../../helpers/errors'
+import {
+    insertTransactionDAO,
+    insertTransactionDetailsDAO,
+} from './transactions.queries'
 
 type TransactionCashflow = 'expense' | 'income'
 
@@ -33,16 +33,16 @@ export const getTransactions = async (
     const query = {
         name: `select-home-transactions`,
         text: `
-            SELECT 
+            SELECT
                 h.id as home_id, h.type as category, h.origin, h.description,
                 tr.id, tr.amount, ${dateColumn} as date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
-                td.payment_method, td.tax_category, td.comment 
-            FROM 
+                td.payment_method, td.tax_category, td.comment
+            FROM
             (
-                SELECT * FROM home.expenses 
-                UNION ALL 
+                SELECT * FROM home.expenses
+                UNION ALL
                 SELECT * FROM home.income
-            ) h 
+            ) h
             JOIN transactions.transactions tr ON h.transaction_id = tr.id
             JOIN transactions.transaction_details td ON tr.id = td.transaction_id
             ORDER by tr.id desc
@@ -74,12 +74,12 @@ export const getTransactionById = async (
             h.id as home_id, h.type as category, h.origin, h.description,
             tr.id, tr.amount, ${dateColumn} as date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
             td.payment_method, td.tax_category, td.comment
-        FROM 
+        FROM
         (
-            SELECT * FROM home.expenses 
-            UNION ALL 
+            SELECT * FROM home.expenses
+            UNION ALL
             SELECT * FROM home.income
-        ) h 
+        ) h
         JOIN transactions.transactions tr ON h.transaction_id = tr.id
         JOIN transactions.transaction_details td ON tr.id = td.transaction_id
         WHERE tr.id = $1;`,
@@ -100,7 +100,7 @@ export const insertTransaction = async (
     transaction: Transaction,
     connectionPool: Pool
 ): Promise<number> => {
-    if (transaction.type().specificTo !== 'home') {
+    if (transaction.context !== 'home') {
         // TODO throw exception!
     }
 
@@ -119,7 +119,7 @@ export const insertTransaction = async (
             {
                 ...transaction,
                 transaction_id: id,
-                cashflow: transaction.type().cashflow,
+                cashflow: transaction.type,
             },
             client
         )
@@ -127,7 +127,8 @@ export const insertTransaction = async (
         for (let i = 0; i < transaction.tags.length; i++) {
             // TODO: replace expense_or_income_id with transaction_id once DB has been adjusted
             const tagDAO: TagDAO = {
-                type: transaction.type(),
+                type: transaction.type,
+                context: transaction.context,
                 tag: transaction.tags[i],
                 expense_or_income_id: home_id,
             }
@@ -141,7 +142,7 @@ export const insertTransaction = async (
         return id
     } catch (e) {
         await client.query('ROLLBACK')
-        logger.trace(
+        logger.warn(
             `Something went wrong while inserting a new domain-model transaction. Database transaction has been rolled back.`
         )
         throw e
@@ -201,8 +202,10 @@ const _mapToTransaction = async (
     const transactionBuilder = createTransaction()
         .about(category, origin, description)
         .withId(id)
+        .withContext('home')
         .withDate(TransactionDate.fromDatabase(date))
         .withAmount(parseFloat(amount))
+        .withType(amount > 0 ? 'income' : 'expense')
         .withCurrency(currency, parseFloat(exchangeRate))
         .withPaymentDetails(paymentMethod, sourceBankAccount, targetBankAccount)
         .withComment(comment)
@@ -214,10 +217,8 @@ const _mapToTransaction = async (
     // TODO remove this function call from here!!! This is unclean and bad for performance
     const tags = await getTagsByExpenseOrIncomeId(
         home_id,
-        {
-            cashflow: parseFloat(amount) >= 0.0 ? 'income' : 'expense',
-            specificTo: 'home',
-        },
+        parseFloat(amount) >= 0.0 ? 'income' : 'expense',
+        'home',
         connectionPool
     )
     transactionBuilder.addTags(tags)

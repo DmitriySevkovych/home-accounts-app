@@ -1,6 +1,7 @@
 {
-    "*.(js|ts)": ["prettier --write", "eslint"],
+    "*.(js|ts)": ["prettier --write", "npm run lint"],
     "*.md": "prettier --list-different",
     "*.json": "prettier --write",
-    "*.{html,css}": "prettier --write"
+    "*.{html,css}": "prettier --write",
+    "*.sql": "npx sql-formatter --language postgresql --fix"
 }

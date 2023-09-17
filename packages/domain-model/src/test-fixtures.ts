@@ -9,6 +9,8 @@ export const dummyTransaction = (
     const transactionBuilder = createTransaction()
         .about(category, 'Test origin', 'A lengthy test description')
         .withAmount(amount)
+        .withType(amount > 0 ? 'income' : 'expense')
+        .withContext('home')
         .withDate(date)
         .withCurrency('USD', 0.95)
         .withComment('A dummy transaction, what else')
@@ -33,6 +35,8 @@ export const minimalDummyTransaction = (
     const transactionBuilder = createTransaction()
         .about(category, 'Test origin', 'A lengthy test description')
         .withAmount(amount)
+        .withType(amount > 0 ? 'income' : 'expense')
+        .withContext('home')
         .withAgent('IntegrationTest-Agent')
 
     if (amount > 0) {

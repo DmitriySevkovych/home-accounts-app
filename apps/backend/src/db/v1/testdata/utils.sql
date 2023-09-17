@@ -16,7 +16,9 @@ VALUES
   (
     'VACATION',
     'Common tags: Accommodation, Transportation, Admission, Restaurant, Cafe&Bar, Groceries, Souvenir'
-  );
+  ),
+  ('SALARY', NULL),
+  ('GIFT', NULL);
 
 INSERT INTO
   utils.income_types (
@@ -25,7 +27,8 @@ INSERT INTO
   )
 VALUES
   ('SALARY', NULL),
-  ('PRIVATE_SALE', NULL);
+  ('PRIVATE_SALE', NULL),
+  ('GIFT', NULL);
 
 INSERT INTO
   utils.tax_categories (category, description)
@@ -79,3 +82,23 @@ VALUES
     'private',
     0.0
   );
+
+INSERT INTO
+  utils.tags (tag)
+VALUES
+  ('Tag1'),
+  ('Tag2'),
+  ('Tag3'),
+  ('Tag4'),
+  ('Tag5'),
+  ('Tag6'),
+  ('Tag7'),
+  ('Tag8'),
+  ('Tag9'),
+  ('Tag10'),
+  ('Coffee'),
+  ('Cafe&Bar'),
+  ('Electronics'),
+  ('Cosmetics'),
+  ('Haircare'),
+  ('Skincare');

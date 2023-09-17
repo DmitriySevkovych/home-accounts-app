@@ -21,7 +21,7 @@ WORKDIR /app
 COPY .gitignore .gitignore
 COPY --from=turbosetup /app/out/json/ .
 COPY --from=turbosetup /app/out/package-lock.json ./package-lock.json
-RUN npm ci
+RUN npm install
 # Build the project and its dependencies
 COPY --from=turbosetup /app/out/full/ .
 COPY turbo.json turbo.json

@@ -1,4 +1,4 @@
-import { TransactionType } from 'domain-model'
+import { TransactionContext, TransactionType } from 'domain-model'
 import { getLogger } from 'logger'
 import type { Pool, PoolClient } from 'pg'
 
@@ -13,6 +13,7 @@ type TagTable = 'tags2expenses' | 'tags2income'
 // TODO: replace home_id with transaction_id once DB has been adjusted
 export type TagDAO = {
     type: TransactionType
+    context: TransactionContext
     tag: string
     expense_or_income_id: number
 }
@@ -24,19 +25,16 @@ export const insertTagDAO = async (
 ): Promise<void> => {
     // TODO: replace expense_or_income_id with transaction_id once DB has been adjusted
     // TODO: remove TransactionType argument once DB has been adjusted
-    const { tag, expense_or_income_id, type } = tagDAO
+    const { tag, expense_or_income_id, type, context } = tagDAO
 
     // TODO: remove once DB has been adjusted
-    const schema = type.specificTo
+    const table: TagTable = type === 'income' ? 'tags2income' : 'tags2expenses'
     // TODO: remove once DB has been adjusted
-    const table: TagTable =
-        type.cashflow === 'income' ? 'tags2income' : 'tags2expenses'
-    // TODO: remove once DB has been adjusted
-    const idColumn = `${type.cashflow}_id`
+    const idColumn = `${type}_id`
 
     const query = {
-        name: `insert-into-${schema}.${table}`,
-        text: `INSERT INTO ${schema}.${table}(tag, ${idColumn}) VALUES ($1, $2);`,
+        name: `insert-into-${context}.${table}`,
+        text: `INSERT INTO ${context}.${table}(tag, ${idColumn}) VALUES ($1, $2);`,
         values: [tag, expense_or_income_id],
     }
 
@@ -55,15 +53,15 @@ export const insertTagDAO = async (
 export const getTagsByExpenseOrIncomeId = async (
     expense_or_income_id: number,
     type: TransactionType,
+    context: TransactionContext,
     connectionPool: Pool
 ): Promise<string[]> => {
     // TODO: remove once DB has been adjusted
-    const schema = type.specificTo
+    const schema = context
     // TODO: remove once DB has been adjusted
-    const table: TagTable =
-        type.cashflow === 'income' ? 'tags2income' : 'tags2expenses'
+    const table: TagTable = type === 'income' ? 'tags2income' : 'tags2expenses'
     // TODO: remove once DB has been adjusted
-    const idColumn = `${type.cashflow}_id`
+    const idColumn = `${type}_id`
 
     const query = {
         name: `select-${schema}.${table}`,
@@ -103,4 +101,9 @@ export const insertTag = async (
     await dbConnection.query(query)
     // TODO: change schema transactions to once DB has been adjusted
     logger.trace(`Inserted a new tag '${tag}' in utils.tags`)
+}
+
+export const getTags = async (connectionPool: Pool): Promise<string[]> => {
+    const queryResult = await connectionPool.query('SELECT tag FROM utils.tags')
+    return queryResult.rows.map((row) => row.tag)
 }

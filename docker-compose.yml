@@ -6,8 +6,8 @@ services:
     build:
       context: .
       dockerfile: ./apps/backend/Dockerfile
-  # frontend:
-  #   container_name: home-app-frontend
-  #   build:
-  #     context: .
-  #     dockerfile: ./apps/frontend/Dockerfile
+  frontend:
+    container_name: home-app-frontend
+    build:
+      context: .
+      dockerfile: ./apps/frontend/Dockerfile

@@ -1,6 +1,8 @@
-import Head from 'next/head'
-import '../styles/globals.css'
 import { AppProps } from 'next/app'
+import Head from 'next/head'
+
+import Toaster from '../components/Toaster'
+import '../styles/globals.css'
 
 export default function MyApp({ Component, pageProps }: AppProps) {
     return (
@@ -33,6 +35,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
                 <meta name="theme-color" content="#317EFB" />
             </Head>
             <Component {...pageProps} />
+            <Toaster />
         </>
     )
 }

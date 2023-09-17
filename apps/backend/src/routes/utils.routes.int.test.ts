@@ -1,13 +1,13 @@
-import supertest from 'supertest'
-import { type Express } from 'express'
-
-import { createServer } from '../server'
 import type {
     BankAccount,
     PaymentMethod,
     TaxCategory,
     TransactionCategory,
 } from 'domain-model'
+import { type Express } from 'express'
+import supertest from 'supertest'
+
+import { createServer } from '../server'
 
 /*
     @group integration
@@ -70,6 +70,20 @@ describe('Utils router tests', () => {
                     expect(item.annualFee).toBeDefined()
                     expect(item.category).toBeDefined()
                 })
+            })
+    })
+
+    it('facade for fetching all transaction-relevant constant returns all expected fields', async () => {
+        await supertest(server)
+            .get(`${routerBaseUrl}/constants/transactions`)
+            .expect(200)
+            .then((res) => {
+                ;[
+                    'transactionCategories',
+                    'taxCategories',
+                    'paymentMethods',
+                    'bankAccounts',
+                ].forEach((key) => expect(res.body).toHaveProperty(key))
             })
     })
 })
