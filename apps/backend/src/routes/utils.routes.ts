@@ -32,6 +32,12 @@ const getRouter = (): Router => {
         res.status(200).json(data)
     })
 
+    router.get('/tags', async (req, res) => {
+        httpLogger(req, res)
+        const data = await repository.getTags()
+        res.status(200).json(data)
+    })
+
     router.get('/constants/transactions', async (req, res) => {
         httpLogger(req, res)
         const data = {

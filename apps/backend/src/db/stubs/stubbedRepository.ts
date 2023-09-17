@@ -111,6 +111,12 @@ export class StubbedRepository implements Repository {
         })
     }
 
+    getTags = (): Promise<string[]> => {
+        return new Promise((resolve) => {
+            resolve(['Tag1', 'Tag2', 'Tag2'])
+        })
+    }
+
     // Transactions
     createTransaction = (_transaction: Transaction) => {
         return Promise.resolve(StubbedRepository.CREATED_TRANSACTION_ID)

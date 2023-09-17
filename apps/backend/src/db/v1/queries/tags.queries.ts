@@ -102,3 +102,8 @@ export const insertTag = async (
     // TODO: change schema transactions to once DB has been adjusted
     logger.trace(`Inserted a new tag '${tag}' in utils.tags`)
 }
+
+export const getTags = async (connectionPool: Pool): Promise<string[]> => {
+    const queryResult = await connectionPool.query('SELECT tag FROM utils.tags')
+    return queryResult.rows.map((row) => row.tag)
+}

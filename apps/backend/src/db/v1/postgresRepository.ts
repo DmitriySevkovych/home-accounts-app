@@ -1,5 +1,3 @@
-import { getLogger, Logger } from 'logger'
-import type { PoolClient, Pool } from 'pg'
 import type {
     BankAccount,
     PaymentMethod,
@@ -7,12 +5,15 @@ import type {
     Transaction,
     TransactionCategory,
 } from 'domain-model'
+import { Logger, getLogger } from 'logger'
+import type { Pool, PoolClient } from 'pg'
 
 import connectionPool from '.'
-import * as utilsQueries from './queries/utils.queries'
-import * as homeQueries from './queries/home.queries'
-import { Repository } from '../repository'
 import { PaginationOptions } from '../../helpers/pagination'
+import { Repository } from '../repository'
+import * as homeQueries from './queries/home.queries'
+import * as tagsQueries from './queries/tags.queries'
+import * as utilsQueries from './queries/utils.queries'
 
 export class PostgresRepository implements Repository {
     logger: Logger
@@ -92,6 +93,10 @@ export class PostgresRepository implements Repository {
 
     getBankAccounts = async (): Promise<BankAccount[]> => {
         return await utilsQueries.getBankAccounts(this.connectionPool)
+    }
+
+    getTags = async (): Promise<string[]> => {
+        return await tagsQueries.getTags(this.connectionPool)
     }
 
     // Transactions
