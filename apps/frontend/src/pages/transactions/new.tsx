@@ -18,6 +18,7 @@ import { NumberInput, TextAreaInput, TextInput } from '../../components/Inputs'
 import Radio from '../../components/Radio'
 import Select from '../../components/Select'
 import TagsManager from '../../components/TagsManager'
+import { BACKEND_BASE_URL } from '../../helpers/constants'
 import { PAGES } from '../../helpers/pages'
 import {
     type NewTransactionForm,
@@ -27,15 +28,13 @@ import { Button } from '../../lib/shadcn/Button'
 import { Form } from '../../lib/shadcn/Form'
 import { useToast } from '../../lib/shadcn/use-toast'
 
-// For backend fetch
-const backendBaseUrl = process.env['NEXT_PUBLIC_BACKEND_URL']
-
 // Type of arguments for export function (from getServerSideProps)
 type NewTransactionPageProps = {
     transactionCategories: TransactionCategory[]
     taxCategories: TaxCategory[]
     paymentMethods: PaymentMethod[]
     bankAccounts: BankAccount[]
+    tags: string[]
 }
 
 const NewTransactionPage = ({
@@ -43,6 +42,7 @@ const NewTransactionPage = ({
     paymentMethods,
     bankAccounts,
     taxCategories,
+    tags,
 }: NewTransactionPageProps) => {
     const formDefaultValues: Partial<NewTransactionForm> = {
         type: 'expense',
@@ -105,7 +105,7 @@ const NewTransactionPage = ({
         const transaction = builder.validate().build()
 
         try {
-            const response = await fetch(`${backendBaseUrl}/transactions`, {
+            const response = await fetch(`${BACKEND_BASE_URL}/transactions`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -260,7 +260,12 @@ const NewTransactionPage = ({
                     </div>
 
                     <div className="lg:col-span-2">
-                        <TagsManager id="tags" form={form} label="Tags" />
+                        <TagsManager
+                            id="tags"
+                            form={form}
+                            label="Tags"
+                            initialTags={tags}
+                        />
                     </div>
 
                     <Button
@@ -272,7 +277,7 @@ const NewTransactionPage = ({
                     </Button>
                 </form>
             </Form>
-            <DevTool control={form.control} />
+            {/* <DevTool control={form.control} /> */}
         </div>
     )
 }
@@ -280,7 +285,7 @@ const NewTransactionPage = ({
 export async function getServerSideProps() {
     try {
         const response = await fetch(
-            `${backendBaseUrl}/utils/constants/transactions`
+            `${BACKEND_BASE_URL}/utils/constants/transactions`
         )
 
         const constants = await response.json()
