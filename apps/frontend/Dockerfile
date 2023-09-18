@@ -50,7 +50,7 @@ COPY --from=installer --chown=frontend:homeapp /app/apps/frontend/.next/standalo
 COPY --from=installer --chown=frontend:homeapp /app/apps/frontend/.next/static ./apps/frontend/.next/static
 COPY --from=installer --chown=frontend:homeapp /app/apps/frontend/public ./apps/frontend/public
 
-EXPOSE 8080
+EXPOSE 3000
 CMD node apps/frontend/server.js
 # CMD ["dumb-init", "node", "apps/frontend/.next/index.js"]
 
