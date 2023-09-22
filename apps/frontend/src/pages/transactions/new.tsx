@@ -18,6 +18,7 @@ import { NumberInput, TextAreaInput, TextInput } from '../../components/Inputs'
 import Radio from '../../components/Radio'
 import Select from '../../components/Select'
 import TagsManager from '../../components/TagsManager'
+import useNewTransactionForm from '../../components/hooks/useNewTransactionForm'
 import { BACKEND_BASE_URL } from '../../helpers/constants'
 import { PAGES } from '../../helpers/pages'
 import {
@@ -44,22 +45,7 @@ const NewTransactionPage = ({
     taxCategories,
     tags,
 }: NewTransactionPageProps) => {
-    const formDefaultValues: Partial<NewTransactionForm> = {
-        type: 'expense',
-        context: 'home',
-        category: 'HOUSEHOLD',
-        date: TransactionDate.today(),
-        currency: 'EUR',
-        exchangeRate: 1,
-        paymentMethod: 'EC',
-        tags: [],
-    }
-
-    const form = useForm<NewTransactionForm>({
-        resolver: zodResolver(NewTransactionFormSchema),
-        defaultValues: formDefaultValues,
-    })
-
+    const { form } = useNewTransactionForm()
     const transactionType = form.watch('type')
 
     const { toast } = useToast()
