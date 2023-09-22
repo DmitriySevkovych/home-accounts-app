@@ -12,7 +12,6 @@ import {
     CommandItem,
 } from '../lib/shadcn/Command'
 import { FormField, FormItem, FormLabel } from '../lib/shadcn/Form'
-import { Input } from '../lib/shadcn/Input'
 import { Popover, PopoverContent, PopoverTrigger } from '../lib/shadcn/Popover'
 
 type TagsManagerProps = {
@@ -63,16 +62,21 @@ const TagsManager = (props: TagsManagerProps) => {
             render={({ field }) => (
                 <FormItem>
                     <FormLabel>{label}</FormLabel>
-                    <div className="w-full flex gap-2">
+                    <div className="md:grid md:grid-cols-2 gap-2">
                         <Popover open={open} onOpenChange={setOpen}>
                             <PopoverTrigger asChild>
-                                <div className="flex flex-col gap-2 h-10 w-full rounded-md bg-background-overlay px-3 py-2 text-sm border-none file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-darkest focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary disabled:cursor-not-allowed disabled:opacity-50">
-                                    Add tags
-                                </div>
+                                <Button
+                                    className="md:w-full"
+                                    variant="secondary"
+                                    type="button"
+                                    size={'lg'}
+                                >
+                                    Add tag
+                                </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-[200px] p-0">
+                            <PopoverContent className="w-full p-0">
                                 <Command>
-                                    <div className="flex gap-2">
+                                    <div className="flex gap-2 ">
                                         <CommandInput
                                             ref={commandInputRef}
                                             placeholder="Search tag..."
@@ -99,6 +103,7 @@ const TagsManager = (props: TagsManagerProps) => {
                                     <CommandGroup>
                                         {tagOptions.map((tagOption) => (
                                             <CommandItem
+                                                className="text-muted-foreground hover:text-primary aria-selected:bg-transparent aria-selected:font-bold"
                                                 key={tagOption}
                                                 onSelect={(currentValue) => {
                                                     addTag(field, currentValue)
@@ -113,18 +118,17 @@ const TagsManager = (props: TagsManagerProps) => {
                             </PopoverContent>
                         </Popover>
                     </div>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2 pt-3">
                         {field.value?.map((tag: string) => (
                             <Badge
-                                variant="secondary"
+                                variant="outline"
                                 key={tag}
-                                className="w-auto flex justify-between text-white pl-4 pr-0 bg-secondary"
+                                className="flex h-10 w-auto items-center justify-between rounded-full bg-background-overlay pl-4 pr-0 py-0.5 text-sm text-muted-foreground font-normal"
                             >
                                 {tag}
 
                                 <Button
-                                    className="text-parent no-underline rounded-r-full"
-                                    variant="link"
+                                    className="inline-flex items-center justify-center rounded-md text-sm font-normal ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 underline-offset-4 w-10 text-parent no-underline rounded-r-full h-auto bg-transparent hover:bg-transparent hover:text-primary"
                                     size={'icon'}
                                     onClick={() => {
                                         field.onChange(
