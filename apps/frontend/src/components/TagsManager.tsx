@@ -51,7 +51,9 @@ const TagsManager = (props: TagsManagerProps) => {
             field.onChange([newTag])
         }
 
-        setTagOptions([...tagOptions, newTag])
+        if (!tagOptions.includes(newTag)) {
+            setTagOptions([...tagOptions, newTag])
+        }
         resetInput()
     }
 
@@ -105,8 +107,13 @@ const TagsManager = (props: TagsManagerProps) => {
                                             <CommandItem
                                                 className="text-muted-foreground hover:text-primary aria-selected:bg-transparent aria-selected:font-bold"
                                                 key={tagOption}
-                                                onSelect={(currentValue) => {
-                                                    addTag(field, currentValue)
+                                                onSelect={(
+                                                    currentValue: string
+                                                ) => {
+                                                    // ATTENTION:
+                                                    // Cannot use currentValue here, because CommandItem transforms values to lowercase and trims them.
+                                                    // This behaviour comes from the underlying 'cmdk' lib.
+                                                    addTag(field, tagOption)
                                                     setOpen(false)
                                                 }}
                                             >
