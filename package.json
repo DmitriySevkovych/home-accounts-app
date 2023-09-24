@@ -6,7 +6,6 @@
         "build": "turbo run build",
         "dev": "turbo run dev --no-cache  --continue",
         "dev:stage": "turbo run dev:stage --no-cache  --continue",
-        "format": "prettier --write .",
         "lint": "turbo run lint",
         "test": "turbo run test",
         "version-packages": "turbo run build lint test && changeset version",
