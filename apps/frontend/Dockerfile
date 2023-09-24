@@ -17,6 +17,13 @@ FROM base AS installer
 RUN apk add --no-cache libc6-compat
 RUN apk update
 WORKDIR /app
+# Environment variables must be present at build time
+# https://github.com/vercel/next.js/discussions/14030
+ARG NEXT_PUBLIC_BACKEND_URL
+ENV NEXT_PUBLIC_BACKEND_URL=${NEXT_PUBLIC_BACKEND_URL}
+ARG NODE_TLS_REJECT_UNAUTHORIZED
+ENV NODE_TLS_REJECT_UNAUTHORIZED=${NODE_TLS_REJECT_UNAUTHORIZED}
+
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry during the build.
@@ -49,6 +56,12 @@ COPY --from=installer /app/apps/frontend/package.json .
 COPY --from=installer --chown=frontend:homeapp /app/apps/frontend/.next/standalone ./
 COPY --from=installer --chown=frontend:homeapp /app/apps/frontend/.next/static ./apps/frontend/.next/static
 COPY --from=installer --chown=frontend:homeapp /app/apps/frontend/public ./apps/frontend/public
+
+# Environment variables must be redefined at run time
+ARG NEXT_PUBLIC_BACKEND_URL
+ENV NEXT_PUBLIC_BACKEND_URL=${NEXT_PUBLIC_BACKEND_URL}
+ARG NODE_TLS_REJECT_UNAUTHORIZED
+ENV NODE_TLS_REJECT_UNAUTHORIZED=${NODE_TLS_REJECT_UNAUTHORIZED}
 
 EXPOSE 3000
 CMD node apps/frontend/server.js
