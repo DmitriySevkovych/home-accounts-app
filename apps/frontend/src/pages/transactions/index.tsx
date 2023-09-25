@@ -1,14 +1,15 @@
 import Link from 'next/link'
 import React from 'react'
 
+import { SystemInfo, SystemInfoFooter } from '../../components/SystemInfoFooter'
 import { PAGES } from '../../helpers/pages'
 import { Button } from '../../lib/shadcn/Button'
 
 type TransactionsOverviewProps = {
-    environment: string
+    systemInfo: SystemInfo
 }
 
-const TransactionsOverview = ({ environment }: TransactionsOverviewProps) => {
+const TransactionsOverview = ({ systemInfo }: TransactionsOverviewProps) => {
     return (
         <>
             <div className="min-h-screen w-full h-full flex flex-col justify-between p-4">
@@ -22,18 +23,33 @@ const TransactionsOverview = ({ environment }: TransactionsOverviewProps) => {
                         </Link>
                     </Button>
                 </div>
-                <p className="place-self-end">
-                    Running in {environment} environment
-                </p>
+                <SystemInfoFooter {...systemInfo} />
             </div>
         </>
     )
 }
 
-export const getServerSideProps = () => {
+export const getServerSideProps = async () => {
+    let backendInfo
+    try {
+        const req = await fetch(
+            `${process.env['NEXT_PUBLIC_BACKEND_URL']}/system/info`
+        )
+        backendInfo = await req.json()
+    } catch (err) {
+        backendInfo = {
+            error: `Fetch ${process.env['NEXT_PUBLIC_BACKEND_URL']} failed`,
+        }
+        console.error(err)
+    }
     return {
         props: {
-            environment: process.env.NODE_ENV,
+            systemInfo: {
+                frontend: {
+                    environment: process.env['APP_ENV'],
+                },
+                backend: backendInfo,
+            },
         },
     }
 }
