@@ -5,10 +5,11 @@
     "scripts": {
         "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
         "build": "tsup src/index.ts --format cjs",
+        "build:image": "docker-compose build",
         "predev": "dotenv -e .env.local -e .env bash ./setup.sh",
         "postdev": "dotenv -e .env.local -e .env bash ./teardown.sh",
         "dev": "tsup src/index.ts --format cjs --watch --onSuccess \"dotenv -e .env.local -e .env node dist/index.js\" | pino-pretty",
-        "dev:stage": "dotenv -e .env.stage.local -e .env node dist/index.js",
+        "dev:stage": "tsup src/index.ts --format cjs --watch --onSuccess \"dotenv -e .env.stage.local -e .env node dist/index.js\" | pino-pretty",
         "lint": "tsc --noEmit && eslint \"src/**/*.ts*\"",
         "start": "dotenv -e .env node dist/index.js",
         "test": "dotenv -e .env.test.local -e .env.test jest --detectOpenHandles",

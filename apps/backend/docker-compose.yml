@@ -1,0 +1,9 @@
+version: "3"
+
+services:
+  home-app-backend:
+    build:
+      context: ../../
+      dockerfile: ./apps/backend/Dockerfile
+    image: home-app-backend
+   

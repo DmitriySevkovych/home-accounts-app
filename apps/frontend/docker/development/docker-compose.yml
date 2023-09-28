@@ -1,0 +1,8 @@
+version: "3"
+
+services:
+  home-app-frontend-dev:
+    build:
+      context: ../../../../
+      dockerfile: apps/frontend/docker/development/Dockerfile
+    image: home-app-frontend-dev

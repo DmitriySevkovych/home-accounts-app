@@ -4,13 +4,12 @@
         "prepare": "is-ci | husky install",
         "clean": "turbo run clean",
         "build": "turbo run build",
+        "build:image": "turbo run build:image",
         "dev": "turbo run dev --no-cache  --continue",
         "dev:stage": "turbo run dev:stage --no-cache  --continue",
-        "format": "prettier --write .",
         "lint": "turbo run lint",
         "test": "turbo run test",
-        "version-packages": "turbo run build lint test && changeset version",
-        "containerize": "docker-compose build"
+        "version-packages": "turbo run build lint test && changeset version"
     },
     "devDependencies": {
         "@changesets/cli": "^2.26.2",

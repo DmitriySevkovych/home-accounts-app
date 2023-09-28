@@ -28,7 +28,7 @@ import { Form } from '../../lib/shadcn/Form'
 import { useToast } from '../../lib/shadcn/use-toast'
 
 // For backend fetch
-const backendBaseUrl = `${process.env['NEXT_PUBLIC_BACKEND_URL']}/${process.env['NEXT_PUBLIC_BACKEND_API_BASE']}`
+const backendBaseUrl = process.env['NEXT_PUBLIC_BACKEND_URL']
 
 // Type of arguments for export function (from getServerSideProps)
 type NewTransactionPageProps = {

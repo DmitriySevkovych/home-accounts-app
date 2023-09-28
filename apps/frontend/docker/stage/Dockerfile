@@ -13,10 +13,10 @@ RUN turbo prune --scope=frontend --docker
 
 
 FROM base AS installer
-# RUN apk add dumb-init
 RUN apk add --no-cache libc6-compat
 RUN apk update
 WORKDIR /app
+
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry during the build.
@@ -28,6 +28,9 @@ COPY --from=turbosetup /app/out/package-lock.json ./package-lock.json
 RUN npm install
 # Build the project and its dependencies
 COPY --from=turbosetup /app/out/full/ .
+# ATTENTION: hack to set the correct environment variables for the staging environment! 
+COPY --from=turbosetup /app/out/full/apps/frontend/docker/stage/.env ./apps/frontend/.env
+COPY --from=turbosetup /app/out/full/apps/frontend/docker/stage/.env.local ./apps/frontend/.env.local
 COPY turbo.json turbo.json
 RUN npx turbo run build --filter=frontend
 
@@ -35,7 +38,6 @@ RUN npx turbo run build --filter=frontend
 # Production image, copy all the files and run next
 # cf. https://snyk.io/blog/10-best-practices-to-containerize-nodejs-web-applications-with-docker/ for infos on dumb-init and the CMD statement
 FROM base AS runner
-# COPY --from=installer /usr/bin/dumb-init /usr/bin/dumb-init
 ENV NODE_ENV production
 WORKDIR /app
 RUN addgroup --system --gid 1001 homeapp
@@ -49,8 +51,10 @@ COPY --from=installer /app/apps/frontend/package.json .
 COPY --from=installer --chown=frontend:homeapp /app/apps/frontend/.next/standalone ./
 COPY --from=installer --chown=frontend:homeapp /app/apps/frontend/.next/static ./apps/frontend/.next/static
 COPY --from=installer --chown=frontend:homeapp /app/apps/frontend/public ./apps/frontend/public
+# ATTENTION: hack to set the correct environment variables for the staging environment! 
+COPY --from=installer --chown=frontend:homeapp /app/apps/frontend/docker/stage/.env ./apps/frontend/.env
+COPY --from=installer --chown=frontend:homeapp /app/apps/frontend/docker/stage/.env.local ./apps/frontend/.env.local
 
-EXPOSE 8080
+EXPOSE 3000
 CMD node apps/frontend/server.js
-# CMD ["dumb-init", "node", "apps/frontend/.next/index.js"]
 
