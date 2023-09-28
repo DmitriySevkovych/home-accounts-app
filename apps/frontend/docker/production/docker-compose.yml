@@ -1,0 +1,8 @@
+version: "3"
+
+services:
+  home-app-frontend-prod:
+    build:
+      context: ../../../../
+      dockerfile: apps/frontend/docker/production/Dockerfile
+    image: dsevkovych/home-app-frontend-prod
