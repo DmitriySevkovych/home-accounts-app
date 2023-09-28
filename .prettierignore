@@ -15,4 +15,3 @@ dist/
 .*ignore
 *.sh
 *.http
-Dockerfile*
