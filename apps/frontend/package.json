@@ -54,6 +54,7 @@
         "autoprefixer": "^10.4.14",
         "eslint-config-custom-next": "*",
         "postcss": "^8.4.27",
+        "prettier-plugin-tailwindcss": "^0.5.4",
         "tailwindcss": "^3.3.3",
         "tsconfig": "*",
         "typescript": "^4.8.3"
