@@ -5,7 +5,7 @@
         "clean": "turbo run clean",
         "build": "turbo run build",
         "build:image": "turbo run build:image",
-        "dev": "turbo run dev --no-cache  --continue",
+        "dev": "turbo run dev --no-cache  --continue --concurrency 11",
         "dev:stage": "turbo run dev:stage --no-cache  --continue",
         "lint": "turbo run lint",
         "test": "turbo run test",

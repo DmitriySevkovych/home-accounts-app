@@ -17,6 +17,10 @@ Further documentation is provided inside the `docs/` folders in the respective `
 -   https://www.robinwieruch.de/javascript-monorepos/
 -   https://blog.frankdejonge.nl/setting-up-a-typescript-mono-repo-for-scoped-packages/
 
+#### Troubleshooting `turborepo`
+
+- [Vercel issue for error `You have 10 persistent tasks but turbo is configured for concurrency of 10. Set --concurrency to at least 11`.](https://github.com/vercel/turbo/issues/4291)
+
 ### NPM
 
 -   https://docs.npmjs.com/cli/v9/configuring-npm/package-json
