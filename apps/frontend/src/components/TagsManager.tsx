@@ -21,7 +21,12 @@ type TagsManagerProps = {
     initialTags: string[]
 }
 
-const TagsManager = (props: TagsManagerProps) => {
+type TagProps = {
+    tag: string
+    removeTagHandler: () => void
+}
+
+const TagsManager: React.FC<TagsManagerProps> = (props) => {
     const { form, label, id, initialTags } = props
     const commandInputRef = useRef<HTMLInputElement>(null)
 
@@ -35,8 +40,8 @@ const TagsManager = (props: TagsManagerProps) => {
     }
 
     const addTag = (
-        field: ControllerRenderProps<any, keyof NewTransactionForm>,
-        newTag: string
+        newTag: string,
+        field: ControllerRenderProps<any, keyof NewTransactionForm>
     ) => {
         if (!newTag) return
 
@@ -55,6 +60,13 @@ const TagsManager = (props: TagsManagerProps) => {
             setTagOptions([...tagOptions, newTag])
         }
         resetInput()
+    }
+
+    const removeTag = (
+        tag: string,
+        field: ControllerRenderProps<any, keyof NewTransactionForm>
+    ) => {
+        field.onChange(field.value.filter((t: string) => t !== tag))
     }
 
     return (
@@ -93,7 +105,7 @@ const TagsManager = (props: TagsManagerProps) => {
                                                 const currentValue =
                                                     commandInputRef.current
                                                         .value
-                                                addTag(field, currentValue)
+                                                addTag(currentValue, field)
                                             }}
                                         >
                                             +
@@ -113,7 +125,7 @@ const TagsManager = (props: TagsManagerProps) => {
                                                     // ATTENTION:
                                                     // Cannot use currentValue here, because CommandItem transforms values to lowercase and trims them.
                                                     // This behaviour comes from the underlying 'cmdk' lib.
-                                                    addTag(field, tagOption)
+                                                    addTag(tagOption, field)
                                                     setOpen(false)
                                                 }}
                                             >
@@ -127,32 +139,35 @@ const TagsManager = (props: TagsManagerProps) => {
                     </div>
                     <div className="flex flex-wrap gap-2 pt-3">
                         {field.value?.map((tag: string) => (
-                            <Badge
-                                variant="outline"
+                            <Tag
                                 key={tag}
-                                className="flex h-10 w-auto items-center justify-between bg-background-overlay py-0.5 pl-4 pr-0 text-sm font-normal text-muted-foreground"
-                            >
-                                {tag}
-
-                                <Button
-                                    className="text-parent h-auto w-10 bg-transparent text-sm font-normal no-underline transition-colors hover:bg-transparent hover:text-primary"
-                                    size={'icon'}
-                                    onClick={() => {
-                                        field.onChange(
-                                            field.value.filter(
-                                                (t: string) => t !== tag
-                                            )
-                                        )
-                                    }}
-                                >
-                                    X
-                                </Button>
-                            </Badge>
+                                tag={tag}
+                                removeTagHandler={() => removeTag(tag, field)}
+                            />
                         ))}
                     </div>
                 </FormItem>
             )}
         />
+    )
+}
+
+const Tag: React.FC<TagProps> = ({ tag, removeTagHandler }) => {
+    return (
+        <Badge
+            variant="outline"
+            className="flex h-10 w-auto items-center justify-between bg-background-overlay py-0.5 pl-4 pr-0 text-sm font-normal text-muted-foreground"
+        >
+            {tag}
+
+            <Button
+                className="text-parent h-auto w-10 bg-transparent text-sm font-normal no-underline transition-colors hover:bg-transparent hover:text-primary"
+                size={'icon'}
+                onClick={removeTagHandler}
+            >
+                X
+            </Button>
+        </Badge>
     )
 }
 
