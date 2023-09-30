@@ -64,7 +64,7 @@ const TagsManager = (props: TagsManagerProps) => {
             render={({ field }) => (
                 <FormItem>
                     <FormLabel>{label}</FormLabel>
-                    <div className="md:grid md:grid-cols-2 gap-2">
+                    <div className="gap-2 md:grid md:grid-cols-2">
                         <Popover open={open} onOpenChange={setOpen}>
                             <PopoverTrigger asChild>
                                 <Button
@@ -130,12 +130,12 @@ const TagsManager = (props: TagsManagerProps) => {
                             <Badge
                                 variant="outline"
                                 key={tag}
-                                className="flex h-10 w-auto items-center justify-between rounded-full bg-background-overlay pl-4 pr-0 py-0.5 text-sm text-muted-foreground font-normal"
+                                className="flex h-10 w-auto items-center justify-between bg-background-overlay py-0.5 pl-4 pr-0 text-sm font-normal text-muted-foreground"
                             >
                                 {tag}
 
                                 <Button
-                                    className="inline-flex items-center justify-center rounded-md text-sm font-normal ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 underline-offset-4 w-10 text-parent no-underline rounded-r-full h-auto bg-transparent hover:bg-transparent hover:text-primary"
+                                    className="text-parent h-auto w-10 bg-transparent text-sm font-normal no-underline transition-colors hover:bg-transparent hover:text-primary"
                                     size={'icon'}
                                     onClick={() => {
                                         field.onChange(
