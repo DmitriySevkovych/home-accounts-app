@@ -25,6 +25,7 @@
         "@radix-ui/react-label": "^2.0.2",
         "@radix-ui/react-popover": "^1.0.6",
         "@radix-ui/react-radio-group": "^1.1.3",
+        "@radix-ui/react-scroll-area": "^1.0.5",
         "@radix-ui/react-select": "^1.2.2",
         "@radix-ui/react-slot": "^1.0.2",
         "@radix-ui/react-toast": "^1.1.4",
@@ -53,8 +54,8 @@
         "@types/react-dom": "^18.2.0",
         "autoprefixer": "^10.4.14",
         "eslint-config-custom-next": "*",
-        "prettier-config-custom": "*",
         "postcss": "^8.4.27",
+        "prettier-config-custom": "*",
         "tailwindcss": "^3.3.3",
         "tsconfig": "*",
         "typescript": "^4.8.3"
