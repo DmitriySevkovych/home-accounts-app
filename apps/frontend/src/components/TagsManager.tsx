@@ -13,6 +13,7 @@ import {
 } from '../lib/shadcn/Command'
 import { FormField, FormItem, FormLabel } from '../lib/shadcn/Form'
 import { Popover, PopoverContent, PopoverTrigger } from '../lib/shadcn/Popover'
+import { ScrollArea } from '../lib/shadcn/ScrollArea'
 
 type TagsManagerProps = {
     id: keyof NewTransactionForm
@@ -115,23 +116,25 @@ const TagsManager: React.FC<TagsManagerProps> = (props) => {
                                         Press &apos;+&apos; to add new tag.
                                     </CommandEmpty>
                                     <CommandGroup>
-                                        {tagOptions.map((tagOption) => (
-                                            <CommandItem
-                                                className="text-muted-foreground hover:text-primary aria-selected:bg-transparent aria-selected:font-bold"
-                                                key={tagOption}
-                                                onSelect={(
-                                                    currentValue: string
-                                                ) => {
-                                                    // ATTENTION:
-                                                    // Cannot use currentValue here, because CommandItem transforms values to lowercase and trims them.
-                                                    // This behaviour comes from the underlying 'cmdk' lib.
-                                                    addTag(tagOption, field)
-                                                    setOpen(false)
-                                                }}
-                                            >
-                                                {tagOption}
-                                            </CommandItem>
-                                        ))}
+                                        <ScrollArea className="h-[200px]">
+                                            {tagOptions.map((tagOption) => (
+                                                <CommandItem
+                                                    className="text-muted-foreground hover:text-primary aria-selected:bg-transparent aria-selected:font-bold"
+                                                    key={tagOption}
+                                                    onSelect={(
+                                                        currentValue: string
+                                                    ) => {
+                                                        // ATTENTION:
+                                                        // Cannot use currentValue here, because CommandItem transforms values to lowercase and trims them.
+                                                        // This behaviour comes from the underlying 'cmdk' lib.
+                                                        addTag(tagOption, field)
+                                                        setOpen(false)
+                                                    }}
+                                                >
+                                                    {tagOption}
+                                                </CommandItem>
+                                            ))}
+                                        </ScrollArea>
                                     </CommandGroup>
                                 </Command>
                             </PopoverContent>
