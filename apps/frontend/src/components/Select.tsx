@@ -9,6 +9,7 @@ import {
     FormLabel,
     FormMessage,
 } from '../lib/shadcn/Form'
+import { ScrollArea } from '../lib/shadcn/ScrollArea'
 import {
     SelectContent,
     SelectItem,
@@ -43,17 +44,41 @@ export default function Select(props: SelectProps) {
                                 <SelectValue />
                             </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
-                            {options.map((option) => (
-                                <SelectItem key={option} value={option}>
-                                    {option}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
+                        <ScrollableSelectContent options={options} />
                     </ShadcnSelect>
                     <FormMessage />
                 </FormItem>
             )}
         />
+    )
+}
+
+const ScrollableSelectContent: React.FC<{ options: string[] }> = ({
+    options,
+}) => {
+    // If there are more than 6 selection options, add a scroll area.
+    // Otherwise the content is neat as is, and the fixed scroll area height is annoying rather than helpful.
+    if (options.length > 6) {
+        return (
+            <SelectContent>
+                <ScrollArea className="h-[190px]">
+                    {options.map((option) => (
+                        <SelectItem key={option} value={option}>
+                            {option}
+                        </SelectItem>
+                    ))}
+                </ScrollArea>
+            </SelectContent>
+        )
+    }
+
+    return (
+        <SelectContent>
+            {options.map((option) => (
+                <SelectItem key={option} value={option}>
+                    {option}
+                </SelectItem>
+            ))}
+        </SelectContent>
     )
 }
