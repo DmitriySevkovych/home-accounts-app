@@ -39,14 +39,14 @@ const NewTransactionPage = ({
     const { onSubmit } = useNewTransactionSubmitHandler()
 
     return (
-        <div className="p-3 md:py-8 bg-background text-darkest max-w-4xl mx-auto">
-            <h1 className="font-bold text-xl lg:text-2xl mb-6 lg:mb-12 text-primary">
+        <div className="mx-auto max-w-4xl bg-background p-3 text-darkest md:py-8">
+            <h1 className="mb-6 text-xl font-bold text-primary lg:mb-12 lg:text-2xl">
                 Create Transaction
             </h1>
             <Form {...form}>
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}
-                    className="w-full space-y-6 lg:grid grid-cols-2 gap-4"
+                    className="w-full grid-cols-2 gap-4 space-y-6 lg:grid"
                 >
                     <div className="lg:col-span-2">
                         <Radio
@@ -84,7 +84,8 @@ const NewTransactionPage = ({
                             .filter((cat) =>
                                 cat.allowedTypes.includes(transactionType)
                             )
-                            .map((obj) => obj.category)}
+                            .map((obj) => obj.category)
+                            .sort()}
                     />
 
                     <TextInput
@@ -122,7 +123,7 @@ const NewTransactionPage = ({
                         id="paymentMethod"
                         form={form}
                         label="Payment Method"
-                        options={paymentMethods.map((obj) => obj.method)}
+                        options={paymentMethods.map((obj) => obj.method).sort()}
                     />
 
                     {transactionType === 'expense' && (
@@ -130,7 +131,9 @@ const NewTransactionPage = ({
                             id="sourceBankAccount"
                             form={form}
                             label="Source Bank Account"
-                            options={bankAccounts.map((obj) => obj.account)}
+                            options={bankAccounts
+                                .map((obj) => obj.account)
+                                .sort()}
                         />
                     )}
 
@@ -139,7 +142,9 @@ const NewTransactionPage = ({
                             id="targetBankAccount"
                             form={form}
                             label="Target Bank Account"
-                            options={bankAccounts.map((obj) => obj.account)}
+                            options={bankAccounts
+                                .map((obj) => obj.account)
+                                .sort()}
                         />
                     )}
 
@@ -147,7 +152,9 @@ const NewTransactionPage = ({
                         id="taxCategory"
                         form={form}
                         label="Tax Category"
-                        options={taxCategories.map((obj) => obj.category)}
+                        options={taxCategories
+                            .map((obj) => obj.category)
+                            .sort()}
                     />
 
                     <div className="lg:col-span-2">
@@ -169,7 +176,7 @@ const NewTransactionPage = ({
                     </div>
 
                     <Button
-                        className="flex w-full md:w-auto md:mr-0 md:ml-auto lg:col-span-2"
+                        className="flex w-full md:ml-auto md:mr-0 md:w-auto lg:col-span-2"
                         type="submit"
                         size={'lg'}
                     >
