@@ -81,7 +81,7 @@ const TagsManager: React.FC<TagsManagerProps> = (props) => {
                         <Popover open={open} onOpenChange={setOpen}>
                             <PopoverTrigger asChild>
                                 <Button
-                                    className="md:w-full"
+                                    className="w-full"
                                     variant="secondary"
                                     type="button"
                                     size={'lg'}
@@ -94,7 +94,7 @@ const TagsManager: React.FC<TagsManagerProps> = (props) => {
                                     <div className="flex gap-2 ">
                                         <CommandInput
                                             ref={commandInputRef}
-                                            placeholder="Search tag..."
+                                            placeholder="Enter tag..."
                                         />
                                         <Button
                                             type="button"
@@ -116,7 +116,7 @@ const TagsManager: React.FC<TagsManagerProps> = (props) => {
                                         Press &apos;+&apos; to add new tag.
                                     </CommandEmpty>
                                     <CommandGroup>
-                                        <ScrollArea className="h-[200px]">
+                                        <ScrollArea className="h-[190px]">
                                             {tagOptions.map((tagOption) => (
                                                 <CommandItem
                                                     className="text-muted-foreground hover:text-primary aria-selected:bg-transparent aria-selected:font-bold"
