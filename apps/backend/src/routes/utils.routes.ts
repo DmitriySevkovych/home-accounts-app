@@ -45,6 +45,7 @@ const getRouter = (): Router => {
             taxCategories: await repository.getTaxCategories(),
             paymentMethods: await repository.getPaymentMethods(),
             bankAccounts: await repository.getBankAccounts(),
+            tags: await repository.getTags(),
         }
         res.status(200).json(data)
     })
