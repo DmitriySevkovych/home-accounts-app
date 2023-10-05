@@ -51,7 +51,7 @@ MyApp.getInitialProps = async (
 
     let title = 'Home Accounts App'
     if (process.env['APP_ENV'] === 'development') title = `DEV: ${title}`
-    else if (process.env['APP_ENV'] === 'staging') title = `STAGE: ${title}`
+    else if (process.env['APP_ENV'] === 'stage') title = `STAGE: ${title}`
     else if (process.env['APP_ENV'] === 'production') title = `PROD: ${title}`
 
     return { ...ctx, title }
