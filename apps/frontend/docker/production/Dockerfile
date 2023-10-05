@@ -51,6 +51,9 @@ COPY --from=installer /app/apps/frontend/package.json .
 COPY --from=installer --chown=frontend:homeapp /app/apps/frontend/.next/standalone ./
 COPY --from=installer --chown=frontend:homeapp /app/apps/frontend/.next/static ./apps/frontend/.next/static
 COPY --from=installer --chown=frontend:homeapp /app/apps/frontend/public ./apps/frontend/public
+# ATTENTION: hack to set the correct environment variables for the production environment! 
+COPY --from=installer --chown=frontend:homeapp /app/apps/frontend/docker/production/.env ./apps/frontend/.env
+COPY --from=installer --chown=frontend:homeapp /app/apps/frontend/docker/production/.env.local ./apps/frontend/.env.local
 
 EXPOSE 3000
 CMD node apps/frontend/server.js
