@@ -5,6 +5,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '../lib/shadcn/Popover'
 
 type FrontendInfo = {
     environment: string
+    tlsRejectUnauthorized: boolean
 }
 
 type BackendInfo = {
@@ -31,16 +32,22 @@ export const SystemInfoFooter = ({ frontend, backend }: SystemInfo) => {
                         <div className="grid grid-cols-2 gap-1">
                             <p>Environment:</p>
                             <p>{frontend.environment}</p>
+                            <p>TLS Reject Unauthorized:</p>
+                            <p>
+                                {frontend.tlsRejectUnauthorized
+                                    ? 'active'
+                                    : 'deactivated'}
+                            </p>
                         </div>
                     </div>
                     <div>
                         <Label>Backend Info</Label>
                         <div className="grid grid-cols-2 gap-1">
                             {backend.error && (
-                                <p className="text-red-500 font-bold">Error!</p>
+                                <p className="font-bold text-red-500">Error!</p>
                             )}
                             {backend.error && (
-                                <p className="text-red-500 font-bold">
+                                <p className="font-bold text-red-500">
                                     {backend.error}
                                 </p>
                             )}

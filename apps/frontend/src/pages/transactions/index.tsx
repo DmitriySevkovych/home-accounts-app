@@ -13,9 +13,9 @@ type TransactionsOverviewProps = {
 const TransactionsOverview = ({ systemInfo }: TransactionsOverviewProps) => {
     return (
         <>
-            <div className="min-h-screen w-full h-full flex flex-col justify-between p-4">
-                <div className="flex flex-col flex-grow justify-center gap-10 items-center">
-                    <h1 className="font-bold text-xl lg:text-2xl text-primary">
+            <div className="flex h-full min-h-screen w-full flex-col justify-between p-4">
+                <div className="flex flex-grow flex-col items-center justify-center gap-10">
+                    <h1 className="text-xl font-bold text-primary lg:text-2xl">
                         Posipaki Home Accounts App: Transactions
                     </h1>
                     <Button>
@@ -46,6 +46,8 @@ export const getServerSideProps = async () => {
             systemInfo: {
                 frontend: {
                     environment: process.env['APP_ENV'],
+                    tlsRejectUnauthorized:
+                        process.env['NODE_TLS_REJECT_UNAUTHORIZED'] !== '0',
                 },
                 backend: backendInfo,
             },
