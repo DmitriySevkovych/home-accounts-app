@@ -5,7 +5,7 @@
     "scripts": {
         "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
         "build": "tsup src/index.ts --format cjs",
-        "build:image": "docker-compose build",
+        "build:image": "docker-compose build --push",
         "predev": "dotenv -e .env.local -e .env bash ./setup.sh",
         "postdev": "dotenv -e .env.local -e .env bash ./teardown.sh",
         "dev": "tsup src/index.ts --format cjs --watch --onSuccess \"dotenv -e .env.local -e .env node dist/index.js\" | pino-pretty",

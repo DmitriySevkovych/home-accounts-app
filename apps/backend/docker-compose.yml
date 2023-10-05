@@ -5,5 +5,5 @@ services:
     build:
       context: ../../
       dockerfile: ./apps/backend/Dockerfile
-    image: home-app-backend
+    image: dsevkovych/home-app-backend
    

@@ -1,0 +1,80 @@
+services:
+  frontend:
+    hostname: home-app-frontend-${APP_ENV}
+    container_name: home-app-frontend-container-${APP_ENV}
+    image: dsevkovych/home-app-frontend-${APP_ENV}
+    user: "${UID}:${GID}"
+    depends_on:
+      - backend
+    ports:
+      - 3000:3000
+    restart: "always"
+    networks:
+     - home-app-network
+  backend:
+    hostname: home-app-backend-${APP_ENV}
+    container_name: home-app-backend-container-${APP_ENV}
+    image: dsevkovych/home-app-backend
+    user: "${UID}:${GID}"
+    depends_on:
+      - db
+    ports:
+      - 8090:8090
+    env_file:
+      - ./backend/.env
+    #environment:
+    #  PGPASSWORD: /run/secrets/db_password
+    #  PGUSER: /run/secrets/db_user
+    #  PGDATABASE: /run/secrets/db_name
+    #secrets:
+    #  - db_password
+    #  - db_user
+    #  - db_name
+    volumes:
+      - ./backend/cert:/app/cert
+    restart: "always"
+    networks:
+     - home-app-network
+     - home-db-network
+  db:
+    container_name: home-app-db-container-${APP_ENV}
+    image: postgres:14
+    restart: always
+    #user: "${UID}:${GID}"
+    # environment:
+    #   POSTGRES_USER: ${PG_USER}
+    #   POSTGRES_PASSWORD: ${PG_PASSWORD}
+    #   POSTGRES_DB: ${PG_DB}
+    environment:
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      POSTGRES_USER_FILE: /run/secrets/db_user
+      POSTGRES_DB_FILE: /run/secrets/db_name
+    secrets:
+      - db_password
+      - db_user
+      - db_name
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+     - home-app-network
+     - home-db-network
+
+volumes:
+  pgdata:
+    name: pgdata_volume
+
+secrets:
+  db_password:
+    file: ./db/.password.txt
+  db_user:
+    file: ./db/.user.txt
+  db_name:
+    file: ./db/.name.txt
+
+networks:
+  home-app-network:
+    external: true
+  home-db-network:
+    external: true
