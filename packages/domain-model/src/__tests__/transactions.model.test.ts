@@ -150,4 +150,35 @@ describe('Transactions tests', () => {
         // Assert
         expect(deserialization).toThrow(TransactionValidationError)
     })
+
+    it.each`
+        context
+        ${'investments'}
+        ${'work'}
+    `(
+        "should throw a TransactionValidationError because of context '$context' and missing investment",
+        ({ context }) => {
+            // Arrange
+            const requestBodyWithMissingData = {
+                // mandatory information
+                category: 'FEE',
+                origin: 'Handyman',
+                date: {
+                    datetime: '2023-06-14T14:48:00.000Z',
+                },
+                amount: -48.34,
+                paymentMethod: 'EC',
+                sourceBankAccount: 'INVESTMENT_ACCOUNT',
+                agent: 'Testbot',
+                type: 'expense',
+                context: context,
+            }
+            // Act
+            const deserialization = () => {
+                deserializeTransaction(requestBodyWithMissingData)
+            }
+            // Assert
+            expect(deserialization).toThrow(TransactionValidationError)
+        }
+    )
 })

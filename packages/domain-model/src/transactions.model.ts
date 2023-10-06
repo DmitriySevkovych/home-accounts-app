@@ -45,15 +45,6 @@ export type TransactionType = 'income' | 'expense'
 
 export type TransactionContext = 'home' | 'work' | 'investments'
 
-// type WorkContext = {
-//     country: string
-//     vat: number
-// }
-
-// type InvestmentContext = {
-//     investment: string
-// }
-
 export class Transaction {
     // Unique identifier, to be provided by a DB sequence
     id?: number
@@ -76,6 +67,13 @@ export class Transaction {
     targetBankAccount?: PickAndFlatten<BankAccount, 'account'>
     taxCategory?: PickAndFlatten<TaxCategory, 'category'>
     comment?: string
+
+    // Additional data relevant in the work context
+    country?: string
+    vat?: number
+
+    // Additional data relevant in the investment context
+    investment?: string
 
     // Technical helper data
     agent: string = 'default_agent'
@@ -193,6 +191,17 @@ class TransactionBuilder {
         return this
     }
 
+    withInvestment = (investment: string): TransactionBuilder => {
+        this.transaction.investment = investment
+        return this
+    }
+
+    withVAT = (vat: number, taxationCountry: string): TransactionBuilder => {
+        this.transaction.vat = vat
+        this.transaction.country = taxationCountry
+        return this
+    }
+
     withAgent = (agent: string): TransactionBuilder => {
         this.transaction.agent = agent
         return this
@@ -229,6 +238,8 @@ class TransactionBuilder {
         this._throwIfAmountInconsistentWithBankAccounts()
 
         this._throwIfAmountInconsistentWithType(amount, type)
+
+        this._throwIfContextDataMissing()
 
         return this
     }
@@ -284,6 +295,31 @@ class TransactionBuilder {
             )
         }
     }
+
+    private _throwIfContextDataMissing = (): void => {
+        const { context } = this.transaction
+
+        if (context === 'work') {
+            const { vat, country } = this.transaction
+            if (vat !== 0 && !vat) {
+                throw new TransactionValidationError(
+                    `The transaction context '${context}' requires the attribute 'vat' to be set.`
+                )
+            }
+            if (!country) {
+                throw new TransactionValidationError(
+                    `The transaction context '${context}' requires the attribute 'country' to be set.`
+                )
+            }
+        } else if (context === 'investments') {
+            const { investment } = this.transaction
+            if (!investment) {
+                throw new TransactionValidationError(
+                    `The transaction context '${context}' requires the attribute 'investment' to be set.`
+                )
+            }
+        }
+    }
 }
 
 export const createTransaction = (): TransactionBuilder => {
@@ -308,6 +344,9 @@ export const deserializeTransaction = (data: any) => {
         tags,
         type,
         context,
+        vat,
+        country,
+        investment,
     } = data
 
     const transaction: Transaction = createTransaction()
@@ -321,6 +360,8 @@ export const deserializeTransaction = (data: any) => {
         .withComment(comment)
         .withAgent(agent)
         .withId(id)
+        .withVAT(vat, country)
+        .withInvestment(investment)
         .addTags(tags)
         .validate()
         .build()

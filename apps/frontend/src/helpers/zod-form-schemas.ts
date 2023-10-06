@@ -19,13 +19,27 @@ export const NewTransactionFormSchema = z
             .string()
             .length(3)
             .transform((val) => val.toUpperCase()),
-        exchangeRate: z.coerce.number(),
+        exchangeRate: z.coerce.number().positive(),
         paymentMethod: z.string(),
         sourceBankAccount: z.optional(z.string()),
         targetBankAccount: z.optional(z.string()),
         taxCategory: z.optional(z.string()),
         comment: z.optional(z.string()),
         tags: z.string().array(),
+        investment: z.optional(z.string()),
+        country: z.optional(
+            z
+                .string()
+                .length(2)
+                .transform((val) => val.toUpperCase())
+        ),
+        vat: z.optional(
+            z.coerce
+                .number()
+                .nonnegative()
+                .max(100)
+                .transform((val) => val / 100)
+        ),
     })
     .transform((form) => {
         // Transform amount
@@ -60,6 +74,34 @@ export const NewTransactionFormSchema = z
                 path: ['exchangeRate'],
                 code: z.ZodIssueCode.custom,
                 message: 'The currency EUR should always have exchange rate 1.',
+            })
+        }
+
+        // Investment check
+        if (form.context === 'investments' && !form.investment) {
+            ctx.addIssue({
+                path: ['investment'],
+                code: z.ZodIssueCode.custom,
+                message:
+                    "Transaction context 'investments' requires an investment to be set.",
+            })
+        }
+
+        // Work fields checks
+        if (form.context === 'work' && !form.country) {
+            ctx.addIssue({
+                path: ['country'],
+                code: z.ZodIssueCode.custom,
+                message:
+                    "Transaction context 'work' requires an 2-character country code to be set.",
+            })
+        }
+
+        if (form.context === 'work' && form.vat !== 0 && !form.vat) {
+            ctx.addIssue({
+                path: ['vat'],
+                code: z.ZodIssueCode.custom,
+                message: "Transaction context 'work' requires a VAT to be set.",
             })
         }
     })
