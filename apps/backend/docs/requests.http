@@ -49,3 +49,7 @@ Content-Type: application/json
 {
     "test": "hello"
 }
+
+
+### Investments routes
+GET https://localhost:8070/api/v1/investments

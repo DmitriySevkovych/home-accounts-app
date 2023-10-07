@@ -1,5 +1,10 @@
-import { Transaction, TransactionDate, createTransaction } from 'domain-model'
-import { Investment, InvestmentType } from 'domain-model/dist/investments.model'
+import {
+    Investment,
+    InvestmentType,
+    Transaction,
+    TransactionDate,
+    createTransaction,
+} from 'domain-model'
 import { getLogger } from 'logger'
 import type { Pool, PoolClient } from 'pg'
 

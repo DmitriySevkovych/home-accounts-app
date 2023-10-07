@@ -1,5 +1,6 @@
 import type {
     BankAccount,
+    Investment,
     PaymentMethod,
     TaxCategory,
     Transaction,
@@ -145,5 +146,10 @@ export class PostgresRepository implements Repository {
 
     getTransactionById = async (id: number): Promise<Transaction> => {
         return await homeQueries.getTransactionById(this.connectionPool, id)
+    }
+
+    // Investments
+    getInvestments = async (): Promise<Investment[]> => {
+        return await investmentsQueries.getInvestments(this.connectionPool)
     }
 }

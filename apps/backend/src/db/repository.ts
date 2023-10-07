@@ -1,5 +1,6 @@
 import type {
     BankAccount,
+    Investment,
     PaymentMethod,
     TaxCategory,
     Transaction,
@@ -27,4 +28,7 @@ export interface Repository {
     ) => Promise<Transaction[]>
 
     getTransactionById: (_id: number) => Promise<Transaction>
+
+    // Investments data
+    getInvestments: () => Promise<Investment[]>
 }

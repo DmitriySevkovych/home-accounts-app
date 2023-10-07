@@ -1,5 +1,6 @@
 import {
     BankAccount,
+    Investment,
     PaymentMethod,
     TaxCategory,
     Transaction,
@@ -156,5 +157,35 @@ export class StubbedRepository implements Repository {
         const transaction = minimalDummyTransaction('FOOD', -33.33)
         transaction.id = id
         return Promise.resolve(transaction)
+    }
+
+    // Investments
+    getInvestments = async (): Promise<Investment[]> => {
+        return Promise.resolve([
+            {
+                key: 'Apartment',
+                type: 'REAL_ESTATE',
+                description: 'A 2/1 flat',
+                startDate: new Date('2012-12-12'),
+            },
+            {
+                key: 'Homebrew',
+                type: 'CRAFT',
+                description: 'A 2/1 flat',
+                startDate: new Date('2012-12-12'),
+            },
+            {
+                key: 'Stock_Portfolio',
+                type: 'STOCKS',
+                description: 'A 2/1 flat',
+                startDate: new Date('2012-12-12'),
+            },
+            {
+                key: 'Precious_Metals',
+                type: 'TANGIBLES',
+                description: 'A 2/1 flat',
+                startDate: new Date('2012-12-12'),
+            },
+        ])
     }
 }
