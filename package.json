@@ -20,7 +20,7 @@
         "is-ci": "^3.0.1",
         "lint-staged": "^13.2.0",
         "prettier-config-custom": "*",
-        "turbo": "^1.10.7"
+        "turbo": "^1.10.15"
     },
     "prettier": "prettier-config-custom",
     "packageManager": "npm@9.5.0",
