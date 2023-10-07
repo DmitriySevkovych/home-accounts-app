@@ -2,7 +2,10 @@ import Link from 'next/link'
 import React from 'react'
 
 import { SystemInfo, SystemInfoFooter } from '../../components/SystemInfoFooter'
-import { BACKEND_BASE_URL } from '../../helpers/constants'
+import {
+    CLIENT_BACKEND_BASE_URL,
+    SERVER_BACKEND_BASE_URL,
+} from '../../helpers/constants'
 import { PAGES } from '../../helpers/pages'
 import { Button } from '../../lib/shadcn/Button'
 
@@ -33,11 +36,11 @@ const TransactionsOverview = ({ systemInfo }: TransactionsOverviewProps) => {
 export const getServerSideProps = async () => {
     let backendInfo
     try {
-        const req = await fetch(`${BACKEND_BASE_URL}/system/info`)
+        const req = await fetch(`${SERVER_BACKEND_BASE_URL}/system/info`)
         backendInfo = await req.json()
     } catch (err) {
         backendInfo = {
-            error: `Fetch ${BACKEND_BASE_URL} failed`,
+            error: `Fetch ${SERVER_BACKEND_BASE_URL} failed`,
         }
         console.error(err)
     }
