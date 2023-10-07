@@ -2,7 +2,7 @@ import { Transaction, createTransaction } from 'domain-model'
 import { NextRouter, useRouter } from 'next/router'
 import { type SubmitHandler } from 'react-hook-form'
 
-import { BACKEND_BASE_URL } from '../../helpers/constants'
+import { CLIENT_BACKEND_BASE_URL } from '../../helpers/constants'
 import { PAGES } from '../../helpers/pages'
 import { NewTransactionForm } from '../../helpers/zod-form-schemas'
 import { useToast } from '../../lib/shadcn/use-toast'
@@ -52,13 +52,16 @@ const sendTransaction = async (
     toast: any
 ) => {
     try {
-        const response = await fetch(`${BACKEND_BASE_URL}/transactions`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(transaction),
-        })
+        const response = await fetch(
+            `${CLIENT_BACKEND_BASE_URL}/transactions`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(transaction),
+            }
+        )
         if (response.status === 201) {
             toast({
                 title: 'A new transaction has been created! You submitted the following values:',

@@ -14,7 +14,7 @@ import Select from '../../components/Select'
 import TagsManager from '../../components/TagsManager'
 import useNewTransactionForm from '../../components/hooks/useNewTransactionForm'
 import useNewTransactionSubmitHandler from '../../components/hooks/useNewTransactionSubmitHandler'
-import { BACKEND_BASE_URL } from '../../helpers/constants'
+import { SERVER_BACKEND_BASE_URL } from '../../helpers/constants'
 import { Button } from '../../lib/shadcn/Button'
 import { Form } from '../../lib/shadcn/Form'
 
@@ -192,7 +192,7 @@ const NewTransactionPage = ({
 export async function getServerSideProps() {
     try {
         const response = await fetch(
-            `${BACKEND_BASE_URL}/utils/constants/transactions`
+            `${SERVER_BACKEND_BASE_URL}/utils/constants/transactions`
         )
 
         const constants = await response.json()
