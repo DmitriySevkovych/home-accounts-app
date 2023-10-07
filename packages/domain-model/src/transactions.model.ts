@@ -1,5 +1,6 @@
 import { TransactionDate } from './dates.model'
 import { TransactionValidationError } from './errors.model'
+import { Investment } from './investments.model'
 
 // TODO extract these helper types to somewhere else...
 type UnionToIntersection<U> = (
@@ -73,7 +74,7 @@ export class Transaction {
     vat?: number
 
     // Additional data relevant in the investment context
-    investment?: string
+    investment?: PickAndFlatten<Investment, 'key'>
 
     // Technical helper data
     agent: string = 'default_agent'
