@@ -14,11 +14,14 @@ import {
     insertTransactionDetailsDAO,
 } from './transactions.queries'
 
-type TransactionCashflow = 'expense' | 'income'
+const HOME_CONTEXT = 'home'
+const HOME_SCHEMA = HOME_CONTEXT
 
-type HomeDAO = Pick<Transaction, 'category' | 'origin' | 'description'> & {
+type HomeDAO = Pick<
+    Transaction,
+    'type' | 'category' | 'origin' | 'description'
+> & {
     transaction_id: number
-    cashflow: TransactionCashflow
 }
 
 const logger = getLogger('db')
@@ -31,7 +34,7 @@ export const getTransactions = async (
 
     //TODO extract logic to DB view?
     const query = {
-        name: `select-home-transactions`,
+        name: `select-${HOME_SCHEMA}-transactions`,
         text: `
             SELECT
                 h.id as home_id, h.type as category, h.origin, h.description,
@@ -39,9 +42,9 @@ export const getTransactions = async (
                 td.payment_method, td.tax_category, td.comment
             FROM
             (
-                SELECT * FROM home.expenses
+                SELECT * FROM ${HOME_SCHEMA}.expenses
                 UNION ALL
-                SELECT * FROM home.income
+                SELECT * FROM ${HOME_SCHEMA}.income
             ) h
             JOIN transactions.transactions tr ON h.transaction_id = tr.id
             JOIN transactions.transaction_details td ON tr.id = td.transaction_id
@@ -67,7 +70,7 @@ export const getTransactionById = async (
 ): Promise<Transaction> => {
     const dateColumn = TransactionDate.formatDateColumn('tr.date')
     const query = {
-        name: `select-home-transaction-by-id`,
+        name: `select-${HOME_SCHEMA}-transaction-by-id`,
         //TODO extract logic to DB view?
         text: `
         SELECT
@@ -76,9 +79,9 @@ export const getTransactionById = async (
             td.payment_method, td.tax_category, td.comment
         FROM
         (
-            SELECT * FROM home.expenses
+            SELECT * FROM ${HOME_SCHEMA}.expenses
             UNION ALL
-            SELECT * FROM home.income
+            SELECT * FROM ${HOME_SCHEMA}.income
         ) h
         JOIN transactions.transactions tr ON h.transaction_id = tr.id
         JOIN transactions.transaction_details td ON tr.id = td.transaction_id
@@ -100,10 +103,6 @@ export const insertTransaction = async (
     transaction: Transaction,
     connectionPool: Pool
 ): Promise<number> => {
-    if (transaction.context !== 'home') {
-        // TODO throw exception!
-    }
-
     const client: PoolClient = await connectionPool.connect()
     try {
         await client.query('BEGIN')
@@ -119,7 +118,6 @@ export const insertTransaction = async (
             {
                 ...transaction,
                 transaction_id: id,
-                cashflow: transaction.type,
             },
             client
         )
@@ -156,7 +154,7 @@ const _insertHomeDAO = async (
     client: PoolClient
 ): Promise<number> => {
     const {
-        cashflow,
+        type: cashflow,
         category: type,
         origin,
         description,
@@ -164,14 +162,14 @@ const _insertHomeDAO = async (
     } = home
     const table = cashflow === 'expense' ? 'expenses' : 'income'
     const query = {
-        name: `insert-into-home.${table}`,
-        text: `INSERT INTO home.${table}(type, origin, description, transaction_id) VALUES ($1, $2, $3, $4) RETURNING id;`,
+        name: `insert-into-${HOME_SCHEMA}.${table}`,
+        text: `INSERT INTO ${HOME_SCHEMA}.${table}(type, origin, description, transaction_id) VALUES ($1, $2, $3, $4) RETURNING id;`,
         values: [type, origin, description, transaction_id],
     }
     const queryResult = await client.query(query)
     const home_id = queryResult.rows[0].id
     logger.trace(
-        `Inserted a new row in home.${table} with id=${home_id} and foreign key transaction_id=${transaction_id}.`
+        `Inserted a new row in ${HOME_SCHEMA}.${table} with id=${home_id} and foreign key transaction_id=${transaction_id}.`
     )
     return home_id
 }
@@ -202,7 +200,7 @@ const _mapToTransaction = async (
     const transactionBuilder = createTransaction()
         .about(category, origin, description)
         .withId(id)
-        .withContext('home')
+        .withContext(HOME_CONTEXT)
         .withDate(TransactionDate.fromDatabase(date))
         .withAmount(parseFloat(amount))
         .withType(amount > 0 ? 'income' : 'expense')
@@ -218,7 +216,7 @@ const _mapToTransaction = async (
     const tags = await getTagsByExpenseOrIncomeId(
         home_id,
         parseFloat(amount) >= 0.0 ? 'income' : 'expense',
-        'home',
+        HOME_CONTEXT,
         connectionPool
     )
     transactionBuilder.addTags(tags)
