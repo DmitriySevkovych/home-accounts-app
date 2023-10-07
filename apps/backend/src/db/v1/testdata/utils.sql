@@ -18,6 +18,8 @@ VALUES
     'Common tags: Accommodation, Transportation, Admission, Restaurant, Cafe&Bar, Groceries, Souvenir'
   ),
   ('SALARY', NULL),
+  ('MAINTENANCE', NULL),
+  ('TAX', NULL),
   ('GIFT', NULL);
 
 INSERT INTO
@@ -28,6 +30,7 @@ INSERT INTO
 VALUES
   ('SALARY', NULL),
   ('PRIVATE_SALE', NULL),
+  ('RENT', NULL),
   ('GIFT', NULL);
 
 INSERT INTO
