@@ -38,6 +38,6 @@ RUN addgroup --system --gid 1001 homeapp
 RUN adduser --system --uid 1001 backend
 USER backend
 COPY --from=installer --chown=backend:homeapp /app .
-EXPOSE 8090
+EXPOSE 8070
 CMD ["dumb-init", "node", "apps/backend/dist/index.js"]
 

@@ -19,7 +19,7 @@ services:
     depends_on:
       - db
     ports:
-      - 8090:8090
+      - 8070:8070
     env_file:
       - ./backend/.env
     #environment:

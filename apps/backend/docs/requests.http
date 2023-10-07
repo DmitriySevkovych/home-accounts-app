@@ -1,32 +1,32 @@
 #https://medium.com/refinitiv-developer-community/how-to-test-rest-api-with-visual-studio-code-rest-client-extensions-9f2e061d0299
 
 ### System routes
-GET https://localhost:8090/api/v1/system/info
+GET https://localhost:8070/api/v1/system/info
 
 ### Utils routes
-GET https://localhost:8090/api/v1/utils/transactionCategories
+GET https://localhost:8070/api/v1/utils/transactionCategories
 ###
-GET https://localhost:8090/api/v1/utils/taxCategories
+GET https://localhost:8070/api/v1/utils/taxCategories
 ###
-GET https://localhost:8090/api/v1/utils/paymentMethods
+GET https://localhost:8070/api/v1/utils/paymentMethods
 ###
-GET https://localhost:8090/api/v1/utils/bankAccounts
+GET https://localhost:8070/api/v1/utils/bankAccounts
 ###
-GET https://localhost:8090/api/v1/utils/tags
+GET https://localhost:8070/api/v1/utils/tags
 ###
-GET https://localhost:8090/api/v1/utils/constants/transactions
+GET https://localhost:8070/api/v1/utils/constants/transactions
 
 ### Transactions routes
 ### Batch get
-GET https://localhost:8090/api/v1/transactions
+GET https://localhost:8070/api/v1/transactions
 ###
-GET https://localhost:8090/api/v1/transactions?limit=5&page=2
+GET https://localhost:8070/api/v1/transactions?limit=5&page=2
 
 ### Get by id
-GET https://localhost:8090/api/v1/transactions/1
+GET https://localhost:8070/api/v1/transactions/1
 
 ### Post
-POST https://localhost:8090/api/v1/transactions
+POST https://localhost:8070/api/v1/transactions
 Content-Type: application/json
 
 {
@@ -43,7 +43,7 @@ Content-Type: application/json
     "agent": "Testbot"
 }
 ### Post to provoke error
-POST https://localhost:8090/api/v1/transactions
+POST https://localhost:8070/api/v1/transactions
 Content-Type: application/json
 
 {
