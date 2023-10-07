@@ -29,25 +29,34 @@ const sendTransaction = async (
         )
         if (response.status === 201) {
             toast({
-                title: 'A new transaction has been created! You submitted the following values:',
+                title: 'A new transaction has been created!',
                 description: (
-                    <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-                        <code className="text-white">
-                            {JSON.stringify(body, null, 2)}
-                        </code>
-                    </pre>
+                    <>
+                        <p>You submitted the following values:</p>
+                        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+                            <code className="text-white">
+                                {JSON.stringify(body, null, 2)}
+                            </code>
+                        </pre>
+                    </>
                 ),
-                duration: 3000,
             })
             router.push(
                 `${PAGES.transactions.success}?transactionType=${transaction.type}`
             )
         } else {
             toast({
-                title: `Something when wrong! Received ${response.status} ${response.statusText}`,
+                variant: 'destructive',
+                title: 'Something when wrong!',
+                description: `Received ${response.status} ${response.statusText}.`,
             })
         }
     } catch (error) {
+        toast({
+            variant: 'destructive',
+            title: `Something when wrong!`,
+            description: `An exception occurred. Please check the error log.`,
+        })
         console.log(error)
     }
 }
