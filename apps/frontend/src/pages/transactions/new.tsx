@@ -2,6 +2,7 @@ import {
     BankAccount,
     Investment,
     PaymentMethod,
+    ProjectInvoice,
     TaxCategory,
     TransactionCategory,
 } from 'domain-model'
@@ -27,6 +28,7 @@ type NewTransactionPageProps = {
     bankAccounts: BankAccount[]
     tags: string[]
     investments: Investment[]
+    invoices: ProjectInvoice[]
 }
 
 const NewTransactionPage = ({
@@ -36,6 +38,7 @@ const NewTransactionPage = ({
     taxCategories,
     tags,
     investments,
+    invoices,
 }: NewTransactionPageProps) => {
     const { form } = useNewTransactionForm()
     const transactionType = form.watch('type')
@@ -54,18 +57,6 @@ const NewTransactionPage = ({
                 >
                     <div className="lg:col-span-2">
                         <Radio
-                            id="type"
-                            form={form}
-                            options={[
-                                { label: 'Expense', value: 'expense' },
-                                { label: 'Income', value: 'income' },
-                            ]}
-                            label="Transaction type"
-                        />
-                    </div>
-
-                    <div className="lg:col-span-2">
-                        <Radio
                             id="context"
                             form={form}
                             options={[
@@ -77,6 +68,18 @@ const NewTransactionPage = ({
                                 },
                             ]}
                             label="Transaction context"
+                        />
+                    </div>
+
+                    <div className="lg:col-span-2">
+                        <Radio
+                            id="type"
+                            form={form}
+                            options={[
+                                { label: 'Expense', value: 'expense' },
+                                { label: 'Income', value: 'income' },
+                            ]}
+                            label="Transaction type"
                         />
                     </div>
 
@@ -171,7 +174,7 @@ const NewTransactionPage = ({
                     </div>
 
                     {transactionContext === 'investments' && (
-                        <div className="lg:col-span-2">
+                        <div>
                             <Select
                                 id="investment"
                                 form={form}
@@ -183,26 +186,42 @@ const NewTransactionPage = ({
                         </div>
                     )}
 
-                    {transactionContext === 'work' && (
-                        <>
-                            <div className="lg:col-span-2">
-                                <NumberInput
-                                    id="vat"
+                    {transactionContext === 'work' &&
+                        transactionType === 'expense' && (
+                            <>
+                                <div>
+                                    <NumberInput
+                                        id="vat"
+                                        form={form}
+                                        label="VAT (Value-Added Tax)"
+                                        placeholder="Enter a number between 0 and 100, e.g. 19"
+                                    />
+                                </div>
+                                <div>
+                                    <TextInput
+                                        id="country"
+                                        form={form}
+                                        label="Taxation country"
+                                        placeholder="Enter a country code, e.g. 'DE'"
+                                    />
+                                </div>
+                            </>
+                        )}
+
+                    {transactionContext === 'work' &&
+                        transactionType === 'income' && (
+                            <div>
+                                <Select
+                                    id="invoice_key"
                                     form={form}
-                                    label="VAT (Value-Added Tax)"
-                                    placeholder="Enter a number between 0 and 100, e.g. 19"
+                                    label="Project invoice for this transaction"
+                                    options={invoices
+                                        // .sort((obj1, obj2) => obj1.issuanceDate.valueOf() - obj2.issuanceDate.valueOf())
+                                        // .reverse()
+                                        .map((obj) => obj.key)}
                                 />
                             </div>
-                            <div className="lg:col-span-2">
-                                <TextInput
-                                    id="country"
-                                    form={form}
-                                    label="Taxation country"
-                                    placeholder="Enter a country code, e.g. 'DE'"
-                                />
-                            </div>
-                        </>
-                    )}
+                        )}
 
                     <div className="lg:col-span-2">
                         <>
@@ -235,6 +254,7 @@ export async function getServerSideProps() {
         const urls = [
             `${SERVER_BACKEND_BASE_URL}/utils/constants/transactions`,
             `${SERVER_BACKEND_BASE_URL}/investments`,
+            `${SERVER_BACKEND_BASE_URL}/work/invoices`,
         ]
 
         const response = await Promise.all(
@@ -245,6 +265,7 @@ export async function getServerSideProps() {
             props: {
                 ...response[0],
                 ...response[1],
+                ...response[2],
             },
         }
     } catch (err) {
