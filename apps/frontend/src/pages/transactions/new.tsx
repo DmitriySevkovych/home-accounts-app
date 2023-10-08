@@ -212,7 +212,7 @@ const NewTransactionPage = ({
                         transactionType === 'income' && (
                             <div>
                                 <Select
-                                    id="invoice_key"
+                                    id="invoiceKey"
                                     form={form}
                                     label="Project invoice for this transaction"
                                     options={invoices

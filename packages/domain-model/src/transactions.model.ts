@@ -70,7 +70,7 @@ export class Transaction {
     comment?: string
 
     // Additional data relevant in the work context
-    invoice_key?: string
+    invoiceKey?: string
     country?: string
     vat?: number
 
@@ -198,8 +198,8 @@ class TransactionBuilder {
         return this
     }
 
-    withInvoice = (invoice_key: string): TransactionBuilder => {
-        this.transaction.invoice_key = invoice_key
+    withInvoice = (invoiceKey: string): TransactionBuilder => {
+        this.transaction.invoiceKey = invoiceKey
         return this
     }
 
@@ -304,9 +304,9 @@ class TransactionBuilder {
     }
 
     private _throwIfContextDataMissing = (): void => {
-        const { context } = this.transaction
+        const { context, type: transactionType } = this.transaction
 
-        if (context === 'work') {
+        if (context === 'work' && transactionType === 'expense') {
             const { vat, country } = this.transaction
             if (vat !== 0 && !vat) {
                 throw new TransactionValidationError(
@@ -316,6 +316,13 @@ class TransactionBuilder {
             if (!country) {
                 throw new TransactionValidationError(
                     `The transaction context '${context}' requires the attribute 'country' to be set.`
+                )
+            }
+        } else if (context === 'work' && transactionType === 'income') {
+            const { invoiceKey } = this.transaction
+            if (!invoiceKey) {
+                throw new TransactionValidationError(
+                    `The transaction context '${context}' requires the attribute 'invoiceKey' to be set.`
                 )
             }
         } else if (context === 'investments') {
@@ -349,10 +356,12 @@ export const deserializeTransaction = (data: any) => {
         comment,
         agent,
         tags,
+        taxCategory,
         type,
         context,
         vat,
         country,
+        invoiceKey,
         investment,
     } = data
 
@@ -364,10 +373,12 @@ export const deserializeTransaction = (data: any) => {
         .withCurrency(currency, exchangeRate)
         .withDate(TransactionDate.deserialize(date))
         .withPaymentDetails(paymentMethod, sourceBankAccount, targetBankAccount)
+        .withTaxCategory(taxCategory)
         .withComment(comment)
         .withAgent(agent)
         .withId(id)
         .withVAT(vat, country)
+        .withInvoice(invoiceKey)
         .withInvestment(investment)
         .addTags(tags)
         .validate()

@@ -34,7 +34,7 @@ type WorkDAO = Pick<
 
 type WorkExpenseDAO = WorkDAO & Pick<Transaction, 'country' | 'vat'>
 
-type WorkIncomeDAO = WorkDAO & Pick<Transaction, 'invoice_key'>
+type WorkIncomeDAO = WorkDAO & Pick<Transaction, 'invoiceKey'>
 
 const logger = getLogger('db')
 
@@ -238,12 +238,12 @@ const _insertWorkIncomeDAO = async (
         origin,
         description,
         transaction_id,
-        invoice_key,
+        invoiceKey,
     } = work
     const query = {
         name: `insert-into-${WORK_SCHEMA}.income`,
         text: `INSERT INTO ${WORK_SCHEMA}.income(type, origin, description, invoice_key, transaction_id) VALUES ($1, $2, $3, $4, $5) RETURNING id;`,
-        values: [type, origin, description, invoice_key, transaction_id],
+        values: [type, origin, description, invoiceKey, transaction_id],
     }
     const queryResult = await client.query(query)
     const work_id = queryResult.rows[0].id

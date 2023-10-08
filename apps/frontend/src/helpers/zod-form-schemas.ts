@@ -27,7 +27,7 @@ export const NewTransactionFormSchema = z
         comment: z.optional(z.string()),
         tags: z.string().array(),
         investment: z.optional(z.string()),
-        invoice_key: z.optional(z.string()),
+        invoiceKey: z.optional(z.string()),
         country: z.optional(
             z
                 .string()
@@ -92,13 +92,13 @@ export const NewTransactionFormSchema = z
         if (
             form.context === 'work' &&
             form.type === 'income' &&
-            !form.invoice_key
+            !form.invoiceKey
         ) {
             ctx.addIssue({
-                path: ['invoice_key'],
+                path: ['invoiceKey'],
                 code: z.ZodIssueCode.custom,
                 message:
-                    "Transaction context 'work' of type 'income' requires an 2-character country code to be set.",
+                    "Transaction context 'work' of type 'income' requires an invoice key to be set.",
             })
         }
 
