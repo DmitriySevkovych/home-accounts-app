@@ -70,6 +70,7 @@ export class Transaction {
     comment?: string
 
     // Additional data relevant in the work context
+    invoice_key?: string
     country?: string
     vat?: number
 
@@ -194,6 +195,11 @@ class TransactionBuilder {
 
     withInvestment = (investment: string): TransactionBuilder => {
         this.transaction.investment = investment
+        return this
+    }
+
+    withInvoice = (invoice_key: string): TransactionBuilder => {
+        this.transaction.invoice_key = invoice_key
         return this
     }
 

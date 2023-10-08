@@ -27,6 +27,7 @@ export const NewTransactionFormSchema = z
         comment: z.optional(z.string()),
         tags: z.string().array(),
         investment: z.optional(z.string()),
+        invoice_key: z.optional(z.string()),
         country: z.optional(
             z
                 .string()
@@ -88,20 +89,43 @@ export const NewTransactionFormSchema = z
         }
 
         // Work fields checks
-        if (form.context === 'work' && !form.country) {
+        if (
+            form.context === 'work' &&
+            form.type === 'income' &&
+            !form.invoice_key
+        ) {
+            ctx.addIssue({
+                path: ['invoice_key'],
+                code: z.ZodIssueCode.custom,
+                message:
+                    "Transaction context 'work' of type 'income' requires an 2-character country code to be set.",
+            })
+        }
+
+        if (
+            form.context === 'work' &&
+            form.type === 'expense' &&
+            !form.country
+        ) {
             ctx.addIssue({
                 path: ['country'],
                 code: z.ZodIssueCode.custom,
                 message:
-                    "Transaction context 'work' requires an 2-character country code to be set.",
+                    "Transaction context 'work' of type 'expense' requires an 2-character country code to be set.",
             })
         }
 
-        if (form.context === 'work' && form.vat !== 0 && !form.vat) {
+        if (
+            form.context === 'work' &&
+            form.type === 'expense' &&
+            form.vat !== 0 &&
+            !form.vat
+        ) {
             ctx.addIssue({
                 path: ['vat'],
                 code: z.ZodIssueCode.custom,
-                message: "Transaction context 'work' requires a VAT to be set.",
+                message:
+                    "Transaction context 'work' of type 'expense' requires a VAT to be set.",
             })
         }
     })
