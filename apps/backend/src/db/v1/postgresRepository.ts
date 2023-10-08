@@ -2,6 +2,7 @@ import type {
     BankAccount,
     Investment,
     PaymentMethod,
+    ProjectInvoice,
     TaxCategory,
     Transaction,
     TransactionCategory,
@@ -17,6 +18,7 @@ import * as homeQueries from './queries/home.queries'
 import * as investmentsQueries from './queries/investments.queries'
 import * as tagsQueries from './queries/tags.queries'
 import * as utilsQueries from './queries/utils.queries'
+import * as workQueries from './queries/work.queries'
 
 export class PostgresRepository implements Repository {
     logger: Logger
@@ -120,12 +122,12 @@ export class PostgresRepository implements Repository {
                     this.connectionPool
                 )
                 break
-            // case 'work':
-            //     id = await workQueries.insertTransaction(
-            //         transaction,
-            //         this.connectionPool
-            //     )
-            //     break;
+            case 'work':
+                id = await workQueries.insertTransaction(
+                    transaction,
+                    this.connectionPool
+                )
+                break
 
             default:
                 throw new UnsupportedTransactionContextError(
@@ -151,5 +153,10 @@ export class PostgresRepository implements Repository {
     // Investments
     getInvestments = async (): Promise<Investment[]> => {
         return await investmentsQueries.getInvestments(this.connectionPool)
+    }
+
+    // Work
+    getProjectInvoices = async (): Promise<ProjectInvoice[]> => {
+        return await workQueries.getProjectInvoices(this.connectionPool)
     }
 }

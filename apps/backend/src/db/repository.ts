@@ -2,6 +2,7 @@ import type {
     BankAccount,
     Investment,
     PaymentMethod,
+    ProjectInvoice,
     TaxCategory,
     Transaction,
     TransactionCategory,
@@ -31,4 +32,7 @@ export interface Repository {
 
     // Investments data
     getInvestments: () => Promise<Investment[]>
+
+    // Work data
+    getProjectInvoices: () => Promise<ProjectInvoice[]>
 }
