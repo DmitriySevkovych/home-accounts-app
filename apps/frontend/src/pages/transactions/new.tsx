@@ -1,7 +1,8 @@
-// Debug tool
 import {
     BankAccount,
+    Investment,
     PaymentMethod,
+    ProjectInvoice,
     TaxCategory,
     TransactionCategory,
 } from 'domain-model'
@@ -17,6 +18,7 @@ import useNewTransactionSubmitHandler from '../../components/hooks/useNewTransac
 import { SERVER_BACKEND_BASE_URL } from '../../helpers/constants'
 import { Button } from '../../lib/shadcn/Button'
 import { Form } from '../../lib/shadcn/Form'
+import { Separator } from '../../lib/shadcn/Separator'
 
 // Type of arguments for export function (from getServerSideProps)
 type NewTransactionPageProps = {
@@ -25,6 +27,8 @@ type NewTransactionPageProps = {
     paymentMethods: PaymentMethod[]
     bankAccounts: BankAccount[]
     tags: string[]
+    investments: Investment[]
+    invoices: ProjectInvoice[]
 }
 
 const NewTransactionPage = ({
@@ -33,9 +37,12 @@ const NewTransactionPage = ({
     bankAccounts,
     taxCategories,
     tags,
+    investments,
+    invoices,
 }: NewTransactionPageProps) => {
     const { form } = useNewTransactionForm()
     const transactionType = form.watch('type')
+    const transactionContext = form.watch('context')
     const { onSubmit } = useNewTransactionSubmitHandler()
 
     return (
@@ -50,18 +57,6 @@ const NewTransactionPage = ({
                 >
                     <div className="lg:col-span-2">
                         <Radio
-                            id="type"
-                            form={form}
-                            options={[
-                                { label: 'Expense', value: 'expense' },
-                                { label: 'Income', value: 'income' },
-                            ]}
-                            label="Transaction type"
-                        />
-                    </div>
-
-                    <div className="lg:col-span-2">
-                        <Radio
                             id="context"
                             form={form}
                             options={[
@@ -73,6 +68,18 @@ const NewTransactionPage = ({
                                 },
                             ]}
                             label="Transaction context"
+                        />
+                    </div>
+
+                    <div className="lg:col-span-2">
+                        <Radio
+                            id="type"
+                            form={form}
+                            options={[
+                                { label: 'Expense', value: 'expense' },
+                                { label: 'Income', value: 'income' },
+                            ]}
+                            label="Transaction type"
                         />
                     </div>
 
@@ -166,13 +173,66 @@ const NewTransactionPage = ({
                         />
                     </div>
 
+                    {transactionContext === 'investments' && (
+                        <div>
+                            <Select
+                                id="investment"
+                                form={form}
+                                label="Investment"
+                                options={investments
+                                    .map((obj) => obj.key)
+                                    .sort()}
+                            />
+                        </div>
+                    )}
+
+                    {transactionContext === 'work' &&
+                        transactionType === 'expense' && (
+                            <>
+                                <div>
+                                    <NumberInput
+                                        id="vat"
+                                        form={form}
+                                        label="VAT (Value-Added Tax)"
+                                        placeholder="Enter a number between 0 and 100, e.g. 19"
+                                    />
+                                </div>
+                                <div>
+                                    <TextInput
+                                        id="country"
+                                        form={form}
+                                        label="Taxation country"
+                                        placeholder="Enter a country code, e.g. 'DE'"
+                                    />
+                                </div>
+                            </>
+                        )}
+
+                    {transactionContext === 'work' &&
+                        transactionType === 'income' && (
+                            <div>
+                                <Select
+                                    id="invoiceKey"
+                                    form={form}
+                                    label="Project invoice for this transaction"
+                                    options={invoices
+                                        // .sort((obj1, obj2) => obj1.issuanceDate.valueOf() - obj2.issuanceDate.valueOf())
+                                        // .reverse()
+                                        .map((obj) => obj.key)}
+                                />
+                            </div>
+                        )}
+
                     <div className="lg:col-span-2">
-                        <TagsManager
-                            id="tags"
-                            form={form}
-                            label="Tags"
-                            initialTags={tags}
-                        />
+                        <>
+                            <Separator />
+                            <TagsManager
+                                id="tags"
+                                form={form}
+                                label="Tags"
+                                initialTags={tags}
+                            />
+                        </>
                     </div>
 
                     <Button
@@ -191,15 +251,21 @@ const NewTransactionPage = ({
 
 export async function getServerSideProps() {
     try {
-        const response = await fetch(
-            `${SERVER_BACKEND_BASE_URL}/utils/constants/transactions`
-        )
+        const urls = [
+            `${SERVER_BACKEND_BASE_URL}/utils/constants/transactions`,
+            `${SERVER_BACKEND_BASE_URL}/investments`,
+            `${SERVER_BACKEND_BASE_URL}/work/invoices`,
+        ]
 
-        const constants = await response.json()
+        const response = await Promise.all(
+            urls.map((url) => fetch(url).then((res) => res.json()))
+        )
 
         return {
             props: {
-                ...constants,
+                ...response[0],
+                ...response[1],
+                ...response[2],
             },
         }
     } catch (err) {

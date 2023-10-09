@@ -1,6 +1,8 @@
 import {
     BankAccount,
+    Investment,
     PaymentMethod,
+    ProjectInvoice,
     TaxCategory,
     Transaction,
     TransactionCategory,
@@ -156,5 +158,63 @@ export class StubbedRepository implements Repository {
         const transaction = minimalDummyTransaction('FOOD', -33.33)
         transaction.id = id
         return Promise.resolve(transaction)
+    }
+
+    // Investments
+    getInvestments = async (): Promise<Investment[]> => {
+        return Promise.resolve([
+            {
+                key: 'Apartment',
+                type: 'REAL_ESTATE',
+                description: 'A 2/1 flat',
+                startDate: new Date('2012-12-12'),
+            },
+            {
+                key: 'Homebrew',
+                type: 'CRAFT',
+                description: 'A 2/1 flat',
+                startDate: new Date('2012-12-12'),
+            },
+            {
+                key: 'Stock_Portfolio',
+                type: 'STOCKS',
+                description: 'A 2/1 flat',
+                startDate: new Date('2012-12-12'),
+            },
+            {
+                key: 'Precious_Metals',
+                type: 'TANGIBLES',
+                description: 'A 2/1 flat',
+                startDate: new Date('2012-12-12'),
+            },
+        ])
+    }
+
+    // Work
+    getProjectInvoices = (): Promise<ProjectInvoice[]> => {
+        return Promise.resolve([
+            {
+                key: 'INV-0123456',
+                issuanceDate: new Date('2019-05-01'),
+                dueDate: new Date('2019-06-01'),
+                project: 'PROJECT_X',
+                netAmount: 12333.45,
+                vat: 0.19,
+                discount: 0,
+                status: 'OPEN',
+                comment: 'Dummy invoce',
+            },
+            {
+                key: 'INV-0123457',
+                issuanceDate: new Date('2019-07-03'),
+                dueDate: new Date('2019-08-02'),
+                project: 'PROJECT_Y',
+                netAmount: 5432.1,
+                vat: 0.19,
+                discount: 0.03,
+                status: 'PAID',
+                comment: 'Second dummy invoce',
+            },
+        ])
     }
 }

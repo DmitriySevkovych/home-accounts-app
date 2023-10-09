@@ -1,8 +1,16 @@
-import { Transaction, TransactionDate, createTransaction } from 'domain-model'
+import {
+    ProjectInvoice,
+    Transaction,
+    TransactionDate,
+    createTransaction,
+} from 'domain-model'
 import { getLogger } from 'logger'
 import type { Pool, PoolClient } from 'pg'
 
-import { NoRecordFoundInDatabaseError } from '../../../helpers/errors'
+import {
+    NoRecordFoundInDatabaseError,
+    UndefinedOperationError,
+} from '../../../helpers/errors'
 import { PaginationOptions } from '../../../helpers/pagination'
 import {
     TagDAO,
@@ -14,17 +22,41 @@ import {
     insertTransactionDetailsDAO,
 } from './transactions.queries'
 
-const HOME_CONTEXT = 'home'
-const HOME_SCHEMA = HOME_CONTEXT
+const WORK_CONTEXT = 'work'
+const WORK_SCHEMA = WORK_CONTEXT
 
-type HomeDAO = Pick<
+type WorkDAO = Pick<
     Transaction,
     'type' | 'category' | 'origin' | 'description'
 > & {
     transaction_id: number
 }
 
+type WorkExpenseDAO = WorkDAO & Pick<Transaction, 'country' | 'vat'>
+
+type WorkIncomeDAO = WorkDAO & Pick<Transaction, 'invoiceKey'>
+
 const logger = getLogger('db')
+
+export const getProjectInvoices = async (
+    connectionPool: Pool
+): Promise<ProjectInvoice[]> => {
+    const queryResult = await connectionPool.query(`
+        SELECT 
+            key, date, due_date, project, net_amount, vat, discount, status, comment
+        FROM work.project_invoices`)
+    return queryResult.rows.map((row) => ({
+        key: row.key,
+        issuanceDate: row.date,
+        dueDate: row.due_date,
+        project: row.project,
+        netAmount: row.net_amount,
+        vat: row.vat,
+        discount: row.discount,
+        status: row.status,
+        comment: row.comment,
+    }))
+}
 
 export const getTransactions = async (
     connectionPool: Pool,
@@ -34,19 +66,19 @@ export const getTransactions = async (
 
     //TODO extract logic to DB view?
     const query = {
-        name: `select-${HOME_SCHEMA}-transactions`,
+        name: `select-${WORK_SCHEMA}-transactions`,
         text: `
             SELECT
-                h.id as home_id, h.type as category, h.origin, h.description,
+                w.id as work_id, w.type as category, w.origin, w.description, w.invoice_key, w.vat, w.country,
                 tr.id, tr.amount, ${dateColumn} as date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
                 td.payment_method, td.tax_category, td.comment
             FROM
             (
-                SELECT * FROM ${HOME_SCHEMA}.expenses
+                SELECT id, transaction_id, type, origin, description, country, vat, NULL AS invoice_key FROM ${WORK_SCHEMA}.expenses
                 UNION ALL
-                SELECT * FROM ${HOME_SCHEMA}.income
-            ) h
-            JOIN transactions.transactions tr ON h.transaction_id = tr.id
+                SELECT id, transaction_id, type, origin, description, NULL AS country, NULL AS vat, invoice_key FROM ${WORK_SCHEMA}.income
+            ) w
+            JOIN transactions.transactions tr ON w.transaction_id = tr.id
             JOIN transactions.transaction_details td ON tr.id = td.transaction_id
             ORDER by tr.id desc
             LIMIT $1
@@ -70,20 +102,20 @@ export const getTransactionById = async (
 ): Promise<Transaction> => {
     const dateColumn = TransactionDate.formatDateColumn('tr.date')
     const query = {
-        name: `select-${HOME_SCHEMA}-transaction-by-id`,
+        name: `select-${WORK_SCHEMA}-transaction-by-id`,
         //TODO extract logic to DB view?
         text: `
         SELECT
-            h.id as home_id, h.type as category, h.origin, h.description,
+            w.id as home_id, w.type as category, w.origin, w.description, w.invoice_key, w.vat, w.country,
             tr.id, tr.amount, ${dateColumn} as date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
             td.payment_method, td.tax_category, td.comment
         FROM
         (
-            SELECT * FROM ${HOME_SCHEMA}.expenses
+            SELECT id, transaction_id, type, origin, description, country, vat, NULL AS invoice_key FROM ${WORK_SCHEMA}.expenses
             UNION ALL
-            SELECT * FROM ${HOME_SCHEMA}.income
-        ) h
-        JOIN transactions.transactions tr ON h.transaction_id = tr.id
+            SELECT id, transaction_id, type, origin, description, NULL AS country, NULL AS vat, invoice_key FROM ${WORK_SCHEMA}.income
+        ) w
+        JOIN transactions.transactions tr ON w.transaction_id = tr.id
         JOIN transactions.transaction_details td ON tr.id = td.transaction_id
         WHERE tr.id = $1;`,
         values: [id],
@@ -107,18 +139,16 @@ export const insertTransaction = async (
     try {
         await client.query('BEGIN')
 
-        const id = await insertTransactionDAO(transaction, client)
+        const transaction_id = await insertTransactionDAO(transaction, client)
 
         await insertTransactionDetailsDAO(
-            { ...transaction, transaction_id: id },
+            { ...transaction, transaction_id },
             client
         )
 
-        const home_id = await _insertHomeDAO(
-            {
-                ...transaction,
-                transaction_id: id,
-            },
+        const work_id = await _insertWorkDAO(
+            transaction,
+            transaction_id,
             client
         )
 
@@ -128,16 +158,16 @@ export const insertTransaction = async (
                 type: transaction.type,
                 context: transaction.context,
                 tag: transaction.tags[i],
-                expense_or_income_id: home_id,
+                expense_or_income_id: work_id,
             }
             await insertTagDAO(tagDAO, client)
         }
 
         await client.query('COMMIT')
         logger.trace(
-            `Committed the database transaction for inserting a new domain-model transaction with id=${id}.`
+            `Committed the database transaction for inserting a new domain-model transaction with id=${transaction_id}.`
         )
-        return id
+        return transaction_id
     } catch (e) {
         await client.query('ROLLBACK')
         logger.warn(
@@ -149,29 +179,78 @@ export const insertTransaction = async (
     }
 }
 
-const _insertHomeDAO = async (
-    home: HomeDAO,
+const _insertWorkDAO = async (
+    transaction: Transaction,
+    transaction_id: number,
+    client: PoolClient
+): Promise<number> => {
+    let handleWorkDAOInsertion
+    if (transaction.type === 'expense') {
+        handleWorkDAOInsertion = _insertWorkExpenseDAO
+    } else if (transaction.type === 'income') {
+        handleWorkDAOInsertion = _insertWorkIncomeDAO
+    } else {
+        throw new UndefinedOperationError(
+            "Transaction type should be either 'expense' or 'income'."
+        )
+    }
+    const work_id = await handleWorkDAOInsertion(
+        {
+            ...transaction,
+            transaction_id: transaction_id,
+        },
+        client
+    )
+    return work_id
+}
+
+const _insertWorkExpenseDAO = async (
+    work: WorkExpenseDAO,
     client: PoolClient
 ): Promise<number> => {
     const {
-        type: cashflow,
         category: type,
         origin,
         description,
         transaction_id,
-    } = home
-    const table = cashflow === 'expense' ? 'expenses' : 'income'
+        country,
+        vat,
+    } = work
     const query = {
-        name: `insert-into-${HOME_SCHEMA}.${table}`,
-        text: `INSERT INTO ${HOME_SCHEMA}.${table}(type, origin, description, transaction_id) VALUES ($1, $2, $3, $4) RETURNING id;`,
-        values: [type, origin, description, transaction_id],
+        name: `insert-into-${WORK_SCHEMA}.expenses`,
+        text: `INSERT INTO ${WORK_SCHEMA}.expenses(type, origin, description, vat, country, transaction_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id;`,
+        values: [type, origin, description, vat, country, transaction_id],
     }
     const queryResult = await client.query(query)
-    const home_id = queryResult.rows[0].id
+    const work_id = queryResult.rows[0].id
     logger.trace(
-        `Inserted a new row in ${HOME_SCHEMA}.${table} with id=${home_id} and foreign key transaction_id=${transaction_id}.`
+        `Inserted a new row in ${WORK_SCHEMA}.expenses with id=${work_id} and foreign key transaction_id=${transaction_id}.`
     )
-    return home_id
+    return work_id
+}
+
+const _insertWorkIncomeDAO = async (
+    work: WorkIncomeDAO,
+    client: PoolClient
+): Promise<number> => {
+    const {
+        category: type,
+        origin,
+        description,
+        transaction_id,
+        invoiceKey,
+    } = work
+    const query = {
+        name: `insert-into-${WORK_SCHEMA}.income`,
+        text: `INSERT INTO ${WORK_SCHEMA}.income(type, origin, description, invoice_key, transaction_id) VALUES ($1, $2, $3, $4, $5) RETURNING id;`,
+        values: [type, origin, description, invoiceKey, transaction_id],
+    }
+    const queryResult = await client.query(query)
+    const work_id = queryResult.rows[0].id
+    logger.trace(
+        `Inserted a new row in ${WORK_SCHEMA}.income with id=${work_id} and foreign key transaction_id=${transaction_id}.`
+    )
+    return work_id
 }
 
 // TECHNICAL DEBT: persistence of tags in DB needs to be refactored and simplified, cf. GitHub Issue #41
@@ -182,7 +261,7 @@ const _mapToTransaction = async (
 ): Promise<Transaction> => {
     const {
         id,
-        home_id,
+        work_id,
         category,
         origin,
         description,
@@ -196,11 +275,14 @@ const _mapToTransaction = async (
         payment_method: paymentMethod,
         tax_category: taxCategory,
         comment,
+        invoice_key,
+        country,
+        vat,
     } = row
     const transactionBuilder = createTransaction()
         .about(category, origin, description)
         .withId(id)
-        .withContext(HOME_CONTEXT)
+        .withContext(WORK_CONTEXT)
         .withDate(TransactionDate.fromDatabase(date))
         .withAmount(parseFloat(amount))
         .withType(amount > 0 ? 'income' : 'expense')
@@ -208,15 +290,17 @@ const _mapToTransaction = async (
         .withPaymentDetails(paymentMethod, sourceBankAccount, targetBankAccount)
         .withComment(comment)
         .withTaxCategory(taxCategory)
+        .withVAT(vat, country)
+        .withInvoice(invoice_key)
         .withAgent(agent)
 
     // TECHNICAL DEBT: persistence of tags in DB needs to be refactored and simplified, cf. GitHub Issue #41
     // TODO remove differentiation income/expense once DB is adjusted
     // TODO remove this function call from here!!! This is unclean and bad for performance
     const tags = await getTagsByExpenseOrIncomeId(
-        home_id,
+        work_id,
         parseFloat(amount) >= 0.0 ? 'income' : 'expense',
-        HOME_CONTEXT,
+        WORK_CONTEXT,
         connectionPool
     )
     transactionBuilder.addTags(tags)

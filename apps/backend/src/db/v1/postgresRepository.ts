@@ -1,6 +1,8 @@
 import type {
     BankAccount,
+    Investment,
     PaymentMethod,
+    ProjectInvoice,
     TaxCategory,
     Transaction,
     TransactionCategory,
@@ -9,11 +11,14 @@ import { Logger, getLogger } from 'logger'
 import type { Pool, PoolClient } from 'pg'
 
 import connectionPool from '.'
+import { UnsupportedTransactionContextError } from '../../helpers/errors'
 import { PaginationOptions } from '../../helpers/pagination'
 import { Repository } from '../repository'
 import * as homeQueries from './queries/home.queries'
+import * as investmentsQueries from './queries/investments.queries'
 import * as tagsQueries from './queries/tags.queries'
 import * as utilsQueries from './queries/utils.queries'
+import * as workQueries from './queries/work.queries'
 
 export class PostgresRepository implements Repository {
     logger: Logger
@@ -103,10 +108,32 @@ export class PostgresRepository implements Repository {
     createTransaction = async (transaction: Transaction): Promise<number> => {
         // TODO to log or not to log?
         this.logger.info(transaction)
-        const id = await homeQueries.insertTransaction(
-            transaction,
-            this.connectionPool
-        )
+        let id
+        switch (transaction.context) {
+            case 'home':
+                id = await homeQueries.insertTransaction(
+                    transaction,
+                    this.connectionPool
+                )
+                break
+            case 'investments':
+                id = await investmentsQueries.insertTransaction(
+                    transaction,
+                    this.connectionPool
+                )
+                break
+            case 'work':
+                id = await workQueries.insertTransaction(
+                    transaction,
+                    this.connectionPool
+                )
+                break
+
+            default:
+                throw new UnsupportedTransactionContextError(
+                    `Transaction context '${transaction.context}' is unsupported in DB v1.`
+                )
+        }
         return id
     }
 
@@ -121,5 +148,15 @@ export class PostgresRepository implements Repository {
 
     getTransactionById = async (id: number): Promise<Transaction> => {
         return await homeQueries.getTransactionById(this.connectionPool, id)
+    }
+
+    // Investments
+    getInvestments = async (): Promise<Investment[]> => {
+        return await investmentsQueries.getInvestments(this.connectionPool)
+    }
+
+    // Work
+    getProjectInvoices = async (): Promise<ProjectInvoice[]> => {
+        return await workQueries.getProjectInvoices(this.connectionPool)
     }
 }

@@ -1,4 +1,10 @@
-import { Transaction, TransactionDate, createTransaction } from 'domain-model'
+import {
+    Investment,
+    InvestmentType,
+    Transaction,
+    TransactionDate,
+    createTransaction,
+} from 'domain-model'
 import { getLogger } from 'logger'
 import type { Pool, PoolClient } from 'pg'
 
@@ -14,17 +20,41 @@ import {
     insertTransactionDetailsDAO,
 } from './transactions.queries'
 
-const HOME_CONTEXT = 'home'
-const HOME_SCHEMA = HOME_CONTEXT
-
-type HomeDAO = Pick<
+type InvestmentDAO = Pick<
     Transaction,
-    'type' | 'category' | 'origin' | 'description'
+    'type' | 'category' | 'origin' | 'description' | 'investment'
 > & {
     transaction_id: number
 }
 
 const logger = getLogger('db')
+
+const INVESTMENTS_CONTEXT = 'investments'
+const INVESTMENTS_SCHEMA = INVESTMENTS_CONTEXT
+
+export const getInvestmentTypes = async (
+    connectionPool: Pool
+): Promise<InvestmentType[]> => {
+    const queryResult = await connectionPool.query(
+        'SELECT type FROM investments.investment_types'
+    )
+    return queryResult.rows
+}
+
+export const getInvestments = async (
+    connectionPool: Pool
+): Promise<Investment[]> => {
+    const queryResult = await connectionPool.query(
+        'SELECT key, description, type, start_date, end_date FROM investments.investments'
+    )
+    return queryResult.rows.map((row) => ({
+        key: row.key,
+        type: row.type,
+        description: row.description,
+        startDate: row.start_date,
+        endDate: row.end_date,
+    }))
+}
 
 export const getTransactions = async (
     connectionPool: Pool,
@@ -34,19 +64,19 @@ export const getTransactions = async (
 
     //TODO extract logic to DB view?
     const query = {
-        name: `select-${HOME_SCHEMA}-transactions`,
+        name: `select-${INVESTMENTS_SCHEMA}-transactions`,
         text: `
             SELECT
-                h.id as home_id, h.type as category, h.origin, h.description,
+                i.id as investment_id, i.type as category, i.origin, i.description, i.investment,
                 tr.id, tr.amount, ${dateColumn} as date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
                 td.payment_method, td.tax_category, td.comment
             FROM
             (
-                SELECT * FROM ${HOME_SCHEMA}.expenses
+                SELECT * FROM ${INVESTMENTS_SCHEMA}.expenses
                 UNION ALL
-                SELECT * FROM ${HOME_SCHEMA}.income
-            ) h
-            JOIN transactions.transactions tr ON h.transaction_id = tr.id
+                SELECT * FROM ${INVESTMENTS_SCHEMA}.income
+            ) i
+            JOIN transactions.transactions tr ON i.transaction_id = tr.id
             JOIN transactions.transaction_details td ON tr.id = td.transaction_id
             ORDER by tr.id desc
             LIMIT $1
@@ -70,20 +100,20 @@ export const getTransactionById = async (
 ): Promise<Transaction> => {
     const dateColumn = TransactionDate.formatDateColumn('tr.date')
     const query = {
-        name: `select-${HOME_SCHEMA}-transaction-by-id`,
+        name: `select-${INVESTMENTS_SCHEMA}-transaction-by-id`,
         //TODO extract logic to DB view?
         text: `
         SELECT
-            h.id as home_id, h.type as category, h.origin, h.description,
+            i.id as home_id, i.type as category, i.origin, i.description, i.investment,
             tr.id, tr.amount, ${dateColumn} as date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
             td.payment_method, td.tax_category, td.comment
         FROM
         (
-            SELECT * FROM ${HOME_SCHEMA}.expenses
+            SELECT * FROM ${INVESTMENTS_SCHEMA}.expenses
             UNION ALL
-            SELECT * FROM ${HOME_SCHEMA}.income
-        ) h
-        JOIN transactions.transactions tr ON h.transaction_id = tr.id
+            SELECT * FROM ${INVESTMENTS_SCHEMA}.income
+        ) i
+        JOIN transactions.transactions tr ON i.transaction_id = tr.id
         JOIN transactions.transaction_details td ON tr.id = td.transaction_id
         WHERE tr.id = $1;`,
         values: [id],
@@ -114,7 +144,7 @@ export const insertTransaction = async (
             client
         )
 
-        const home_id = await _insertHomeDAO(
+        const home_id = await _insertInvestmentDAO(
             {
                 ...transaction,
                 transaction_id: id,
@@ -149,8 +179,8 @@ export const insertTransaction = async (
     }
 }
 
-const _insertHomeDAO = async (
-    home: HomeDAO,
+const _insertInvestmentDAO = async (
+    investmentDAO: InvestmentDAO,
     client: PoolClient
 ): Promise<number> => {
     const {
@@ -159,19 +189,20 @@ const _insertHomeDAO = async (
         origin,
         description,
         transaction_id,
-    } = home
+        investment,
+    } = investmentDAO
     const table = cashflow === 'expense' ? 'expenses' : 'income'
     const query = {
-        name: `insert-into-${HOME_SCHEMA}.${table}`,
-        text: `INSERT INTO ${HOME_SCHEMA}.${table}(type, origin, description, transaction_id) VALUES ($1, $2, $3, $4) RETURNING id;`,
-        values: [type, origin, description, transaction_id],
+        name: `insert-into-${INVESTMENTS_SCHEMA}.${table}`,
+        text: `INSERT INTO ${INVESTMENTS_SCHEMA}.${table}(type, origin, description, investment, transaction_id) VALUES ($1, $2, $3, $4, $5) RETURNING id;`,
+        values: [type, origin, description, investment, transaction_id],
     }
     const queryResult = await client.query(query)
-    const home_id = queryResult.rows[0].id
+    const investment_id = queryResult.rows[0].id
     logger.trace(
-        `Inserted a new row in ${HOME_SCHEMA}.${table} with id=${home_id} and foreign key transaction_id=${transaction_id}.`
+        `Inserted a new row in ${INVESTMENTS_SCHEMA}.${table} with id=${investment_id} and foreign key transaction_id=${transaction_id}.`
     )
-    return home_id
+    return investment_id
 }
 
 // TECHNICAL DEBT: persistence of tags in DB needs to be refactored and simplified, cf. GitHub Issue #41
@@ -182,7 +213,7 @@ const _mapToTransaction = async (
 ): Promise<Transaction> => {
     const {
         id,
-        home_id,
+        investment_id,
         category,
         origin,
         description,
@@ -196,11 +227,12 @@ const _mapToTransaction = async (
         payment_method: paymentMethod,
         tax_category: taxCategory,
         comment,
+        investment,
     } = row
     const transactionBuilder = createTransaction()
         .about(category, origin, description)
         .withId(id)
-        .withContext(HOME_CONTEXT)
+        .withContext(INVESTMENTS_CONTEXT)
         .withDate(TransactionDate.fromDatabase(date))
         .withAmount(parseFloat(amount))
         .withType(amount > 0 ? 'income' : 'expense')
@@ -209,14 +241,15 @@ const _mapToTransaction = async (
         .withComment(comment)
         .withTaxCategory(taxCategory)
         .withAgent(agent)
+        .withInvestment(investment)
 
     // TECHNICAL DEBT: persistence of tags in DB needs to be refactored and simplified, cf. GitHub Issue #41
     // TODO remove differentiation income/expense once DB is adjusted
     // TODO remove this function call from here!!! This is unclean and bad for performance
     const tags = await getTagsByExpenseOrIncomeId(
-        home_id,
+        investment_id,
         parseFloat(amount) >= 0.0 ? 'income' : 'expense',
-        HOME_CONTEXT,
+        INVESTMENTS_CONTEXT,
         connectionPool
     )
     transactionBuilder.addTags(tags)

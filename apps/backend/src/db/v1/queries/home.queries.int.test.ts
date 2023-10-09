@@ -1,13 +1,13 @@
-import type { Pool } from 'pg'
-
-import { PostgresRepository } from '../postgresRepository'
-import { getTransactionById, insertTransaction } from './home.queries'
 import {
     Transaction,
     TransactionDate,
     dummyTransaction,
     minimalDummyTransaction,
 } from 'domain-model'
+import type { Pool } from 'pg'
+
+import { PostgresRepository } from '../postgresRepository'
+import { getTransactionById, insertTransaction } from './home.queries'
 
 /*
     @group integration
@@ -58,7 +58,6 @@ describe('Database queries targeting the home schema', () => {
         // Act
         const transaction = await getTransactionById(connectionPool, id)
         // Assert
-        expect(transaction).toBeDefined()
         expect(transaction.id).toBe(id)
         expect(transaction.amount).toBe(amount)
         expect(transaction.date.toString()).toEqual(transactionDate.toString())
@@ -84,7 +83,6 @@ describe('Database queries targeting the home schema', () => {
         // Act
         const transaction = await getTransactionById(connectionPool, id)
         // Assert
-        expect(transaction).toBeDefined()
         expect(transaction.id).toBe(id)
         expect(transaction.amount).toBe(amount)
         expect(transaction.category).toBe(category)
@@ -116,7 +114,6 @@ describe('Database queries targeting the home schema', () => {
         // Act
         const transaction = await getTransactionById(connectionPool, id)
         // Assert
-        expect(transaction).toBeDefined()
         expect(transaction.id).toBe(id)
         expect(transaction.amount).toBe(amount)
         expect(transaction.date.toString()).toEqual(transactionDate.toString())
@@ -140,7 +137,6 @@ describe('Database queries targeting the home schema', () => {
         // Act
         const transaction = await getTransactionById(connectionPool, id)
         // Assert
-        expect(transaction).toBeDefined()
         expect(transaction.id).toBe(id)
         expect(transaction.amount).toBe(amount)
         expect(transaction.category).toBe(category)

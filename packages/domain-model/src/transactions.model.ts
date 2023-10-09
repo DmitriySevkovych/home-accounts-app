@@ -1,5 +1,6 @@
 import { TransactionDate } from './dates.model'
 import { TransactionValidationError } from './errors.model'
+import { Investment } from './investments.model'
 
 // TODO extract these helper types to somewhere else...
 type UnionToIntersection<U> = (
@@ -45,15 +46,6 @@ export type TransactionType = 'income' | 'expense'
 
 export type TransactionContext = 'home' | 'work' | 'investments'
 
-// type WorkContext = {
-//     country: string
-//     vat: number
-// }
-
-// type InvestmentContext = {
-//     investment: string
-// }
-
 export class Transaction {
     // Unique identifier, to be provided by a DB sequence
     id?: number
@@ -76,6 +68,14 @@ export class Transaction {
     targetBankAccount?: PickAndFlatten<BankAccount, 'account'>
     taxCategory?: PickAndFlatten<TaxCategory, 'category'>
     comment?: string
+
+    // Additional data relevant in the work context
+    invoiceKey?: string
+    country?: string
+    vat?: number
+
+    // Additional data relevant in the investment context
+    investment?: PickAndFlatten<Investment, 'key'>
 
     // Technical helper data
     agent: string = 'default_agent'
@@ -193,6 +193,22 @@ class TransactionBuilder {
         return this
     }
 
+    withInvestment = (investment: string): TransactionBuilder => {
+        this.transaction.investment = investment
+        return this
+    }
+
+    withInvoice = (invoiceKey: string): TransactionBuilder => {
+        this.transaction.invoiceKey = invoiceKey
+        return this
+    }
+
+    withVAT = (vat: number, taxationCountry: string): TransactionBuilder => {
+        this.transaction.vat = vat
+        this.transaction.country = taxationCountry
+        return this
+    }
+
     withAgent = (agent: string): TransactionBuilder => {
         this.transaction.agent = agent
         return this
@@ -229,6 +245,8 @@ class TransactionBuilder {
         this._throwIfAmountInconsistentWithBankAccounts()
 
         this._throwIfAmountInconsistentWithType(amount, type)
+
+        this._throwIfContextDataMissing()
 
         return this
     }
@@ -284,6 +302,38 @@ class TransactionBuilder {
             )
         }
     }
+
+    private _throwIfContextDataMissing = (): void => {
+        const { context, type: transactionType } = this.transaction
+
+        if (context === 'work' && transactionType === 'expense') {
+            const { vat, country } = this.transaction
+            if (vat !== 0 && !vat) {
+                throw new TransactionValidationError(
+                    `The transaction context '${context}' requires the attribute 'vat' to be set.`
+                )
+            }
+            if (!country) {
+                throw new TransactionValidationError(
+                    `The transaction context '${context}' requires the attribute 'country' to be set.`
+                )
+            }
+        } else if (context === 'work' && transactionType === 'income') {
+            const { invoiceKey } = this.transaction
+            if (!invoiceKey) {
+                throw new TransactionValidationError(
+                    `The transaction context '${context}' requires the attribute 'invoiceKey' to be set.`
+                )
+            }
+        } else if (context === 'investments') {
+            const { investment } = this.transaction
+            if (!investment) {
+                throw new TransactionValidationError(
+                    `The transaction context '${context}' requires the attribute 'investment' to be set.`
+                )
+            }
+        }
+    }
 }
 
 export const createTransaction = (): TransactionBuilder => {
@@ -306,8 +356,13 @@ export const deserializeTransaction = (data: any) => {
         comment,
         agent,
         tags,
+        taxCategory,
         type,
         context,
+        vat,
+        country,
+        invoiceKey,
+        investment,
     } = data
 
     const transaction: Transaction = createTransaction()
@@ -318,9 +373,13 @@ export const deserializeTransaction = (data: any) => {
         .withCurrency(currency, exchangeRate)
         .withDate(TransactionDate.deserialize(date))
         .withPaymentDetails(paymentMethod, sourceBankAccount, targetBankAccount)
+        .withTaxCategory(taxCategory)
         .withComment(comment)
         .withAgent(agent)
         .withId(id)
+        .withVAT(vat, country)
+        .withInvoice(invoiceKey)
+        .withInvestment(investment)
         .addTags(tags)
         .validate()
         .build()
