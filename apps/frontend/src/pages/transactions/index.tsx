@@ -49,6 +49,12 @@ export const getServerSideProps = async () => {
             systemInfo: {
                 frontend: {
                     environment: process.env['APP_ENV'],
+                    branch: process.env['GIT_BRANCH']
+                        ? process.env['GIT_BRANCH']
+                        : '',
+                    commit: process.env['GIT_COMMIT']
+                        ? process.env['GIT_COMMIT']
+                        : '',
                     tlsRejectUnauthorized:
                         process.env['NODE_TLS_REJECT_UNAUTHORIZED'] !== '0',
                 },
