@@ -2,10 +2,13 @@ import React from 'react'
 
 import { Label } from '../lib/shadcn/Label'
 import { Popover, PopoverContent, PopoverTrigger } from '../lib/shadcn/Popover'
+import { ScrollArea } from '../lib/shadcn/ScrollArea'
 
 type FrontendInfo = {
     environment: string
     tlsRejectUnauthorized: boolean
+    branch?: string
+    commit?: string
 }
 
 type BackendInfo = {
@@ -13,6 +16,8 @@ type BackendInfo = {
     host: string
     port: string
     db: string
+    branch?: string
+    commit?: string
     error?: string
 }
 
@@ -26,30 +31,40 @@ export const SystemInfoFooter = ({ frontend, backend }: SystemInfo) => {
         <footer className="place-self-center">
             <Popover>
                 <PopoverTrigger>System information</PopoverTrigger>
-                <PopoverContent className="grid gap-4">
+                <PopoverContent className="grid gap-8">
                     <div>
                         <Label>Frontend Info</Label>
                         <div className="grid grid-cols-2 gap-1">
                             <p>Environment:</p>
                             <p>{frontend.environment}</p>
-                            <p>TLS Reject Unauthorized:</p>
+                            <p>TLS:</p>
                             <p>
                                 {frontend.tlsRejectUnauthorized
                                     ? 'active'
                                     : 'deactivated'}
                             </p>
+                            {frontend.branch && (
+                                <>
+                                    <p>Branch:</p>
+                                    <p>{frontend.branch}</p>
+                                    <p>Commit:</p>
+                                    <p>{frontend.commit?.substring(0, 7)}</p>
+                                </>
+                            )}
                         </div>
                     </div>
                     <div>
                         <Label>Backend Info</Label>
                         <div className="grid grid-cols-2 gap-1">
                             {backend.error && (
-                                <p className="font-bold text-red-500">Error!</p>
-                            )}
-                            {backend.error && (
-                                <p className="font-bold text-red-500">
-                                    {backend.error}
-                                </p>
+                                <>
+                                    <p className="font-bold text-red-500">
+                                        Error!
+                                    </p>
+                                    <p className="font-bold text-red-500">
+                                        {backend.error}
+                                    </p>
+                                </>
                             )}
                             <p>Environment:</p>
                             <p>{backend.environment}</p>
@@ -59,6 +74,14 @@ export const SystemInfoFooter = ({ frontend, backend }: SystemInfo) => {
                             <p>{backend.port}</p>
                             <p>Database:</p>
                             <p>{backend.db}</p>
+                            {backend.branch && (
+                                <>
+                                    <p>Branch:</p>
+                                    <p>{backend.branch}</p>
+                                    <p>Commit:</p>
+                                    <p>{backend.commit}</p>
+                                </>
+                            )}
                         </div>
                     </div>
                 </PopoverContent>
