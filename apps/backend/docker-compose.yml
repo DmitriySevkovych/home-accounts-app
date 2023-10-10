@@ -5,5 +5,8 @@ services:
     build:
       context: ../../
       dockerfile: ./apps/backend/Dockerfile
+      args:
+        - GIT_BRANCH
+        - GIT_COMMIT
     image: dsevkovych/home-app-backend
    

@@ -39,6 +39,11 @@ RUN npx turbo run build --filter=frontend
 # cf. https://snyk.io/blog/10-best-practices-to-containerize-nodejs-web-applications-with-docker/ for infos on dumb-init and the CMD statement
 FROM base AS runner
 ENV NODE_ENV production
+ARG GIT_BRANCH
+ENV GIT_BRANCH=${GIT_BRANCH:-unknown}
+ARG GIT_COMMIT
+ENV GIT_COMMIT=${GIT_COMMIT:-unknown}
+RUN echo "The image is based on branch $GIT_BRANCH and commit $GIT_COMMIT"
 WORKDIR /app
 RUN addgroup --system --gid 1001 homeapp
 RUN adduser --system --uid 1001 frontend
