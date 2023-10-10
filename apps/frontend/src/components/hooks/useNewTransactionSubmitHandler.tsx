@@ -14,7 +14,7 @@ const sendTransaction = async (
     try {
         const body = {
             ...transaction,
-            agent: 'test-agent', // TODO agent should be the logged-in user, once there is a login
+            agent: 'home-app-frontend', // TODO agent should be the logged-in user, once there is a login
         }
 
         const response = await fetch(
