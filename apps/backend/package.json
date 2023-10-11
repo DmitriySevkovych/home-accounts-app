@@ -3,7 +3,7 @@
     "version": "0.0.0",
     "private": true,
     "scripts": {
-        "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
+        "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist && rm -rf coverage",
         "build": "tsup src/index.ts --format cjs",
         "build:image": "make build",
         "predev": "dotenv -e .env.local -e .env bash ./setup.sh",
