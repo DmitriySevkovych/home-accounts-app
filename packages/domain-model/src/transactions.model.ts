@@ -1,4 +1,4 @@
-import { TransactionDate } from './dates.model'
+import { HomeAppDate } from './dates.model'
 import { TransactionValidationError } from './errors.model'
 import { Investment } from './investments.model'
 
@@ -54,7 +54,7 @@ export class Transaction {
     category!: PickAndFlatten<TransactionCategory, 'category'>
     origin!: string
     description!: string
-    date: TransactionDate = TransactionDate.today()
+    date: HomeAppDate = HomeAppDate.today()
     tags: string[] = []
 
     // Data describing the money movement
@@ -144,7 +144,7 @@ class TransactionBuilder {
         return this
     }
 
-    withDate = (date: TransactionDate): TransactionBuilder => {
+    withDate = (date: HomeAppDate): TransactionBuilder => {
         // TODO maybe remove the default date value and remove this if statement
         if (date) {
             this.transaction.date = date
@@ -279,7 +279,7 @@ class TransactionBuilder {
         }
     }
 
-    private _throwIfDateInvalid = (date: TransactionDate): void => {
+    private _throwIfDateInvalid = (date: HomeAppDate): void => {
         this._throwIfFalsy('date', date)
 
         if (date.toString() === 'Invalid DateTime') {
@@ -371,7 +371,7 @@ export const deserializeTransaction = (data: any) => {
         .withContext(context)
         .withAmount(amount)
         .withCurrency(currency, exchangeRate)
-        .withDate(TransactionDate.deserialize(date))
+        .withDate(HomeAppDate.deserialize(date))
         .withPaymentDetails(paymentMethod, sourceBankAccount, targetBankAccount)
         .withTaxCategory(taxCategory)
         .withComment(comment)

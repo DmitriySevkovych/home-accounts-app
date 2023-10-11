@@ -8,7 +8,7 @@ export type ProjectInvoiceStatus = 'OPEN' | 'PAID'
 
 export type ProjectInvoice = {
     key: string
-    issuanceDate: Date // TODO consolidate with TransactionDate... or ditch TransactionDate
+    issuanceDate: Date // TODO consolidate with HomeAppDate... or ditch HomeAppDate
     dueDate: Date
     project: PickAndFlatten<Project, 'key'>
     netAmount: number

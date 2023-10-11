@@ -1,4 +1,4 @@
-import { Transaction, TransactionDate } from 'domain-model'
+import { HomeAppDate, Transaction } from 'domain-model'
 import { CalendarIcon } from 'lucide-react'
 import React from 'react'
 import { UseFormReturn } from 'react-hook-form'
@@ -49,9 +49,7 @@ export const Calendar = (props: CalendarProps) => {
                                 onSelect={(selectedDay) => {
                                     if (selectedDay)
                                         field.onChange(
-                                            TransactionDate.fromJsDate(
-                                                selectedDay
-                                            )
+                                            HomeAppDate.fromJsDate(selectedDay)
                                         )
                                 }}
                                 initialFocus

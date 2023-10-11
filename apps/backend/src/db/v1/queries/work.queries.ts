@@ -1,7 +1,7 @@
 import {
+    HomeAppDate,
     ProjectInvoice,
     Transaction,
-    TransactionDate,
     createTransaction,
 } from 'domain-model'
 import { getLogger } from 'logger'
@@ -62,7 +62,7 @@ export const getTransactions = async (
     connectionPool: Pool,
     paginationOptions: PaginationOptions
 ): Promise<Transaction[]> => {
-    const dateColumn = TransactionDate.formatDateColumn('tr.date')
+    const dateColumn = HomeAppDate.formatDateColumn('tr.date')
 
     //TODO extract logic to DB view?
     const query = {
@@ -100,7 +100,7 @@ export const getTransactionById = async (
     connectionPool: Pool,
     id: number
 ): Promise<Transaction> => {
-    const dateColumn = TransactionDate.formatDateColumn('tr.date')
+    const dateColumn = HomeAppDate.formatDateColumn('tr.date')
     const query = {
         name: `select-${WORK_SCHEMA}-transaction-by-id`,
         //TODO extract logic to DB view?
@@ -283,7 +283,7 @@ const _mapToTransaction = async (
         .about(category, origin, description)
         .withId(id)
         .withContext(WORK_CONTEXT)
-        .withDate(TransactionDate.fromDatabase(date))
+        .withDate(HomeAppDate.fromDatabase(date))
         .withAmount(parseFloat(amount))
         .withType(amount > 0 ? 'income' : 'expense')
         .withCurrency(currency, parseFloat(exchangeRate))

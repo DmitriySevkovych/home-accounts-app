@@ -8,6 +8,6 @@ export type Investment = {
     key: string
     type: PickAndFlatten<InvestmentType, 'type'>
     description: string
-    startDate: Date // TODO unify with TransactionDate? Or remove TransactionDate?
-    endDate?: Date // TODO unify with TransactionDate? Or remove TransactionDate?
+    startDate: Date // TODO unify with HomeAppDate? Or remove HomeAppDate?
+    endDate?: Date // TODO unify with HomeAppDate? Or remove HomeAppDate?
 }

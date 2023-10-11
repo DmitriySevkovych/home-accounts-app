@@ -1,10 +1,10 @@
-import { TransactionDate } from './dates.model'
+import { HomeAppDate } from './dates.model'
 import { Transaction, createTransaction } from './transactions.model'
 
 export const dummyTransaction = (
     category: string,
     amount: number,
-    date: TransactionDate
+    date: HomeAppDate
 ): Transaction => {
     const transactionBuilder = createTransaction()
         .about(category, 'Test origin', 'A lengthy test description')

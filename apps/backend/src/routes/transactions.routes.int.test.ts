@@ -1,14 +1,14 @@
-import supertest from 'supertest'
 import {
-    TransactionDate,
+    HomeAppDate,
     TransactionValidationError,
     deserializeTransaction,
     dummyTransaction,
 } from 'domain-model'
 import { type Express } from 'express'
+import supertest from 'supertest'
 
-import { createServer } from '../server'
 import { StubbedRepository } from '../db/stubs/stubbedRepository'
+import { createServer } from '../server'
 
 /*
     @group integration
@@ -26,7 +26,7 @@ describe('Transactions router tests', () => {
     it('POST should create a transaction and return with status 201 Created', async () => {
         await supertest(server)
             .post(routerBaseUrl)
-            .send(dummyTransaction('FOOD', -3.45, TransactionDate.today()))
+            .send(dummyTransaction('FOOD', -3.45, HomeAppDate.today()))
             .expect(201)
             .then((res) => {
                 expect(res.body.message).toBe(

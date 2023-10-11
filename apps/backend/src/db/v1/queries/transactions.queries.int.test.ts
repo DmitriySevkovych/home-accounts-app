@@ -1,3 +1,4 @@
+import { HomeAppDate } from 'domain-model'
 import type { Pool } from 'pg'
 
 import { PostgresRepository } from '../postgresRepository'
@@ -6,7 +7,6 @@ import {
     getTransactionDAOById,
     insertTransactionDAO,
 } from './transactions.queries'
-import { TransactionDate } from 'domain-model'
 
 /*
     @group integration
@@ -40,7 +40,7 @@ describe('Database queries targeting only the transactions schema', () => {
     it('insertTransactionDAO should create a new entry in the database and getTransactionDAOById should retrieve it', async () => {
         // Arrange
         const transaction: TransactionDAO = {
-            date: TransactionDate.today(),
+            date: HomeAppDate.today(),
             amount: 9.99,
             currency: 'EUR',
             exchangeRate: 1,
