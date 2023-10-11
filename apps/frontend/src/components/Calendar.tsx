@@ -29,7 +29,7 @@ export const Calendar = (props: CalendarProps) => {
                             <FormControl>
                                 <Button
                                     className={cn(
-                                        'w-full pl-3 text-left font-normal bg-background-overlay hover:bg-background-overlay text-darkest',
+                                        'w-full bg-background-overlay pl-3 text-left font-normal text-darkest hover:bg-background-overlay',
                                         !field.value && 'text-muted-foreground'
                                     )}
                                 >
@@ -45,7 +45,7 @@ export const Calendar = (props: CalendarProps) => {
                         <PopoverContent className="w-auto p-0" align="start">
                             <ShadcnCalendar
                                 mode="single"
-                                selected={field.value.toString()}
+                                selected={new Date(field.value.toString())}
                                 onSelect={(selectedDay) => {
                                     if (selectedDay)
                                         field.onChange(
