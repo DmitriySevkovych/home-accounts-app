@@ -20,6 +20,7 @@ VALUES
   ('SALARY', NULL),
   ('MAINTENANCE', NULL),
   ('TAX', NULL),
+  ('FEE', NULL),
   ('GIFT', NULL);
 
 INSERT INTO

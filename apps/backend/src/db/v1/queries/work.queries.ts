@@ -290,7 +290,7 @@ const _mapToTransaction = async (
         .withPaymentDetails(paymentMethod, sourceBankAccount, targetBankAccount)
         .withComment(comment)
         .withTaxCategory(taxCategory)
-        .withVAT(vat, country)
+        .withVAT(parseFloat(vat), country)
         .withInvoice(invoice_key)
         .withAgent(agent)
 
