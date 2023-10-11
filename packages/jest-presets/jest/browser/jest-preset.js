@@ -2,5 +2,5 @@ const basePreset = require('../base/jest-preset')
 
 module.exports = {
     ...basePreset,
-    testEnvironment: "node",
+    testEnvironment: "jsdom",
 }
