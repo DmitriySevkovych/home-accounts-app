@@ -14,9 +14,7 @@
         "test": "dotenv -e .env.test.local -e .env.test jest --detectOpenHandles"
     },
     "jest": {
-        "preset": "jest-presets/jest/node",
-        "runner": "groups",
-        "testEnvironment": "node"
+        "preset": "jest-presets/jest/browser"
     },
     "dependencies": {
         "@hookform/resolvers": "^3.1.1",

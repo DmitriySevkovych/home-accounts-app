@@ -17,9 +17,7 @@
         "posttest": "dotenv -e .env.test.local -e .env.test bash ./teardown.sh"
     },
     "jest": {
-        "preset": "jest-presets/jest/node",
-        "runner": "groups",
-        "testEnvironment": "node"
+        "preset": "jest-presets/jest/node"
     },
     "dependencies": {
         "body-parser": "^1.19.0",
