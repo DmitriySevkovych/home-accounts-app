@@ -3,7 +3,7 @@
     "version": "0.0.0",
     "private": true,
     "scripts": {
-        "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
+        "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist && rm -rf coverage",
         "build": "tsup src/index.ts --format cjs",
         "build:image": "make build",
         "predev": "dotenv -e .env.local -e .env bash ./setup.sh",
@@ -17,9 +17,7 @@
         "posttest": "dotenv -e .env.test.local -e .env.test bash ./teardown.sh"
     },
     "jest": {
-        "preset": "jest-presets/jest/node",
-        "runner": "groups",
-        "testEnvironment": "node"
+        "preset": "jest-presets/jest/node"
     },
     "dependencies": {
         "body-parser": "^1.19.0",
@@ -41,9 +39,7 @@
         "@types/pg": "^8.6.6",
         "@types/supertest": "^2.0.12",
         "eslint-config-custom-server": "*",
-        "jest": "^26.6.3",
         "jest-presets": "*",
-        "jest-runner-groups": "^2.2.0",
         "pino-pretty": "^10.0.0",
         "supertest": "^6.2.4",
         "ts-node": "10.7.0",
