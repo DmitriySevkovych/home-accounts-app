@@ -53,6 +53,7 @@
         "@types/react-dom": "^18.2.0",
         "autoprefixer": "^10.4.14",
         "eslint-config-custom-next": "*",
+        "jest-presets": "*",
         "postcss": "^8.4.27",
         "prettier-config-custom": "*",
         "tailwindcss": "^3.3.3",
