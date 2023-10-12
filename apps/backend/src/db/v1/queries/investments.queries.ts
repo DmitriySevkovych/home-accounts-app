@@ -51,8 +51,8 @@ export const getInvestments = async (
         key: row.key,
         type: row.type,
         description: row.description,
-        startDate: row.start_date,
-        endDate: row.end_date,
+        startDate: HomeAppDate.fromDatabase(row.start_date),
+        endDate: HomeAppDate.fromDatabase(row.end_date),
     }))
 }
 

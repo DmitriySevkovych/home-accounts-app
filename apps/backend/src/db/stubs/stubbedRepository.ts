@@ -1,5 +1,6 @@
 import {
     BankAccount,
+    HomeAppDate,
     Investment,
     PaymentMethod,
     ProjectInvoice,
@@ -167,25 +168,25 @@ export class StubbedRepository implements Repository {
                 key: 'Apartment',
                 type: 'REAL_ESTATE',
                 description: 'A 2/1 flat',
-                startDate: new Date('2012-12-12'),
+                startDate: HomeAppDate.fromString('2012-12-12'),
             },
             {
                 key: 'Homebrew',
                 type: 'CRAFT',
                 description: 'A 2/1 flat',
-                startDate: new Date('2012-12-12'),
+                startDate: HomeAppDate.fromString('2012-12-12'),
             },
             {
                 key: 'Stock_Portfolio',
                 type: 'STOCKS',
                 description: 'A 2/1 flat',
-                startDate: new Date('2012-12-12'),
+                startDate: HomeAppDate.fromString('2012-12-12'),
             },
             {
                 key: 'Precious_Metals',
                 type: 'TANGIBLES',
                 description: 'A 2/1 flat',
-                startDate: new Date('2012-12-12'),
+                startDate: HomeAppDate.fromString('2012-12-12'),
             },
         ])
     }
