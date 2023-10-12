@@ -1,6 +1,6 @@
 import {
+    HomeAppDate,
     Transaction,
-    TransactionDate,
     dummyTransaction,
     minimalDummyTransaction,
 } from 'domain-model'
@@ -34,7 +34,7 @@ describe('Database queries targeting the home schema', () => {
             const transaction: Transaction = dummyTransaction(
                 category,
                 amount,
-                TransactionDate.fromString('2020-01-15')
+                HomeAppDate.fromString('2020-01-15')
             )
             // Act
             const transactionId = await insertTransaction(
@@ -50,7 +50,7 @@ describe('Database queries targeting the home schema', () => {
         // Arrange
         const category = 'FOOD'
         const amount = -5.99
-        const transactionDate = TransactionDate.fromString('2020-02-16')
+        const transactionDate = HomeAppDate.fromString('2020-02-16')
         const id = await insertTransaction(
             dummyTransaction(category, amount, transactionDate),
             connectionPool
@@ -89,7 +89,7 @@ describe('Database queries targeting the home schema', () => {
         expect(transaction.type).toBe('expense')
         expect(transaction.context).toBe('home')
         expect(transaction.date.toString()).toEqual(
-            TransactionDate.today().toString()
+            HomeAppDate.today().toString()
         ) // default value!
         expect(transaction.currency).toBe('EUR') // default value!
         expect(transaction.exchangeRate).toBe(1) // default value!
@@ -106,7 +106,7 @@ describe('Database queries targeting the home schema', () => {
         // Arrange
         const category = 'SALARY'
         const amount = 19.99
-        const transactionDate = TransactionDate.fromString('2020-05-05')
+        const transactionDate = HomeAppDate.fromString('2020-05-05')
         const id = await insertTransaction(
             dummyTransaction(category, amount, transactionDate),
             connectionPool
@@ -143,7 +143,7 @@ describe('Database queries targeting the home schema', () => {
         expect(transaction.type).toBe('income')
         expect(transaction.context).toBe('home')
         expect(transaction.date.toString()).toEqual(
-            TransactionDate.today().toString()
+            HomeAppDate.today().toString()
         ) // default value!
         expect(transaction.currency).toBe('EUR') // default value!
         expect(transaction.exchangeRate).toBe(1) // default value!

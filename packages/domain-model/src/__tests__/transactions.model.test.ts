@@ -2,12 +2,12 @@
     @group unit
     @group domain
  */
-import { TransactionDate } from '../dates.model'
-import { TransactionValidationError } from '../errors.model'
+import { HomeAppDate } from '../models/dates.model'
+import { TransactionValidationError } from '../models/errors.model'
 import {
     createTransaction,
     deserializeTransaction,
-} from '../transactions.model'
+} from '../models/transactions.model'
 
 describe('Transactions tests', () => {
     it('should return right equivalent in EUR', () => {
@@ -45,7 +45,7 @@ describe('Transactions tests', () => {
         const transactionBuilder = createTransaction()
             .about('FOOD', 'Test origin', '')
             .withAmount(3.0)
-            .withDate(TransactionDate.today())
+            .withDate(HomeAppDate.today())
             .withPaymentTo('TRANSFER', 'HOME_ACCOUNT')
             .withType('income')
             .withContext('home')
@@ -64,7 +64,7 @@ describe('Transactions tests', () => {
         const transactionBuilder = createTransaction()
             .about('FOOD', 'Test origin', '')
             .withAmount(amount)
-            .withDate(TransactionDate.today())
+            .withDate(HomeAppDate.today())
             .withPaymentTo('TRANSFER', 'HOME_ACCOUNT')
         // Act
         const validation = () => {
@@ -87,7 +87,7 @@ describe('Transactions tests', () => {
             const transactionBuilder = createTransaction()
                 .about('FOOD', 'Test origin', '')
                 .withAmount(amount)
-                .withDate(TransactionDate.today())
+                .withDate(HomeAppDate.today())
                 .withPaymentDetails(
                     'TRANSFER',
                     sourceBankAccount,

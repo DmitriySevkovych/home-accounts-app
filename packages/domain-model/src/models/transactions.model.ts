@@ -1,50 +1,19 @@
-import { TransactionDate } from './dates.model'
+import { PickAndFlatten } from '../helpers/handy-types'
+import { HomeAppDate } from './dates.model'
 import { TransactionValidationError } from './errors.model'
 import { Investment } from './investments.model'
-
-// TODO extract these helper types to somewhere else...
-type UnionToIntersection<U> = (
-    U extends any ? (_k: U) => void : never
-) extends (_k: infer I) => void
-    ? I
-    : never
-export type PickAndFlatten<T, K extends keyof T> = UnionToIntersection<T[K]>
-
-// Types for utility data - TODO extract to somewhere else...
-export type TransactionCategory = {
-    category: string
-    allowedTypes: TransactionType[]
-    description?: string
-}
-
-export type TaxCategory = {
-    category: string
-    description?: string
-}
-
-export type PaymentMethod = {
-    method: string
-    description?: string
-}
-
-export type BankAccount = {
-    account: string
-    bank: string
-    annualFee: number
-    category: 'private' | 'business' | 'investment'
-    owner?: 'Dmitriy' | 'Ivanna' | 'Dmitriy and Ivanna'
-    purpose?: string
-    iban?: string
-    openingDate?: Date
-    closingDate?: Date
-    contact?: string
-    comment?: string
-}
+import { BankAccount, PaymentMethod, TaxCategory } from './utilities.model'
 
 // Transactions-related types
 export type TransactionType = 'income' | 'expense'
 
 export type TransactionContext = 'home' | 'work' | 'investments'
+
+export type TransactionCategory = {
+    category: string
+    allowedTypes: TransactionType[]
+    description?: string
+}
 
 export class Transaction {
     // Unique identifier, to be provided by a DB sequence
@@ -54,7 +23,7 @@ export class Transaction {
     category!: PickAndFlatten<TransactionCategory, 'category'>
     origin!: string
     description!: string
-    date: TransactionDate = TransactionDate.today()
+    date: HomeAppDate = HomeAppDate.today()
     tags: string[] = []
 
     // Data describing the money movement
@@ -144,7 +113,7 @@ class TransactionBuilder {
         return this
     }
 
-    withDate = (date: TransactionDate): TransactionBuilder => {
+    withDate = (date: HomeAppDate): TransactionBuilder => {
         // TODO maybe remove the default date value and remove this if statement
         if (date) {
             this.transaction.date = date
@@ -279,7 +248,7 @@ class TransactionBuilder {
         }
     }
 
-    private _throwIfDateInvalid = (date: TransactionDate): void => {
+    private _throwIfDateInvalid = (date: HomeAppDate): void => {
         this._throwIfFalsy('date', date)
 
         if (date.toString() === 'Invalid DateTime') {
@@ -371,7 +340,7 @@ export const deserializeTransaction = (data: any) => {
         .withContext(context)
         .withAmount(amount)
         .withCurrency(currency, exchangeRate)
-        .withDate(TransactionDate.deserialize(date))
+        .withDate(HomeAppDate.deserialize(date))
         .withPaymentDetails(paymentMethod, sourceBankAccount, targetBankAccount)
         .withTaxCategory(taxCategory)
         .withComment(comment)

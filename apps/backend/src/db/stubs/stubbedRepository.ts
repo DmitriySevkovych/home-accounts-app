@@ -1,5 +1,6 @@
 import {
     BankAccount,
+    HomeAppDate,
     Investment,
     PaymentMethod,
     ProjectInvoice,
@@ -167,25 +168,25 @@ export class StubbedRepository implements Repository {
                 key: 'Apartment',
                 type: 'REAL_ESTATE',
                 description: 'A 2/1 flat',
-                startDate: new Date('2012-12-12'),
+                startDate: HomeAppDate.fromString('2012-12-12'),
             },
             {
                 key: 'Homebrew',
                 type: 'CRAFT',
                 description: 'A 2/1 flat',
-                startDate: new Date('2012-12-12'),
+                startDate: HomeAppDate.fromString('2012-12-12'),
             },
             {
                 key: 'Stock_Portfolio',
                 type: 'STOCKS',
                 description: 'A 2/1 flat',
-                startDate: new Date('2012-12-12'),
+                startDate: HomeAppDate.fromString('2012-12-12'),
             },
             {
                 key: 'Precious_Metals',
                 type: 'TANGIBLES',
                 description: 'A 2/1 flat',
-                startDate: new Date('2012-12-12'),
+                startDate: HomeAppDate.fromString('2012-12-12'),
             },
         ])
     }
@@ -195,8 +196,8 @@ export class StubbedRepository implements Repository {
         return Promise.resolve([
             {
                 key: 'INV-0123456',
-                issuanceDate: new Date('2019-05-01'),
-                dueDate: new Date('2019-06-01'),
+                issuanceDate: HomeAppDate.fromString('2019-05-01'),
+                dueDate: HomeAppDate.fromString('2019-06-01'),
                 project: 'PROJECT_X',
                 netAmount: 12333.45,
                 vat: 0.19,
@@ -206,8 +207,8 @@ export class StubbedRepository implements Repository {
             },
             {
                 key: 'INV-0123457',
-                issuanceDate: new Date('2019-07-03'),
-                dueDate: new Date('2019-08-02'),
+                issuanceDate: HomeAppDate.fromString('2019-07-03'),
+                dueDate: HomeAppDate.fromString('2019-08-02'),
                 project: 'PROJECT_Y',
                 netAmount: 5432.1,
                 vat: 0.19,

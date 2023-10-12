@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { TransactionDate } from 'domain-model'
+import { HomeAppDate } from 'domain-model'
 import { useForm } from 'react-hook-form'
 
 import {
@@ -12,7 +12,7 @@ const useNewTransactionForm = () => {
         type: 'expense',
         context: 'home',
         category: 'HOUSEHOLD',
-        date: TransactionDate.today(),
+        date: HomeAppDate.today(),
         currency: 'EUR',
         exchangeRate: 1,
         paymentMethod: 'EC',

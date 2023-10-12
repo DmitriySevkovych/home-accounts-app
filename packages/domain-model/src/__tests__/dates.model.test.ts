@@ -1,4 +1,4 @@
-import { TransactionDate } from '../dates.model'
+import { HomeAppDate } from '../models/dates.model'
 
 /*
     @group unit
@@ -9,7 +9,7 @@ describe('Tests for dealing with dates', () => {
         // Arrange
         const expectedDateString = new Date().toISOString().split('T')[0]
         // Act
-        const today = TransactionDate.today()
+        const today = HomeAppDate.today()
         const todayDateString = today.toString()
         // Assert
         expect(todayDateString).toBe(expectedDateString)
@@ -19,7 +19,7 @@ describe('Tests for dealing with dates', () => {
         // Arrange
         const expectedDateString = '2023-06-04'
         // Act
-        const date = TransactionDate.fromString('2023-06-04')
+        const date = HomeAppDate.fromString('2023-06-04')
         // Assert
         expect(date.toString()).toBe(expectedDateString)
     })
@@ -28,7 +28,7 @@ describe('Tests for dealing with dates', () => {
         // Arrange
         const expectedDateString = '2023-06-04'
         // Act
-        const date = TransactionDate.fromString('Sunday, June 4, 2023', 'DDDD')
+        const date = HomeAppDate.fromString('Sunday, June 4, 2023', 'DDDD')
         // Assert
         expect(date.toString()).toBe(expectedDateString)
     })
@@ -37,7 +37,7 @@ describe('Tests for dealing with dates', () => {
         // Arrange
         const expectedDateString = '2023-06-04'
         // Act
-        const date = TransactionDate.fromDatabase('2023-06-04')
+        const date = HomeAppDate.fromDatabase('2023-06-04')
         // Assert
         expect(date.toString()).toBe(expectedDateString)
     })
@@ -47,16 +47,25 @@ describe('Tests for dealing with dates', () => {
         const jsDate = new Date('1995-12-17T03:24:00')
         const expectedDateString = '1995-12-17'
         // Act
-        const date = TransactionDate.fromJsDate(jsDate)
+        const date = HomeAppDate.fromJsDate(jsDate)
         // Assert
         expect(date.toString()).toBe(expectedDateString)
+    })
+
+    it('should convert to a correct JS Date object', () => {
+        // Arrange
+        const date = HomeAppDate.today()
+        // Act
+        const jsDate = date.toJSDate()
+        // Assert
+        expect(jsDate.getDate()).toEqual(new Date().getDate())
     })
 
     it('should create a date string in YYYY-MM-DD format from an ISO String', () => {
         // Arrange
         const expectedDateString = '2023-09-10'
         // Act
-        const date = TransactionDate.fromISO('2023-09-10T04:10:22.258Z')
+        const date = HomeAppDate.fromISO('2023-09-10T04:10:22.258Z')
         // Assert
         expect(date.toString()).toBe(expectedDateString)
     })
