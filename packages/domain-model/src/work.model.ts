@@ -1,3 +1,4 @@
+import { HomeAppDate } from './dates.model'
 import { PickAndFlatten } from './transactions.model'
 
 export type Project = {
@@ -8,8 +9,8 @@ export type ProjectInvoiceStatus = 'OPEN' | 'PAID'
 
 export type ProjectInvoice = {
     key: string
-    issuanceDate: Date // TODO consolidate with HomeAppDate... or ditch HomeAppDate
-    dueDate: Date
+    issuanceDate: HomeAppDate
+    dueDate: HomeAppDate
     project: PickAndFlatten<Project, 'key'>
     netAmount: number
     vat: number

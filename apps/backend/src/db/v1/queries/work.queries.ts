@@ -47,8 +47,8 @@ export const getProjectInvoices = async (
         FROM work.project_invoices`)
     return queryResult.rows.map((row) => ({
         key: row.key,
-        issuanceDate: row.date,
-        dueDate: row.due_date,
+        issuanceDate: HomeAppDate.fromDatabase(row.date),
+        dueDate: HomeAppDate.fromDatabase(row.due_date),
         project: row.project,
         netAmount: row.net_amount,
         vat: row.vat,
