@@ -1,4 +1,4 @@
-import { HomeAppDate } from '../dates.model'
+import { HomeAppDate } from '../models/dates.model'
 
 /*
     @group unit

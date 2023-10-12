@@ -2,12 +2,12 @@
     @group unit
     @group domain
  */
-import { HomeAppDate } from '../dates.model'
-import { TransactionValidationError } from '../errors.model'
+import { HomeAppDate } from '../models/dates.model'
+import { TransactionValidationError } from '../models/errors.model'
 import {
     createTransaction,
     deserializeTransaction,
-} from '../transactions.model'
+} from '../models/transactions.model'
 
 describe('Transactions tests', () => {
     it('should return right equivalent in EUR', () => {

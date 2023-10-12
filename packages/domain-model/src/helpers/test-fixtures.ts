@@ -1,5 +1,5 @@
-import { HomeAppDate } from '../dates.model'
-import { Transaction, createTransaction } from '../transactions.model'
+import { HomeAppDate } from '../models/dates.model'
+import { Transaction, createTransaction } from '../models/transactions.model'
 
 export const dummyTransaction = (
     category: string,

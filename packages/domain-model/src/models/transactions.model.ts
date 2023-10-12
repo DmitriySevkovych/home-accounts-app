@@ -1,6 +1,6 @@
+import { PickAndFlatten } from '../helpers/handy-types'
 import { HomeAppDate } from './dates.model'
 import { TransactionValidationError } from './errors.model'
-import { PickAndFlatten } from './helpers/handy-types'
 import { Investment } from './investments.model'
 import { BankAccount, PaymentMethod, TaxCategory } from './utilities.model'
 

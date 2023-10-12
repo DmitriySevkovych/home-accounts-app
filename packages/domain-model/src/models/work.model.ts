@@ -1,5 +1,5 @@
+import { PickAndFlatten } from '../helpers/handy-types'
 import { HomeAppDate } from './dates.model'
-import { PickAndFlatten } from './helpers/handy-types'
 
 export type Project = {
     key: string
