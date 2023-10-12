@@ -52,6 +52,15 @@ describe('Tests for dealing with dates', () => {
         expect(date.toString()).toBe(expectedDateString)
     })
 
+    it('should convert to a correct JS Date object', () => {
+        // Arrange
+        const date = HomeAppDate.today()
+        // Act
+        const jsDate = date.toJSDate()
+        // Assert
+        expect(jsDate.getDate()).toEqual(new Date().getDate())
+    })
+
     it('should create a date string in YYYY-MM-DD format from an ISO String', () => {
         // Arrange
         const expectedDateString = '2023-09-10'

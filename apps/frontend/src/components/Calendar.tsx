@@ -45,7 +45,7 @@ export const Calendar = (props: CalendarProps) => {
                         <PopoverContent className="w-auto p-0" align="start">
                             <ShadcnCalendar
                                 mode="single"
-                                selected={new Date(field.value.toString())}
+                                selected={field.value.toJSDate()}
                                 onSelect={(selectedDay) => {
                                     if (selectedDay)
                                         field.onChange(

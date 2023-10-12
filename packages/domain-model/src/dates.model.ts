@@ -22,7 +22,11 @@ export class HomeAppDate {
     }
 
     toWords = (): string => {
-        return this.datetime.toFormat('dd LLL yyyy')
+        return this.datetime.toFormat('dd LLLL yyyy')
+    }
+
+    toJSDate = (): Date => {
+        return this.datetime.toJSDate()
     }
 
     /** Static helper methods */
