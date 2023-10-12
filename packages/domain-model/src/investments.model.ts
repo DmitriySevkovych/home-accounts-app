@@ -1,5 +1,5 @@
 import { HomeAppDate } from './dates.model'
-import { PickAndFlatten } from './transactions.model'
+import { PickAndFlatten } from './helpers/handy-types'
 
 export type InvestmentType = {
     type: string

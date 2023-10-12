@@ -1,50 +1,19 @@
 import { HomeAppDate } from './dates.model'
 import { TransactionValidationError } from './errors.model'
+import { PickAndFlatten } from './helpers/handy-types'
 import { Investment } from './investments.model'
-
-// TODO extract these helper types to somewhere else...
-type UnionToIntersection<U> = (
-    U extends any ? (_k: U) => void : never
-) extends (_k: infer I) => void
-    ? I
-    : never
-export type PickAndFlatten<T, K extends keyof T> = UnionToIntersection<T[K]>
-
-// Types for utility data - TODO extract to somewhere else...
-export type TransactionCategory = {
-    category: string
-    allowedTypes: TransactionType[]
-    description?: string
-}
-
-export type TaxCategory = {
-    category: string
-    description?: string
-}
-
-export type PaymentMethod = {
-    method: string
-    description?: string
-}
-
-export type BankAccount = {
-    account: string
-    bank: string
-    annualFee: number
-    category: 'private' | 'business' | 'investment'
-    owner?: 'Dmitriy' | 'Ivanna' | 'Dmitriy and Ivanna'
-    purpose?: string
-    iban?: string
-    openingDate?: Date
-    closingDate?: Date
-    contact?: string
-    comment?: string
-}
+import { BankAccount, PaymentMethod, TaxCategory } from './utilities.model'
 
 // Transactions-related types
 export type TransactionType = 'income' | 'expense'
 
 export type TransactionContext = 'home' | 'work' | 'investments'
+
+export type TransactionCategory = {
+    category: string
+    allowedTypes: TransactionType[]
+    description?: string
+}
 
 export class Transaction {
     // Unique identifier, to be provided by a DB sequence
