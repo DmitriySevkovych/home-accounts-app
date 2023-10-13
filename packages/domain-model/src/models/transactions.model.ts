@@ -35,6 +35,7 @@ export class Transaction {
     description!: string
     date: HomeAppDate = HomeAppDate.today()
     tags: string[] = []
+    receipt?: TransactionReceipt
 
     // Data describing the money movement
     amount!: number
