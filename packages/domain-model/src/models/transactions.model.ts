@@ -15,6 +15,10 @@ export type TransactionCategory = {
     description?: string
 }
 
+export type TransactionReceipt = {
+    name: string
+}
+
 export class Transaction {
     // Unique identifier, to be provided by a DB sequence
     id?: number
@@ -25,6 +29,7 @@ export class Transaction {
     description!: string
     date: HomeAppDate = HomeAppDate.today()
     tags: string[] = []
+    receipt?: TransactionReceipt
 
     // Data describing the money movement
     type!: TransactionType

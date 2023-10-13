@@ -1,6 +1,8 @@
 import { HomeAppDate } from 'domain-model'
 import { z } from 'zod'
 
+import { FileWithPath } from './utils'
+
 // TODO add validation texts
 export const NewTransactionFormSchema = z
     .object({
@@ -39,6 +41,7 @@ export const NewTransactionFormSchema = z
                 .max(100)
                 .transform((val) => val / 100)
         ),
+        receipt: z.optional(z.custom<FileWithPath>()),
     })
     .transform((form) => {
         // Transform amount

@@ -1,3 +1,4 @@
+import { DevTool } from '@hookform/devtools'
 import {
     BankAccount,
     Investment,
@@ -9,6 +10,7 @@ import {
 import React from 'react'
 
 import { Calendar } from '../../components/Calendar'
+import { DropzoneFormField } from '../../components/Dropzone'
 import { NumberInput, TextAreaInput, TextInput } from '../../components/Inputs'
 import Radio from '../../components/Radio'
 import Select from '../../components/Select'
@@ -235,6 +237,14 @@ const NewTransactionPage = ({
                         </>
                     </div>
 
+                    <div className="lg:col-span-2">
+                        <DropzoneFormField
+                            id="receipt"
+                            form={form}
+                            label="Transaction receipt"
+                        />
+                    </div>
+
                     <Button
                         className="flex w-full md:ml-auto md:mr-0 md:w-auto lg:col-span-2"
                         type="submit"
@@ -244,7 +254,7 @@ const NewTransactionPage = ({
                     </Button>
                 </form>
             </Form>
-            {/* <DevTool control={form.control} /> */}
+            <DevTool control={form.control} />
         </div>
     )
 }
