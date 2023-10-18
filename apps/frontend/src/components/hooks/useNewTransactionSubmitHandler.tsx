@@ -1,4 +1,5 @@
 import { NextRouter, useRouter } from 'next/router'
+import React from 'react'
 import { type SubmitHandler } from 'react-hook-form'
 
 import { CLIENT_BACKEND_BASE_URL } from '../../helpers/constants'
@@ -6,25 +7,29 @@ import { PAGES } from '../../helpers/pages'
 import { NewTransactionForm } from '../../helpers/zod-form-schemas'
 import { useToast } from '../../lib/shadcn/use-toast'
 
-const sendTransaction = async (
+const _sendTransaction = async (
     transaction: NewTransactionForm,
     router: NextRouter,
     toast: CallableFunction
 ) => {
     try {
-        const body = {
+        const formData = new FormData()
+
+        const payload = {
             ...transaction,
             agent: 'home-app-frontend', // TODO agent should be the logged-in user, once there is a login
+        }
+        formData.append('transaction', JSON.stringify(payload))
+
+        if (transaction.receipt) {
+            formData.append('receipt', transaction.receipt)
         }
 
         const response = await fetch(
             `${CLIENT_BACKEND_BASE_URL}/transactions`,
             {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(body),
+                body: formData,
             }
         )
         if (response.status === 201) {
@@ -35,7 +40,7 @@ const sendTransaction = async (
                         <p>You submitted the following values:</p>
                         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
                             <code className="text-white">
-                                {JSON.stringify(body, null, 2)}
+                                {JSON.stringify(payload, null, 2)}
                             </code>
                         </pre>
                     </>
@@ -67,7 +72,7 @@ const useNewTransactionSubmitHandler = () => {
     const router = useRouter()
 
     const onSubmit: SubmitHandler<NewTransactionForm> = async (data) => {
-        sendTransaction(data, router, toast)
+        _sendTransaction(data, router, toast)
     }
 
     return { onSubmit }
