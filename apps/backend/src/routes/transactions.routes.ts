@@ -1,16 +1,18 @@
-import express, { type Router } from 'express'
-import { getHttpLogger } from 'logger'
-import { RepositoryLocator } from '../db/repositoryLocator'
 import {
     Transaction,
     TransactionValidationError,
     deserializeTransaction,
 } from 'domain-model'
+import express, { type Router } from 'express'
+import { getHttpLogger } from 'logger'
+
+import { RepositoryLocator } from '../db/repositoryLocator'
 import {
     BadQueryParameterInRequestError,
     NoRecordFoundInDatabaseError,
 } from '../helpers/errors'
 import { getPaginationOptionsFromRequest } from '../helpers/pagination'
+import upload from '../helpers/upload'
 
 const getRouter = (): Router => {
     const router = express.Router()
@@ -22,9 +24,8 @@ const getRouter = (): Router => {
 
         try {
             const paginationOptions = getPaginationOptionsFromRequest(req)
-            const transactions = await repository.getTransactions(
-                paginationOptions
-            )
+            const transactions =
+                await repository.getTransactions(paginationOptions)
             return res.status(200).json(transactions)
         } catch (err) {
             req.log.error(err)
@@ -38,11 +39,18 @@ const getRouter = (): Router => {
         }
     })
 
-    router.post('/', async (req, res) => {
+    router.post('/', upload.single('receipt'), async (req, res) => {
         httpLogger(req, res)
 
+        console.log({
+            file: req.file,
+            body: JSON.parse(req.body.transaction).date,
+        })
+
         try {
-            const transaction: Transaction = deserializeTransaction(req.body)
+            const transaction: Transaction = deserializeTransaction(
+                JSON.parse(req.body.transaction)
+            )
             const id = await repository.createTransaction(transaction)
             res.status(201).json({
                 message: `Created new entry with id: ${id}`,
