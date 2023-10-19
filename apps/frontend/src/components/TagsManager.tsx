@@ -77,11 +77,10 @@ const TagsManager: React.FC<TagsManagerProps> = (props) => {
             render={({ field }) => (
                 <FormItem>
                     <FormLabel>{label}</FormLabel>
-                    <div className="gap-2 md:grid md:grid-cols-2">
+                    <div>
                         <Popover open={open} onOpenChange={setOpen}>
                             <PopoverTrigger asChild>
                                 <Button
-                                    className="w-full"
                                     variant="secondary"
                                     type="button"
                                     size={'lg'}
@@ -91,14 +90,14 @@ const TagsManager: React.FC<TagsManagerProps> = (props) => {
                             </PopoverTrigger>
                             <PopoverContent className="w-full p-0">
                                 <Command>
-                                    <div className="flex gap-2 ">
+                                    <div className="flex gap-2 p-3">
                                         <CommandInput
                                             ref={commandInputRef}
                                             placeholder="Enter tag..."
                                         />
                                         <Button
                                             type="button"
-                                            variant="secondary"
+                                            className="px-4"
                                             onClick={() => {
                                                 if (!commandInputRef.current) {
                                                     return
@@ -119,7 +118,7 @@ const TagsManager: React.FC<TagsManagerProps> = (props) => {
                                         <ScrollArea className="h-[190px]">
                                             {tagOptions.map((tagOption) => (
                                                 <CommandItem
-                                                    className="text-muted-foreground hover:text-primary aria-selected:bg-transparent aria-selected:font-bold"
+                                                    className="text-primary hover:text-darkest aria-selected:bg-transparent aria-selected:font-bold"
                                                     key={tagOption}
                                                     onSelect={(
                                                         currentValue: string
@@ -157,14 +156,11 @@ const TagsManager: React.FC<TagsManagerProps> = (props) => {
 
 const Tag: React.FC<TagProps> = ({ tag, removeTagHandler }) => {
     return (
-        <Badge
-            variant="outline"
-            className="flex h-10 w-auto items-center justify-between bg-background-overlay py-0.5 pl-4 pr-0 text-sm font-normal text-muted-foreground"
-        >
+        <Badge variant="outline">
             {tag}
 
             <Button
-                className="text-parent h-auto w-10 bg-transparent text-sm font-normal no-underline transition-colors hover:bg-transparent hover:text-primary"
+                className="text-parent h-auto w-10 bg-transparent text-sm font-bold no-underline transition-colors hover:bg-transparent hover:text-primary"
                 size={'icon'}
                 onClick={removeTagHandler}
             >

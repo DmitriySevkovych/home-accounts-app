@@ -2,8 +2,18 @@ html,
 body {
     padding: 0;
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-        Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        Segoe UI,
+        Roboto,
+        Oxygen,
+        Ubuntu,
+        Cantarell,
+        Fira Sans,
+        Droid Sans,
+        Helvetica Neue,
+        sans-serif;
 }
 
 a {
@@ -22,16 +32,18 @@ a {
 @layer base {
     :root {
         /* Adjusted START */
-        --background: 229, 2%, 91%;
-        --background-overlay: 223, 16%, 88%;
-        --popover: 223, 16%, 88%;
-        --accent: 356, 95%, 73%;
+        --background: 222, 20%, 90%;
+        --background-overlay: 223, 23%, 85%;
+        --popover: 223, 23%, 85%;
+        --accent: 354, 99%, 67%;
+        --accent-lighter: 354, 99%, 72%;
         --secondary: 223, 22%, 62%;
         --secondary-lighter: 223, 22%, 70%;
         --secondary-foreground: 210 40% 98%;
-        --darkest: 221, 30%, 41%;
-        --primary: 356, 100%, 67%;
+        --darkest: 222, 11%, 18%;
+        --primary: 216, 34%, 43%;
         --primary-foreground: 210 40% 98%;
+        --destructive: 354, 99%, 67%;
         /* Adjusted END */
 
         --foreground: 222.2 47.4% 11.2%;
@@ -49,7 +61,6 @@ a {
 
         --accent-foreground: 222.2 47.4% 11.2%;
 
-        --destructive: 0 100% 50%;
         --destructive-foreground: 210 40% 98%;
 
         --ring: 215 20.2% 65.1%;
@@ -97,6 +108,8 @@ a {
     }
     body {
         @apply bg-background text-foreground;
-        font-feature-settings: 'rlig' 1, 'calt' 1;
+        font-feature-settings:
+            'rlig' 1,
+            'calt' 1;
     }
 }

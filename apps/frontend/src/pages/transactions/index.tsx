@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import React from 'react'
 
+import OverlayImage from '../../components/Overlay'
 import { SystemInfo, SystemInfoFooter } from '../../components/SystemInfoFooter'
 import {
     CLIENT_BACKEND_BASE_URL,
@@ -16,9 +17,9 @@ type TransactionsOverviewProps = {
 const TransactionsOverview = ({ systemInfo }: TransactionsOverviewProps) => {
     return (
         <>
-            <div className="flex h-full min-h-screen w-full flex-col justify-between p-4">
+            <div className="relative flex h-full min-h-screen w-full flex-col justify-between p-4">
                 <div className="flex flex-grow flex-col items-center justify-center gap-10">
-                    <h1 className="text-xl font-bold text-primary lg:text-2xl">
+                    <h1 className="text-center text-xl font-bold text-primary lg:text-2xl">
                         Posipaki Home Accounts App: Transactions
                     </h1>
                     <Button>
@@ -27,6 +28,7 @@ const TransactionsOverview = ({ systemInfo }: TransactionsOverviewProps) => {
                         </Link>
                     </Button>
                 </div>
+                <OverlayImage />
                 <SystemInfoFooter {...systemInfo} />
             </div>
         </>

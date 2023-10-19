@@ -29,7 +29,7 @@ export const Calendar = (props: CalendarProps) => {
                             <FormControl>
                                 <Button
                                     className={cn(
-                                        'w-full bg-background-overlay pl-3 text-left font-normal text-darkest hover:bg-background-overlay',
+                                        'w-full rounded-md bg-background-overlay pl-3 text-left font-medium text-primary hover:bg-background-overlay',
                                         !field.value && 'text-muted-foreground'
                                     )}
                                 >
@@ -38,7 +38,7 @@ export const Calendar = (props: CalendarProps) => {
                                     ) : (
                                         <span>Pick a date</span>
                                     )}
-                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                    <CalendarIcon className="ml-auto h-4 w-4 text-primary opacity-50" />
                                 </Button>
                             </FormControl>
                         </PopoverTrigger>
