@@ -1,3 +1,5 @@
+import { HomeAppDate } from './dates.model'
+
 export type TaxCategory = {
     category: string
     description?: string
@@ -20,4 +22,16 @@ export type BankAccount = {
     closingDate?: Date
     contact?: string
     comment?: string
+}
+
+export type HomeAppFile = {
+    id?: number
+    name: string
+    mimetype: string
+    buffer: Buffer
+}
+
+export type HomeAppDocument = HomeAppFile & {
+    date: HomeAppDate
+    description: string
 }
