@@ -42,7 +42,7 @@ const Dropzone = (props: DropzoneProps) => {
 
     const dropzoneStyle = useMemo(() => {
         const baseStyle =
-            'dropzone h-[75px] text-center border border-dashed rounded-md flex items-center justify-center transition ease-in-out transition-colors'
+            'dropzone h-[75px] text-center border border-darkest border-dashed rounded-md flex items-center justify-center transition ease-in-out transition-colors'
         if (isFocused) {
             return `${baseStyle} bg-background-overlay`
         } else if (isDragAccept) {
@@ -64,13 +64,13 @@ const Dropzone = (props: DropzoneProps) => {
                 })}
             >
                 <input {...getInputProps()} />
-                <p className="text-sm text-darkest">
+                <p className="text-sm font-medium text-primary">
                     {file ? '📃 Dropped' : "Drop it like it's hot"}
                 </p>
             </div>
             {file && (
                 <aside>
-                    <p className="text-sm text-darkest">
+                    <p className="text-sm font-medium text-primary">
                         Selected file: {file.name}
                     </p>
                 </aside>

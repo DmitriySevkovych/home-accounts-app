@@ -12,6 +12,8 @@ import React from 'react'
 import { Calendar } from '../../components/Calendar'
 import { DropzoneFormField } from '../../components/Dropzone'
 import { NumberInput, TextAreaInput, TextInput } from '../../components/Inputs'
+import InlineSvgImage from '../../components/Overlay'
+import OverlayImage from '../../components/Overlay'
 import Radio from '../../components/Radio'
 import Select from '../../components/Select'
 import TagsManager from '../../components/TagsManager'
@@ -48,7 +50,7 @@ const NewTransactionPage = ({
     const { onSubmit } = useNewTransactionSubmitHandler()
 
     return (
-        <div className="mx-auto max-w-4xl bg-background p-3 text-darkest md:py-8">
+        <div className="relative mx-auto max-w-4xl bg-background p-3 text-darkest md:py-8">
             <h1 className="mb-6 text-xl font-bold text-primary lg:mb-12 lg:text-2xl">
                 Create Transaction
             </h1>
@@ -247,6 +249,7 @@ const NewTransactionPage = ({
 
                     <Button
                         className="flex w-full md:ml-auto md:mr-0 md:w-auto lg:col-span-2"
+                        variant="destructive"
                         type="submit"
                         size={'lg'}
                     >
@@ -254,7 +257,8 @@ const NewTransactionPage = ({
                     </Button>
                 </form>
             </Form>
-            <DevTool control={form.control} />
+            <OverlayImage />
+            {/* <DevTool control={form.control} /> */}
         </div>
     )
 }

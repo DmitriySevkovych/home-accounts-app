@@ -20,6 +20,7 @@ module.exports = {
                 },
                 accent: {
                     DEFAULT: 'hsl(var(--accent))',
+                    lighter: 'hsl(var(--accent-lighter))',
                 },
                 darkest: 'hsl(var(--darkest))',
                 primary: {
