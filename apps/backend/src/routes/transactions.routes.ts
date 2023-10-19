@@ -1,5 +1,4 @@
 import {
-    Transaction,
     TransactionValidationError,
     deserializeTransaction,
 } from 'domain-model'
@@ -12,7 +11,7 @@ import {
     NoRecordFoundInDatabaseError,
 } from '../helpers/errors'
 import { getPaginationOptionsFromRequest } from '../helpers/pagination'
-import upload from '../helpers/upload'
+import upload, { deserializeTransactionReceipt } from '../helpers/upload'
 
 const getRouter = (): Router => {
     const router = express.Router()
@@ -42,16 +41,15 @@ const getRouter = (): Router => {
     router.post('/', upload.single('receipt'), async (req, res) => {
         httpLogger(req, res)
 
-        console.log({
-            file: req.file,
-            body: JSON.parse(req.body.transaction).date,
-        })
-
         try {
-            const transaction: Transaction = deserializeTransaction(
+            // Deserialize payload
+            const transaction = deserializeTransaction(
                 JSON.parse(req.body.transaction)
             )
-            const id = await repository.createTransaction(transaction)
+            const receipt = deserializeTransactionReceipt(req.file)
+            // Persist
+            const id = await repository.createTransaction(transaction, receipt)
+            // Send response
             res.status(201).json({
                 message: `Created new entry with id: ${id}`,
             })
@@ -61,6 +59,7 @@ const getRouter = (): Router => {
                 res.status(400).json({
                     message:
                         'Data sent in the request body is not a valid transaction.',
+                    cause: err.message,
                 })
             } else {
                 res.status(500).json({ message: 'Something went wrong' })
