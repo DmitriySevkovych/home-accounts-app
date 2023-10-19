@@ -258,7 +258,7 @@ const NewTransactionPage = ({
                 </form>
             </Form>
             <OverlayImage />
-            <DevTool control={form.control} />
+            {/* <DevTool control={form.control} /> */}
         </div>
     )
 }
