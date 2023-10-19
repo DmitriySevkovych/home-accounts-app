@@ -1,4 +1,4 @@
-import { Transaction } from 'domain-model'
+import { Transaction, TransactionReceipt } from 'domain-model'
 import { getLogger } from 'logger'
 import type { Pool, PoolClient } from 'pg'
 
@@ -22,7 +22,12 @@ export type TransactionDAO = Pick<
 export type TransactionDetailsDAO = Pick<
     Transaction,
     'paymentMethod' | 'taxCategory' | 'comment'
-> & { transaction_id: number }
+> & {
+    transaction_id: number
+    receipt_id?: number
+}
+
+type TransactionReceiptDAO = TransactionReceipt
 
 /* 
     'database-specific' CRUD methods 
@@ -83,17 +88,46 @@ export const insertTransactionDetailsDAO = async (
 ): Promise<void> => {
     const query = {
         name: 'insert-into-transactions.transaction_details',
-        text: 'INSERT INTO transactions.transaction_details(payment_method, tax_relevant, tax_category, comment, transaction_id) VALUES ($1, $2, $3, $4, $5);',
+        text: 'INSERT INTO transactions.transaction_details(payment_method, tax_relevant, tax_category, comment, transaction_id, receipt_id) VALUES ($1, $2, $3, $4, $5, $6);',
         values: [
             transactionDetailsDAO.paymentMethod,
             !!transactionDetailsDAO.taxCategory,
             transactionDetailsDAO.taxCategory,
             transactionDetailsDAO.comment,
             transactionDetailsDAO.transaction_id,
+            transactionDetailsDAO.receipt_id,
         ],
     }
     await client.query(query)
     logger.trace(
         `Inserted a new row in transactions.transaction_details with foreign key transaction_id=${transactionDetailsDAO.transaction_id}.`
     )
+}
+
+export const insertTransactionReceiptDAO = async (
+    transactionReceipt: TransactionReceiptDAO | undefined,
+    client: PoolClient
+): Promise<number | undefined> => {
+    if (!transactionReceipt) {
+        logger.trace(
+            'No transaction receipt provided for this transaction. Will return undefined for receipt_id'
+        )
+        return undefined
+    }
+
+    const { name, mimetype, buffer } = transactionReceipt
+
+    const query = {
+        name: 'insert-into-transactions.transaction_receipts',
+        text: 'INSERT INTO transactions.transaction_receipts(name, mimetype, buffer) VALUES ($1, $2, $3) RETURNING id;',
+        values: [name, mimetype, buffer],
+    }
+    const queryResult = await client.query(query)
+    if (queryResult.rowCount === 0) {
+        // TODO throw error
+    }
+    logger.info(
+        `Inserted a new row in transactions.transaction_receipts with primary key id=${queryResult.rows[0].id}.`
+    )
+    return queryResult.rows[0].id
 }

@@ -35,8 +35,8 @@ describe('Database queries targeting the investments schema', () => {
             transaction.investment = investment
             // Act
             const transactionId = await insertTransaction(
-                transaction,
-                connectionPool
+                connectionPool,
+                transaction
             )
             // Assert
             expect(transactionId).toBeDefined()
@@ -54,7 +54,7 @@ describe('Database queries targeting the investments schema', () => {
         )
         transactionToInsert.context = context
         transactionToInsert.investment = investment
-        const id = await insertTransaction(transactionToInsert, connectionPool)
+        const id = await insertTransaction(connectionPool, transactionToInsert)
         // Act
         const transaction = await getTransactionById(connectionPool, id)
         // Assert
@@ -75,7 +75,7 @@ describe('Database queries targeting the investments schema', () => {
         )
         transactionToInsert.context = context
         transactionToInsert.investment = investment
-        const id = await insertTransaction(transactionToInsert, connectionPool)
+        const id = await insertTransaction(connectionPool, transactionToInsert)
         // Act
         const transaction = await getTransactionById(connectionPool, id)
         // Assert

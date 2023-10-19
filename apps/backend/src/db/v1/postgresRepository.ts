@@ -6,6 +6,7 @@ import type {
     TaxCategory,
     Transaction,
     TransactionCategory,
+    TransactionReceipt,
 } from 'domain-model'
 import { Logger, getLogger } from 'logger'
 import type { Pool, PoolClient } from 'pg'
@@ -105,35 +106,33 @@ export class PostgresRepository implements Repository {
     }
 
     // Transactions
-    createTransaction = async (transaction: Transaction): Promise<number> => {
+    createTransaction = async (
+        transaction: Transaction,
+        transactionReceipt?: TransactionReceipt
+    ): Promise<number> => {
         // TODO to log or not to log?
         this.logger.info(transaction)
-        let id
+        let queries
         switch (transaction.context) {
             case 'home':
-                id = await homeQueries.insertTransaction(
-                    transaction,
-                    this.connectionPool
-                )
+                queries = homeQueries
                 break
             case 'investments':
-                id = await investmentsQueries.insertTransaction(
-                    transaction,
-                    this.connectionPool
-                )
+                queries = investmentsQueries
                 break
             case 'work':
-                id = await workQueries.insertTransaction(
-                    transaction,
-                    this.connectionPool
-                )
+                queries = workQueries
                 break
-
             default:
                 throw new UnsupportedTransactionContextError(
                     `Transaction context '${transaction.context}' is unsupported in DB v1.`
                 )
         }
+        const id = await queries.insertTransaction(
+            this.connectionPool,
+            transaction,
+            transactionReceipt
+        )
         return id
     }
 

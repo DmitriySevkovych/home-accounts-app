@@ -38,8 +38,8 @@ describe('Database queries targeting the home schema', () => {
             )
             // Act
             const transactionId = await insertTransaction(
-                transaction,
-                connectionPool
+                connectionPool,
+                transaction
             )
             // Assert
             expect(transactionId).toBeDefined()
@@ -52,8 +52,8 @@ describe('Database queries targeting the home schema', () => {
         const amount = -5.99
         const transactionDate = HomeAppDate.fromString('2020-02-16')
         const id = await insertTransaction(
-            dummyTransaction(category, amount, transactionDate),
-            connectionPool
+            connectionPool,
+            dummyTransaction(category, amount, transactionDate)
         )
         // Act
         const transaction = await getTransactionById(connectionPool, id)
@@ -77,8 +77,8 @@ describe('Database queries targeting the home schema', () => {
         const category = 'FOOD'
         const amount = -15.99
         const id = await insertTransaction(
-            minimalDummyTransaction(category, amount),
-            connectionPool
+            connectionPool,
+            minimalDummyTransaction(category, amount)
         )
         // Act
         const transaction = await getTransactionById(connectionPool, id)
@@ -108,8 +108,8 @@ describe('Database queries targeting the home schema', () => {
         const amount = 19.99
         const transactionDate = HomeAppDate.fromString('2020-05-05')
         const id = await insertTransaction(
-            dummyTransaction(category, amount, transactionDate),
-            connectionPool
+            connectionPool,
+            dummyTransaction(category, amount, transactionDate)
         )
         // Act
         const transaction = await getTransactionById(connectionPool, id)
@@ -131,8 +131,8 @@ describe('Database queries targeting the home schema', () => {
         const category = 'SALARY'
         const amount = 123.99
         const id = await insertTransaction(
-            minimalDummyTransaction(category, amount),
-            connectionPool
+            connectionPool,
+            minimalDummyTransaction(category, amount)
         )
         // Act
         const transaction = await getTransactionById(connectionPool, id)

@@ -2,6 +2,7 @@ import {
     HomeAppDate,
     ProjectInvoice,
     Transaction,
+    TransactionReceipt,
     createTransaction,
 } from 'domain-model'
 import { getLogger } from 'logger'
@@ -20,6 +21,7 @@ import {
 import {
     insertTransactionDAO,
     insertTransactionDetailsDAO,
+    insertTransactionReceiptDAO,
 } from './transactions.queries'
 
 const WORK_CONTEXT = 'work'
@@ -132,8 +134,9 @@ export const getTransactionById = async (
 }
 
 export const insertTransaction = async (
+    connectionPool: Pool,
     transaction: Transaction,
-    connectionPool: Pool
+    transactionReceipt?: TransactionReceipt
 ): Promise<number> => {
     const client: PoolClient = await connectionPool.connect()
     try {
@@ -141,8 +144,13 @@ export const insertTransaction = async (
 
         const transaction_id = await insertTransactionDAO(transaction, client)
 
+        const receipt_id = await insertTransactionReceiptDAO(
+            transactionReceipt,
+            client
+        )
+
         await insertTransactionDetailsDAO(
-            { ...transaction, transaction_id },
+            { ...transaction, transaction_id, receipt_id },
             client
         )
 
