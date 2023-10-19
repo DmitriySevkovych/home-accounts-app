@@ -30,8 +30,8 @@ describe('Database queries targeting the work schema', () => {
         transaction.country = 'DE'
         // Act
         const transactionId = await insertTransaction(
-            transaction,
-            connectionPool
+            connectionPool,
+            transaction
         )
         // Assert
         expect(transactionId).toBeDefined()
@@ -50,7 +50,7 @@ describe('Database queries targeting the work schema', () => {
         transactionToInsert.context = context
         transactionToInsert.vat = vat
         transactionToInsert.country = country
-        const id = await insertTransaction(transactionToInsert, connectionPool)
+        const id = await insertTransaction(connectionPool, transactionToInsert)
         // Act
         const transaction = await getTransactionById(connectionPool, id)
         // Assert
@@ -72,8 +72,8 @@ describe('Database queries targeting the work schema', () => {
         transaction.invoiceKey = 'INV-0123456' // REM: testdata that is present in the database
         // Act
         const transactionId = await insertTransaction(
-            transaction,
-            connectionPool
+            connectionPool,
+            transaction
         )
         // Assert
         expect(transactionId).toBeDefined()
@@ -90,7 +90,7 @@ describe('Database queries targeting the work schema', () => {
         )
         transactionToInsert.context = context
         transactionToInsert.invoiceKey = invoiceKey
-        const id = await insertTransaction(transactionToInsert, connectionPool)
+        const id = await insertTransaction(connectionPool, transactionToInsert)
         // Act
         const transaction = await getTransactionById(connectionPool, id)
         // Assert

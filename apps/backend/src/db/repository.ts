@@ -6,6 +6,7 @@ import type {
     TaxCategory,
     Transaction,
     TransactionCategory,
+    TransactionReceipt,
 } from 'domain-model'
 
 import { PaginationOptions } from '../helpers/pagination'
@@ -22,7 +23,10 @@ export interface Repository {
     getTags: () => Promise<string[]>
 
     // Transactions data
-    createTransaction: (_transaction: Transaction) => Promise<number>
+    createTransaction: (
+        _transaction: Transaction,
+        _transactionReceipt?: TransactionReceipt
+    ) => Promise<number>
 
     getTransactions: (
         _paginationOptions: PaginationOptions

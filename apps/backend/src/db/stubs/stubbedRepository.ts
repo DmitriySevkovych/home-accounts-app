@@ -7,6 +7,7 @@ import {
     TaxCategory,
     Transaction,
     TransactionCategory,
+    TransactionReceipt,
     minimalDummyTransaction,
 } from 'domain-model'
 
@@ -121,7 +122,10 @@ export class StubbedRepository implements Repository {
     }
 
     // Transactions
-    createTransaction = (_transaction: Transaction) => {
+    createTransaction = (
+        _transaction: Transaction,
+        _transactionReceipt?: TransactionReceipt
+    ) => {
         return Promise.resolve(StubbedRepository.CREATED_TRANSACTION_ID)
     }
 

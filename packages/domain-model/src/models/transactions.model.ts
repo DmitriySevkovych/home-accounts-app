@@ -2,7 +2,13 @@ import { PickAndFlatten } from '../helpers/handy-types'
 import { HomeAppDate } from './dates.model'
 import { TransactionValidationError } from './errors.model'
 import { Investment } from './investments.model'
-import { BankAccount, PaymentMethod, TaxCategory } from './utilities.model'
+import {
+    BankAccount,
+    HomeAppFile,
+    PaymentMethod,
+    TaxCategory,
+} from './utilities.model'
+import { ProjectInvoice } from './work.model'
 
 // Transactions-related types
 export type TransactionType = 'income' | 'expense'
@@ -15,11 +21,15 @@ export type TransactionCategory = {
     description?: string
 }
 
+export type TransactionReceipt = HomeAppFile
+
 export class Transaction {
     // Unique identifier, to be provided by a DB sequence
     id?: number
 
-    // Data describing ...
+    // Data describing what the transaction was for
+    type!: TransactionType
+    context!: TransactionContext
     category!: PickAndFlatten<TransactionCategory, 'category'>
     origin!: string
     description!: string
@@ -27,8 +37,6 @@ export class Transaction {
     tags: string[] = []
 
     // Data describing the money movement
-    type!: TransactionType
-    context!: TransactionContext
     amount!: number
     exchangeRate: number = 1
     currency: string = 'EUR'
@@ -39,12 +47,15 @@ export class Transaction {
     comment?: string
 
     // Additional data relevant in the work context
-    invoiceKey?: string
+    invoiceKey?: PickAndFlatten<ProjectInvoice, 'key'>
     country?: string
     vat?: number
 
     // Additional data relevant in the investment context
     investment?: PickAndFlatten<Investment, 'key'>
+
+    // Associated files
+    receiptId?: number
 
     // Technical helper data
     agent: string = 'default_agent'
@@ -129,8 +140,8 @@ class TransactionBuilder {
     }
 
     withPaymentFrom = (
-        paymentMethod: string,
-        sourceBankAccount: string
+        paymentMethod: PickAndFlatten<PaymentMethod, 'method'>,
+        sourceBankAccount: PickAndFlatten<BankAccount, 'account'>
     ): TransactionBuilder => {
         this.transaction.paymentMethod = paymentMethod
         this.transaction.sourceBankAccount = sourceBankAccount
@@ -138,8 +149,8 @@ class TransactionBuilder {
     }
 
     withPaymentTo = (
-        paymentMethod: string,
-        targetBankAccount: string
+        paymentMethod: PickAndFlatten<PaymentMethod, 'method'>,
+        targetBankAccount: PickAndFlatten<BankAccount, 'account'>
     ): TransactionBuilder => {
         this.transaction.paymentMethod = paymentMethod
         this.transaction.targetBankAccount = targetBankAccount
@@ -147,9 +158,9 @@ class TransactionBuilder {
     }
 
     withPaymentDetails = (
-        paymentMethod: string,
-        sourceBankAccount: string,
-        targetBankAccount: string
+        paymentMethod: PickAndFlatten<PaymentMethod, 'method'>,
+        sourceBankAccount: PickAndFlatten<BankAccount, 'account'>,
+        targetBankAccount: PickAndFlatten<BankAccount, 'account'>
     ): TransactionBuilder => {
         this.transaction.paymentMethod = paymentMethod
         this.transaction.sourceBankAccount = sourceBankAccount
@@ -162,12 +173,16 @@ class TransactionBuilder {
         return this
     }
 
-    withInvestment = (investment: string): TransactionBuilder => {
+    withInvestment = (
+        investment: PickAndFlatten<Investment, 'key'>
+    ): TransactionBuilder => {
         this.transaction.investment = investment
         return this
     }
 
-    withInvoice = (invoiceKey: string): TransactionBuilder => {
+    withInvoice = (
+        invoiceKey: PickAndFlatten<ProjectInvoice, 'key'>
+    ): TransactionBuilder => {
         this.transaction.invoiceKey = invoiceKey
         return this
     }
@@ -175,6 +190,11 @@ class TransactionBuilder {
     withVAT = (vat: number, taxationCountry: string): TransactionBuilder => {
         this.transaction.vat = vat
         this.transaction.country = taxationCountry
+        return this
+    }
+
+    withReceipt(receiptId: number) {
+        this.transaction.receiptId = receiptId
         return this
     }
 
@@ -332,6 +352,7 @@ export const deserializeTransaction = (data: any) => {
         country,
         invoiceKey,
         investment,
+        receiptId,
     } = data
 
     const transaction: Transaction = createTransaction()
@@ -349,6 +370,7 @@ export const deserializeTransaction = (data: any) => {
         .withVAT(vat, country)
         .withInvoice(invoiceKey)
         .withInvestment(investment)
+        .withReceipt(receiptId)
         .addTags(tags)
         .validate()
         .build()

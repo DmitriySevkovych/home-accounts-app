@@ -3,6 +3,7 @@ import {
     Investment,
     InvestmentType,
     Transaction,
+    TransactionReceipt,
     createTransaction,
 } from 'domain-model'
 import { getLogger } from 'logger'
@@ -18,6 +19,7 @@ import {
 import {
     insertTransactionDAO,
     insertTransactionDetailsDAO,
+    insertTransactionReceiptDAO,
 } from './transactions.queries'
 
 type InvestmentDAO = Pick<
@@ -130,24 +132,30 @@ export const getTransactionById = async (
 }
 
 export const insertTransaction = async (
+    connectionPool: Pool,
     transaction: Transaction,
-    connectionPool: Pool
+    transactionReceipt?: TransactionReceipt
 ): Promise<number> => {
     const client: PoolClient = await connectionPool.connect()
     try {
         await client.query('BEGIN')
 
-        const id = await insertTransactionDAO(transaction, client)
+        const transaction_id = await insertTransactionDAO(transaction, client)
+
+        const receipt_id = await insertTransactionReceiptDAO(
+            transactionReceipt,
+            client
+        )
 
         await insertTransactionDetailsDAO(
-            { ...transaction, transaction_id: id },
+            { ...transaction, transaction_id, receipt_id },
             client
         )
 
         const home_id = await _insertInvestmentDAO(
             {
                 ...transaction,
-                transaction_id: id,
+                transaction_id,
             },
             client
         )
@@ -165,9 +173,9 @@ export const insertTransaction = async (
 
         await client.query('COMMIT')
         logger.trace(
-            `Committed the database transaction for inserting a new domain-model transaction with id=${id}.`
+            `Committed the database transaction for inserting a new domain-model transaction with id=${transaction_id}.`
         )
-        return id
+        return transaction_id
     } catch (e) {
         await client.query('ROLLBACK')
         logger.warn(

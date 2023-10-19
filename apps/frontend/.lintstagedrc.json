@@ -1,6 +1,6 @@
 {
     "*.(js|jsx|ts|tsx)": ["prettier --write", "eslint"],
-    "*.md": "prettier --list-different",
+    "*.md": "prettier --write",
     "*.json": "prettier --write",
     "*.{html,css}": "prettier --write"
 }
