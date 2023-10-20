@@ -9,6 +9,7 @@ import {
     BadQueryParameterInRequestError,
     NoRecordFoundInDatabaseError,
 } from '../helpers/errors'
+import { checkIdIsInteger } from '../helpers/middleware'
 import { getPaginationOptionsFromRequest } from '../helpers/pagination'
 import upload, { deserializeTransactionReceipt } from '../helpers/upload'
 
@@ -61,7 +62,9 @@ const getRouter = (): Router => {
         }
     })
 
-    router.get('/:id', async (req, res) => {
+    router.get('/:id', checkIdIsInteger, async (req, res) => {
+        // REM 1: a http logger is set up through middleware, cf. server.js
+        // REM 2: :id must be an integer. A check is set up through middleware, cf. server.js
         const id = parseInt(req.params.id)
         try {
             const transaction = await repository.getTransactionById(id)
