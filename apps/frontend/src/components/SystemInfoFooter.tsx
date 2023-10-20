@@ -79,7 +79,7 @@ export const SystemInfoFooter = ({ frontend, backend }: SystemInfo) => {
                                     <p>Branch:</p>
                                     <p>{backend.branch}</p>
                                     <p>Commit:</p>
-                                    <p>{backend.commit}</p>
+                                    <p>{backend.commit?.substring(0, 7)}</p>
                                 </>
                             )}
                         </div>
