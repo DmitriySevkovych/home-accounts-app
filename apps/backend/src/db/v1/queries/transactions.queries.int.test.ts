@@ -2,11 +2,7 @@ import { HomeAppDate } from 'domain-model'
 import type { Pool } from 'pg'
 
 import { PostgresRepository } from '../postgresRepository'
-import {
-    TransactionDAO,
-    getTransactionDAOById,
-    insertTransactionDAO,
-} from './transactions.queries'
+import { TransactionDAO, insertTransactionDAO } from './transactions.queries'
 
 /*
     @group integration
@@ -22,22 +18,7 @@ describe('Database queries targeting only the transactions schema', () => {
         await connectionPool.end()
     })
 
-    it('getTransactionDAOById should throw an error if no matching id exists', async () => {
-        // Arrange
-        const fakeId = 1234
-        // Act
-        const queryFakeId = async () => {
-            await getTransactionDAOById(fakeId, connectionPool)
-        }
-        // Assert
-        await expect(queryFakeId).rejects.toThrow(
-            new Error(
-                `Found no rows in transactions.transactions with id=${fakeId}.`
-            )
-        )
-    })
-
-    it('insertTransactionDAO should create a new entry in the database and getTransactionDAOById should retrieve it', async () => {
+    it('insertTransactionDAO should create a new entry in the database', async () => {
         // Arrange
         const transaction: TransactionDAO = {
             date: HomeAppDate.today(),
@@ -60,12 +41,5 @@ describe('Database queries targeting only the transactions schema', () => {
         }
         // Assert
         expect(insertedTransactionId).toBeDefined()
-        const queriedTransaction = await getTransactionDAOById(
-            insertedTransactionId,
-            connectionPool
-        )
-        expect(queriedTransaction).not.toBeNull()
     })
-
-    // TODO test that either sourceBankAccount or targetBankAccount must be set on the transactionDAO object. Otherwise
 })

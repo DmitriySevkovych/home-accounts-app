@@ -63,8 +63,6 @@ const getRouter = (): Router => {
     })
 
     router.get('/:id', checkIdIsInteger, async (req, res) => {
-        // REM 1: a http logger is set up through middleware, cf. server.js
-        // REM 2: :id must be an integer. A check is set up through middleware, cf. server.js
         const id = parseInt(req.params.id)
         try {
             const transaction = await repository.getTransactionById(id)
@@ -73,7 +71,47 @@ const getRouter = (): Router => {
             req.log.error(err)
             if (err instanceof NoRecordFoundInDatabaseError) {
                 res.status(404).json({
-                    message: err.message,
+                    message: 'No record found in the database.',
+                    cause: err.message,
+                })
+            } else {
+                res.status(500).json({ message: 'Something went wrong' })
+            }
+        }
+    })
+
+    router.get('/:id/receipt', checkIdIsInteger, async (req, res) => {
+        const id = parseInt(req.params.id)
+        try {
+            const transaction = await repository.getTransactionById(id)
+
+            if (!transaction.receiptId) {
+                return res.status(404).send({
+                    message: `The transaction with id=${id} does not have an associated receipt.`,
+                })
+            }
+
+            const receipt = await repository.getTransactionReceipt(
+                transaction.receiptId
+            )
+            // const readStream = new stream.PassThrough();
+            // readStream.end(receipt.buffer);
+
+            res.set(
+                'Content-disposition',
+                `attachment; filename=${receipt.name}`
+            )
+            // TODO: 'Content-Length': necessary? Cf. https://dzone.com/articles/uploading-and-downloading-files-buffering-in-nodej
+            res.set('Content-Type', receipt.mimetype)
+
+            // readStream.pipe(res);
+            return res.status(200).send(receipt.buffer)
+        } catch (err) {
+            req.log.error(err)
+            if (err instanceof NoRecordFoundInDatabaseError) {
+                res.status(404).json({
+                    message: 'No record found in the database.',
+                    cause: err.message,
                 })
             } else {
                 res.status(500).json({ message: 'Something went wrong' })

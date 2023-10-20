@@ -33,21 +33,22 @@ type TransactionReceiptDAO = TransactionReceipt
     'database-specific' CRUD methods 
  */
 
-export const getTransactionDAOById = async (
-    id: number,
-    connectionPool: Pool
-): Promise<TransactionDAO> => {
+export const getTransactionReceipt = async (
+    connectionPool: Pool,
+    receiptId: number
+): Promise<TransactionReceipt> => {
     const query = {
-        name: 'select-from-transactions.transactions-where-id',
-        text: 'SELECT * FROM transactions.transactions WHERE id = $1;',
-        values: [id],
+        name: 'select-from-transactions.transaction_receipts-where-id',
+        text: `
+        SELECT id, buffer, name, mimetype
+        FROM transactions.transaction_receipts
+        WHERE id = $1
+        `,
+        values: [receiptId],
     }
-    const queryResult = await connectionPool.query<TransactionDAO>(query)
+    const queryResult = await connectionPool.query(query)
     if (queryResult.rowCount === 0) {
-        logger.warn(`Found no rows in transactions.transactions with id=${id}.`)
-        throw new Error(
-            `Found no rows in transactions.transactions with id=${id}.`
-        )
+        // TODO throw error
     }
     return queryResult.rows[0]
 }
