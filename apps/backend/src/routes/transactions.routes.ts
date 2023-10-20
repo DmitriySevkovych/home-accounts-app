@@ -3,7 +3,6 @@ import {
     deserializeTransaction,
 } from 'domain-model'
 import express, { type Router } from 'express'
-import { getHttpLogger } from 'logger'
 
 import { RepositoryLocator } from '../db/repositoryLocator'
 import {
@@ -16,11 +15,8 @@ import upload, { deserializeTransactionReceipt } from '../helpers/upload'
 const getRouter = (): Router => {
     const router = express.Router()
     const repository = RepositoryLocator.getRepository()
-    const httpLogger = getHttpLogger('backend')
 
     router.get('/', async (req, res) => {
-        httpLogger(req, res)
-
         try {
             const paginationOptions = getPaginationOptionsFromRequest(req)
             const transactions =
@@ -39,8 +35,6 @@ const getRouter = (): Router => {
     })
 
     router.post('/', upload.single('receipt'), async (req, res) => {
-        httpLogger(req, res)
-
         try {
             // Deserialize payload
             const transaction = deserializeTransaction(
@@ -68,17 +62,7 @@ const getRouter = (): Router => {
     })
 
     router.get('/:id', async (req, res) => {
-        httpLogger(req, res)
-
         const id = parseInt(req.params.id)
-
-        if (isNaN(id)) {
-            const message = `The request contains a malformed id in path (id=${id}).`
-            req.log.error({ message })
-            res.status(400).json({ message })
-            return
-        }
-
         try {
             const transaction = await repository.getTransactionById(id)
             return res.status(200).json(transaction)

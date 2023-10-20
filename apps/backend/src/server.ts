@@ -1,11 +1,12 @@
 import { json, urlencoded } from 'body-parser'
 import cors from 'cors'
+import express, { type Express } from 'express'
 import { readFileSync } from 'fs'
 import https from 'https'
-import express, { type Express } from 'express'
 import morgan from 'morgan'
 import path from 'path'
 
+import { backendHttpLogger } from './helpers/middleware'
 import mountRoutes from './routes'
 
 export const createServer = async (): Promise<Express> => {
@@ -15,6 +16,7 @@ export const createServer = async (): Promise<Express> => {
         .use(urlencoded({ extended: true }))
         .use(json())
         .use(cors())
+        .use(backendHttpLogger)
         .get('/healthz', (req, res) => {
             return res.json({ ok: true })
         })
