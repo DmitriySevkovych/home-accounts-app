@@ -71,7 +71,7 @@ export const getTransactions = async (
             SELECT
                 i.id as investment_id, i.type as category, i.origin, i.description, i.investment,
                 tr.id, tr.amount, ${dateColumn} as date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
-                td.payment_method, td.tax_category, td.comment
+                td.payment_method, td.tax_category, td.comment, td.receipt_id
             FROM
             (
                 SELECT * FROM ${INVESTMENTS_SCHEMA}.expenses
@@ -108,7 +108,7 @@ export const getTransactionById = async (
         SELECT
             i.id as home_id, i.type as category, i.origin, i.description, i.investment,
             tr.id, tr.amount, ${dateColumn} as date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
-            td.payment_method, td.tax_category, td.comment
+            td.payment_method, td.tax_category, td.comment, td.receipt_id
         FROM
         (
             SELECT * FROM ${INVESTMENTS_SCHEMA}.expenses

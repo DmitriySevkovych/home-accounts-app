@@ -73,7 +73,7 @@ export const getTransactions = async (
             SELECT
                 w.id as work_id, w.type as category, w.origin, w.description, w.invoice_key, w.vat, w.country,
                 tr.id, tr.amount, ${dateColumn} as date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
-                td.payment_method, td.tax_category, td.comment
+                td.payment_method, td.tax_category, td.comment, td.receipt_id
             FROM
             (
                 SELECT id, transaction_id, type, origin, description, country, vat, NULL AS invoice_key FROM ${WORK_SCHEMA}.expenses
@@ -110,7 +110,7 @@ export const getTransactionById = async (
         SELECT
             w.id as home_id, w.type as category, w.origin, w.description, w.invoice_key, w.vat, w.country,
             tr.id, tr.amount, ${dateColumn} as date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
-            td.payment_method, td.tax_category, td.comment
+            td.payment_method, td.tax_category, td.comment, td.receipt_id
         FROM
         (
             SELECT id, transaction_id, type, origin, description, country, vat, NULL AS invoice_key FROM ${WORK_SCHEMA}.expenses
