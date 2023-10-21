@@ -3,6 +3,7 @@ import {
     deserializeTransaction,
 } from 'domain-model'
 import express, { type Router } from 'express'
+import stream from 'stream'
 
 import { RepositoryLocator } from '../db/repositoryLocator'
 import {
@@ -94,18 +95,26 @@ const getRouter = (): Router => {
             const receipt = await repository.getTransactionReceipt(
                 transaction.receiptId
             )
-            // const readStream = new stream.PassThrough();
-            // readStream.end(receipt.buffer);
 
+            res.status(200)
             res.set(
                 'Content-disposition',
                 `attachment; filename=${receipt.name}`
             )
-            // TODO: 'Content-Length': necessary? Cf. https://dzone.com/articles/uploading-and-downloading-files-buffering-in-nodej
             res.set('Content-Type', receipt.mimetype)
 
-            // readStream.pipe(res);
-            return res.status(200).send(receipt.buffer)
+            /**
+             * Pass the in-memory buffer through a readStream so that it can be downloaded as a file,
+             * cf. {@see ../../docs/api.md#sending-files-in-responses}.
+             *
+             * The straightforward approach res.download() does not work (the download-method expects a path to a file on disk).
+             *
+             * Using res.send(receipt.buffer) does technically work and would probably be simpler. Not sure though if there are any gotchas.
+             * I'll leave the stream.PassThrough implementation for now.
+             */
+            const readStream = new stream.PassThrough()
+            readStream.end(receipt.buffer)
+            readStream.pipe(res)
         } catch (err) {
             req.log.error(err)
             if (err instanceof NoRecordFoundInDatabaseError) {
