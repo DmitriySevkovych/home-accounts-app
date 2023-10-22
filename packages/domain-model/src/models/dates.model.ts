@@ -17,6 +17,22 @@ export class HomeAppDate {
         this.datetime = datetime
     }
 
+    isBefore = (date: HomeAppDate): boolean => {
+        return this.datetime.diff(date.datetime).valueOf() < 0
+    }
+
+    isNotBefore = (date: HomeAppDate): boolean => {
+        return this.datetime.diff(date.datetime).valueOf() >= 0
+    }
+
+    isAfter = (date: HomeAppDate): boolean => {
+        return this.datetime.diff(date.datetime).valueOf() > 0
+    }
+
+    isNotAfter = (date: HomeAppDate): boolean => {
+        return this.datetime.diff(date.datetime).valueOf() <= 0
+    }
+
     toString = (): string => {
         return this.datetime.toFormat(HomeAppDate.format)
     }
