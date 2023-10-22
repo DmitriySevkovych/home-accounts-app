@@ -1,5 +1,6 @@
 import {
     BankAccount,
+    HomeAppDate,
     PaymentMethod,
     TaxCategory,
     TransactionCategory,
@@ -61,7 +62,11 @@ export const getBankAccounts = async (
     connectionPool: Pool
 ): Promise<BankAccount[]> => {
     const queryResult = await connectionPool.query(
-        'SELECT * FROM utils.bank_accounts'
+        `SELECT
+            account, bank, annual_fee, type, owner, iban, purpose, contact, comment,
+            ${HomeAppDate.formatDateColumn('opening_date')} AS opening_date,
+            ${HomeAppDate.formatDateColumn('closing_date')} AS closing_date
+        FROM utils.bank_accounts`
     )
     const bankAccounts: BankAccount[] = queryResult.rows.map((row) => ({
         account: row.account,
@@ -71,10 +76,14 @@ export const getBankAccounts = async (
         owner: row.owner,
         iban: row.iban,
         purpose: row.purpose,
-        openingDate: row.opening_date,
-        closingDate: row.closing_date,
         contact: row.contact,
         comment: row.comment,
+        openingDate: row.opening_date
+            ? HomeAppDate.fromDatabase(row.opening_date)
+            : undefined,
+        closingDate: row.closing_date
+            ? HomeAppDate.fromDatabase(row.closing_date)
+            : undefined,
     }))
     return bankAccounts
 }
