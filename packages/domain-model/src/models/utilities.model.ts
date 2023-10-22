@@ -18,8 +18,8 @@ export type BankAccount = {
     owner?: 'Dmitriy' | 'Ivanna' | 'Dmitriy and Ivanna'
     purpose?: string
     iban?: string
-    openingDate?: Date
-    closingDate?: Date
+    openingDate?: HomeAppDate
+    closingDate?: HomeAppDate
     contact?: string
     comment?: string
 }
