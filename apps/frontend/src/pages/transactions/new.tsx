@@ -1,6 +1,7 @@
-import { DevTool } from '@hookform/devtools'
+// import { DevTool } from '@hookform/devtools'
 import {
     BankAccount,
+    HomeAppDate,
     Investment,
     PaymentMethod,
     ProjectInvoice,
@@ -12,7 +13,6 @@ import React from 'react'
 import { Calendar } from '../../components/Calendar'
 import { DropzoneFormField } from '../../components/Dropzone'
 import { NumberInput, TextAreaInput, TextInput } from '../../components/Inputs'
-import InlineSvgImage from '../../components/Overlay'
 import OverlayImage from '../../components/Overlay'
 import Radio from '../../components/Radio'
 import Select from '../../components/Select'
@@ -143,6 +143,13 @@ const NewTransactionPage = ({
                             form={form}
                             label="Source Bank Account"
                             options={bankAccounts
+                                .filter(
+                                    (obj) =>
+                                        !obj.closingDate ||
+                                        HomeAppDate.today().isNotAfter(
+                                            obj.closingDate
+                                        )
+                                )
                                 .map((obj) => obj.account)
                                 .sort()}
                         />
@@ -154,6 +161,13 @@ const NewTransactionPage = ({
                             form={form}
                             label="Target Bank Account"
                             options={bankAccounts
+                                .filter(
+                                    (obj) =>
+                                        !obj.closingDate ||
+                                        HomeAppDate.today().isNotAfter(
+                                            obj.closingDate
+                                        )
+                                )
                                 .map((obj) => obj.account)
                                 .sort()}
                         />

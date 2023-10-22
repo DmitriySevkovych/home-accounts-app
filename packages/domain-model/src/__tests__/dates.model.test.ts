@@ -69,4 +69,23 @@ describe('Tests for dealing with dates', () => {
         // Assert
         expect(date.toString()).toBe(expectedDateString)
     })
+
+    it.each`
+        dateStr         | otherDateStr    | expectedBefore | expectedAfter
+        ${'1999-09-09'} | ${'1999-09-09'} | ${false}       | ${false}
+        ${'1999-09-09'} | ${'1999-10-10'} | ${true}        | ${false}
+        ${'1999-11-11'} | ${'1999-10-10'} | ${false}       | ${true}
+    `(
+        'should correctly determine whether one date is before or after another date',
+        ({ dateStr, otherDateStr, expectedBefore, expectedAfter }) => {
+            // Arrange
+            const date = HomeAppDate.fromString(dateStr)
+            const otherDate = HomeAppDate.fromString(otherDateStr)
+            // Act & Assert
+            expect(date.isBefore(otherDate)).toBe(expectedBefore)
+            expect(date.isNotBefore(otherDate)).toBe(!expectedBefore)
+            expect(date.isAfter(otherDate)).toBe(expectedAfter)
+            expect(date.isNotAfter(otherDate)).toBe(!expectedAfter)
+        }
+    )
 })
