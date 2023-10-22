@@ -1,4 +1,4 @@
-import { DevTool } from '@hookform/devtools'
+// import { DevTool } from '@hookform/devtools'
 import {
     BankAccount,
     Investment,
@@ -12,7 +12,6 @@ import React from 'react'
 import { Calendar } from '../../components/Calendar'
 import { DropzoneFormField } from '../../components/Dropzone'
 import { NumberInput, TextAreaInput, TextInput } from '../../components/Inputs'
-import InlineSvgImage from '../../components/Overlay'
 import OverlayImage from '../../components/Overlay'
 import Radio from '../../components/Radio'
 import Select from '../../components/Select'
