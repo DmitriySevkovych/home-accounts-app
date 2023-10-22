@@ -1,6 +1,7 @@
 // import { DevTool } from '@hookform/devtools'
 import {
     BankAccount,
+    HomeAppDate,
     Investment,
     PaymentMethod,
     ProjectInvoice,
@@ -142,6 +143,13 @@ const NewTransactionPage = ({
                             form={form}
                             label="Source Bank Account"
                             options={bankAccounts
+                                .filter(
+                                    (obj) =>
+                                        !obj.closingDate ||
+                                        HomeAppDate.today().isNotAfter(
+                                            obj.closingDate
+                                        )
+                                )
                                 .map((obj) => obj.account)
                                 .sort()}
                         />
@@ -153,6 +161,13 @@ const NewTransactionPage = ({
                             form={form}
                             label="Target Bank Account"
                             options={bankAccounts
+                                .filter(
+                                    (obj) =>
+                                        !obj.closingDate ||
+                                        HomeAppDate.today().isNotAfter(
+                                            obj.closingDate
+                                        )
+                                )
                                 .map((obj) => obj.account)
                                 .sort()}
                         />
