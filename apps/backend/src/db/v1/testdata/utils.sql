@@ -55,7 +55,9 @@ INSERT INTO
     bank,
     owner,
     type,
-    annual_fee
+    annual_fee,
+    opening_date,
+    closing_date
   )
 VALUES
   (
@@ -63,28 +65,45 @@ VALUES
     'Bank Home',
     'Ivanna',
     'private',
-    0.0
+    0.0,
+    NULL,
+    NULL
   ),
   (
     'WORK_ACCOUNT',
     'Bank Work',
     'Dmitriy',
     'business',
-    9.99
+    9.99,
+    NULL,
+    NULL
   ),
   (
     'INVESTMENT_ACCOUNT',
     'Bank Inv',
     'Dmitriy and Ivanna',
     'investment',
-    0.0
+    0.0,
+    NULL,
+    NULL
   ),
   (
     'CASH',
     'Piggy bank',
     'Dmitriy and Ivanna',
     'private',
-    0.0
+    0.0,
+    NULL,
+    NULL
+  ),
+  (
+    'OLD_ACCOUNT',
+    'Old, inactive account',
+    'Dmitriy and Ivanna',
+    'private',
+    0.0,
+    '2000-01-01',
+    '2020-12-31'
   );
 
 INSERT INTO
