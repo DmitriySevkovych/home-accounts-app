@@ -6,6 +6,7 @@ import type {
     TaxCategory,
     Transaction,
     TransactionCategory,
+    TransactionContext,
     TransactionReceipt,
 } from 'domain-model'
 import { Logger, getLogger } from 'logger'
@@ -123,22 +124,7 @@ export class PostgresRepository implements Repository {
     ): Promise<number> => {
         // TODO to log or not to log?
         this.logger.info(transaction)
-        let queries
-        switch (transaction.context) {
-            case 'home':
-                queries = homeQueries
-                break
-            case 'investments':
-                queries = investmentsQueries
-                break
-            case 'work':
-                queries = workQueries
-                break
-            default:
-                throw new UnsupportedTransactionContextError(
-                    `Transaction context '${transaction.context}' is unsupported in DB v1.`
-                )
-        }
+        const queries = this._queries(transaction.context)
         const id = await queries.insertTransaction(
             this.connectionPool,
             transaction,
@@ -148,9 +134,11 @@ export class PostgresRepository implements Repository {
     }
 
     getTransactions = async (
+        context: TransactionContext,
         paginationOptions: PaginationOptions
     ): Promise<Transaction[]> => {
-        return await homeQueries.getTransactions(
+        const queries = this._queries(context)
+        return await queries.getTransactions(
             this.connectionPool,
             paginationOptions
         )
@@ -177,5 +165,23 @@ export class PostgresRepository implements Repository {
     // Work
     getProjectInvoices = async (): Promise<ProjectInvoice[]> => {
         return await workQueries.getProjectInvoices(this.connectionPool)
+    }
+
+    /*
+        Private helper methods
+    */
+    _queries = (context: TransactionContext) => {
+        switch (context) {
+            case 'home':
+                return homeQueries
+            case 'investments':
+                return investmentsQueries
+            case 'work':
+                return workQueries
+            default:
+                throw new UnsupportedTransactionContextError(
+                    `Transaction context '${context}' is unsupported in DB v1.`
+                )
+        }
     }
 }

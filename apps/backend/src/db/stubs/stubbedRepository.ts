@@ -7,8 +7,11 @@ import {
     TaxCategory,
     Transaction,
     TransactionCategory,
+    TransactionContext,
     TransactionReceipt,
+    minimalDummyInvestmentTransaction,
     minimalDummyTransaction,
+    minimalDummyWorkTransaction,
 } from 'domain-model'
 
 import { NoRecordFoundInDatabaseError } from '../../helpers/errors'
@@ -130,9 +133,22 @@ export class StubbedRepository implements Repository {
     }
 
     getTransactions = (
+        context: TransactionContext,
         paginationOptions: PaginationOptions
     ): Promise<Transaction[]> => {
         const transactions = []
+
+        let getDummyTransaction
+        switch (context) {
+            case 'work':
+                getDummyTransaction = minimalDummyWorkTransaction
+                break
+            case 'investments':
+                getDummyTransaction = minimalDummyInvestmentTransaction
+                break
+            default:
+                getDummyTransaction = minimalDummyTransaction
+        }
 
         for (let i = 0; i < 10; i++) {
             const amount = Math.pow(-1, i) * (i + 1)
@@ -140,7 +156,7 @@ export class StubbedRepository implements Repository {
                 amount < 0
                     ? 'EXPENSE_CATEGORY_PLACEHOLDER'
                     : 'INCOME_CATEGORY_PLACEHOLDER'
-            const transaction = minimalDummyTransaction(category, amount)
+            const transaction = getDummyTransaction(category, amount)
             transaction.id = i
             transactions.push(transaction)
         }
