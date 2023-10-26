@@ -1,6 +1,4 @@
-import { Pool, type QueryResult } from 'pg'
-
-type QueryCallback = (_err: Error, _result: QueryResult<any>) => void
+import { Pool } from 'pg'
 
 const connectionPool = new Pool({
     /* CLIENT config */
@@ -39,9 +37,5 @@ const connectionPool = new Pool({
     // where you don't want to wait for your clients to go idle before your process exits.
     // allowExitOnIdle: true,
 })
-
-export const query = (text: string, params: any[], callback: QueryCallback) => {
-    return connectionPool.query(text, params, callback)
-}
 
 export default connectionPool
