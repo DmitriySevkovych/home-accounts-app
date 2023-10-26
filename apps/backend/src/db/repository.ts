@@ -6,6 +6,7 @@ import type {
     TaxCategory,
     Transaction,
     TransactionCategory,
+    TransactionContext,
     TransactionReceipt,
 } from 'domain-model'
 
@@ -29,6 +30,7 @@ export interface Repository {
     ) => Promise<number>
 
     getTransactions: (
+        _context: TransactionContext,
         _paginationOptions: PaginationOptions
     ) => Promise<Transaction[]>
 

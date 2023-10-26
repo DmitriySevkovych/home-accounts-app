@@ -69,21 +69,48 @@ describe('Transactions router tests', () => {
             })
     })
 
-    it('GET should return an array of Transaction objects', async () => {
-        await supertest(server)
-            .get(routerBaseUrl)
-            .query({ limit: 5 })
-            .expect(200)
-            .then((res) => {
-                expect(res.body.length).toBe(5)
+    it.each`
+        context
+        ${'home'}
+        ${'work'}
+        ${'investments'}
+    `(
+        "GET with context='$context' should return an array of Transaction objects",
+        async ({ context }) => {
+            await supertest(server)
+                .get(routerBaseUrl)
+                .query({ limit: 5, context: context })
+                .expect(200)
+                .then((res) => {
+                    expect(res.body.length).toBe(5)
 
-                res.body.forEach((element: object) => {
-                    expect(() => deserializeTransaction(element)).not.toThrow(
-                        TransactionValidationError
+                    res.body.forEach((element: object) => {
+                        expect(() =>
+                            deserializeTransaction(element)
+                        ).not.toThrow(TransactionValidationError)
+                    })
+                })
+        }
+    )
+
+    it.each`
+        context
+        ${'madeUpContext'}
+        ${undefined}
+    `(
+        'GET with unknown or missing context should return a bad request',
+        async ({ context }) => {
+            await supertest(server)
+                .get(routerBaseUrl)
+                .query({ limit: 5, context: context })
+                .expect(400)
+                .then((res) => {
+                    expect(res.body.message).toBe(
+                        `The request contains an unknown context as query parameter (context=${context}).`
                     )
                 })
-            })
-    })
+        }
+    )
 
     it('GET with a valid id should return a Transaction object', async () => {
         await supertest(server)
@@ -92,7 +119,7 @@ describe('Transactions router tests', () => {
             .then((res) => {
                 const transaction = deserializeTransaction(res.body)
                 expect(transaction.id).toBe(1)
-                expect(transaction.category).toBe('FOOD') // set in the stubbedRepository
+                expect(transaction.category).toBe('FEE') // set in the stubbedRepository
                 expect(transaction.amount).toBe(-33.33) // set in the stubbedRepository
             })
     })

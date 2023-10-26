@@ -1,4 +1,8 @@
-import { Transaction, TransactionReceipt } from 'domain-model'
+import {
+    Transaction,
+    TransactionContext,
+    TransactionReceipt,
+} from 'domain-model'
 import { getLogger } from 'logger'
 import type { Pool, PoolClient } from 'pg'
 
@@ -12,6 +16,7 @@ const logger = getLogger('db')
 
 export type TransactionDAO = Pick<
     Transaction,
+    | 'context'
     | 'date'
     | 'amount'
     | 'sourceBankAccount'
@@ -34,6 +39,28 @@ type TransactionReceiptDAO = TransactionReceipt
 /* 
     'database-specific' CRUD methods 
  */
+
+export const getTransactionContext = async (
+    connectionPool: Pool,
+    transactionId: number
+): Promise<TransactionContext> => {
+    const query = {
+        name: 'select-context-from-transactions.transactions-where-id',
+        text: `
+        SELECT context
+        FROM transactions.transactions
+        WHERE id = $1
+        `,
+        values: [transactionId],
+    }
+    const queryResult = await connectionPool.query(query)
+    if (queryResult.rowCount === 0) {
+        throw new NoRecordFoundInDatabaseError(
+            `No transaction with id='${transactionId}' found.`
+        )
+    }
+    return queryResult.rows[0]
+}
 
 export const getTransactionReceipt = async (
     connectionPool: Pool,
@@ -64,10 +91,11 @@ export const insertTransactionDAO = async (
     const query = {
         name: 'insert-into-transactions.transactions',
         text: `
-        INSERT INTO transactions.transactions(date, amount, source_bank_account, target_bank_account, currency, exchange_rate, agent) 
-        VALUES ($1, $2, $3, $4, $5, $6, $7) 
+        INSERT INTO transactions.transactions(context, date, amount, source_bank_account, target_bank_account, currency, exchange_rate, agent) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
         RETURNING id;`,
         values: [
+            transactionDAO.context,
             transactionDAO.date.toString(),
             transactionDAO.amount,
             transactionDAO.sourceBankAccount,

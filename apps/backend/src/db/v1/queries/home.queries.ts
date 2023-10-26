@@ -20,8 +20,7 @@ import {
     insertTransactionReceiptDAO,
 } from './transactions.queries'
 
-const HOME_CONTEXT = 'home'
-const HOME_SCHEMA = HOME_CONTEXT
+const HOME_SCHEMA = 'home'
 
 type HomeDAO = Pick<
     Transaction,
@@ -81,7 +80,7 @@ export const getTransactionById = async (
         text: `
         SELECT
             h.id as home_id, h.type as category, h.origin, h.description,
-            tr.id, tr.amount, ${dateColumn} as date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
+            tr.id, tr.context, tr.amount, ${dateColumn} as date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
             td.payment_method, td.tax_category, td.comment, td.receipt_id
         FROM
         (
@@ -195,6 +194,7 @@ const _mapToTransaction = async (
     const {
         id,
         home_id,
+        context,
         category,
         origin,
         description,
@@ -213,7 +213,7 @@ const _mapToTransaction = async (
     const transactionBuilder = createTransaction()
         .about(category, origin, description)
         .withId(id)
-        .withContext(HOME_CONTEXT)
+        .withContext(context)
         .withDate(HomeAppDate.fromDatabase(date))
         .withAmount(parseFloat(amount))
         .withType(amount > 0 ? 'income' : 'expense')
@@ -230,7 +230,7 @@ const _mapToTransaction = async (
     const tags = await getTagsByExpenseOrIncomeId(
         home_id,
         parseFloat(amount) >= 0.0 ? 'income' : 'expense',
-        HOME_CONTEXT,
+        context,
         connectionPool
     )
     transactionBuilder.addTags(tags)

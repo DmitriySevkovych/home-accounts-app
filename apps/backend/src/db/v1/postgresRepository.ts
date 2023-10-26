@@ -6,6 +6,7 @@ import type {
     TaxCategory,
     Transaction,
     TransactionCategory,
+    TransactionContext,
     TransactionReceipt,
 } from 'domain-model'
 import { Logger, getLogger } from 'logger'
@@ -123,22 +124,7 @@ export class PostgresRepository implements Repository {
     ): Promise<number> => {
         // TODO to log or not to log?
         this.logger.info(transaction)
-        let queries
-        switch (transaction.context) {
-            case 'home':
-                queries = homeQueries
-                break
-            case 'investments':
-                queries = investmentsQueries
-                break
-            case 'work':
-                queries = workQueries
-                break
-            default:
-                throw new UnsupportedTransactionContextError(
-                    `Transaction context '${transaction.context}' is unsupported in DB v1.`
-                )
-        }
+        const queries = this._queries(transaction.context)
         const id = await queries.insertTransaction(
             this.connectionPool,
             transaction,
@@ -148,16 +134,26 @@ export class PostgresRepository implements Repository {
     }
 
     getTransactions = async (
+        context: TransactionContext,
         paginationOptions: PaginationOptions
     ): Promise<Transaction[]> => {
-        return await homeQueries.getTransactions(
+        const queries = this._queries(context)
+        return await queries.getTransactions(
             this.connectionPool,
             paginationOptions
         )
     }
 
     getTransactionById = async (id: number): Promise<Transaction> => {
-        return await homeQueries.getTransactionById(this.connectionPool, id)
+        // TECHNICAL DEBT - the extra step for determining the context is made due to the suboptimal database design.
+        // There is some ugly redundancy here...
+        // TODO Fix in v2...
+        const context = await transactionsQueries.getTransactionContext(
+            this.connectionPool,
+            id
+        )
+        const queries = this._queries(context)
+        return await queries.getTransactionById(this.connectionPool, id)
     }
 
     getTransactionReceipt = async (
@@ -177,5 +173,23 @@ export class PostgresRepository implements Repository {
     // Work
     getProjectInvoices = async (): Promise<ProjectInvoice[]> => {
         return await workQueries.getProjectInvoices(this.connectionPool)
+    }
+
+    /*
+        Private helper methods
+    */
+    _queries = (context: TransactionContext) => {
+        switch (context) {
+            case 'home':
+                return homeQueries
+            case 'investments':
+                return investmentsQueries
+            case 'work':
+                return workQueries
+            default:
+                throw new UnsupportedTransactionContextError(
+                    `Transaction context '${context}' is unsupported in DB v1.`
+                )
+        }
     }
 }

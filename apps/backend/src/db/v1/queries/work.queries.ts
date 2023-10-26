@@ -24,8 +24,7 @@ import {
     insertTransactionReceiptDAO,
 } from './transactions.queries'
 
-const WORK_CONTEXT = 'work'
-const WORK_SCHEMA = WORK_CONTEXT
+const WORK_SCHEMA = 'work'
 
 type WorkDAO = Pick<
     Transaction,
@@ -109,7 +108,7 @@ export const getTransactionById = async (
         text: `
         SELECT
             w.id as home_id, w.type as category, w.origin, w.description, w.invoice_key, w.vat, w.country,
-            tr.id, tr.amount, ${dateColumn} as date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
+            tr.id, tr.context, tr.amount, ${dateColumn} as date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
             td.payment_method, td.tax_category, td.comment, td.receipt_id
         FROM
         (
@@ -270,6 +269,7 @@ const _mapToTransaction = async (
     const {
         id,
         work_id,
+        context,
         category,
         origin,
         description,
@@ -290,7 +290,7 @@ const _mapToTransaction = async (
     const transactionBuilder = createTransaction()
         .about(category, origin, description)
         .withId(id)
-        .withContext(WORK_CONTEXT)
+        .withContext(context)
         .withDate(HomeAppDate.fromDatabase(date))
         .withAmount(parseFloat(amount))
         .withType(amount > 0 ? 'income' : 'expense')
@@ -308,7 +308,7 @@ const _mapToTransaction = async (
     const tags = await getTagsByExpenseOrIncomeId(
         work_id,
         parseFloat(amount) >= 0.0 ? 'income' : 'expense',
-        WORK_CONTEXT,
+        context,
         connectionPool
     )
     transactionBuilder.addTags(tags)

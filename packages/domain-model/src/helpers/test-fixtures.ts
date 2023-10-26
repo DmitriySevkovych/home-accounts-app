@@ -1,5 +1,8 @@
 import { HomeAppDate } from '../models/dates.model'
+import { Investment } from '../models/investments.model'
 import { Transaction, createTransaction } from '../models/transactions.model'
+import { ProjectInvoice } from '../models/work.model'
+import { PickAndFlatten } from './handy-types'
 
 export const dummyTransaction = (
     category: string,
@@ -46,4 +49,28 @@ export const minimalDummyTransaction = (
     }
 
     return transactionBuilder.build()
+}
+
+export const minimalDummyWorkTransaction = (
+    category: string,
+    amount: number,
+    invoiceKey?: PickAndFlatten<ProjectInvoice, 'key'>
+): Transaction => {
+    const transaction = minimalDummyTransaction(category, amount)
+    transaction.context = 'work'
+    transaction.invoiceKey = invoiceKey ? invoiceKey : 'Any Invoice'
+    transaction.vat = 0.19
+    transaction.country = 'DE'
+    return transaction
+}
+
+export const minimalDummyInvestmentTransaction = (
+    category: string,
+    amount: number,
+    investment?: PickAndFlatten<Investment, 'key'>
+): Transaction => {
+    const transaction = minimalDummyTransaction(category, amount)
+    transaction.context = 'investments'
+    transaction.investment = investment ? investment : 'Any Investment'
+    return transaction
 }
