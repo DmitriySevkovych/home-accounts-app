@@ -94,22 +94,13 @@ const getRouter = (): Router => {
     })
 
     router.get(
-        '/:id/receipt',
+        '/receipt/:receiptId',
         middleware.checkIdIsInteger,
         async (req, res) => {
-            const id = parseInt(req.params.id)
+            const receiptId = parseInt(req.params.receiptId)
             try {
-                const transaction = await repository.getTransactionById(id)
-
-                if (!transaction.receiptId) {
-                    return res.status(404).send({
-                        message: `The transaction with id=${id} does not have an associated receipt.`,
-                    })
-                }
-
-                const receipt = await repository.getTransactionReceipt(
-                    transaction.receiptId
-                )
+                const receipt =
+                    await repository.getTransactionReceipt(receiptId)
 
                 res.status(200)
                 res.set(
