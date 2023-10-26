@@ -2,6 +2,8 @@ import { Transaction, TransactionReceipt } from 'domain-model'
 import { getLogger } from 'logger'
 import type { Pool, PoolClient } from 'pg'
 
+import { NoRecordFoundInDatabaseError } from '../../../helpers/errors'
+
 const logger = getLogger('db')
 
 /* 
@@ -48,7 +50,9 @@ export const getTransactionReceipt = async (
     }
     const queryResult = await connectionPool.query(query)
     if (queryResult.rowCount === 0) {
-        // TODO throw error
+        throw new NoRecordFoundInDatabaseError(
+            `No transaction receipt with receipt_id='${receiptId}' found.`
+        )
     }
     return queryResult.rows[0]
 }
@@ -74,9 +78,6 @@ export const insertTransactionDAO = async (
         ],
     }
     const queryResult = await client.query(query)
-    if (queryResult.rowCount === 0) {
-        // TODO throw error
-    }
     logger.info(
         `Inserted a new row in transactions.transactions with primary key id=${queryResult.rows[0].id}.`
     )
@@ -124,9 +125,6 @@ export const insertTransactionReceiptDAO = async (
         values: [name, mimetype, buffer],
     }
     const queryResult = await client.query(query)
-    if (queryResult.rowCount === 0) {
-        // TODO throw error
-    }
     logger.info(
         `Inserted a new row in transactions.transaction_receipts with primary key id=${queryResult.rows[0].id}.`
     )
