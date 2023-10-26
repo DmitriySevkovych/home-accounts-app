@@ -49,6 +49,16 @@ export class PostgresRepository implements Repository {
                 `A client has been checked out from the pool. Current pool size: ${totalCount}. Currently idle clients: ${idleCount}.`
             )
         })
+
+        this.connectionPool.on(
+            'release',
+            (_err: Error, _client: PoolClient) => {
+                const { totalCount, idleCount } = this.connectionPool
+                this.logger.trace(
+                    `A client has been released. Current pool size: ${totalCount}. Currently idle clients: ${idleCount}.`
+                )
+            }
+        )
     }
 
     close = async (): Promise<void> => {
