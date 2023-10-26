@@ -4,6 +4,17 @@
 
 TODO docs!
 
+## PostgreSQL client
+
+We are using [`node-postgres`](https://node-postgres.com) and plain SQL to communicate with the database. No ORMs are used.
+
+### Connection: `Pool` vs `PoolClient`
+
+The DB repository holds an instance of a connection `Pool` object, which is responsible for handling all connections to the database. However, the following distinction is made:
+
+-   If a SQL transaction is necessary (e.g. for multi-table inserts), then a single `PoolClient` is checked-out/acquired from the `Pool`. This client handles all the queries within the SQL transaction scope. It must be released back to the pool manually at the end of the transaction.
+-   If a SQL transaction is not necessary, then the `Pool` instance is used directly to handle the queries.
+
 ## Autostarting DB container for dev, test
 
 TODO docs!
