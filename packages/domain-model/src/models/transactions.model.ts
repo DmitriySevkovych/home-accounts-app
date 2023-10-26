@@ -15,6 +15,12 @@ export type TransactionType = 'income' | 'expense'
 
 export type TransactionContext = 'home' | 'work' | 'investments'
 
+export const transactionContexts: ReadonlyArray<TransactionContext> = [
+    'home',
+    'work',
+    'investments',
+]
+
 export type TransactionCategory = {
     category: string
     allowedTypes: TransactionType[]
