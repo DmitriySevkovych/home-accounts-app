@@ -19,7 +19,6 @@ export const deserializeTransactionReceipt = (
             }
         }
     }
-    console.log({ file, receipt })
 
     return receipt
 }

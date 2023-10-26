@@ -2,6 +2,8 @@ import { Transaction, TransactionReceipt } from 'domain-model'
 import { getLogger } from 'logger'
 import type { Pool, PoolClient } from 'pg'
 
+import { NoRecordFoundInDatabaseError } from '../../../helpers/errors'
+
 const logger = getLogger('db')
 
 /* 
@@ -33,20 +35,23 @@ type TransactionReceiptDAO = TransactionReceipt
     'database-specific' CRUD methods 
  */
 
-export const getTransactionDAOById = async (
-    id: number,
-    connectionPool: Pool
-): Promise<TransactionDAO> => {
+export const getTransactionReceipt = async (
+    connectionPool: Pool,
+    receiptId: number
+): Promise<TransactionReceipt> => {
     const query = {
-        name: 'select-from-transactions.transactions-where-id',
-        text: 'SELECT * FROM transactions.transactions WHERE id = $1;',
-        values: [id],
+        name: 'select-from-transactions.transaction_receipts-where-id',
+        text: `
+        SELECT id, buffer, name, mimetype
+        FROM transactions.transaction_receipts
+        WHERE id = $1
+        `,
+        values: [receiptId],
     }
-    const queryResult = await connectionPool.query<TransactionDAO>(query)
+    const queryResult = await connectionPool.query(query)
     if (queryResult.rowCount === 0) {
-        logger.warn(`Found no rows in transactions.transactions with id=${id}.`)
-        throw new Error(
-            `Found no rows in transactions.transactions with id=${id}.`
+        throw new NoRecordFoundInDatabaseError(
+            `No transaction receipt with receipt_id='${receiptId}' found.`
         )
     }
     return queryResult.rows[0]
@@ -73,9 +78,6 @@ export const insertTransactionDAO = async (
         ],
     }
     const queryResult = await client.query(query)
-    if (queryResult.rowCount === 0) {
-        // TODO throw error
-    }
     logger.info(
         `Inserted a new row in transactions.transactions with primary key id=${queryResult.rows[0].id}.`
     )
@@ -123,9 +125,6 @@ export const insertTransactionReceiptDAO = async (
         values: [name, mimetype, buffer],
     }
     const queryResult = await client.query(query)
-    if (queryResult.rowCount === 0) {
-        // TODO throw error
-    }
     logger.info(
         `Inserted a new row in transactions.transaction_receipts with primary key id=${queryResult.rows[0].id}.`
     )

@@ -18,6 +18,7 @@ import { Repository } from '../repository'
 import * as homeQueries from './queries/home.queries'
 import * as investmentsQueries from './queries/investments.queries'
 import * as tagsQueries from './queries/tags.queries'
+import * as transactionsQueries from './queries/transactions.queries'
 import * as utilsQueries from './queries/utils.queries'
 import * as workQueries from './queries/work.queries'
 
@@ -48,6 +49,16 @@ export class PostgresRepository implements Repository {
                 `A client has been checked out from the pool. Current pool size: ${totalCount}. Currently idle clients: ${idleCount}.`
             )
         })
+
+        this.connectionPool.on(
+            'release',
+            (_err: Error, _client: PoolClient) => {
+                const { totalCount, idleCount } = this.connectionPool
+                this.logger.trace(
+                    `A client has been released. Current pool size: ${totalCount}. Currently idle clients: ${idleCount}.`
+                )
+            }
+        )
     }
 
     close = async (): Promise<void> => {
@@ -147,6 +158,15 @@ export class PostgresRepository implements Repository {
 
     getTransactionById = async (id: number): Promise<Transaction> => {
         return await homeQueries.getTransactionById(this.connectionPool, id)
+    }
+
+    getTransactionReceipt = async (
+        receiptId: number
+    ): Promise<TransactionReceipt> => {
+        return await transactionsQueries.getTransactionReceipt(
+            this.connectionPool,
+            receiptId
+        )
     }
 
     // Investments

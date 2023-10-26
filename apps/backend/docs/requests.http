@@ -27,21 +27,28 @@ GET https://localhost:8070/api/v1/transactions/1
 
 ### Post
 POST https://localhost:8070/api/v1/transactions
-Content-Type: application/json
+Content-Type: multipart/form-data;boundary=~~~123
+
+--~~~123
+Content-Disposition: form-data; name="transaction" 
 
 {
-    "category": "FOOD",
-    "origin": "Grocery store",
-    "description": "Some tasty food",
-    "amount": -45.67,
-    "date": {
-        "datetime":"2023-06-14T11:38:00.000Z"
-    },
-    "paymentMethod": "EC",
-    "sourceBankAccount": "HOME_ACCOUNT",
-    "tags": ["Test", "Tag"],
-    "agent": "Testbot"
+        "type": "expense",
+        "context": "home",
+        "category": "FOOD",
+        "origin": "Grocery store",
+        "description": "Some tasty food",
+        "amount": -45.67,
+        "date": {
+            "datetime":"2023-06-14T11:38:00.000Z"
+        },
+        "paymentMethod": "EC",
+        "sourceBankAccount": "HOME_ACCOUNT",
+        "tags": ["Test", "Tag"],
+        "agent": "Testbot"
 }
+--~~~123--
+
 ### Post to provoke error
 POST https://localhost:8070/api/v1/transactions
 Content-Type: application/json
@@ -50,6 +57,8 @@ Content-Type: application/json
     "test": "hello"
 }
 
+### Get transaction receipt
+GET https://localhost:8070/api/v1/transactions/1/receipt
 
 ### Investments routes
 GET https://localhost:8070/api/v1/investments

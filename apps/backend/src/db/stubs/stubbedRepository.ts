@@ -165,6 +165,22 @@ export class StubbedRepository implements Repository {
         return Promise.resolve(transaction)
     }
 
+    getTransactionReceipt = (
+        receiptId: number
+    ): Promise<TransactionReceipt> => {
+        if (receiptId === 404) {
+            throw new NoRecordFoundInDatabaseError(
+                `The database does not hold a transaction with id=${receiptId}.`
+            )
+        }
+
+        return Promise.resolve({
+            name: 'hello.txt',
+            mimetype: 'text/plain',
+            buffer: Buffer.from('This is a sample text file'),
+        })
+    }
+
     // Investments
     getInvestments = async (): Promise<Investment[]> => {
         return Promise.resolve([

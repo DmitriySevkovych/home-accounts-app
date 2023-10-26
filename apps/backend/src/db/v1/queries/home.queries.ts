@@ -45,7 +45,7 @@ export const getTransactions = async (
             SELECT
                 h.id as home_id, h.type as category, h.origin, h.description,
                 tr.id, tr.amount, ${dateColumn} as date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
-                td.payment_method, td.tax_category, td.comment
+                td.payment_method, td.tax_category, td.comment, td.receipt_id
             FROM
             (
                 SELECT * FROM ${HOME_SCHEMA}.expenses
@@ -82,7 +82,7 @@ export const getTransactionById = async (
         SELECT
             h.id as home_id, h.type as category, h.origin, h.description,
             tr.id, tr.amount, ${dateColumn} as date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
-            td.payment_method, td.tax_category, td.comment
+            td.payment_method, td.tax_category, td.comment, td.receipt_id
         FROM
         (
             SELECT * FROM ${HOME_SCHEMA}.expenses
@@ -208,6 +208,7 @@ const _mapToTransaction = async (
         payment_method: paymentMethod,
         tax_category: taxCategory,
         comment,
+        receipt_id: receiptId,
     } = row
     const transactionBuilder = createTransaction()
         .about(category, origin, description)
@@ -220,6 +221,7 @@ const _mapToTransaction = async (
         .withPaymentDetails(paymentMethod, sourceBankAccount, targetBankAccount)
         .withComment(comment)
         .withTaxCategory(taxCategory)
+        .withReceipt(receiptId)
         .withAgent(agent)
 
     // TECHNICAL DEBT: persistence of tags in DB needs to be refactored and simplified, cf. GitHub Issue #41
