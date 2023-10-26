@@ -31,8 +31,7 @@ type InvestmentDAO = Pick<
 
 const logger = getLogger('db')
 
-const INVESTMENTS_CONTEXT = 'investments'
-const INVESTMENTS_SCHEMA = INVESTMENTS_CONTEXT
+const INVESTMENTS_SCHEMA = 'investments'
 
 export const getInvestmentTypes = async (
     connectionPool: Pool
@@ -107,7 +106,7 @@ export const getTransactionById = async (
         text: `
         SELECT
             i.id as home_id, i.type as category, i.origin, i.description, i.investment,
-            tr.id, tr.amount, ${dateColumn} as date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
+            tr.id, tr.context, tr.amount, ${dateColumn} as date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
             td.payment_method, td.tax_category, td.comment, td.receipt_id
         FROM
         (
@@ -222,6 +221,7 @@ const _mapToTransaction = async (
     const {
         id,
         investment_id,
+        context,
         category,
         origin,
         description,
@@ -240,7 +240,7 @@ const _mapToTransaction = async (
     const transactionBuilder = createTransaction()
         .about(category, origin, description)
         .withId(id)
-        .withContext(INVESTMENTS_CONTEXT)
+        .withContext(context)
         .withDate(HomeAppDate.fromDatabase(date))
         .withAmount(parseFloat(amount))
         .withType(amount > 0 ? 'income' : 'expense')
@@ -257,7 +257,7 @@ const _mapToTransaction = async (
     const tags = await getTagsByExpenseOrIncomeId(
         investment_id,
         parseFloat(amount) >= 0.0 ? 'income' : 'expense',
-        INVESTMENTS_CONTEXT,
+        context,
         connectionPool
     )
     transactionBuilder.addTags(tags)

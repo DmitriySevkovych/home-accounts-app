@@ -21,6 +21,7 @@ describe('Database queries targeting only the transactions schema', () => {
     it('insertTransactionDAO should create a new entry in the database', async () => {
         // Arrange
         const transaction: TransactionDAO = {
+            context: 'home',
             date: HomeAppDate.today(),
             amount: 9.99,
             currency: 'EUR',

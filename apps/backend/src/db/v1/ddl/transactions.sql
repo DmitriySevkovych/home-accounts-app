@@ -3,6 +3,7 @@
 CREATE TABLE IF NOT EXISTS
   transactions.transactions (
     id integer PRIMARY KEY,
+    context varchar NOT NULL,
     date date NOT NULL,
     amount numeric(10, 2) NOT NULL,
     source_bank_account character varying,

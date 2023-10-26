@@ -12,6 +12,7 @@ const logger = getLogger('db')
 
 export type TransactionDAO = Pick<
     Transaction,
+    | 'context'
     | 'date'
     | 'amount'
     | 'sourceBankAccount'
@@ -64,10 +65,11 @@ export const insertTransactionDAO = async (
     const query = {
         name: 'insert-into-transactions.transactions',
         text: `
-        INSERT INTO transactions.transactions(date, amount, source_bank_account, target_bank_account, currency, exchange_rate, agent) 
-        VALUES ($1, $2, $3, $4, $5, $6, $7) 
+        INSERT INTO transactions.transactions(context, date, amount, source_bank_account, target_bank_account, currency, exchange_rate, agent) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
         RETURNING id;`,
         values: [
+            transactionDAO.context,
             transactionDAO.date.toString(),
             transactionDAO.amount,
             transactionDAO.sourceBankAccount,
