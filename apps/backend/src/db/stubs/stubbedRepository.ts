@@ -138,25 +138,17 @@ export class StubbedRepository implements Repository {
     ): Promise<Transaction[]> => {
         const transactions = []
 
-        let getDummyTransaction
-        switch (context) {
-            case 'work':
-                getDummyTransaction = minimalDummyWorkTransaction
-                break
-            case 'investments':
-                getDummyTransaction = minimalDummyInvestmentTransaction
-                break
-            default:
-                getDummyTransaction = minimalDummyTransaction
-        }
-
         for (let i = 0; i < 10; i++) {
             const amount = Math.pow(-1, i) * (i + 1)
             const category =
                 amount < 0
                     ? 'EXPENSE_CATEGORY_PLACEHOLDER'
                     : 'INCOME_CATEGORY_PLACEHOLDER'
-            const transaction = getDummyTransaction(category, amount)
+            const transaction = this._getDummyTransaction(
+                category,
+                amount,
+                context
+            )
             transaction.id = i
             transactions.push(transaction)
         }
@@ -176,7 +168,7 @@ export class StubbedRepository implements Repository {
             )
         }
 
-        const transaction = minimalDummyTransaction('FOOD', -33.33)
+        const transaction = this._getDummyTransaction('FEE', -33.33)
         transaction.id = id
         return Promise.resolve(transaction)
     }
@@ -253,5 +245,28 @@ export class StubbedRepository implements Repository {
                 comment: 'Second dummy invoce',
             },
         ])
+    }
+
+    /* 
+        Private helper functions 
+    */
+    _getDummyTransaction = (
+        category: string,
+        amount: number,
+        context: TransactionContext = 'home'
+    ) => {
+        let getDummyTransaction
+        switch (context) {
+            case 'work':
+                getDummyTransaction = minimalDummyWorkTransaction
+                break
+            case 'investments':
+                getDummyTransaction = minimalDummyInvestmentTransaction
+                break
+            default:
+                getDummyTransaction = minimalDummyTransaction
+        }
+
+        return getDummyTransaction(category, amount)
     }
 }

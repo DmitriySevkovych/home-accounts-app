@@ -145,7 +145,15 @@ export class PostgresRepository implements Repository {
     }
 
     getTransactionById = async (id: number): Promise<Transaction> => {
-        return await homeQueries.getTransactionById(this.connectionPool, id)
+        // TECHNICAL DEBT - the extra step for determining the context is made due to the suboptimal database design.
+        // There is some ugly redundancy here...
+        // TODO Fix in v2...
+        const context = await transactionsQueries.getTransactionContext(
+            this.connectionPool,
+            id
+        )
+        const queries = this._queries(context)
+        return await queries.getTransactionById(this.connectionPool, id)
     }
 
     getTransactionReceipt = async (

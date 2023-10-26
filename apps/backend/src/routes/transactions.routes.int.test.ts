@@ -119,7 +119,7 @@ describe('Transactions router tests', () => {
             .then((res) => {
                 const transaction = deserializeTransaction(res.body)
                 expect(transaction.id).toBe(1)
-                expect(transaction.category).toBe('FOOD') // set in the stubbedRepository
+                expect(transaction.category).toBe('FEE') // set in the stubbedRepository
                 expect(transaction.amount).toBe(-33.33) // set in the stubbedRepository
             })
     })
