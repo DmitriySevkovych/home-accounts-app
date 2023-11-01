@@ -84,33 +84,34 @@ const TagsManager: React.FC<TagsManagerProps> = (props) => {
                 <FormItem>
                     <FormLabel>{label}</FormLabel>
 
-                    <Command>
-                        <div className="flex gap-2 p-3">
+                    <div className="flex justify-between gap-3">
+                        <Command>
                             <CommandInput
                                 onValueChange={setCurrentTag}
                                 value={currentTag}
                                 placeholder="Enter tag..."
                             />
-                            <Button
-                                type="button"
-                                className="px-4"
-                                onClick={() => {
-                                    if (!currentTag) {
-                                        return
-                                    }
-                                    addTag(currentTag, field)
-                                    resetInput()
-                                }}
-                            >
-                                +
-                            </Button>
-                        </div>
-                        <TagOptions
-                            options={tagOptions}
-                            field={field}
-                            addTag={addTag}
-                        />
-                    </Command>
+                            <TagOptions
+                                options={tagOptions}
+                                field={field}
+                                addTag={addTag}
+                            />
+                        </Command>
+
+                        <Button
+                            variant="secondary"
+                            type="button"
+                            onClick={() => {
+                                if (!currentTag) {
+                                    return
+                                }
+                                addTag(currentTag, field)
+                                resetInput()
+                            }}
+                        >
+                            +
+                        </Button>
+                    </div>
 
                     <div className="flex flex-wrap gap-2 pt-3">
                         {field.value?.map((tag: string) => (
@@ -133,29 +134,31 @@ const TagOptions: React.FC<TagOptionsProps> = ({ options, field, addTag }) => {
     if (!ongoingSearch) return null
 
     return (
-        <>
-            <CommandGroup>
-                <ScrollArea className="h-[190px]">
-                    {options.map((option) => (
-                        <CommandItem
-                            className="text-primary hover:text-darkest aria-selected:bg-transparent aria-selected:font-bold"
-                            key={option}
-                            onSelect={(currentValue: string) => {
-                                // ATTENTION:
-                                // Cannot use currentValue here, because CommandItem transforms values to lowercase and trims them.
-                                // This behaviour comes from the underlying 'cmdk' lib.
-                                addTag(option, field)
-                            }}
-                        >
-                            {option}
-                        </CommandItem>
-                    ))}
-                </ScrollArea>
-            </CommandGroup>
-            <CommandEmpty>
-                Tag &apos;{ongoingSearch}&apos; does not exist yet.
-            </CommandEmpty>
-        </>
+        <div className="px-3">
+            <div className="border-t border-primary">
+                <CommandGroup>
+                    <ScrollArea className="h-[190px]">
+                        {options.map((option) => (
+                            <CommandItem
+                                className="text-primary hover:text-darkest aria-selected:bg-transparent aria-selected:font-bold"
+                                key={option}
+                                onSelect={(currentValue: string) => {
+                                    // ATTENTION:
+                                    // Cannot use currentValue here, because CommandItem transforms values to lowercase and trims them.
+                                    // This behaviour comes from the underlying 'cmdk' lib.
+                                    addTag(option, field)
+                                }}
+                            >
+                                {option}
+                            </CommandItem>
+                        ))}
+                    </ScrollArea>
+                </CommandGroup>
+                <CommandEmpty>
+                    Tag &apos;{ongoingSearch}&apos; does not exist yet.
+                </CommandEmpty>
+            </div>
+        </div>
     )
 }
 

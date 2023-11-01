@@ -42,10 +42,10 @@ const CommandInput = React.forwardRef<
     React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>
 >(({ className, ...props }, ref) => (
     <div
-        className="flex items-center border-b border-primary px-3 font-medium text-primary"
+        className="flex items-center px-3 font-medium text-primary"
         cmdk-input-wrapper=""
     >
-        <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+        {/* <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" /> */}
         <CommandPrimitive.Input
             ref={ref}
             className={cn(
@@ -95,7 +95,7 @@ const CommandGroup = React.forwardRef<
     <CommandPrimitive.Group
         ref={ref}
         className={cn(
-            'overflow-hidden p-1 pl-10 font-medium text-primary [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-primary',
+            'overflow-hidden font-medium text-primary [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-primary',
             className
         )}
         {...props}
@@ -123,7 +123,7 @@ const CommandItem = React.forwardRef<
     <CommandPrimitive.Item
         ref={ref}
         className={cn(
-            'aria-selected:text-accent-foreground relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none aria-selected:bg-accent data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+            'aria-selected:text-accent-foreground relative flex cursor-default select-none items-center rounded-sm px-3 py-1.5 text-sm outline-none aria-selected:bg-accent data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
             className
         )}
         {...props}
