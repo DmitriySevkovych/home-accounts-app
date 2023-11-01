@@ -1,3 +1,4 @@
+import { useCommandState } from 'cmdk'
 import React, { useRef, useState } from 'react'
 import { ControllerRenderProps, UseFormReturn } from 'react-hook-form'
 
@@ -12,7 +13,6 @@ import {
     CommandItem,
 } from '../lib/shadcn/Command'
 import { FormField, FormItem, FormLabel } from '../lib/shadcn/Form'
-import { Popover, PopoverContent, PopoverTrigger } from '../lib/shadcn/Popover'
 import { ScrollArea } from '../lib/shadcn/ScrollArea'
 
 type TagsManagerProps = {
@@ -22,6 +22,15 @@ type TagsManagerProps = {
     initialTags: string[]
 }
 
+type TagOptionsProps = {
+    options: string[]
+    field: ControllerRenderProps<any, keyof NewTransactionForm>
+    addTag: (
+        option: string,
+        field: ControllerRenderProps<any, keyof NewTransactionForm>
+    ) => void
+}
+
 type TagProps = {
     tag: string
     removeTagHandler: () => void
@@ -29,15 +38,12 @@ type TagProps = {
 
 const TagsManager: React.FC<TagsManagerProps> = (props) => {
     const { form, label, id, initialTags } = props
-    const commandInputRef = useRef<HTMLInputElement>(null)
 
-    const [open, setOpen] = useState(false)
+    const [currentTag, setCurrentTag] = useState<string>('')
     const [tagOptions, setTagOptions] = useState<string[]>(initialTags)
 
     const resetInput = () => {
-        if (commandInputRef.current) {
-            commandInputRef.current.value = ''
-        }
+        setCurrentTag('')
     }
 
     const addTag = (
@@ -77,68 +83,36 @@ const TagsManager: React.FC<TagsManagerProps> = (props) => {
             render={({ field }) => (
                 <FormItem>
                     <FormLabel>{label}</FormLabel>
-                    <div>
-                        <Popover open={open} onOpenChange={setOpen}>
-                            <PopoverTrigger asChild>
-                                <Button
-                                    variant="secondary"
-                                    type="button"
-                                    size={'lg'}
-                                >
-                                    Add tag
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-full p-0">
-                                <Command>
-                                    <div className="flex gap-2 p-3">
-                                        <CommandInput
-                                            ref={commandInputRef}
-                                            placeholder="Enter tag..."
-                                        />
-                                        <Button
-                                            type="button"
-                                            className="px-4"
-                                            onClick={() => {
-                                                if (!commandInputRef.current) {
-                                                    return
-                                                }
-                                                const currentValue =
-                                                    commandInputRef.current
-                                                        .value
-                                                addTag(currentValue, field)
-                                            }}
-                                        >
-                                            +
-                                        </Button>
-                                    </div>
-                                    <CommandEmpty>
-                                        Press &apos;+&apos; to add new tag.
-                                    </CommandEmpty>
-                                    <CommandGroup>
-                                        <ScrollArea className="h-[190px]">
-                                            {tagOptions.map((tagOption) => (
-                                                <CommandItem
-                                                    className="text-primary hover:text-darkest aria-selected:bg-transparent aria-selected:font-bold"
-                                                    key={tagOption}
-                                                    onSelect={(
-                                                        currentValue: string
-                                                    ) => {
-                                                        // ATTENTION:
-                                                        // Cannot use currentValue here, because CommandItem transforms values to lowercase and trims them.
-                                                        // This behaviour comes from the underlying 'cmdk' lib.
-                                                        addTag(tagOption, field)
-                                                        setOpen(false)
-                                                    }}
-                                                >
-                                                    {tagOption}
-                                                </CommandItem>
-                                            ))}
-                                        </ScrollArea>
-                                    </CommandGroup>
-                                </Command>
-                            </PopoverContent>
-                        </Popover>
+
+                    <div className="flex justify-between gap-3">
+                        <Command>
+                            <CommandInput
+                                onValueChange={setCurrentTag}
+                                value={currentTag}
+                                placeholder="Enter tag..."
+                            />
+                            <TagOptions
+                                options={tagOptions}
+                                field={field}
+                                addTag={addTag}
+                            />
+                        </Command>
+
+                        <Button
+                            variant="secondary"
+                            type="button"
+                            onClick={() => {
+                                if (!currentTag) {
+                                    return
+                                }
+                                addTag(currentTag, field)
+                                resetInput()
+                            }}
+                        >
+                            +
+                        </Button>
                     </div>
+
                     <div className="flex flex-wrap gap-2 pt-3">
                         {field.value?.map((tag: string) => (
                             <Tag
@@ -151,6 +125,40 @@ const TagsManager: React.FC<TagsManagerProps> = (props) => {
                 </FormItem>
             )}
         />
+    )
+}
+
+const TagOptions: React.FC<TagOptionsProps> = ({ options, field, addTag }) => {
+    const ongoingSearch = useCommandState((state) => state.search)
+
+    if (!ongoingSearch) return null
+
+    return (
+        <div className="px-3">
+            <div className="border-t border-primary">
+                <CommandGroup>
+                    <ScrollArea className="h-[190px]">
+                        {options.map((option) => (
+                            <CommandItem
+                                className="text-primary hover:text-darkest aria-selected:bg-transparent aria-selected:font-bold"
+                                key={option}
+                                onSelect={(currentValue: string) => {
+                                    // ATTENTION:
+                                    // Cannot use currentValue here, because CommandItem transforms values to lowercase and trims them.
+                                    // This behaviour comes from the underlying 'cmdk' lib.
+                                    addTag(option, field)
+                                }}
+                            >
+                                {option}
+                            </CommandItem>
+                        ))}
+                    </ScrollArea>
+                </CommandGroup>
+                <CommandEmpty>
+                    Tag &apos;{ongoingSearch}&apos; does not exist yet.
+                </CommandEmpty>
+            </div>
+        </div>
     )
 }
 
