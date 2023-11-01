@@ -22,7 +22,7 @@ type TagsManagerProps = {
     initialTags: string[]
 }
 
-type TagOptionsProps = {
+type TagsCommandGroupProps = {
     options: string[]
     field: ControllerRenderProps<any, keyof NewTransactionForm>
     addTag: (
@@ -42,7 +42,7 @@ const TagsManager: React.FC<TagsManagerProps> = (props) => {
     const [currentTag, setCurrentTag] = useState<string>('')
     const [tagOptions, setTagOptions] = useState<string[]>(initialTags)
 
-    const resetInput = () => {
+    const reset = () => {
         setCurrentTag('')
     }
 
@@ -53,7 +53,7 @@ const TagsManager: React.FC<TagsManagerProps> = (props) => {
         if (!newTag) return
 
         if (field.value.includes(newTag)) {
-            resetInput()
+            reset()
             return
         }
 
@@ -66,7 +66,7 @@ const TagsManager: React.FC<TagsManagerProps> = (props) => {
         if (!tagOptions.includes(newTag)) {
             setTagOptions([...tagOptions, newTag])
         }
-        resetInput()
+        reset()
     }
 
     const removeTag = (
@@ -91,7 +91,7 @@ const TagsManager: React.FC<TagsManagerProps> = (props) => {
                                 value={currentTag}
                                 placeholder="Enter tag..."
                             />
-                            <TagOptions
+                            <TagsCommandGroup
                                 options={tagOptions}
                                 field={field}
                                 addTag={addTag}
@@ -106,7 +106,6 @@ const TagsManager: React.FC<TagsManagerProps> = (props) => {
                                     return
                                 }
                                 addTag(currentTag, field)
-                                resetInput()
                             }}
                         >
                             +
@@ -128,10 +127,14 @@ const TagsManager: React.FC<TagsManagerProps> = (props) => {
     )
 }
 
-const TagOptions: React.FC<TagOptionsProps> = ({ options, field, addTag }) => {
-    const ongoingSearch = useCommandState((state) => state.search)
+const TagsCommandGroup: React.FC<TagsCommandGroupProps> = ({
+    options,
+    field,
+    addTag,
+}) => {
+    const searchedTag = useCommandState((state) => state.search)
 
-    if (!ongoingSearch) return null
+    if (!searchedTag) return null
 
     return (
         <div className="px-3">
@@ -142,7 +145,7 @@ const TagOptions: React.FC<TagOptionsProps> = ({ options, field, addTag }) => {
                             <CommandItem
                                 className="text-primary hover:text-darkest aria-selected:bg-transparent aria-selected:font-bold"
                                 key={option}
-                                onSelect={(currentValue: string) => {
+                                onSelect={(_currentValue: string) => {
                                     // ATTENTION:
                                     // Cannot use currentValue here, because CommandItem transforms values to lowercase and trims them.
                                     // This behaviour comes from the underlying 'cmdk' lib.
@@ -155,7 +158,7 @@ const TagOptions: React.FC<TagOptionsProps> = ({ options, field, addTag }) => {
                     </ScrollArea>
                 </CommandGroup>
                 <CommandEmpty>
-                    Tag &apos;{ongoingSearch}&apos; does not exist yet.
+                    Tag &apos;{searchedTag}&apos; does not exist yet.
                 </CommandEmpty>
             </div>
         </div>
