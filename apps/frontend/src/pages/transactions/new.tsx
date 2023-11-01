@@ -17,6 +17,7 @@ import OverlayImage from '../../components/Overlay'
 import Radio from '../../components/Radio'
 import Select from '../../components/Select'
 import TagsManager from '../../components/TagsManager'
+import TagsManager_input from '../../components/TagsManager_input'
 import useNewTransactionForm from '../../components/hooks/useNewTransactionForm'
 import useNewTransactionSubmitHandler from '../../components/hooks/useNewTransactionSubmitHandler'
 import { SERVER_BACKEND_BASE_URL } from '../../helpers/constants'
@@ -245,6 +246,12 @@ const NewTransactionPage = ({
                         <>
                             <Separator />
                             <TagsManager
+                                id="tags"
+                                form={form}
+                                label="Tags"
+                                initialTags={tags}
+                            />
+                            <TagsManager_input
                                 id="tags"
                                 form={form}
                                 label="Tags"
