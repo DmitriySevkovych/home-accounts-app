@@ -83,6 +83,7 @@ describe('Utils router tests', () => {
                     'taxCategories',
                     'paymentMethods',
                     'bankAccounts',
+                    'tags',
                 ].forEach((key) => expect(res.body).toHaveProperty(key))
             })
     })

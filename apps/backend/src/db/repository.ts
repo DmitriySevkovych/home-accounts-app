@@ -38,6 +38,8 @@ export interface Repository {
 
     getTransactionReceipt: (_receiptId: number) => Promise<TransactionReceipt>
 
+    getTransactionOrigins: () => Promise<string[]>
+
     // Investments data
     getInvestments: () => Promise<Investment[]>
 

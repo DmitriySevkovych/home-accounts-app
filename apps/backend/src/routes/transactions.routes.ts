@@ -75,21 +75,13 @@ const getRouter = (): Router => {
         }
     })
 
-    router.get('/:id', middleware.checkIdIsInteger, async (req, res) => {
-        const id = parseInt(req.params.id)
+    router.get('/origins', async (req, res) => {
         try {
-            const transaction = await repository.getTransactionById(id)
-            return res.status(200).json(transaction)
+            const transactionOrigins = await repository.getTransactionOrigins()
+            return res.status(200).json({ transactionOrigins })
         } catch (err) {
             req.log.error(err)
-            if (err instanceof NoRecordFoundInDatabaseError) {
-                res.status(404).json({
-                    message: 'No record found in the database.',
-                    cause: err.message,
-                })
-            } else {
-                res.status(500).json({ message: 'Something went wrong' })
-            }
+            res.status(500).json({ message: 'Something went wrong' })
         }
     })
 
@@ -134,6 +126,24 @@ const getRouter = (): Router => {
             }
         }
     )
+
+    router.get('/:id', middleware.checkIdIsInteger, async (req, res) => {
+        const id = parseInt(req.params.id)
+        try {
+            const transaction = await repository.getTransactionById(id)
+            return res.status(200).json(transaction)
+        } catch (err) {
+            req.log.error(err)
+            if (err instanceof NoRecordFoundInDatabaseError) {
+                res.status(404).json({
+                    message: 'No record found in the database.',
+                    cause: err.message,
+                })
+            } else {
+                res.status(500).json({ message: 'Something went wrong' })
+            }
+        }
+    })
 
     return router
 }

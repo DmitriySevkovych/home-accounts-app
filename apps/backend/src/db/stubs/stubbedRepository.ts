@@ -189,6 +189,10 @@ export class StubbedRepository implements Repository {
         })
     }
 
+    getTransactionOrigins = (): Promise<string[]> => {
+        return Promise.resolve(['Gas station', 'Supermarket', 'Post office'])
+    }
+
     // Investments
     getInvestments = async (): Promise<Investment[]> => {
         return Promise.resolve([

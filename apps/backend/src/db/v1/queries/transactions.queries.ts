@@ -62,6 +62,29 @@ export const getTransactionContext = async (
     return queryResult.rows[0]
 }
 
+export const getTransactionOrigins = async (
+    connectionPool: Pool
+): Promise<string[]> => {
+    const query = {
+        name: 'select-origins-union-over-all-schemas',
+        text: `
+        SELECT origin FROM home.expenses 
+        UNION 
+        SELECT origin FROM home.income
+        UNION 
+        SELECT origin FROM work.expenses
+        UNION 
+        SELECT origin FROM work.income
+        UNION 
+        SELECT origin FROM investments.expenses
+        UNION 
+        SELECT origin FROM investments.income
+        `,
+    }
+    const queryResult = await connectionPool.query(query)
+    return queryResult.rows.map((row) => row.origin)
+}
+
 export const getTransactionReceipt = async (
     connectionPool: Pool,
     receiptId: number

@@ -25,6 +25,9 @@ GET https://localhost:8070/api/v1/transactions?limit=5&page=2
 ### Get by id
 GET https://localhost:8070/api/v1/transactions/1
 
+### Get transaction origins
+GET https://localhost:8070/api/v1/transactions/origins
+
 ### Post
 POST https://localhost:8070/api/v1/transactions
 Content-Type: multipart/form-data;boundary=~~~123
@@ -58,7 +61,7 @@ Content-Type: application/json
 }
 
 ### Get transaction receipt
-GET https://localhost:8070/api/v1/transactions/1/receipt
+GET https://localhost:8070/api/v1/transactions/receipt/1
 
 ### Investments routes
 GET https://localhost:8070/api/v1/investments

@@ -147,4 +147,15 @@ describe('Transactions router tests', () => {
                 )
             })
     })
+
+    it('GET /origins should return a transactionOrigins array of strings', async () => {
+        await supertest(server)
+            .get(`${routerBaseUrl}/origins`)
+            .expect(200)
+            .then((res) => {
+                const { transactionOrigins } = res.body
+                expect(Array.isArray(transactionOrigins)).toBe(true)
+                expect(typeof transactionOrigins[0]).toBe('string')
+            })
+    })
 })

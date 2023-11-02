@@ -165,6 +165,12 @@ export class PostgresRepository implements Repository {
         )
     }
 
+    getTransactionOrigins = async (): Promise<string[]> => {
+        return await transactionsQueries.getTransactionOrigins(
+            this.connectionPool
+        )
+    }
+
     // Investments
     getInvestments = async (): Promise<Investment[]> => {
         return await investmentsQueries.getInvestments(this.connectionPool)
