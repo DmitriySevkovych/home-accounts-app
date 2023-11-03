@@ -10,6 +10,7 @@ import {
 } from 'domain-model'
 import React from 'react'
 
+import AutocompleteInput from '../../components/AutocompleteInput'
 import { Calendar } from '../../components/Calendar'
 import { DropzoneFormField } from '../../components/Dropzone'
 import { NumberInput, TextAreaInput, TextInput } from '../../components/Inputs'
@@ -26,6 +27,7 @@ import { Separator } from '../../lib/shadcn/Separator'
 
 // Type of arguments for export function (from getServerSideProps)
 type NewTransactionPageProps = {
+    transactionOrigins: string[]
     transactionCategories: TransactionCategory[]
     taxCategories: TaxCategory[]
     paymentMethods: PaymentMethod[]
@@ -36,6 +38,7 @@ type NewTransactionPageProps = {
 }
 
 const NewTransactionPage = ({
+    transactionOrigins,
     transactionCategories,
     paymentMethods,
     bankAccounts,
@@ -99,11 +102,12 @@ const NewTransactionPage = ({
                             .sort()}
                     />
 
-                    <TextInput
+                    <AutocompleteInput
                         id="origin"
                         form={form}
                         label="Origin"
                         placeholder={`Where did the ${transactionType} occur?`}
+                        autocompleteOptions={transactionOrigins}
                     />
 
                     <TextInput
@@ -283,6 +287,7 @@ export async function getServerSideProps() {
             `${SERVER_BACKEND_BASE_URL}/utils/constants/transactions`,
             `${SERVER_BACKEND_BASE_URL}/investments`,
             `${SERVER_BACKEND_BASE_URL}/work/invoices`,
+            `${SERVER_BACKEND_BASE_URL}/transactions/origins`,
         ]
 
         const response = await Promise.all(
@@ -294,6 +299,7 @@ export async function getServerSideProps() {
                 ...response[0],
                 ...response[1],
                 ...response[2],
+                ...response[3],
             },
         }
     } catch (err) {
