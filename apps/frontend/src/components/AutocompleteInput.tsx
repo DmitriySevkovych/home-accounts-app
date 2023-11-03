@@ -1,5 +1,5 @@
 import { useCommandState } from 'cmdk'
-import React from 'react'
+import React, { useState } from 'react'
 import { ControllerRenderProps, UseFormReturn } from 'react-hook-form'
 
 import { NewTransactionForm } from '../helpers/zod-form-schemas'
@@ -32,12 +32,20 @@ type CollapsibleCommandGroupProps = {
 
 const AutocompleteInput: React.FC<AutocompleteInputProps> = (props) => {
     const { form, label, id, autocompleteOptions, placeholder } = props
+    const [openAutocompleteOptions, setOpenAutocompleteOptions] =
+        useState(false)
 
     const onSelect = (
         selectedOption: string,
         field: ControllerRenderProps<any, keyof NewTransactionForm>
     ) => {
         field.onChange(selectedOption)
+        setOpenAutocompleteOptions(false)
+    }
+
+    const onValueChange = (value: any, field: any) => {
+        field.onChange(value)
+        setOpenAutocompleteOptions(true)
     }
 
     return (
@@ -50,15 +58,17 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = (props) => {
 
                     <Command>
                         <CommandInput
-                            onValueChange={field.onChange}
+                            onValueChange={(val) => onValueChange(val, field)}
                             value={field.value}
                             placeholder={placeholder}
                         />
-                        <CollapsibleCommandGroup
-                            options={autocompleteOptions}
-                            field={field}
-                            onSelect={onSelect}
-                        />
+                        {openAutocompleteOptions && (
+                            <CollapsibleCommandGroup
+                                options={autocompleteOptions}
+                                field={field}
+                                onSelect={onSelect}
+                            />
+                        )}
                     </Command>
                 </FormItem>
             )}
