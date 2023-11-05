@@ -29,7 +29,9 @@ const TransactionsOverview = ({ systemInfo }: TransactionsOverviewProps) => {
                     </Button>
                 </div>
                 <OverlayImage />
-                <SystemInfoFooter {...systemInfo} />
+                {systemInfo.frontend.environment !== 'production' && (
+                    <SystemInfoFooter {...systemInfo} />
+                )}
             </div>
         </>
     )
