@@ -18,6 +18,7 @@ type TransactionsOverviewProps = {
 
 const transactionsData = [
     {
+        id: 1,
         type: 'expense',
         context: 'home',
         category: 'FOOD',
@@ -35,6 +36,7 @@ const transactionsData = [
         agent: 'home-app-frontend',
     },
     {
+        id: 2,
         type: 'expense',
         context: 'home',
         category: 'FEE',
@@ -52,6 +54,7 @@ const transactionsData = [
         receiptId: 1,
     },
     {
+        id: 3,
         type: 'income',
         context: 'home',
         category: 'SALARY',
@@ -83,7 +86,7 @@ const TransactionsOverview = ({ systemInfo }: TransactionsOverviewProps) => {
                         <ScrollArea className="h-[190px]">
                             {transactionsData.map((transaction) => {
                                 return (
-                                    <>
+                                    <div key={transaction.id}>
                                         <div className="flex w-full flex-col gap-1 rounded-md border border-input bg-background-overlay px-3 py-2 text-sm font-medium text-primary ring-offset-background">
                                             <div className="flex w-full justify-between">
                                                 <p className="w-[200px] truncate">
@@ -105,7 +108,7 @@ const TransactionsOverview = ({ systemInfo }: TransactionsOverviewProps) => {
                                                 )}
                                             </div>
                                         </div>
-                                    </>
+                                    </div>
                                 )
                             })}
                         </ScrollArea>
