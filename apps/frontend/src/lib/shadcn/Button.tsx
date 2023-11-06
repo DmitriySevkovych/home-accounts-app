@@ -10,7 +10,7 @@ const buttonVariants = cva(
         variants: {
             variant: {
                 default: 'bg-primary text-primary-foreground',
-                destructive:
+                primary:
                     'bg-accent hover:bg-accent-lighter text-darkest font-medium',
                 outline:
                     'border border-input bg-background hover:bg-accent hover:text-accent-foreground',

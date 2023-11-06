@@ -87,7 +87,7 @@ const TransactionsOverview = ({ systemInfo }: TransactionsOverviewProps) => {
                             </ScrollArea>
                         </Suspense>
                     </div>
-                    <Button className="self-end" variant="secondary">
+                    <Button className="self-end" variant="primary">
                         <Link href={PAGES.transactions.new}>New</Link>
                     </Button>
                 </div>
