@@ -48,11 +48,13 @@ const TransactionsOverview = ({ systemInfo }: TransactionsOverviewProps) => {
         <>
             <div className="relative flex h-full min-h-screen w-full flex-col justify-between p-4">
                 <div className="flex flex-grow flex-col items-center justify-between gap-10">
-                    <h1 className="mt-48 text-center text-xl font-bold text-primary lg:text-2xl">
+                    <h1 className="mt-24 text-center text-xl font-bold text-primary lg:text-2xl">
                         Posipaki Home Accounts App: Transactions
                     </h1>
-                    <div className="flex w-full flex-col gap-3">
-                        <h2>Latest transactions</h2>
+                    <div className="flex w-full flex-col gap-1">
+                        <h1 className="text-md font-bold text-primary lg:text-xl">
+                            Latest
+                        </h1>
                         <Suspense fallback={<p>Loading...</p>}>
                             <ScrollArea className="h-[190px]">
                                 {transactions.map(
@@ -87,7 +89,7 @@ const TransactionsOverview = ({ systemInfo }: TransactionsOverviewProps) => {
                             </ScrollArea>
                         </Suspense>
                     </div>
-                    <Button className="self-end" variant="primary">
+                    <Button className="w-full" variant="primary">
                         <Link href={PAGES.transactions.new}>New</Link>
                     </Button>
                 </div>
