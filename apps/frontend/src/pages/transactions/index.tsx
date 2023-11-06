@@ -1,6 +1,10 @@
-import { HomeAppDate } from 'domain-model'
+import {
+    Transaction,
+    TransactionContext,
+    deserializeTransaction,
+} from 'domain-model'
 import Link from 'next/link'
-import React from 'react'
+import React, { Suspense, useEffect, useState } from 'react'
 
 import OverlayImage from '../../components/Overlay'
 import { SystemInfo, SystemInfoFooter } from '../../components/SystemInfoFooter'
@@ -16,64 +20,30 @@ type TransactionsOverviewProps = {
     systemInfo: SystemInfo
 }
 
-const transactionsData = [
-    {
-        id: 1,
-        type: 'expense',
-        context: 'home',
-        category: 'FOOD',
-        origin: 'Lidl Schorndorf',
-        description: 'Avocado',
-        date: {
-            datetime: '2023-11-05T01:00:00.000+01:00',
-        },
-        amount: -123,
-        currency: 'EUR',
-        exchangeRate: 1,
-        paymentMethod: 'EC',
-        targetBankAccount: 'HOME_ACCOUNT',
-        tags: ['1'],
-        agent: 'home-app-frontend',
-    },
-    {
-        id: 2,
-        type: 'expense',
-        context: 'home',
-        category: 'FEE',
-        origin: 'Test 2 dadsgagggggggggggggggggggggggggggggggfgvhhhhhhhhhhh sdfffffffffffg',
-        date: {
-            datetime: '2023-11-05T01:00:00.000+01:00',
-        },
-        amount: -456,
-        currency: 'EUR',
-        exchangeRate: 1,
-        paymentMethod: 'EC',
-        targetBankAccount: 'HOME_ACCOUNT',
-        tags: ['BigAmount', 'Test Tag'],
-        agent: 'home-app-frontend',
-        receiptId: 1,
-    },
-    {
-        id: 3,
-        type: 'income',
-        context: 'home',
-        category: 'SALARY',
-        origin: 'ITK Engineering GmbH',
-        description: 'November',
-        date: {
-            datetime: '2023-11-05T01:00:00.000+01:00',
-        },
-        amount: 3000,
-        currency: 'EUR',
-        exchangeRate: 1,
-        paymentMethod: 'EC',
-        targetBankAccount: 'HOME_ACCOUNT',
-        tags: [],
-        agent: 'home-app-frontend',
-    },
-]
+const useLatestTransactions = (context: TransactionContext, limit: number) => {
+    const [transactions, setTransactions] = useState<Transaction[]>([])
+    useEffect(() => {
+        const fetchTransactions = async () => {
+            const req = await fetch(
+                `${CLIENT_BACKEND_BASE_URL}/transactions?context=${context}&limit=${limit}`
+            )
+            const reqData = await req.json()
+            const fetchedTransactions = reqData.map((obj: any) =>
+                deserializeTransaction(obj)
+            )
+            setTransactions(fetchedTransactions)
+        }
+        fetchTransactions()
+    }, [context, limit])
+    return transactions
+}
 
 const TransactionsOverview = ({ systemInfo }: TransactionsOverviewProps) => {
+    const context = 'home'
+    const limit = 5
+
+    const transactions = useLatestTransactions(context, limit)
+
     return (
         <>
             <div className="relative flex h-full min-h-screen w-full flex-col justify-between p-4">
@@ -82,36 +52,40 @@ const TransactionsOverview = ({ systemInfo }: TransactionsOverviewProps) => {
                         Posipaki Home Accounts App: Transactions
                     </h1>
                     <div className="flex w-full flex-col gap-3">
-                        <h2>List of transactions</h2>
-                        <ScrollArea className="h-[190px]">
-                            {transactionsData.map((transaction) => {
-                                return (
-                                    <div key={transaction.id}>
-                                        <div className="flex w-full flex-col gap-1 rounded-md border border-input bg-background-overlay px-3 py-2 text-sm font-medium text-primary ring-offset-background">
-                                            <div className="flex w-full justify-between">
-                                                <p className="w-[200px] truncate">
-                                                    {transaction.origin}
-                                                </p>
-                                                <p className="block w-1/3 text-right">
-                                                    {`${transaction.amount} ${transaction.currency}`}
-                                                </p>
+                        <h2>Latest transactions</h2>
+                        <Suspense fallback={<p>Loading...</p>}>
+                            <ScrollArea className="h-[190px]">
+                                {transactions.map(
+                                    ({
+                                        id,
+                                        date,
+                                        origin,
+                                        amount,
+                                        currency,
+                                        receiptId,
+                                    }) => {
+                                        return (
+                                            <div key={id}>
+                                                <div className="flex w-full flex-col gap-1 rounded-md border bg-background-overlay px-3 py-2 text-sm font-medium text-primary">
+                                                    <div className="flex w-full justify-between">
+                                                        <p className="w-[200px] truncate">
+                                                            {origin}
+                                                        </p>
+                                                        <p className="block w-1/3 text-right">
+                                                            {`${amount} ${currency}`}
+                                                        </p>
+                                                    </div>
+                                                    <div className="flex w-full justify-between">
+                                                        <p>{date.toWords()}</p>
+                                                        {receiptId && <p>📄</p>}
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div className="flex w-full justify-between">
-                                                <p>
-                                                    {HomeAppDate.fromISO(
-                                                        transaction.date
-                                                            .datetime
-                                                    ).toWords()}
-                                                </p>
-                                                {transaction.receiptId && (
-                                                    <p>📄</p>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-                                )
-                            })}
-                        </ScrollArea>
+                                        )
+                                    }
+                                )}
+                            </ScrollArea>
+                        </Suspense>
                     </div>
                     <Button className="self-end" variant="secondary">
                         <Link href={PAGES.transactions.new}>New</Link>
