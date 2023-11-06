@@ -11,7 +11,7 @@ const useNewTransactionForm = () => {
     const formDefaultValues: Partial<NewTransactionForm> = {
         type: 'expense',
         context: 'home',
-        category: 'HOUSEHOLD',
+        category: 'FOOD',
         date: HomeAppDate.today(),
         currency: 'EUR',
         exchangeRate: 1,
