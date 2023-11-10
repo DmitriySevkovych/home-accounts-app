@@ -3,5 +3,6 @@ export const PAGES = {
         index: '/transactions',
         new: '/transactions/new',
         success: '/transactions/congrats',
+        edit: (id: number) => `/transactions/${id}`,
     },
 } as const

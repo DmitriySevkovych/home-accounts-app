@@ -57,35 +57,37 @@ const TransactionsOverview = ({ systemInfo }: TransactionsOverviewProps) => {
                         </h1>
                         <Suspense fallback={<p>Loading...</p>}>
                             <ScrollArea className="h-[190px]">
-                                {transactions.map(
-                                    ({
+                                {transactions.map((transaction) => {
+                                    const {
                                         id,
                                         date,
                                         origin,
                                         amount,
                                         currency,
                                         receiptId,
-                                    }) => {
-                                        return (
-                                            <div key={id}>
-                                                <div className="flex w-full flex-col gap-1 rounded-md border bg-background-overlay px-3 py-2 text-sm font-medium text-primary">
-                                                    <div className="flex w-full justify-between">
-                                                        <p className="w-[200px] truncate">
-                                                            {origin}
-                                                        </p>
-                                                        <p className="block w-1/3 text-right">
-                                                            {`${amount} ${currency}`}
-                                                        </p>
-                                                    </div>
-                                                    <div className="flex w-full justify-between">
-                                                        <p>{date.toWords()}</p>
-                                                        {receiptId && <p>📄</p>}
-                                                    </div>
+                                    } = transaction
+                                    return (
+                                        <Link
+                                            href={PAGES.transactions.edit(id!)}
+                                            key={id}
+                                        >
+                                            <div className="flex w-full flex-col gap-1 rounded-md border bg-background-overlay px-3 py-2 text-sm font-medium text-primary">
+                                                <div className="flex w-full justify-between">
+                                                    <p className="w-[200px] truncate">
+                                                        {origin}
+                                                    </p>
+                                                    <p className="block w-1/3 text-right">
+                                                        {`${amount} ${currency}`}
+                                                    </p>
+                                                </div>
+                                                <div className="flex w-full justify-between">
+                                                    <p>{date.toWords()}</p>
+                                                    {receiptId && <p>📄</p>}
                                                 </div>
                                             </div>
-                                        )
-                                    }
-                                )}
+                                        </Link>
+                                    )
+                                })}
                             </ScrollArea>
                         </Suspense>
                     </div>
