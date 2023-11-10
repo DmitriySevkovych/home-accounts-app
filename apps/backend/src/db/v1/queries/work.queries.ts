@@ -71,7 +71,7 @@ export const getTransactions = async (
         text: `
             SELECT
                 w.id as work_id, w.type as category, w.origin, w.description, w.invoice_key, w.vat, w.country,
-                tr.id, tr.amount, ${dateColumn} as date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
+                tr.id, tr.context, tr.amount, ${dateColumn} as date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
                 td.payment_method, td.tax_category, td.comment, td.receipt_id
             FROM
             (

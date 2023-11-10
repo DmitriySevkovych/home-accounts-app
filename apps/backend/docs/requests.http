@@ -20,7 +20,7 @@ GET https://localhost:8070/api/v1/utils/constants/transactions
 ### Batch get
 GET https://localhost:8070/api/v1/transactions
 ###
-GET https://localhost:8070/api/v1/transactions?limit=5&page=2
+GET https://localhost:8070/api/v1/transactions?context=home&limit=5
 
 ### Get by id
 GET https://localhost:8070/api/v1/transactions/1

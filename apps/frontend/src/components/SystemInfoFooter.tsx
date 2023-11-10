@@ -28,7 +28,7 @@ export type SystemInfo = {
 
 export const SystemInfoFooter = ({ frontend, backend }: SystemInfo) => {
     return (
-        <footer className="place-self-center">
+        <footer className="mt-3 place-self-center">
             <Popover>
                 <PopoverTrigger>System information</PopoverTrigger>
                 <PopoverContent className="grid gap-8">

@@ -267,7 +267,7 @@ const NewTransactionPage = ({
 
                     <Button
                         className="flex w-full md:ml-auto md:mr-0 md:w-auto lg:col-span-2"
-                        variant="destructive"
+                        variant="primary"
                         type="submit"
                         size={'lg'}
                     >
