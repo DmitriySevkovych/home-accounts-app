@@ -12,8 +12,7 @@ import Link from 'next/link'
 import React from 'react'
 import { SubmitHandler, UseFormReturn } from 'react-hook-form'
 
-import { SERVER_BACKEND_BASE_URL } from '../helpers/constants'
-import { PAGES } from '../helpers/pages'
+import { API, PAGES } from '../helpers/routes'
 import { Button } from '../lib/shadcn/Button'
 import { Form } from '../lib/shadcn/Form'
 import { Separator } from '../lib/shadcn/Separator'
@@ -45,12 +44,7 @@ type TransactionFormPageProps = {
 }
 
 export const fetchTransactionConstants = async () => {
-    const urls = [
-        `${SERVER_BACKEND_BASE_URL}/utils/constants/transactions`,
-        `${SERVER_BACKEND_BASE_URL}/investments`,
-        `${SERVER_BACKEND_BASE_URL}/work/invoices`,
-        `${SERVER_BACKEND_BASE_URL}/transactions/origins`,
-    ]
+    const urls = API.server.transactions.constants
 
     const response = await Promise.all(
         urls.map((url) => fetch(url).then((res) => res.json()))

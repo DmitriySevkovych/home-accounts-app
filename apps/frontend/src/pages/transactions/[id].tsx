@@ -6,7 +6,7 @@ import TransactionFormPage, {
     fetchTransactionConstants,
 } from '../../components/TransactionFormPage'
 import useTransactionForm from '../../components/hooks/useTransactionForm'
-import { SERVER_BACKEND_BASE_URL } from '../../helpers/constants'
+import { API } from '../../helpers/routes'
 import { TransactionForm } from '../../helpers/zod-form-schemas'
 
 type EditPageProps = {
@@ -34,9 +34,7 @@ const EditTransactionPage = ({ transaction, constants }: EditPageProps) => {
 export async function getServerSideProps(context: any) {
     const { id } = context.query
     try {
-        const response = await fetch(
-            `${SERVER_BACKEND_BASE_URL}/transactions/${id}`
-        )
+        const response = await fetch(API.server.transactions.getById(id))
         const transaction = await response.json()
 
         return {

@@ -2,8 +2,7 @@ import { NextRouter, useRouter } from 'next/router'
 import React from 'react'
 import { type SubmitHandler } from 'react-hook-form'
 
-import { CLIENT_BACKEND_BASE_URL } from '../../helpers/constants'
-import { PAGES } from '../../helpers/pages'
+import { API, PAGES } from '../../helpers/routes'
 import { TransactionForm } from '../../helpers/zod-form-schemas'
 import { useToast } from '../../lib/shadcn/use-toast'
 
@@ -25,13 +24,10 @@ const _sendTransaction = async (
             formData.append('receipt', transaction.receipt)
         }
 
-        const response = await fetch(
-            `${CLIENT_BACKEND_BASE_URL}/transactions`,
-            {
-                method: 'POST',
-                body: formData,
-            }
-        )
+        const response = await fetch(API.client.transactions.create, {
+            method: 'POST',
+            body: formData,
+        })
         if (response.status === 201) {
             toast({
                 title: 'A new transaction has been created!',
@@ -46,9 +42,7 @@ const _sendTransaction = async (
                     </>
                 ),
             })
-            router.push(
-                `${PAGES.transactions.success}?transactionType=${transaction.type}`
-            )
+            router.push(PAGES.transactions.success(transaction.type))
         } else {
             toast({
                 variant: 'destructive',
