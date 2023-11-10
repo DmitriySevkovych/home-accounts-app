@@ -7,10 +7,13 @@ import {
     TaxCategory,
     TransactionCategory,
 } from 'domain-model'
+import { ArrowLeft } from 'lucide-react'
+import Link from 'next/link'
 import React from 'react'
 import { SubmitHandler, UseFormReturn } from 'react-hook-form'
 
 import { SERVER_BACKEND_BASE_URL } from '../helpers/constants'
+import { PAGES } from '../helpers/pages'
 import { Button } from '../lib/shadcn/Button'
 import { Form } from '../lib/shadcn/Form'
 import { Separator } from '../lib/shadcn/Separator'
@@ -81,10 +84,21 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
     const transactionContext = form.watch('context')
 
     return (
-        <div className="relative mx-auto max-w-4xl bg-background p-3 text-darkest md:py-8">
-            <h1 className="mb-6 text-xl font-bold text-primary lg:mb-12 lg:text-2xl">
-                {heading}
-            </h1>
+        <div className="relative mx-auto  max-w-4xl bg-background px-3 pb-3 text-darkest md:py-8">
+            <div className="sticky top-0 z-10 flex items-center justify-between gap-2 bg-inherit py-3">
+                <h1 className="flex-grow text-xl font-bold leading-none text-primary lg:text-2xl">
+                    {heading}
+                </h1>
+                <Link href={PAGES.transactions.index}>
+                    <Button
+                        className="w-[40px] p-0"
+                        variant="secondary"
+                        type="button"
+                    >
+                        <ArrowLeft size={18} />
+                    </Button>
+                </Link>
+            </div>
             <Form {...form}>
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}

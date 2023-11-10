@@ -21,7 +21,7 @@ const EditTransactionPage = ({ transaction, constants }: EditPageProps) => {
 
     return (
         <TransactionFormPage
-            heading={`Transaction ${transaction.id}`}
+            heading="Edit Transaction"
             form={form}
             constants={constants}
             onSubmit={() => {
