@@ -91,7 +91,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                 </h1>
                 <Link href={PAGES.transactions.index}>
                     <Button
-                        className="w-[40px] p-0"
+                        className="min-w-[40px] p-0"
                         variant="secondary"
                         type="button"
                     >

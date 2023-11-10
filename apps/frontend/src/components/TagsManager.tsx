@@ -1,4 +1,5 @@
 import { useCommandState } from 'cmdk'
+import { Plus } from 'lucide-react'
 import React, { useRef, useState } from 'react'
 import { ControllerRenderProps, UseFormReturn } from 'react-hook-form'
 
@@ -99,6 +100,7 @@ const TagsManager: React.FC<TagsManagerProps> = (props) => {
                         </Command>
 
                         <Button
+                            className="min-w-[40px] p-0"
                             variant="secondary"
                             type="button"
                             onClick={() => {
@@ -108,7 +110,7 @@ const TagsManager: React.FC<TagsManagerProps> = (props) => {
                                 addTag(currentTag, field)
                             }}
                         >
-                            +
+                            <Plus size={18} />
                         </Button>
                     </div>
 
