@@ -2,7 +2,7 @@ import { useCommandState } from 'cmdk'
 import React, { useState } from 'react'
 import { ControllerRenderProps, UseFormReturn } from 'react-hook-form'
 
-import { NewTransactionForm } from '../helpers/zod-form-schemas'
+import { TransactionForm } from '../helpers/zod-form-schemas'
 import {
     Command,
     CommandEmpty,
@@ -14,7 +14,7 @@ import { FormField, FormItem, FormLabel } from '../lib/shadcn/Form'
 import { ScrollArea } from '../lib/shadcn/ScrollArea'
 
 type AutocompleteInputProps = {
-    id: keyof NewTransactionForm
+    id: keyof TransactionForm
     form: UseFormReturn<any, any, undefined>
     label: string
     placeholder?: string
@@ -23,10 +23,10 @@ type AutocompleteInputProps = {
 
 type CollapsibleCommandGroupProps = {
     options: string[]
-    field: ControllerRenderProps<any, keyof NewTransactionForm>
+    field: ControllerRenderProps<any, keyof TransactionForm>
     onSelect: (
         option: string,
-        field: ControllerRenderProps<any, keyof NewTransactionForm>
+        field: ControllerRenderProps<any, keyof TransactionForm>
     ) => void
 }
 
@@ -37,7 +37,7 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = (props) => {
 
     const onSelect = (
         selectedOption: string,
-        field: ControllerRenderProps<any, keyof NewTransactionForm>
+        field: ControllerRenderProps<any, keyof TransactionForm>
     ) => {
         field.onChange(selectedOption)
         setOpenAutocompleteOptions(false)

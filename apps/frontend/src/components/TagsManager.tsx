@@ -2,7 +2,7 @@ import { useCommandState } from 'cmdk'
 import React, { useRef, useState } from 'react'
 import { ControllerRenderProps, UseFormReturn } from 'react-hook-form'
 
-import { NewTransactionForm } from '../helpers/zod-form-schemas'
+import { TransactionForm } from '../helpers/zod-form-schemas'
 import { Badge } from '../lib/shadcn/Badge'
 import { Button } from '../lib/shadcn/Button'
 import {
@@ -16,7 +16,7 @@ import { FormField, FormItem, FormLabel } from '../lib/shadcn/Form'
 import { ScrollArea } from '../lib/shadcn/ScrollArea'
 
 type TagsManagerProps = {
-    id: keyof NewTransactionForm
+    id: keyof TransactionForm
     form: UseFormReturn<any, any, undefined>
     label: string
     initialTags: string[]
@@ -24,10 +24,10 @@ type TagsManagerProps = {
 
 type TagsCommandGroupProps = {
     options: string[]
-    field: ControllerRenderProps<any, keyof NewTransactionForm>
+    field: ControllerRenderProps<any, keyof TransactionForm>
     addTag: (
         option: string,
-        field: ControllerRenderProps<any, keyof NewTransactionForm>
+        field: ControllerRenderProps<any, keyof TransactionForm>
     ) => void
 }
 
@@ -48,7 +48,7 @@ const TagsManager: React.FC<TagsManagerProps> = (props) => {
 
     const addTag = (
         newTag: string,
-        field: ControllerRenderProps<any, keyof NewTransactionForm>
+        field: ControllerRenderProps<any, keyof TransactionForm>
     ) => {
         if (!newTag) return
 
@@ -71,7 +71,7 @@ const TagsManager: React.FC<TagsManagerProps> = (props) => {
 
     const removeTag = (
         tag: string,
-        field: ControllerRenderProps<any, keyof NewTransactionForm>
+        field: ControllerRenderProps<any, keyof TransactionForm>
     ) => {
         field.onChange(field.value.filter((t: string) => t !== tag))
     }

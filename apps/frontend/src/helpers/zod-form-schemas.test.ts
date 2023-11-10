@@ -1,14 +1,14 @@
 import { minimalDummyTransaction } from 'domain-model'
 import { ZodError } from 'zod'
 
-import { NewTransactionFormSchema } from './zod-form-schemas'
+import { TransactionFormSchema } from './zod-form-schemas'
 
-describe('Zod NewTransactionFormSchema tests', () => {
+describe('Zod TransactionFormSchema tests', () => {
     it('should succeed for a valid transaction', () => {
         // Arrange
         const dummyTransaction = minimalDummyTransaction('FOOD', -10.5)
         // Act
-        const result = NewTransactionFormSchema.parse(dummyTransaction)
+        const result = TransactionFormSchema.parse(dummyTransaction)
         // Assert
         expect(result).toBeDefined()
     })
@@ -17,7 +17,7 @@ describe('Zod NewTransactionFormSchema tests', () => {
         // Arrange
         const data = minimalDummyTransaction('FOOD', 0)
         // Act
-        const validation = () => NewTransactionFormSchema.parse(data)
+        const validation = () => TransactionFormSchema.parse(data)
         // Assert
         expect(validation).toThrow(ZodError)
     })
@@ -32,7 +32,7 @@ describe('Zod NewTransactionFormSchema tests', () => {
         data.type = 'expense'
         data.sourceBankAccount = 'VALID_ACCOUNT'
         // Act
-        const transaction = NewTransactionFormSchema.parse(data)
+        const transaction = TransactionFormSchema.parse(data)
         // Assert
         expect(transaction.amount).toBeLessThan(0)
     })
@@ -47,7 +47,7 @@ describe('Zod NewTransactionFormSchema tests', () => {
         data.type = 'income'
         data.targetBankAccount = 'VALID_ACCOUNT'
         // Act
-        const transaction = NewTransactionFormSchema.parse(data)
+        const transaction = TransactionFormSchema.parse(data)
         // Assert
         expect(transaction.amount).toBeGreaterThan(0)
     })

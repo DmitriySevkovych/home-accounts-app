@@ -18,9 +18,10 @@ import OverlayImage from '../../components/Overlay'
 import Radio from '../../components/Radio'
 import Select from '../../components/Select'
 import TagsManager from '../../components/TagsManager'
-import useNewTransactionForm from '../../components/hooks/useNewTransactionForm'
 import useNewTransactionSubmitHandler from '../../components/hooks/useNewTransactionSubmitHandler'
+import useTransactionForm from '../../components/hooks/useTransactionForm'
 import { SERVER_BACKEND_BASE_URL } from '../../helpers/constants'
+import { TransactionForm } from '../../helpers/zod-form-schemas'
 import { Button } from '../../lib/shadcn/Button'
 import { Form } from '../../lib/shadcn/Form'
 import { Separator } from '../../lib/shadcn/Separator'
@@ -47,7 +48,18 @@ const NewTransactionPage = ({
     investments,
     invoices,
 }: NewTransactionPageProps) => {
-    const { form } = useNewTransactionForm()
+    const formDefaultValues: Partial<TransactionForm> = {
+        type: 'expense',
+        context: 'home',
+        category: 'FOOD',
+        date: HomeAppDate.today(),
+        currency: 'EUR',
+        exchangeRate: 1,
+        paymentMethod: 'EC',
+        tags: [],
+    }
+
+    const { form } = useTransactionForm(formDefaultValues)
     const transactionType = form.watch('type')
     const transactionContext = form.watch('context')
     const { onSubmit } = useNewTransactionSubmitHandler()

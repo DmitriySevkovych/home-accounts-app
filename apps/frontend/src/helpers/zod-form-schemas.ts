@@ -4,8 +4,9 @@ import { z } from 'zod'
 import { FileWithPath } from './utils'
 
 // TODO add validation texts
-export const NewTransactionFormSchema = z
+export const TransactionFormSchema = z
     .object({
+        id: z.optional(z.coerce.number()),
         type: z.enum(['expense', 'income']),
         context: z.enum(['home', 'work', 'investments']),
         category: z.string(),
@@ -131,4 +132,4 @@ export const NewTransactionFormSchema = z
         }
     })
 
-export type NewTransactionForm = z.infer<typeof NewTransactionFormSchema>
+export type TransactionForm = z.infer<typeof TransactionFormSchema>

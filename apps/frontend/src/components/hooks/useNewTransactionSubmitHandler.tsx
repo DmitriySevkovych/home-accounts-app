@@ -4,11 +4,11 @@ import { type SubmitHandler } from 'react-hook-form'
 
 import { CLIENT_BACKEND_BASE_URL } from '../../helpers/constants'
 import { PAGES } from '../../helpers/pages'
-import { NewTransactionForm } from '../../helpers/zod-form-schemas'
+import { TransactionForm } from '../../helpers/zod-form-schemas'
 import { useToast } from '../../lib/shadcn/use-toast'
 
 const _sendTransaction = async (
-    transaction: NewTransactionForm,
+    transaction: TransactionForm,
     router: NextRouter,
     toast: CallableFunction
 ) => {
@@ -71,7 +71,7 @@ const useNewTransactionSubmitHandler = () => {
 
     const router = useRouter()
 
-    const onSubmit: SubmitHandler<NewTransactionForm> = async (data) => {
+    const onSubmit: SubmitHandler<TransactionForm> = async (data) => {
         _sendTransaction(data, router, toast)
     }
 

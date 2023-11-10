@@ -1,13 +1,13 @@
 import React from 'react'
 import { type UseFormReturn } from 'react-hook-form'
 
-import { NewTransactionForm } from '../helpers/zod-form-schemas'
+import { TransactionForm } from '../helpers/zod-form-schemas'
 import { FormField, FormItem, FormLabel, FormMessage } from '../lib/shadcn/Form'
 import { Input } from '../lib/shadcn/Input'
 import { Textarea } from '../lib/shadcn/Textarea'
 
 type InputProps = {
-    id: keyof NewTransactionForm
+    id: keyof TransactionForm
     form: UseFormReturn<any>
     label: string
     placeholder?: string

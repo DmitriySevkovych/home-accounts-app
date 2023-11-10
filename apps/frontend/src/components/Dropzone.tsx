@@ -3,11 +3,11 @@ import { useDropzone } from 'react-dropzone'
 import { ControllerRenderProps, UseFormReturn } from 'react-hook-form'
 
 import { FileWithPath } from '../helpers/utils'
-import { NewTransactionForm } from '../helpers/zod-form-schemas'
+import { TransactionForm } from '../helpers/zod-form-schemas'
 import { FormField, FormItem, FormLabel, FormMessage } from '../lib/shadcn/Form'
 
 type DropzoneProps = {
-    field: ControllerRenderProps<any, keyof NewTransactionForm>
+    field: ControllerRenderProps<any, keyof TransactionForm>
 }
 
 const Dropzone = (props: DropzoneProps) => {
@@ -80,9 +80,9 @@ const Dropzone = (props: DropzoneProps) => {
 }
 
 type DropzoneFormFieldProps = {
-    form: UseFormReturn<any, keyof NewTransactionForm>
+    form: UseFormReturn<any, keyof TransactionForm>
     label: string
-    id: keyof NewTransactionForm
+    id: keyof TransactionForm
 }
 
 export const DropzoneFormField = (props: DropzoneFormFieldProps) => {
