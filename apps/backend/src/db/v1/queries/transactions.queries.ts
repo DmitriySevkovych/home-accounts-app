@@ -10,8 +10,8 @@ import { NoRecordFoundInDatabaseError } from '../../../helpers/errors'
 
 const logger = getLogger('db')
 
-/* 
-    Types 
+/*
+    Types
  */
 
 export type TransactionDAO = Pick<
@@ -36,8 +36,8 @@ export type TransactionDetailsDAO = Pick<
 
 type TransactionReceiptDAO = TransactionReceipt
 
-/* 
-    'database-specific' CRUD methods 
+/*
+    'database-specific' CRUD methods
  */
 
 export const getTransactionContext = async (
@@ -59,7 +59,7 @@ export const getTransactionContext = async (
             `No transaction with id='${transactionId}' found.`
         )
     }
-    return queryResult.rows[0]
+    return queryResult.rows[0].context
 }
 
 export const getTransactionOrigins = async (
@@ -68,16 +68,16 @@ export const getTransactionOrigins = async (
     const query = {
         name: 'select-origins-union-over-all-schemas',
         text: `
-        SELECT origin FROM home.expenses 
-        UNION 
+        SELECT origin FROM home.expenses
+        UNION
         SELECT origin FROM home.income
-        UNION 
+        UNION
         SELECT origin FROM work.expenses
-        UNION 
+        UNION
         SELECT origin FROM work.income
-        UNION 
+        UNION
         SELECT origin FROM investments.expenses
-        UNION 
+        UNION
         SELECT origin FROM investments.income
         `,
     }
@@ -114,8 +114,8 @@ export const insertTransactionDAO = async (
     const query = {
         name: 'insert-into-transactions.transactions',
         text: `
-        INSERT INTO transactions.transactions(context, date, amount, source_bank_account, target_bank_account, currency, exchange_rate, agent) 
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
+        INSERT INTO transactions.transactions(context, date, amount, source_bank_account, target_bank_account, currency, exchange_rate, agent)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
         RETURNING id;`,
         values: [
             transactionDAO.context,
