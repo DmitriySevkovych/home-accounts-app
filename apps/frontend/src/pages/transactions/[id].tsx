@@ -6,6 +6,7 @@ import TransactionFormPage, {
     fetchTransactionConstants,
 } from '../../components/TransactionFormPage'
 import useTransactionForm from '../../components/hooks/useTransactionForm'
+import useUpdateTransactionSubmitHandler from '../../components/hooks/useUpdateTransactionSubmitHandler'
 import { API } from '../../helpers/routes'
 import { TransactionForm } from '../../helpers/zod-form-schemas'
 
@@ -17,16 +18,14 @@ type EditPageProps = {
 const EditTransactionPage = ({ transaction, constants }: EditPageProps) => {
     const { form } = useTransactionForm(deserializeTransaction(transaction))
 
-    // const { onSubmit } = useNewTransactionSubmitHandler()
+    const { onSubmit } = useUpdateTransactionSubmitHandler()
 
     return (
         <TransactionFormPage
             heading="Edit Transaction"
             form={form}
             constants={constants}
-            onSubmit={() => {
-                alert('PUT missing')
-            }}
+            onSubmit={onSubmit}
         />
     )
 }
