@@ -1,5 +1,3 @@
-import { HomeAppDate } from './dates.model'
-
 export type TaxCategory = {
     category: string
     description?: string
@@ -18,8 +16,8 @@ export type BankAccount = {
     owner?: 'Dmitriy' | 'Ivanna' | 'Dmitriy and Ivanna'
     purpose?: string
     iban?: string
-    openingDate?: HomeAppDate
-    closingDate?: HomeAppDate
+    openingDate?: Date
+    closingDate?: Date
     contact?: string
     comment?: string
 }
@@ -32,6 +30,6 @@ export type HomeAppFile = {
 }
 
 export type HomeAppDocument = HomeAppFile & {
-    date: HomeAppDate
+    date: Date
     description: string
 }

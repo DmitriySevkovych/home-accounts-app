@@ -1,4 +1,4 @@
-import { HomeAppDate, Transaction, dummyTransaction } from 'domain-model'
+import { Transaction, dateFromString, dummyTransaction } from 'domain-model'
 import type { Pool } from 'pg'
 
 import { PostgresRepository } from '../postgresRepository'
@@ -23,7 +23,7 @@ describe('Database queries targeting the work schema', () => {
         const transaction: Transaction = dummyTransaction(
             'SALARY',
             -500,
-            HomeAppDate.fromString('2021-05-17')
+            dateFromString('2021-05-17')
         )
         transaction.context = 'work'
         transaction.vat = 0.19
@@ -45,7 +45,7 @@ describe('Database queries targeting the work schema', () => {
         const transactionToInsert = dummyTransaction(
             'FEE',
             -5.99,
-            HomeAppDate.fromString('2023-07-26')
+            dateFromString('2023-07-26')
         )
         transactionToInsert.context = context
         transactionToInsert.vat = vat
@@ -66,7 +66,7 @@ describe('Database queries targeting the work schema', () => {
         const transaction: Transaction = dummyTransaction(
             'SALARY',
             2000,
-            HomeAppDate.fromString('2021-01-27')
+            dateFromString('2021-01-27')
         )
         transaction.context = 'work'
         transaction.invoiceKey = 'INV-0123456' // REM: testdata that is present in the database
@@ -86,7 +86,7 @@ describe('Database queries targeting the work schema', () => {
         const transactionToInsert = dummyTransaction(
             'RENT',
             198.99,
-            HomeAppDate.fromString('2020-11-11')
+            dateFromString('2020-11-11')
         )
         transactionToInsert.context = context
         transactionToInsert.invoiceKey = invoiceKey

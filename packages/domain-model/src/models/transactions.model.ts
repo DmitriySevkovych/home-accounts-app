@@ -1,5 +1,4 @@
 import { PickAndFlatten } from '../helpers/handy-types'
-import { HomeAppDate } from './dates.model'
 import { TransactionValidationError } from './errors.model'
 import { Investment } from './investments.model'
 import {
@@ -39,7 +38,7 @@ export class Transaction {
     category!: PickAndFlatten<TransactionCategory, 'category'>
     origin!: string
     description!: string
-    date: HomeAppDate = HomeAppDate.today()
+    date: Date = new Date()
     tags: string[] = []
     receipt?: TransactionReceipt
 
@@ -131,7 +130,7 @@ class TransactionBuilder {
         return this
     }
 
-    withDate = (date: HomeAppDate): TransactionBuilder => {
+    withDate = (date: Date): TransactionBuilder => {
         // TODO maybe remove the default date value and remove this if statement
         if (date) {
             this.transaction.date = date
@@ -235,8 +234,7 @@ class TransactionBuilder {
             'bank accounts',
             sourceBankAccount || targetBankAccount
         )
-
-        this._throwIfDateInvalid(date)
+        this._throwIfFalsy('date', date)
 
         this._throwIfAmountInconsistentWithBankAccounts()
 
@@ -271,16 +269,6 @@ class TransactionBuilder {
         } else if (amount > 0 && !targetBankAccount) {
             throw new TransactionValidationError(
                 `A Transaction with amount > 0 should have a target (incoming) bank account set`
-            )
-        }
-    }
-
-    private _throwIfDateInvalid = (date: HomeAppDate): void => {
-        this._throwIfFalsy('date', date)
-
-        if (date.toString() === 'Invalid DateTime') {
-            throw new TransactionValidationError(
-                'The Transaction has an invalid date'
             )
         }
     }
@@ -368,7 +356,7 @@ export const deserializeTransaction = (data: any) => {
         .withContext(context)
         .withAmount(amount)
         .withCurrency(currency, exchangeRate)
-        .withDate(HomeAppDate.deserialize(date))
+        .withDate(new Date(date))
         .withPaymentDetails(paymentMethod, sourceBankAccount, targetBankAccount)
         .withTaxCategory(taxCategory)
         .withComment(comment)

@@ -119,7 +119,7 @@ export const insertTransactionDAO = async (
         RETURNING id;`,
         values: [
             transactionDAO.context,
-            transactionDAO.date.toString(),
+            transactionDAO.date.toISOString(),
             transactionDAO.amount,
             transactionDAO.sourceBankAccount,
             transactionDAO.targetBankAccount,

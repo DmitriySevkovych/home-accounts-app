@@ -1,6 +1,6 @@
 import {
     BankAccount,
-    HomeAppDate,
+    DateCheck,
     Investment,
     PaymentMethod,
     ProjectInvoice,
@@ -186,7 +186,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                                 .filter(
                                     (obj) =>
                                         !obj.closingDate ||
-                                        HomeAppDate.today().isNotAfter(
+                                        DateCheck.today().isNotAfter(
                                             obj.closingDate
                                         )
                                 )
@@ -204,7 +204,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                                 .filter(
                                     (obj) =>
                                         !obj.closingDate ||
-                                        HomeAppDate.today().isNotAfter(
+                                        DateCheck.today().isNotAfter(
                                             obj.closingDate
                                         )
                                 )

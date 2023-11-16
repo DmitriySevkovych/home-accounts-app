@@ -1,4 +1,3 @@
-import { HomeAppDate } from 'domain-model'
 import React from 'react'
 
 import TransactionFormPage, {
@@ -19,7 +18,7 @@ const NewTransactionPage = ({ constants }: NewTransactionPageProps) => {
         type: 'expense',
         context: 'home',
         category: 'FOOD',
-        date: HomeAppDate.today(),
+        date: new Date(),
         currency: 'EUR',
         exchangeRate: 1,
         paymentMethod: 'EC',

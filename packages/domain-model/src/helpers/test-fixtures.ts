@@ -1,4 +1,3 @@
-import { HomeAppDate } from '../models/dates.model'
 import { Investment } from '../models/investments.model'
 import { Transaction, createTransaction } from '../models/transactions.model'
 import { ProjectInvoice } from '../models/work.model'
@@ -7,7 +6,7 @@ import { PickAndFlatten } from './handy-types'
 export const dummyTransaction = (
     category: string,
     amount: number,
-    date: HomeAppDate
+    date: Date
 ): Transaction => {
     const transactionBuilder = createTransaction()
         .about(category, 'Test origin', 'A lengthy test description')
