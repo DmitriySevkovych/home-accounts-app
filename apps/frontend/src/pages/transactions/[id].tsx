@@ -16,7 +16,10 @@ type EditPageProps = {
 }
 
 const EditTransactionPage = ({ transaction, constants }: EditPageProps) => {
-    const { form } = useTransactionForm(deserializeTransaction(transaction))
+    //TODO: this is a hack. Not sure how to deserialize the transaction from string AND pass it to the hook so that TypeScript doesn't cry
+    transaction.date = new Date(transaction.date)
+
+    const { form } = useTransactionForm(transaction)
 
     const { onSubmit } = useUpdateTransactionSubmitHandler()
 
