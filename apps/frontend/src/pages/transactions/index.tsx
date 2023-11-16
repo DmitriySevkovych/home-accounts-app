@@ -85,9 +85,12 @@ const TransactionsOverview = ({ systemInfo }: TransactionsOverviewProps) => {
                             </ScrollArea>
                         </Suspense>
                     </div>
-                    <Button className="w-full" variant="primary">
-                        <Link href={PAGES.transactions.new}>New</Link>
-                    </Button>
+
+                    <Link className="w-full" href={PAGES.transactions.new}>
+                        <Button className="w-full" variant="primary">
+                            New
+                        </Button>
+                    </Link>
                 </div>
                 <OverlayImage />
                 {systemInfo.frontend.environment !== 'production' && (
