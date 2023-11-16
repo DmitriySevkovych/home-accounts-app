@@ -1,4 +1,4 @@
-import { HomeAppDate, Transaction, dummyTransaction } from 'domain-model'
+import { Transaction, dateFromString, dummyTransaction } from 'domain-model'
 import type { Pool } from 'pg'
 
 import { PostgresRepository } from '../postgresRepository'
@@ -29,7 +29,7 @@ describe('Database queries targeting the investments schema', () => {
             const transaction: Transaction = dummyTransaction(
                 category,
                 amount,
-                HomeAppDate.fromString('2020-01-15')
+                dateFromString('2020-01-15')
             )
             transaction.context = 'investments'
             transaction.investment = investment
@@ -50,7 +50,7 @@ describe('Database queries targeting the investments schema', () => {
         const transactionToInsert = dummyTransaction(
             'MAINTENANCE',
             -5.99,
-            HomeAppDate.fromString('2020-02-16')
+            dateFromString('2020-02-16')
         )
         transactionToInsert.context = context
         transactionToInsert.investment = investment
@@ -71,7 +71,7 @@ describe('Database queries targeting the investments schema', () => {
         const transactionToInsert = dummyTransaction(
             'RENT',
             19.99,
-            HomeAppDate.fromString('2020-05-05')
+            dateFromString('2020-05-05')
         )
         transactionToInsert.context = context
         transactionToInsert.investment = investment

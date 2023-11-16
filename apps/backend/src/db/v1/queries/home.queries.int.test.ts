@@ -1,7 +1,8 @@
 import {
-    HomeAppDate,
     Transaction,
+    dateFromString,
     dummyTransaction,
+    formatDate,
     minimalDummyTransaction,
 } from 'domain-model'
 import type { Pool } from 'pg'
@@ -34,7 +35,7 @@ describe('Database queries targeting the home schema', () => {
             const transaction: Transaction = dummyTransaction(
                 category,
                 amount,
-                HomeAppDate.fromString('2020-01-15')
+                dateFromString('2020-01-15')
             )
             // Act
             const transactionId = await insertTransaction(
@@ -50,7 +51,7 @@ describe('Database queries targeting the home schema', () => {
         // Arrange
         const category = 'FOOD'
         const amount = -5.99
-        const transactionDate = HomeAppDate.fromString('2020-02-16')
+        const transactionDate = dateFromString('2020-02-16')
         const id = await insertTransaction(
             connectionPool,
             dummyTransaction(category, amount, transactionDate)
@@ -60,7 +61,7 @@ describe('Database queries targeting the home schema', () => {
         // Assert
         expect(transaction.id).toBe(id)
         expect(transaction.amount).toBe(amount)
-        expect(transaction.date.toString()).toEqual(transactionDate.toString())
+        expect(transaction.date).toEqual(transactionDate)
         expect(transaction.category).toBe(category)
         expect(transaction.type).toBe('expense')
         expect(transaction.context).toBe('home')
@@ -88,9 +89,7 @@ describe('Database queries targeting the home schema', () => {
         expect(transaction.category).toBe(category)
         expect(transaction.type).toBe('expense')
         expect(transaction.context).toBe('home')
-        expect(transaction.date.toString()).toEqual(
-            HomeAppDate.today().toString()
-        ) // default value!
+        expect(formatDate(transaction.date)).toEqual(formatDate(new Date())) // default value!
         expect(transaction.currency).toBe('EUR') // default value!
         expect(transaction.exchangeRate).toBe(1) // default value!
         expect(transaction.tags).toEqual([]) // default value!
@@ -106,7 +105,7 @@ describe('Database queries targeting the home schema', () => {
         // Arrange
         const category = 'SALARY'
         const amount = 19.99
-        const transactionDate = HomeAppDate.fromString('2020-05-05')
+        const transactionDate = dateFromString('2020-05-05')
         const id = await insertTransaction(
             connectionPool,
             dummyTransaction(category, amount, transactionDate)
@@ -116,7 +115,7 @@ describe('Database queries targeting the home schema', () => {
         // Assert
         expect(transaction.id).toBe(id)
         expect(transaction.amount).toBe(amount)
-        expect(transaction.date.toString()).toEqual(transactionDate.toString())
+        expect(transaction.date).toEqual(transactionDate)
         expect(transaction.category).toBe(category)
         expect(transaction.type).toBe('income')
         expect(transaction.context).toBe('home')
@@ -142,9 +141,7 @@ describe('Database queries targeting the home schema', () => {
         expect(transaction.category).toBe(category)
         expect(transaction.type).toBe('income')
         expect(transaction.context).toBe('home')
-        expect(transaction.date.toString()).toEqual(
-            HomeAppDate.today().toString()
-        ) // default value!
+        expect(formatDate(transaction.date)).toEqual(formatDate(new Date())) // default value!
         expect(transaction.currency).toBe('EUR') // default value!
         expect(transaction.exchangeRate).toBe(1) // default value!
         expect(transaction.tags).toEqual([]) // default value!

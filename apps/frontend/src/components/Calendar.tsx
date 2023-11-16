@@ -1,4 +1,4 @@
-import { HomeAppDate, Transaction } from 'domain-model'
+import { Transaction, formatDateToWords } from 'domain-model'
 import { CalendarIcon } from 'lucide-react'
 import React from 'react'
 import { UseFormReturn } from 'react-hook-form'
@@ -34,7 +34,7 @@ export const Calendar = (props: CalendarProps) => {
                                     )}
                                 >
                                     {field.value ? (
-                                        field.value.toWords()
+                                        formatDateToWords(field.value)
                                     ) : (
                                         <span>Pick a date</span>
                                     )}
@@ -45,13 +45,8 @@ export const Calendar = (props: CalendarProps) => {
                         <PopoverContent className="w-auto p-0" align="start">
                             <ShadcnCalendar
                                 mode="single"
-                                selected={field.value.toJSDate()}
-                                onSelect={(selectedDay) => {
-                                    if (selectedDay)
-                                        field.onChange(
-                                            HomeAppDate.fromJsDate(selectedDay)
-                                        )
-                                }}
+                                selected={field.value}
+                                onSelect={field.onChange}
                                 initialFocus
                             />
                         </PopoverContent>

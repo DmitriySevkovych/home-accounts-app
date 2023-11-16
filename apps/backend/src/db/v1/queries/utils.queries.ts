@@ -1,9 +1,10 @@
 import {
     BankAccount,
-    HomeAppDate,
     PaymentMethod,
     TaxCategory,
     TransactionCategory,
+    dateFromString,
+    formatDateColumn,
 } from 'domain-model'
 import type { Pool } from 'pg'
 
@@ -64,8 +65,8 @@ export const getBankAccounts = async (
     const queryResult = await connectionPool.query(
         `SELECT
             account, bank, annual_fee, type, owner, iban, purpose, contact, comment,
-            ${HomeAppDate.formatDateColumn('opening_date')} AS opening_date,
-            ${HomeAppDate.formatDateColumn('closing_date')} AS closing_date
+            ${formatDateColumn('opening_date')} AS opening_date,
+            ${formatDateColumn('closing_date')} AS closing_date
         FROM utils.bank_accounts`
     )
     const bankAccounts: BankAccount[] = queryResult.rows.map((row) => ({
@@ -79,10 +80,10 @@ export const getBankAccounts = async (
         contact: row.contact,
         comment: row.comment,
         openingDate: row.opening_date
-            ? HomeAppDate.fromDatabase(row.opening_date)
+            ? dateFromString(row.opening_date)
             : undefined,
         closingDate: row.closing_date
-            ? HomeAppDate.fromDatabase(row.closing_date)
+            ? dateFromString(row.closing_date)
             : undefined,
     }))
     return bankAccounts

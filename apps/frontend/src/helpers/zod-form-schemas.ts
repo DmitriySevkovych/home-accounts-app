@@ -1,4 +1,3 @@
-import { HomeAppDate } from 'domain-model'
 import { z } from 'zod'
 
 import { FileWithPath } from './utils'
@@ -12,7 +11,7 @@ export const TransactionFormSchema = z
         category: z.string(),
         origin: z.string(),
         description: z.string(),
-        date: z.coerce.date().transform((val) => HomeAppDate.fromJsDate(val)),
+        date: z.coerce.date(),
         amount: z.coerce
             .number()
             .refine((val) => val !== 0, { message: 'Amount cannot be 0' }),

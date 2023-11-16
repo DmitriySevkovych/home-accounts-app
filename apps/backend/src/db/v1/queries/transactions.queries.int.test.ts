@@ -1,4 +1,3 @@
-import { HomeAppDate } from 'domain-model'
 import type { Pool } from 'pg'
 
 import { PostgresRepository } from '../postgresRepository'
@@ -22,7 +21,7 @@ describe('Database queries targeting only the transactions schema', () => {
         // Arrange
         const transaction: TransactionDAO = {
             context: 'home',
-            date: HomeAppDate.today(),
+            date: new Date(),
             amount: 9.99,
             currency: 'EUR',
             exchangeRate: 1,

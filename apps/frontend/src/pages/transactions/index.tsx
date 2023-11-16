@@ -2,6 +2,7 @@ import {
     Transaction,
     TransactionContext,
     deserializeTransaction,
+    formatDateToWords,
 } from 'domain-model'
 import Link from 'next/link'
 import React, { Suspense, useEffect, useState } from 'react'
@@ -75,7 +76,11 @@ const TransactionsOverview = ({ systemInfo }: TransactionsOverviewProps) => {
                                                     </p>
                                                 </div>
                                                 <div className="flex w-full justify-between">
-                                                    <p>{date.toWords()}</p>
+                                                    <p>
+                                                        {formatDateToWords(
+                                                            date
+                                                        )}
+                                                    </p>
                                                     {receiptId && <p>📄</p>}
                                                 </div>
                                             </div>

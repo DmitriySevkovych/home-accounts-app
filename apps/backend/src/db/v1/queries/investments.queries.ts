@@ -1,10 +1,11 @@
 import {
-    HomeAppDate,
     Investment,
     InvestmentType,
     Transaction,
     TransactionReceipt,
     createTransaction,
+    dateFromString,
+    formatDateColumn,
 } from 'domain-model'
 import { getLogger } from 'logger'
 import type { Pool, PoolClient } from 'pg'
@@ -52,8 +53,8 @@ export const getInvestments = async (
         key: row.key,
         type: row.type,
         description: row.description,
-        startDate: HomeAppDate.fromDatabase(row.start_date),
-        endDate: HomeAppDate.fromDatabase(row.end_date),
+        startDate: dateFromString(row.start_date),
+        endDate: dateFromString(row.end_date),
     }))
 }
 
@@ -61,7 +62,7 @@ export const getTransactions = async (
     connectionPool: Pool,
     paginationOptions: PaginationOptions
 ): Promise<Transaction[]> => {
-    const dateColumn = HomeAppDate.formatDateColumn('tr.date')
+    const dateColumn = formatDateColumn('tr.date')
 
     //TODO extract logic to DB view?
     const query = {
@@ -99,7 +100,7 @@ export const getTransactionById = async (
     connectionPool: Pool,
     id: number
 ): Promise<Transaction> => {
-    const dateColumn = HomeAppDate.formatDateColumn('tr.date')
+    const dateColumn = formatDateColumn('tr.date')
     const query = {
         name: `select-${INVESTMENTS_SCHEMA}-transaction-by-id`,
         //TODO extract logic to DB view?
@@ -241,7 +242,7 @@ const _mapToTransaction = async (
         .about(category, origin, description)
         .withId(id)
         .withContext(context)
-        .withDate(HomeAppDate.fromDatabase(date))
+        .withDate(dateFromString(date))
         .withAmount(parseFloat(amount))
         .withType(amount > 0 ? 'income' : 'expense')
         .withCurrency(currency, parseFloat(exchangeRate))
