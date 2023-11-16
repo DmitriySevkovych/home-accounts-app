@@ -20,14 +20,10 @@
     },
     "devDependencies": {
         "@types/jest": "^26.0.22",
-        "@types/luxon": "^3.3.0",
         "@types/node": "^18.11.9",
         "eslint-config-custom": "*",
         "jest-presets": "*",
         "tsconfig": "*",
         "typescript": "^4.8.3"
-    },
-    "dependencies": {
-        "luxon": "^3.3.0"
     }
 }
