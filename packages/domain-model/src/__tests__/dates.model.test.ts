@@ -19,43 +19,6 @@ describe('Tests for dealing with dates', () => {
         expect(formattedDateString).toBe(today.toISOString().split('T')[0])
     })
 
-    // it('should not change a date string in YYYY-MM-DD format', () => {
-    //     // Arrange
-    //     const expectedDateString = '2023-06-04'
-    //     // Act
-    //     const date = HomeAppDate.fromString('2023-06-04')
-    //     // Assert
-    //     expect(date.toString()).toBe(expectedDateString)
-    // })
-
-    // it('should create a date string in YYYY-MM-DD format from a date string in a different format', () => {
-    //     // Arrange
-    //     const expectedDateString = '2023-06-04'
-    //     // Act
-    //     const date = HomeAppDate.fromString('Sunday, June 4, 2023', 'DDDD')
-    //     // Assert
-    //     expect(date.toString()).toBe(expectedDateString)
-    // })
-
-    // it('should create a date string in YYYY-MM-DD format when date is queried from a database table', () => {
-    //     // Arrange
-    //     const expectedDateString = '2023-06-04'
-    //     // Act
-    //     const date = HomeAppDate.fromDatabase('2023-06-04')
-    //     // Assert
-    //     expect(date.toString()).toBe(expectedDateString)
-    // })
-
-    // it('should create a date string in YYYY-MM-DD format from a JS Date object', () => {
-    //     // Arrange
-    //     const jsDate = new Date('1995-12-17T03:24:00')
-    //     const expectedDateString = '1995-12-17'
-    //     // Act
-    //     const date = HomeAppDate.fromJsDate(jsDate)
-    //     // Assert
-    //     expect(date.toString()).toBe(expectedDateString)
-    // })
-
     it('timestampFromString should convert to a numeric timestamp', () => {
         // Arrange
         const dateString = '2011-01-02'

@@ -4,7 +4,6 @@ import {
     TaxCategory,
     TransactionCategory,
     dateFromString,
-    formatDateColumn,
 } from 'domain-model'
 import type { Pool } from 'pg'
 
@@ -64,9 +63,7 @@ export const getBankAccounts = async (
 ): Promise<BankAccount[]> => {
     const queryResult = await connectionPool.query(
         `SELECT
-            account, bank, annual_fee, type, owner, iban, purpose, contact, comment,
-            ${formatDateColumn('opening_date')} AS opening_date,
-            ${formatDateColumn('closing_date')} AS closing_date
+            account, bank, annual_fee, type, owner, iban, purpose, contact, comment, opening_date, closing_date
         FROM utils.bank_accounts`
     )
     const bankAccounts: BankAccount[] = queryResult.rows.map((row) => ({

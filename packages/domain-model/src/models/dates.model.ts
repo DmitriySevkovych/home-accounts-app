@@ -24,10 +24,6 @@ export const dateFromString = (dateString: string): Date => {
     return new Date(Date.parse(dateString))
 }
 
-export const formatDateColumn = (column: string): string => {
-    return `TO_CHAR(${column}::date, 'yyyy-mm-dd')`
-}
-
 export class DateCheck {
     private date: Date
 

@@ -4,7 +4,6 @@ import {
     TransactionReceipt,
     createTransaction,
     dateFromString,
-    formatDateColumn,
 } from 'domain-model'
 import { getLogger } from 'logger'
 import type { Pool, PoolClient } from 'pg'
@@ -64,15 +63,13 @@ export const getTransactions = async (
     connectionPool: Pool,
     paginationOptions: PaginationOptions
 ): Promise<Transaction[]> => {
-    const dateColumn = formatDateColumn('tr.date')
-
     //TODO extract logic to DB view?
     const query = {
         name: `select-${WORK_SCHEMA}-transactions`,
         text: `
             SELECT
                 w.id as work_id, w.type as category, w.origin, w.description, w.invoice_key, w.vat, w.country,
-                tr.id, tr.context, tr.amount, ${dateColumn} as date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
+                tr.id, tr.context, tr.amount, tr.date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
                 td.payment_method, td.tax_category, td.comment, td.receipt_id
             FROM
             (
@@ -102,14 +99,13 @@ export const getTransactionById = async (
     connectionPool: Pool,
     id: number
 ): Promise<Transaction> => {
-    const dateColumn = formatDateColumn('tr.date')
     const query = {
         name: `select-${WORK_SCHEMA}-transaction-by-id`,
         //TODO extract logic to DB view?
         text: `
         SELECT
             w.id as home_id, w.type as category, w.origin, w.description, w.invoice_key, w.vat, w.country,
-            tr.id, tr.context, tr.amount, ${dateColumn} as date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
+            tr.id, tr.context, tr.amount, tr.date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
             td.payment_method, td.tax_category, td.comment, td.receipt_id
         FROM
         (
