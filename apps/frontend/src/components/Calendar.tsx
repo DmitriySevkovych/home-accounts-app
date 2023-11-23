@@ -1,7 +1,11 @@
-import { Transaction, formatDateToWords } from 'domain-model'
+import {
+    Transaction,
+    formatDateToWords,
+    handleUnwantedTimezoneShift,
+} from 'domain-model'
 import { CalendarIcon } from 'lucide-react'
-import React from 'react'
-import { UseFormReturn } from 'react-hook-form'
+import React, { useState } from 'react'
+import { ControllerRenderProps, UseFormReturn } from 'react-hook-form'
 
 import { cn } from '../helpers/utils'
 import { Button } from '../lib/shadcn/Button'
@@ -17,6 +21,17 @@ type CalendarProps = {
 
 export const Calendar = (props: CalendarProps) => {
     const { form, label, id } = props
+
+    const [isOpen, setIsOpen] = useState<boolean>(false)
+
+    const handleSelect = (
+        field: ControllerRenderProps<any, keyof Transaction>,
+        selectedDate: Date
+    ) => {
+        field.onChange(handleUnwantedTimezoneShift(selectedDate))
+        setIsOpen(false)
+    }
+
     return (
         <FormField
             control={form.control}
@@ -24,7 +39,7 @@ export const Calendar = (props: CalendarProps) => {
             render={({ field }) => (
                 <FormItem>
                     <FormLabel>{label}</FormLabel>
-                    <Popover>
+                    <Popover open={isOpen} onOpenChange={setIsOpen}>
                         <PopoverTrigger asChild>
                             <FormControl>
                                 <Button
@@ -46,7 +61,11 @@ export const Calendar = (props: CalendarProps) => {
                             <ShadcnCalendar
                                 mode="single"
                                 selected={field.value}
-                                onSelect={field.onChange}
+                                onSelect={(selectedDate) =>
+                                    handleSelect(field, selectedDate!)
+                                }
+                                required
+                                ISOWeek
                                 initialFocus
                             />
                         </PopoverContent>

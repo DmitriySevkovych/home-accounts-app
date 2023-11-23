@@ -1,3 +1,4 @@
+import { DevTool } from '@hookform/devtools'
 import {
     BankAccount,
     DateCheck,
@@ -312,7 +313,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                 </form>
             </Form>
             <OverlayImage />
-            {/* <DevTool control={form.control} /> */}
+            <DevTool control={form.control} />
         </div>
     )
 }

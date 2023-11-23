@@ -21,7 +21,38 @@ export const timestampFromString = (dateString: string): number => {
 }
 
 export const dateFromString = (dateString: string): Date => {
-    return new Date(Date.parse(dateString))
+    return handleUnwantedTimezoneShift(new Date(Date.parse(dateString)))
+}
+
+export const handleUnwantedTimezoneShift = (date: Date): Date => {
+    const utcDate = _utcDate(date)
+
+    if (date.getDate() > utcDate.getDate()) {
+        return new Date(
+            Date.UTC(
+                utcDate.getFullYear(),
+                utcDate.getMonth(),
+                utcDate.getDate() + 1
+            )
+        )
+    } else if (date.getDate() < utcDate.getDate()) {
+        return new Date(
+            Date.UTC(
+                utcDate.getFullYear(),
+                utcDate.getMonth(),
+                utcDate.getDate() - 1
+            )
+        )
+    } else {
+        return utcDate
+    }
+}
+
+const _utcDate = (date: Date): Date => {
+    const year = date.getUTCFullYear()
+    const month = date.getUTCMonth()
+    const day = date.getUTCDate()
+    return new Date(Date.UTC(year, month, day))
 }
 
 export class DateCheck {

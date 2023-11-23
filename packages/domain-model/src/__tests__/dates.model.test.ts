@@ -28,14 +28,21 @@ describe('Tests for dealing with dates', () => {
         expect(typeof timestamp).toBe('number')
     })
 
-    it('dateFromString should convert to a JS Date object', () => {
-        // Arrange
-        const dateString = '2011-01-02'
-        // Act
-        const jsDate = dateFromString(dateString)
-        // Assert
-        expect(jsDate).toBeInstanceOf(Date)
-    })
+    it.each`
+        dateString
+        ${'1999-08-02'}
+        ${'1999-08-02T00:00:00.000Z'}
+        ${'1999-08-02T14:48:00.000Z'}
+    `(
+        'dateFromString should convert $dateString to a JS Date object',
+        ({ dateString }) => {
+            // Act
+            const jsDate = dateFromString(dateString)
+            // Assert
+            expect(jsDate).toBeInstanceOf(Date)
+            expect(jsDate.toISOString().split('T')[0]).toBe('1999-08-02')
+        }
+    )
 
     it.each`
         dateStr         | otherDateStr    | expectedBefore | expectedAfter
