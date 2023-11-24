@@ -148,7 +148,7 @@ export const insertTransaction = async (
             client
         )
 
-        const home_id = await _insertInvestmentDAO(
+        const investment_id = await _insertInvestmentDAO(
             {
                 ...transaction,
                 transaction_id,
@@ -162,7 +162,7 @@ export const insertTransaction = async (
                 type: transaction.type,
                 context: transaction.context,
                 tag: transaction.tags[i],
-                expense_or_income_id: home_id,
+                expense_or_income_id: investment_id,
             }
             await insertTagDAO(tagDAO, client)
         }
