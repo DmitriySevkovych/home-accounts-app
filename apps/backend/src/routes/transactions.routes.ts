@@ -145,6 +145,41 @@ const getRouter = (): Router => {
         }
     })
 
+    router.put('/', upload.single('receipt'), async (req, res) => {
+        try {
+            // Deserialize payload
+            const transaction = deserializeTransaction(
+                JSON.parse(req.body.transaction)
+            )
+            const receipt = deserializeTransactionReceipt(req.file)
+
+            // Little sanity check
+            if (!transaction.id) {
+                return res
+                    .status(400)
+                    .json({
+                        message:
+                            'The sent transaction does not have an id. Can not update.',
+                    })
+            }
+
+            // Update
+            await repository.updateTransaction(transaction, receipt)
+            return res.status(200).json({ message: 'Transaction updated' })
+        } catch (err) {
+            req.log.error(err)
+            if (err instanceof TransactionValidationError) {
+                res.status(400).json({
+                    message:
+                        'Data sent in the request body is not a valid transaction.',
+                    cause: err.message,
+                })
+            } else {
+                res.status(500).json({ message: 'Something went wrong' })
+            }
+        }
+    })
+
     return router
 }
 

@@ -9,3 +9,7 @@ export class NoRecordFoundInDatabaseError extends Error {}
 export class BadEnvironmentVariableError extends Error {}
 
 export class UndefinedOperationError extends Error {}
+
+export class DatabaseConfigurationError extends Error {}
+
+export class DataConsistencyError extends Error {}

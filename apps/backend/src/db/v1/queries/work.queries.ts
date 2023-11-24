@@ -9,6 +9,8 @@ import { getLogger } from 'logger'
 import type { Pool, PoolClient } from 'pg'
 
 import {
+    DataConsistencyError,
+    DatabaseConfigurationError,
     NoRecordFoundInDatabaseError,
     UndefinedOperationError,
 } from '../../../helpers/errors'
@@ -17,11 +19,15 @@ import {
     TagDAO,
     getTagsByExpenseOrIncomeId,
     insertTagDAO,
+    updateTransactionTags,
 } from './tags.queries'
 import {
     insertTransactionDAO,
     insertTransactionDetailsDAO,
     insertTransactionReceiptDAO,
+    updateTransactionDAO,
+    updateTransactionDetailsDAO,
+    updateTransactionReceiptDAO,
 } from './transactions.queries'
 
 const WORK_SCHEMA = 'work'
@@ -183,6 +189,71 @@ export const insertTransaction = async (
     }
 }
 
+export const updateTransaction = async (
+    connectionPool: Pool,
+    transaction: Transaction,
+    transactionReceipt?: TransactionReceipt
+): Promise<void> => {
+    const { id } = transaction
+    if (id === undefined) {
+        const message = `Can not update ${WORK_SCHEMA} transaction, transaction.id is missing!`
+        logger.warn(message)
+        throw new DataConsistencyError(message)
+    }
+
+    const client: PoolClient = await connectionPool.connect()
+    try {
+        await client.query('BEGIN')
+
+        // Update work table based on context
+        const expense_or_income_id = await _updateWorkDAO(transaction, client)
+
+        // Update transaction table
+        await updateTransactionDAO(transaction, client)
+
+        // Update transaction receipt table
+        const receipt_id = await updateTransactionReceiptDAO(
+            {
+                ...transactionReceipt,
+                id: transaction.receiptId,
+            },
+            client
+        )
+
+        // Update transaction details table
+        await updateTransactionDetailsDAO(
+            {
+                ...transaction,
+                transaction_id: id,
+                receipt_id: receipt_id,
+            },
+            client
+        )
+
+        // Update tags
+        await updateTransactionTags(
+            {
+                ...transaction,
+                expense_or_income_id,
+            },
+            client
+        )
+
+        await client.query('COMMIT')
+        logger.trace(
+            `Domain-model transaction with transaction_id=${id} has been updated.`
+        )
+    } catch (e) {
+        await client.query('ROLLBACK')
+        logger.warn(
+            `Something went wrong while updating the domain-model transaction with transaction_id=${id}. Database transaction has been rolled back.`
+        )
+        throw e
+    } finally {
+        client.release()
+    }
+}
+
 const _insertWorkDAO = async (
     transaction: Transaction,
     transaction_id: number,
@@ -255,6 +326,106 @@ const _insertWorkIncomeDAO = async (
         `Inserted a new row in ${WORK_SCHEMA}.income with id=${work_id} and foreign key transaction_id=${transaction_id}.`
     )
     return work_id
+}
+
+const _updateWorkDAO = async (
+    transaction: Transaction,
+    client: PoolClient
+): Promise<number> => {
+    if (transaction.id === undefined) {
+        const message = `Can not update ${WORK_SCHEMA} transaction: transaction.id is missing!`
+        logger.warn(message)
+        throw new DataConsistencyError(message)
+    }
+
+    let handleWorkDAOUpdate
+    if (transaction.type === 'expense') {
+        handleWorkDAOUpdate = _updateWorkExpenseDAO
+    } else if (transaction.type === 'income') {
+        handleWorkDAOUpdate = _updateWorkIncomeDAO
+    } else {
+        throw new UndefinedOperationError(
+            "Transaction type should be either 'expense' or 'income'."
+        )
+    }
+    return await handleWorkDAOUpdate(
+        {
+            ...transaction,
+            transaction_id: transaction.id,
+        },
+        client
+    )
+}
+
+const _updateWorkExpenseDAO = async (
+    work: WorkExpenseDAO,
+    client: PoolClient
+): Promise<number> => {
+    const {
+        category: type,
+        origin,
+        description,
+        transaction_id,
+        country,
+        vat,
+    } = work
+
+    const query = {
+        name: `update-${WORK_SCHEMA}.expenses`,
+        text: `UPDATE ${WORK_SCHEMA}.expenses SET type=$1, origin=$2, description=$3, vat=$4, country=$5 WHERE transaction_id=$6 RETURNING id;`,
+        values: [type, origin, description, vat, country, transaction_id],
+    }
+
+    const queryResult = await client.query(query)
+
+    if (queryResult.rows.length === 0) {
+        const message = `No row has been updated in ${WORK_SCHEMA}.expenses! A row with transaction_id=${transaction_id} seems to not exist.`
+        logger.error(message)
+        throw new DatabaseConfigurationError(message)
+    } else if (queryResult.rows.length > 1) {
+        const message = `Multiple rows have been updated in ${WORK_SCHEMA}.expenses for transaction_id=${transaction_id}! How is that even possible?! Check the database foreign key constraints!`
+        logger.error(message)
+        throw new DatabaseConfigurationError(message)
+    }
+
+    logger.trace(
+        `Updated a row in ${WORK_SCHEMA}.expenses with foreign key transaction_id=${transaction_id}.`
+    )
+    return queryResult.rows[0].id
+}
+
+const _updateWorkIncomeDAO = async (
+    work: WorkIncomeDAO,
+    client: PoolClient
+): Promise<number> => {
+    const {
+        category: type,
+        origin,
+        description,
+        transaction_id,
+        invoiceKey,
+    } = work
+    const query = {
+        name: `update-${WORK_SCHEMA}.income`,
+        text: `UPDATE ${WORK_SCHEMA}.income SET type=$1, origin=$2, description=$3, invoice_key=$4 WHERE transaction_id=$5 RETURNING id;`,
+        values: [type, origin, description, invoiceKey, transaction_id],
+    }
+    const queryResult = await client.query(query)
+
+    if (queryResult.rows.length === 0) {
+        const message = `No row has been updated in ${WORK_SCHEMA}.expenses! A row with transaction_id=${transaction_id} seems to not exist.`
+        logger.error(message)
+        throw new DatabaseConfigurationError(message)
+    } else if (queryResult.rows.length > 1) {
+        const message = `Multiple rows have been updated in ${WORK_SCHEMA}.expenses for transaction_id=${transaction_id}! How is that even possible?! Check the database foreign key constraints!`
+        logger.error(message)
+        throw new DatabaseConfigurationError(message)
+    }
+
+    logger.trace(
+        `Updated a row in ${WORK_SCHEMA}.expenses with foreign key transaction_id=${transaction_id}.`
+    )
+    return queryResult.rows[0].id
 }
 
 // TECHNICAL DEBT: persistence of tags in DB needs to be refactored and simplified, cf. GitHub Issue #41

@@ -133,6 +133,20 @@ export class PostgresRepository implements Repository {
         return id
     }
 
+    updateTransaction = async (
+        transaction: Transaction,
+        transactionReceipt?: TransactionReceipt
+    ): Promise<void> => {
+        // TODO to log or not to log?
+        this.logger.info(transaction)
+        const queries = this._queries(transaction.context)
+        await queries.updateTransaction(
+            this.connectionPool,
+            transaction,
+            transactionReceipt
+        )
+    }
+
     getTransactions = async (
         context: TransactionContext,
         paginationOptions: PaginationOptions

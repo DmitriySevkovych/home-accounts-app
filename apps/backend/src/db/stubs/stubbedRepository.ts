@@ -1,5 +1,6 @@
 import {
     BankAccount,
+    HomeAppFile,
     Investment,
     PaymentMethod,
     ProjectInvoice,
@@ -130,6 +131,13 @@ export class StubbedRepository implements Repository {
         _transactionReceipt?: TransactionReceipt
     ) => {
         return Promise.resolve(StubbedRepository.CREATED_TRANSACTION_ID)
+    }
+
+    updateTransaction = async (
+        _transaction: Transaction,
+        _transactionReceipt?: HomeAppFile | undefined
+    ) => {
+        Promise.resolve()
     }
 
     getTransactions = (

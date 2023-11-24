@@ -12,9 +12,16 @@ type TagTable = 'tags2expenses' | 'tags2income'
 // TODO: remove TransactionType argument once DB has been adjusted
 // TODO: replace home_id with transaction_id once DB has been adjusted
 export type TagDAO = {
+    tag: string
     type: TransactionType
     context: TransactionContext
-    tag: string
+    expense_or_income_id: number
+}
+
+export type TransactionTagsBatchDAO = {
+    tags: string[]
+    type: TransactionType
+    context: TransactionContext
     expense_or_income_id: number
 }
 
@@ -46,6 +53,60 @@ export const insertTagDAO = async (
     await client.query(query)
 }
 
+export const updateTransactionTags = async (
+    transactionTagsDAO: TransactionTagsBatchDAO,
+    client: PoolClient
+): Promise<void> => {
+    const { tags, expense_or_income_id, context, type } = transactionTagsDAO
+    // Create a 'tag diff' (in-flight transaction tags vs already stored tags)
+    const storedTags = await getTagsByExpenseOrIncomeId(
+        expense_or_income_id,
+        type,
+        context,
+        client
+    )
+
+    const newTags = tags.filter((tag) => !storedTags.includes(tag))
+    const obsoleteTags = storedTags.filter((tag) => !tags.includes(tag))
+
+    // Insert new transaction tags into DB
+    newTags.forEach((tag) =>
+        insertTagDAO(
+            {
+                tag,
+                expense_or_income_id,
+                type,
+                context,
+            },
+            client
+        )
+    )
+
+    // Delete obsolete transaction tags from DB
+    obsoleteTags.forEach((tag) =>
+        _untag(
+            {
+                tag,
+                expense_or_income_id,
+                type,
+                context,
+            },
+            client
+        )
+    )
+}
+
+const _untag = async (tagDAO: TagDAO, client: PoolClient): Promise<void> => {
+    const { tag, expense_or_income_id, type, context } = tagDAO
+    const table: TagTable = type === 'income' ? 'tags2income' : 'tags2expenses'
+    const query = {
+        name: `delet-from-${context}.${table}`,
+        text: `DELETE FROM ${context}.${table} WHERE tag=$1 AND transaction_id=$2;`,
+        values: [tag, expense_or_income_id],
+    }
+    await client.query(query)
+}
+
 // TECHNICAL DEBT: persistence of tags in DB needs to be refactored and simplified, cf. GitHub Issue #41
 // TODO: remove type argument once DB has been adjusted
 // TODO: replace expense_or_income_id with transaction_id once DB has been adjusted
@@ -54,7 +115,7 @@ export const getTagsByExpenseOrIncomeId = async (
     expense_or_income_id: number,
     type: TransactionType,
     context: TransactionContext,
-    connectionPool: Pool
+    dbConnection: Pool | PoolClient
 ): Promise<string[]> => {
     // TODO: remove once DB has been adjusted
     const schema = context
@@ -68,7 +129,7 @@ export const getTagsByExpenseOrIncomeId = async (
         text: `SELECT tag from ${schema}.${table} WHERE ${idColumn} = $1;`,
         values: [expense_or_income_id],
     }
-    const queryResult = await connectionPool.query(query)
+    const queryResult = await dbConnection.query(query)
     return queryResult.rowCount > 0
         ? queryResult.rows.map((row) => row.tag)
         : []
