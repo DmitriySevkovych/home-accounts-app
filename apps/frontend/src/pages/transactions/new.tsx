@@ -35,6 +35,7 @@ const NewTransactionPage = ({ constants }: NewTransactionPageProps) => {
             form={form}
             constants={constants}
             onSubmit={onSubmit}
+            submitLabel="Create"
         />
     )
 }

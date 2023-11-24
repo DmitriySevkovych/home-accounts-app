@@ -42,6 +42,7 @@ type TransactionFormPageProps = {
     form: UseFormReturn<any>
     onSubmit: SubmitHandler<any>
     constants: TransactionFormConstants
+    submitLabel: string
 }
 
 export const fetchTransactionConstants = async () => {
@@ -64,6 +65,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
     form,
     constants,
     onSubmit,
+    submitLabel,
 }) => {
     const {
         transactionOrigins,
@@ -308,7 +310,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                         type="submit"
                         size={'lg'}
                     >
-                        Submit
+                        {submitLabel}
                     </Button>
                 </form>
             </Form>

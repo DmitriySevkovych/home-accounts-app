@@ -29,6 +29,7 @@ const EditTransactionPage = ({ transaction, constants }: EditPageProps) => {
             form={form}
             constants={constants}
             onSubmit={onSubmit}
+            submitLabel="Update"
         />
     )
 }
