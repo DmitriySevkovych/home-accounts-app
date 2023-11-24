@@ -17,8 +17,7 @@ export const API = {
     client: {
         transactions: {
             create: `${CLIENT_BACKEND_BASE_URL}/transactions`,
-            update: (id: number) =>
-                `${CLIENT_BACKEND_BASE_URL}/transactions/${id}`,
+            update: `${CLIENT_BACKEND_BASE_URL}/transactions`,
             get: (context: TransactionContext, limit: number) =>
                 `${CLIENT_BACKEND_BASE_URL}/transactions?context=${context}&limit=${limit}`,
         },
