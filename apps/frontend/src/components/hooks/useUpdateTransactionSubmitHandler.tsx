@@ -27,7 +27,7 @@ const _sendTransaction = async (
             method: 'PUT',
             body: formData,
         })
-        if (response.status === 201) {
+        if (response.status === 200) {
             toast({
                 title: 'Transaction has been updated!',
                 description: (
