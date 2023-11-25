@@ -98,7 +98,7 @@ describe('Database queries targeting the home schema', () => {
         expect(transaction.agent).toBe('IntegrationTest-Agent') // value comes from dummyTransaction()
         expect(transaction.paymentMethod).toBe('EC') // value comes from dummyTransaction()
         expect(transaction.sourceBankAccount).toBe('HOME_ACCOUNT') // value comes from dummyTransaction()
-        expect(transaction.targetBankAccount).toBeNull()
+        expect(transaction.targetBankAccount).toBeUndefined()
     })
 
     it('getTransactionById should return a home income', async () => {
@@ -149,7 +149,7 @@ describe('Database queries targeting the home schema', () => {
         expect(transaction.description).toBe('A lengthy test description') // value comes from dummyTransaction()
         expect(transaction.agent).toBe('IntegrationTest-Agent') // value comes from dummyTransaction()
         expect(transaction.paymentMethod).toBe('TRANSFER') // value comes from dummyTransaction()
-        expect(transaction.sourceBankAccount).toBeNull()
+        expect(transaction.sourceBankAccount).toBeUndefined()
         expect(transaction.targetBankAccount).toBe('BUSINESS_ACCOUNT') // value comes from dummyTransaction()
     })
 })

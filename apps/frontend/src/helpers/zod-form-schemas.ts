@@ -5,7 +5,7 @@ import { FileWithPath } from './utils'
 // TODO add validation texts
 export const TransactionFormSchema = z
     .object({
-        id: z.optional(z.coerce.number()),
+        id: z.optional(z.coerce.number().int()),
         type: z.enum(['expense', 'income']),
         context: z.enum(['home', 'work', 'investments']),
         category: z.string(),
@@ -15,25 +15,17 @@ export const TransactionFormSchema = z
         amount: z.coerce
             .number()
             .refine((val) => val !== 0, { message: 'Amount cannot be 0' }),
-        currency: z
-            .string()
-            .length(3)
-            .transform((val) => val.toUpperCase()),
+        currency: z.string().toUpperCase().length(3),
         exchangeRate: z.coerce.number().positive(),
         paymentMethod: z.string(),
-        sourceBankAccount: z.optional(z.coerce.string()),
-        targetBankAccount: z.optional(z.coerce.string()),
-        taxCategory: z.optional(z.coerce.string()),
-        comment: z.optional(z.coerce.string()),
+        sourceBankAccount: z.optional(z.string()),
+        targetBankAccount: z.optional(z.string()),
+        taxCategory: z.optional(z.string()),
+        comment: z.optional(z.string()),
         tags: z.string().array(),
         investment: z.optional(z.string()),
         invoiceKey: z.optional(z.string()),
-        country: z.optional(
-            z
-                .string()
-                .length(2)
-                .transform((val) => val.toUpperCase())
-        ),
+        country: z.optional(z.string().toUpperCase().length(2)),
         vat: z.optional(
             z.coerce
                 .number()
