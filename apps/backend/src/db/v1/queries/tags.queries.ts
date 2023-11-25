@@ -97,11 +97,16 @@ export const updateTransactionTags = async (
 }
 
 const _untag = async (tagDAO: TagDAO, client: PoolClient): Promise<void> => {
+    // TECHNICAL DEBT: persistence of tags in DB needs to be refactored and simplified, cf. GitHub Issue #41
+    // TODO: remove type argument once DB has been adjusted
+    // TODO: replace expense_or_income_id with transaction_id once DB has been adjusted
+    // TODO: remove 'table' and 'column_id', they should no longer be necessary
     const { tag, expense_or_income_id, type, context } = tagDAO
     const table: TagTable = type === 'income' ? 'tags2income' : 'tags2expenses'
+    const id_column: string = type === 'income' ? 'income_id' : 'expense_id'
     const query = {
         name: `delet-from-${context}.${table}`,
-        text: `DELETE FROM ${context}.${table} WHERE tag=$1 AND transaction_id=$2;`,
+        text: `DELETE FROM ${context}.${table} WHERE tag=$1 AND ${id_column}=$2;`,
         values: [tag, expense_or_income_id],
     }
     await client.query(query)
