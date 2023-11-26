@@ -1,74 +1,48 @@
-import { HomeAppDate } from '../models/dates.model'
+import {
+    DateCheck,
+    dateFromString,
+    formatDate,
+    timestampFromString,
+} from '../models/dates.model'
 
 /*
     @group unit
     @group domain
  */
 describe('Tests for dealing with dates', () => {
-    it("should create today's date string in YYYY-MM-DD format", () => {
+    it('formatDate should create a date string in YYYY-MM-DD format', () => {
         // Arrange
-        const expectedDateString = new Date().toISOString().split('T')[0]
+        const today = new Date()
         // Act
-        const today = HomeAppDate.today()
-        const todayDateString = today.toString()
+        const formattedDateString = formatDate(today)
         // Assert
-        expect(todayDateString).toBe(expectedDateString)
+        expect(formattedDateString).toBe(today.toISOString().split('T')[0])
     })
 
-    it('should not change a date string in YYYY-MM-DD format', () => {
+    it('timestampFromString should convert to a numeric timestamp', () => {
         // Arrange
-        const expectedDateString = '2023-06-04'
+        const dateString = '2011-01-02'
         // Act
-        const date = HomeAppDate.fromString('2023-06-04')
+        const timestamp = timestampFromString(dateString)
         // Assert
-        expect(date.toString()).toBe(expectedDateString)
+        expect(typeof timestamp).toBe('number')
     })
 
-    it('should create a date string in YYYY-MM-DD format from a date string in a different format', () => {
-        // Arrange
-        const expectedDateString = '2023-06-04'
-        // Act
-        const date = HomeAppDate.fromString('Sunday, June 4, 2023', 'DDDD')
-        // Assert
-        expect(date.toString()).toBe(expectedDateString)
-    })
-
-    it('should create a date string in YYYY-MM-DD format when date is queried from a database table', () => {
-        // Arrange
-        const expectedDateString = '2023-06-04'
-        // Act
-        const date = HomeAppDate.fromDatabase('2023-06-04')
-        // Assert
-        expect(date.toString()).toBe(expectedDateString)
-    })
-
-    it('should create a date string in YYYY-MM-DD format from a JS Date object', () => {
-        // Arrange
-        const jsDate = new Date('1995-12-17T03:24:00')
-        const expectedDateString = '1995-12-17'
-        // Act
-        const date = HomeAppDate.fromJsDate(jsDate)
-        // Assert
-        expect(date.toString()).toBe(expectedDateString)
-    })
-
-    it('should convert to a correct JS Date object', () => {
-        // Arrange
-        const date = HomeAppDate.today()
-        // Act
-        const jsDate = date.toJSDate()
-        // Assert
-        expect(jsDate.getDate()).toEqual(new Date().getDate())
-    })
-
-    it('should create a date string in YYYY-MM-DD format from an ISO String', () => {
-        // Arrange
-        const expectedDateString = '2023-09-10'
-        // Act
-        const date = HomeAppDate.fromISO('2023-09-10T04:10:22.258Z')
-        // Assert
-        expect(date.toString()).toBe(expectedDateString)
-    })
+    it.each`
+        dateString
+        ${'1999-08-02'}
+        ${'1999-08-02T00:00:00.000Z'}
+        ${'1999-08-02T14:48:00.000Z'}
+    `(
+        'dateFromString should convert $dateString to a JS Date object',
+        ({ dateString }) => {
+            // Act
+            const jsDate = dateFromString(dateString)
+            // Assert
+            expect(jsDate).toBeInstanceOf(Date)
+            expect(jsDate.toISOString().split('T')[0]).toBe('1999-08-02')
+        }
+    )
 
     it.each`
         dateStr         | otherDateStr    | expectedBefore | expectedAfter
@@ -76,16 +50,20 @@ describe('Tests for dealing with dates', () => {
         ${'1999-09-09'} | ${'1999-10-10'} | ${true}        | ${false}
         ${'1999-11-11'} | ${'1999-10-10'} | ${false}       | ${true}
     `(
-        'should correctly determine whether one date is before or after another date',
+        'DateCheck should correctly determine whether one date is before or after another date',
         ({ dateStr, otherDateStr, expectedBefore, expectedAfter }) => {
             // Arrange
-            const date = HomeAppDate.fromString(dateStr)
-            const otherDate = HomeAppDate.fromString(otherDateStr)
+            const date = new Date(Date.parse(dateStr))
+            const otherDate = new Date(Date.parse(otherDateStr))
             // Act & Assert
-            expect(date.isBefore(otherDate)).toBe(expectedBefore)
-            expect(date.isNotBefore(otherDate)).toBe(!expectedBefore)
-            expect(date.isAfter(otherDate)).toBe(expectedAfter)
-            expect(date.isNotAfter(otherDate)).toBe(!expectedAfter)
+            expect(new DateCheck(date).isBefore(otherDate)).toBe(expectedBefore)
+            expect(new DateCheck(date).isNotBefore(otherDate)).toBe(
+                !expectedBefore
+            )
+            expect(new DateCheck(date).isAfter(otherDate)).toBe(expectedAfter)
+            expect(new DateCheck(date).isNotAfter(otherDate)).toBe(
+                !expectedAfter
+            )
         }
     )
 })

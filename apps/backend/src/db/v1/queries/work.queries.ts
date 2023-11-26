@@ -1,14 +1,16 @@
 import {
-    HomeAppDate,
     ProjectInvoice,
     Transaction,
     TransactionReceipt,
     createTransaction,
+    dateFromString,
 } from 'domain-model'
 import { getLogger } from 'logger'
 import type { Pool, PoolClient } from 'pg'
 
 import {
+    DataConsistencyError,
+    DatabaseConfigurationError,
     NoRecordFoundInDatabaseError,
     UndefinedOperationError,
 } from '../../../helpers/errors'
@@ -17,11 +19,15 @@ import {
     TagDAO,
     getTagsByExpenseOrIncomeId,
     insertTagDAO,
+    updateTransactionTags,
 } from './tags.queries'
 import {
     insertTransactionDAO,
     insertTransactionDetailsDAO,
     insertTransactionReceiptDAO,
+    updateTransactionDAO,
+    updateTransactionDetailsDAO,
+    updateTransactionReceiptDAO,
 } from './transactions.queries'
 
 const WORK_SCHEMA = 'work'
@@ -48,8 +54,8 @@ export const getProjectInvoices = async (
         FROM work.project_invoices`)
     return queryResult.rows.map((row) => ({
         key: row.key,
-        issuanceDate: HomeAppDate.fromDatabase(row.date),
-        dueDate: HomeAppDate.fromDatabase(row.due_date),
+        issuanceDate: dateFromString(row.date),
+        dueDate: dateFromString(row.due_date),
         project: row.project,
         netAmount: row.net_amount,
         vat: row.vat,
@@ -63,15 +69,13 @@ export const getTransactions = async (
     connectionPool: Pool,
     paginationOptions: PaginationOptions
 ): Promise<Transaction[]> => {
-    const dateColumn = HomeAppDate.formatDateColumn('tr.date')
-
     //TODO extract logic to DB view?
     const query = {
         name: `select-${WORK_SCHEMA}-transactions`,
         text: `
             SELECT
                 w.id as work_id, w.type as category, w.origin, w.description, w.invoice_key, w.vat, w.country,
-                tr.id, tr.context, tr.amount, ${dateColumn} as date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
+                tr.id, tr.context, tr.amount, tr.date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
                 td.payment_method, td.tax_category, td.comment, td.receipt_id
             FROM
             (
@@ -101,14 +105,13 @@ export const getTransactionById = async (
     connectionPool: Pool,
     id: number
 ): Promise<Transaction> => {
-    const dateColumn = HomeAppDate.formatDateColumn('tr.date')
     const query = {
         name: `select-${WORK_SCHEMA}-transaction-by-id`,
         //TODO extract logic to DB view?
         text: `
         SELECT
             w.id as home_id, w.type as category, w.origin, w.description, w.invoice_key, w.vat, w.country,
-            tr.id, tr.context, tr.amount, ${dateColumn} as date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
+            tr.id, tr.context, tr.amount, tr.date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
             td.payment_method, td.tax_category, td.comment, td.receipt_id
         FROM
         (
@@ -179,6 +182,71 @@ export const insertTransaction = async (
         await client.query('ROLLBACK')
         logger.warn(
             `Something went wrong while inserting a new domain-model transaction. Database transaction has been rolled back.`
+        )
+        throw e
+    } finally {
+        client.release()
+    }
+}
+
+export const updateTransaction = async (
+    connectionPool: Pool,
+    transaction: Transaction,
+    transactionReceipt?: TransactionReceipt
+): Promise<void> => {
+    const { id } = transaction
+    if (id === undefined) {
+        const message = `Can not update ${WORK_SCHEMA} transaction, transaction.id is missing!`
+        logger.warn(message)
+        throw new DataConsistencyError(message)
+    }
+
+    const client: PoolClient = await connectionPool.connect()
+    try {
+        await client.query('BEGIN')
+
+        // Update work table based on context
+        const expense_or_income_id = await _updateWorkDAO(transaction, client)
+
+        // Update transaction table
+        await updateTransactionDAO(transaction, client)
+
+        // Update transaction receipt table
+        const receipt_id = await updateTransactionReceiptDAO(
+            {
+                ...transactionReceipt,
+                id: transaction.receiptId,
+            },
+            client
+        )
+
+        // Update transaction details table
+        await updateTransactionDetailsDAO(
+            {
+                ...transaction,
+                transaction_id: id,
+                receipt_id: receipt_id,
+            },
+            client
+        )
+
+        // Update tags
+        await updateTransactionTags(
+            {
+                ...transaction,
+                expense_or_income_id,
+            },
+            client
+        )
+
+        await client.query('COMMIT')
+        logger.trace(
+            `Domain-model transaction with transaction_id=${id} has been updated.`
+        )
+    } catch (e) {
+        await client.query('ROLLBACK')
+        logger.warn(
+            `Something went wrong while updating the domain-model transaction with transaction_id=${id}. Database transaction has been rolled back.`
         )
         throw e
     } finally {
@@ -260,6 +328,106 @@ const _insertWorkIncomeDAO = async (
     return work_id
 }
 
+const _updateWorkDAO = async (
+    transaction: Transaction,
+    client: PoolClient
+): Promise<number> => {
+    if (transaction.id === undefined) {
+        const message = `Can not update ${WORK_SCHEMA} transaction: transaction.id is missing!`
+        logger.warn(message)
+        throw new DataConsistencyError(message)
+    }
+
+    let handleWorkDAOUpdate
+    if (transaction.type === 'expense') {
+        handleWorkDAOUpdate = _updateWorkExpenseDAO
+    } else if (transaction.type === 'income') {
+        handleWorkDAOUpdate = _updateWorkIncomeDAO
+    } else {
+        throw new UndefinedOperationError(
+            "Transaction type should be either 'expense' or 'income'."
+        )
+    }
+    return await handleWorkDAOUpdate(
+        {
+            ...transaction,
+            transaction_id: transaction.id,
+        },
+        client
+    )
+}
+
+const _updateWorkExpenseDAO = async (
+    work: WorkExpenseDAO,
+    client: PoolClient
+): Promise<number> => {
+    const {
+        category: type,
+        origin,
+        description,
+        transaction_id,
+        country,
+        vat,
+    } = work
+
+    const query = {
+        name: `update-${WORK_SCHEMA}.expenses`,
+        text: `UPDATE ${WORK_SCHEMA}.expenses SET type=$1, origin=$2, description=$3, vat=$4, country=$5 WHERE transaction_id=$6 RETURNING id;`,
+        values: [type, origin, description, vat, country, transaction_id],
+    }
+
+    const queryResult = await client.query(query)
+
+    if (queryResult.rows.length === 0) {
+        const message = `No row has been updated in ${WORK_SCHEMA}.expenses! A row with transaction_id=${transaction_id} seems to not exist.`
+        logger.error(message)
+        throw new DatabaseConfigurationError(message)
+    } else if (queryResult.rows.length > 1) {
+        const message = `Multiple rows have been updated in ${WORK_SCHEMA}.expenses for transaction_id=${transaction_id}! How is that even possible?! Check the database foreign key constraints!`
+        logger.error(message)
+        throw new DatabaseConfigurationError(message)
+    }
+
+    logger.trace(
+        `Updated a row in ${WORK_SCHEMA}.expenses with foreign key transaction_id=${transaction_id}.`
+    )
+    return queryResult.rows[0].id
+}
+
+const _updateWorkIncomeDAO = async (
+    work: WorkIncomeDAO,
+    client: PoolClient
+): Promise<number> => {
+    const {
+        category: type,
+        origin,
+        description,
+        transaction_id,
+        invoiceKey,
+    } = work
+    const query = {
+        name: `update-${WORK_SCHEMA}.income`,
+        text: `UPDATE ${WORK_SCHEMA}.income SET type=$1, origin=$2, description=$3, invoice_key=$4 WHERE transaction_id=$5 RETURNING id;`,
+        values: [type, origin, description, invoiceKey, transaction_id],
+    }
+    const queryResult = await client.query(query)
+
+    if (queryResult.rows.length === 0) {
+        const message = `No row has been updated in ${WORK_SCHEMA}.expenses! A row with transaction_id=${transaction_id} seems to not exist.`
+        logger.error(message)
+        throw new DatabaseConfigurationError(message)
+    } else if (queryResult.rows.length > 1) {
+        const message = `Multiple rows have been updated in ${WORK_SCHEMA}.expenses for transaction_id=${transaction_id}! How is that even possible?! Check the database foreign key constraints!`
+        logger.error(message)
+        throw new DatabaseConfigurationError(message)
+    }
+
+    logger.trace(
+        `Updated a row in ${WORK_SCHEMA}.expenses with foreign key transaction_id=${transaction_id}.`
+    )
+    return queryResult.rows[0].id
+}
+
 // TECHNICAL DEBT: persistence of tags in DB needs to be refactored and simplified, cf. GitHub Issue #41
 // TODO remove connectionPool argument once the issue with the tags is corrected
 const _mapToTransaction = async (
@@ -291,7 +459,7 @@ const _mapToTransaction = async (
         .about(category, origin, description)
         .withId(id)
         .withContext(context)
-        .withDate(HomeAppDate.fromDatabase(date))
+        .withDate(dateFromString(date))
         .withAmount(parseFloat(amount))
         .withType(amount > 0 ? 'income' : 'expense')
         .withCurrency(currency, parseFloat(exchangeRate))

@@ -29,6 +29,11 @@ export interface Repository {
         _transactionReceipt?: TransactionReceipt
     ) => Promise<number>
 
+    updateTransaction: (
+        _transaction: Transaction,
+        _transactionReceipt?: TransactionReceipt
+    ) => Promise<void>
+
     getTransactions: (
         _context: TransactionContext,
         _paginationOptions: PaginationOptions

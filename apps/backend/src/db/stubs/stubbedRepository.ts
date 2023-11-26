@@ -1,6 +1,6 @@
 import {
     BankAccount,
-    HomeAppDate,
+    HomeAppFile,
     Investment,
     PaymentMethod,
     ProjectInvoice,
@@ -9,6 +9,7 @@ import {
     TransactionCategory,
     TransactionContext,
     TransactionReceipt,
+    dateFromString,
     minimalDummyInvestmentTransaction,
     minimalDummyTransaction,
     minimalDummyWorkTransaction,
@@ -132,6 +133,13 @@ export class StubbedRepository implements Repository {
         return Promise.resolve(StubbedRepository.CREATED_TRANSACTION_ID)
     }
 
+    updateTransaction = async (
+        _transaction: Transaction,
+        _transactionReceipt?: HomeAppFile | undefined
+    ) => {
+        Promise.resolve()
+    }
+
     getTransactions = (
         context: TransactionContext,
         paginationOptions: PaginationOptions
@@ -200,25 +208,25 @@ export class StubbedRepository implements Repository {
                 key: 'Apartment',
                 type: 'REAL_ESTATE',
                 description: 'A 2/1 flat',
-                startDate: HomeAppDate.fromString('2012-12-12'),
+                startDate: dateFromString('2012-12-12'),
             },
             {
                 key: 'Homebrew',
                 type: 'CRAFT',
                 description: 'A 2/1 flat',
-                startDate: HomeAppDate.fromString('2012-12-12'),
+                startDate: dateFromString('2012-12-12'),
             },
             {
                 key: 'Stock_Portfolio',
                 type: 'STOCKS',
                 description: 'A 2/1 flat',
-                startDate: HomeAppDate.fromString('2012-12-12'),
+                startDate: dateFromString('2012-12-12'),
             },
             {
                 key: 'Precious_Metals',
                 type: 'TANGIBLES',
                 description: 'A 2/1 flat',
-                startDate: HomeAppDate.fromString('2012-12-12'),
+                startDate: dateFromString('2012-12-12'),
             },
         ])
     }
@@ -228,8 +236,8 @@ export class StubbedRepository implements Repository {
         return Promise.resolve([
             {
                 key: 'INV-0123456',
-                issuanceDate: HomeAppDate.fromString('2019-05-01'),
-                dueDate: HomeAppDate.fromString('2019-06-01'),
+                issuanceDate: dateFromString('2019-05-01'),
+                dueDate: dateFromString('2019-06-01'),
                 project: 'PROJECT_X',
                 netAmount: 12333.45,
                 vat: 0.19,
@@ -239,8 +247,8 @@ export class StubbedRepository implements Repository {
             },
             {
                 key: 'INV-0123457',
-                issuanceDate: HomeAppDate.fromString('2019-07-03'),
-                dueDate: HomeAppDate.fromString('2019-08-02'),
+                issuanceDate: dateFromString('2019-07-03'),
+                dueDate: dateFromString('2019-08-02'),
                 project: 'PROJECT_Y',
                 netAmount: 5432.1,
                 vat: 0.19,

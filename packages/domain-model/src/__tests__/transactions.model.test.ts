@@ -2,7 +2,6 @@
     @group unit
     @group domain
  */
-import { HomeAppDate } from '../models/dates.model'
 import { TransactionValidationError } from '../models/errors.model'
 import {
     createTransaction,
@@ -45,7 +44,7 @@ describe('Transactions tests', () => {
         const transactionBuilder = createTransaction()
             .about('FOOD', 'Test origin', '')
             .withAmount(3.0)
-            .withDate(HomeAppDate.today())
+            .withDate(new Date(Date.UTC(2023, 10, 14)))
             .withPaymentTo('TRANSFER', 'HOME_ACCOUNT')
             .withType('income')
             .withContext('home')
@@ -64,7 +63,7 @@ describe('Transactions tests', () => {
         const transactionBuilder = createTransaction()
             .about('FOOD', 'Test origin', '')
             .withAmount(amount)
-            .withDate(HomeAppDate.today())
+            .withDate(new Date(Date.UTC(2023, 10, 15)))
             .withPaymentTo('TRANSFER', 'HOME_ACCOUNT')
         // Act
         const validation = () => {
@@ -87,7 +86,7 @@ describe('Transactions tests', () => {
             const transactionBuilder = createTransaction()
                 .about('FOOD', 'Test origin', '')
                 .withAmount(amount)
-                .withDate(HomeAppDate.today())
+                .withDate(new Date(Date.UTC(2023, 10, 16)))
                 .withPaymentDetails(
                     'TRANSFER',
                     sourceBankAccount,
@@ -109,9 +108,7 @@ describe('Transactions tests', () => {
             origin: 'Grocery store',
             description: 'Some tasty food',
             amount: -45.67,
-            date: {
-                datetime: '2023-06-14T14:48:00.000Z',
-            },
+            date: '2023-06-14T14:48:00.000Z',
             paymentMethod: 'EC',
             sourceBankAccount: 'HOME_ACCOUNT',
             tags: ['Test', 'Tag'],
@@ -123,32 +120,7 @@ describe('Transactions tests', () => {
         const transaction = deserializeTransaction(receivedRequestBody)
         // Assert
         expect(transaction).toBeDefined()
-        expect(transaction.date.toString()).toBe('2023-06-14')
-    })
-
-    it('should throw a TransactionValidationError because of an incorrect date', () => {
-        // Arrange
-        const malformedRequestBody = {
-            // malformed date field
-            date: {
-                bla: '2023-06-14T14:48:00.000Z',
-            },
-            // mandatory information
-            category: 'FOOD',
-            origin: 'Grocery store',
-            amount: -45.67,
-            paymentMethod: 'EC',
-            sourceBankAccount: 'HOME_ACCOUNT',
-            agent: 'Testbot',
-            type: 'expense',
-            context: 'home',
-        }
-        // Act
-        const deserialization = () => {
-            deserializeTransaction(malformedRequestBody)
-        }
-        // Assert
-        expect(deserialization).toThrow(TransactionValidationError)
+        expect(transaction.date.toISOString()).toBe('2023-06-14T14:48:00.000Z')
     })
 
     it.each`

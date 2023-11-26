@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React from 'react'
 
-import { PAGES } from '../../helpers/pages'
+import { PAGES } from '../../helpers/routes'
 import { Button } from '../../lib/shadcn/Button'
 
 const Congrats = () => {
@@ -18,8 +18,8 @@ const Congrats = () => {
     const heading =
         transactionType === 'expense' ? 'Money well spent😎' : 'Чеки растут🤑'
     return (
-        <div className="min-h-screen w-full h-full flex flex-col gap-10 justify-center items-center">
-            <h1 className="font-bold text-xl lg:text-2xl text-primary">
+        <div className="flex h-full w-full flex-col items-center justify-center gap-10">
+            <h1 className="text-xl font-bold text-primary lg:text-2xl">
                 {heading}
             </h1>
             <Image

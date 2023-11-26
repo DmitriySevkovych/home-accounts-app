@@ -1,88 +1,84 @@
-import { DateTime } from 'luxon'
-
-import { TransactionValidationError } from './errors.model'
-
-/* Resources:
-    - https://moment.github.io/luxon/index.html
-    - https://moment.github.io/luxon/demo/global.html
- */
-export type SerializedTransactionDate = {
-    datetime: string
+const _padZero = (value: number): string => {
+    return value < 10 ? `0${value}` : value.toString()
 }
 
-export class HomeAppDate {
-    private datetime: DateTime
+export const formatDate = (date: Date): string => {
+    const YYYY = date.getFullYear().toString()
+    const MM = _padZero(date.getMonth() + 1)
+    const DD = _padZero(date.getDate())
+    return `${YYYY}-${MM}-${DD}`
+}
 
-    private constructor(datetime: DateTime) {
-        this.datetime = datetime
-    }
+export const formatDateToWords = (date: Date): string => {
+    const year = date.getFullYear().toString()
+    const month = date.toLocaleString('default', { month: 'long' })
+    const day = _padZero(date.getDate())
+    return `${day}. ${month} ${year}`
+}
 
-    isBefore = (date: HomeAppDate): boolean => {
-        return this.datetime.diff(date.datetime).valueOf() < 0
-    }
+export const timestampFromString = (dateString: string): number => {
+    return Date.parse(dateString)
+}
 
-    isNotBefore = (date: HomeAppDate): boolean => {
-        return this.datetime.diff(date.datetime).valueOf() >= 0
-    }
+export const dateFromString = (dateString: string): Date => {
+    return handleUnwantedTimezoneShift(new Date(Date.parse(dateString)))
+}
 
-    isAfter = (date: HomeAppDate): boolean => {
-        return this.datetime.diff(date.datetime).valueOf() > 0
-    }
+export const handleUnwantedTimezoneShift = (date: Date): Date => {
+    const utcDate = _utcDate(date)
 
-    isNotAfter = (date: HomeAppDate): boolean => {
-        return this.datetime.diff(date.datetime).valueOf() <= 0
-    }
-
-    toString = (): string => {
-        return this.datetime.toFormat(HomeAppDate.format)
-    }
-
-    toWords = (): string => {
-        return this.datetime.toFormat('dd LLLL yyyy')
-    }
-
-    toJSDate = (): Date => {
-        return this.datetime.toJSDate()
-    }
-
-    /** Static helper methods */
-
-    // https://moment.github.io/luxon/index.html#/formatting
-    static format = 'yyyy-MM-dd'
-
-    static today = (): HomeAppDate => {
-        return new HomeAppDate(DateTime.now())
-    }
-
-    static fromISO = (isoDateString: string): HomeAppDate => {
-        return new HomeAppDate(DateTime.fromISO(isoDateString))
-    }
-
-    static fromJsDate(date: Date) {
-        return HomeAppDate.fromISO(date.toISOString())
-    }
-
-    static fromString = (
-        dateString: string,
-        format: string = HomeAppDate.format
-    ): HomeAppDate => {
-        return new HomeAppDate(DateTime.fromFormat(dateString, format))
-    }
-
-    static deserialize = (date: SerializedTransactionDate): HomeAppDate => {
-        if (!(date instanceof Object && date.datetime)) {
-            throw new TransactionValidationError(
-                'The Trasaction date could not be deserialized: Transaction.date.datetime is missing.'
+    if (date.getDate() > utcDate.getDate()) {
+        return new Date(
+            Date.UTC(
+                utcDate.getFullYear(),
+                utcDate.getMonth(),
+                utcDate.getDate() + 1
             )
-        }
-        return new HomeAppDate(DateTime.fromISO(date.datetime))
+        )
+    } else if (date.getDate() < utcDate.getDate()) {
+        return new Date(
+            Date.UTC(
+                utcDate.getFullYear(),
+                utcDate.getMonth(),
+                utcDate.getDate() - 1
+            )
+        )
+    } else {
+        return utcDate
+    }
+}
+
+const _utcDate = (date: Date): Date => {
+    const year = date.getUTCFullYear()
+    const month = date.getUTCMonth()
+    const day = date.getUTCDate()
+    return new Date(Date.UTC(year, month, day))
+}
+
+export class DateCheck {
+    private date: Date
+
+    constructor(date: Date) {
+        this.date = date
     }
 
-    static fromDatabase = (dateString: string): HomeAppDate => {
-        return HomeAppDate.fromISO(dateString)
+    static today() {
+        return new DateCheck(new Date())
     }
 
-    static formatDateColumn = (column: string): string => {
-        return `TO_CHAR(${column}::date, 'yyyy-mm-dd')`
+    isBefore(otherDate: Date) {
+        return this.date.valueOf() - otherDate.valueOf() < 0
+    }
+
+    isNotBefore(otherDate: Date) {
+        return !this.isBefore(otherDate)
+    }
+
+    isAfter(otherDate: Date) {
+        return this.date.valueOf() - otherDate.valueOf() > 0
+    }
+
+    isNotAfter(otherDate: Date) {
+        return !this.isAfter(otherDate)
     }
 }

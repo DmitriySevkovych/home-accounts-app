@@ -1,5 +1,4 @@
 import {
-    HomeAppDate,
     Transaction,
     TransactionValidationError,
     deserializeTransaction,
@@ -44,11 +43,7 @@ describe('Transactions router tests', () => {
     it('POST should create a transaction and return with status 201 Created', async () => {
         await supertest(server)
             .post(routerBaseUrl)
-            .send(
-                asMultiform(
-                    dummyTransaction('FOOD', -3.45, HomeAppDate.today())
-                )
-            )
+            .send(asMultiform(dummyTransaction('FOOD', -3.45, new Date())))
             .expect(201)
             .then((res) => {
                 expect(res.body.message).toBe(

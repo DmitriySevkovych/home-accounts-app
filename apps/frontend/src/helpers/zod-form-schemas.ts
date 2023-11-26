@@ -1,24 +1,21 @@
-import { HomeAppDate } from 'domain-model'
 import { z } from 'zod'
 
 import { FileWithPath } from './utils'
 
 // TODO add validation texts
-export const NewTransactionFormSchema = z
+export const TransactionFormSchema = z
     .object({
+        id: z.optional(z.coerce.number().int()),
         type: z.enum(['expense', 'income']),
         context: z.enum(['home', 'work', 'investments']),
         category: z.string(),
         origin: z.string(),
         description: z.string(),
-        date: z.coerce.date().transform((val) => HomeAppDate.fromJsDate(val)),
+        date: z.coerce.date(),
         amount: z.coerce
             .number()
             .refine((val) => val !== 0, { message: 'Amount cannot be 0' }),
-        currency: z
-            .string()
-            .length(3)
-            .transform((val) => val.toUpperCase()),
+        currency: z.string().toUpperCase().length(3),
         exchangeRate: z.coerce.number().positive(),
         paymentMethod: z.string(),
         sourceBankAccount: z.optional(z.string()),
@@ -28,12 +25,7 @@ export const NewTransactionFormSchema = z
         tags: z.string().array(),
         investment: z.optional(z.string()),
         invoiceKey: z.optional(z.string()),
-        country: z.optional(
-            z
-                .string()
-                .length(2)
-                .transform((val) => val.toUpperCase())
-        ),
+        country: z.optional(z.string().toUpperCase().length(2)),
         vat: z.optional(
             z.coerce
                 .number()
@@ -131,4 +123,4 @@ export const NewTransactionFormSchema = z
         }
     })
 
-export type NewTransactionForm = z.infer<typeof NewTransactionFormSchema>
+export type TransactionForm = z.infer<typeof TransactionFormSchema>

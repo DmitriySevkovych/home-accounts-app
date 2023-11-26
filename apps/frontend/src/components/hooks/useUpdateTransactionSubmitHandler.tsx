@@ -1,5 +1,4 @@
 import { NextRouter, useRouter } from 'next/router'
-import React from 'react'
 import { type SubmitHandler } from 'react-hook-form'
 
 import { API, PAGES } from '../../helpers/routes'
@@ -24,13 +23,13 @@ const _sendTransaction = async (
             formData.append('receipt', transaction.receipt)
         }
 
-        const response = await fetch(API.client.transactions.create, {
-            method: 'POST',
+        const response = await fetch(API.client.transactions.update, {
+            method: 'PUT',
             body: formData,
         })
-        if (response.status === 201) {
+        if (response.status === 200) {
             toast({
-                title: 'A new transaction has been created!',
+                title: 'Transaction has been updated!',
                 description: (
                     <>
                         <p>You submitted the following values:</p>
@@ -60,7 +59,7 @@ const _sendTransaction = async (
     }
 }
 
-const useNewTransactionSubmitHandler = () => {
+const useUpdateTransactionSubmitHandler = () => {
     const { toast } = useToast()
 
     const router = useRouter()
@@ -72,4 +71,4 @@ const useNewTransactionSubmitHandler = () => {
     return { onSubmit }
 }
 
-export default useNewTransactionSubmitHandler
+export default useUpdateTransactionSubmitHandler

@@ -1,5 +1,4 @@
 import { PickAndFlatten } from '../helpers/handy-types'
-import { HomeAppDate } from './dates.model'
 import { TransactionValidationError } from './errors.model'
 import { Investment } from './investments.model'
 import {
@@ -39,7 +38,7 @@ export class Transaction {
     category!: PickAndFlatten<TransactionCategory, 'category'>
     origin!: string
     description!: string
-    date: HomeAppDate = HomeAppDate.today()
+    date: Date = new Date()
     tags: string[] = []
     receipt?: TransactionReceipt
 
@@ -127,11 +126,11 @@ class TransactionBuilder {
     }
 
     withTaxCategory = (taxCategory: string): TransactionBuilder => {
-        this.transaction.taxCategory = taxCategory
+        this.transaction.taxCategory = swapNullToUndefined(taxCategory)
         return this
     }
 
-    withDate = (date: HomeAppDate): TransactionBuilder => {
+    withDate = (date: Date): TransactionBuilder => {
         // TODO maybe remove the default date value and remove this if statement
         if (date) {
             this.transaction.date = date
@@ -151,7 +150,8 @@ class TransactionBuilder {
         sourceBankAccount: PickAndFlatten<BankAccount, 'account'>
     ): TransactionBuilder => {
         this.transaction.paymentMethod = paymentMethod
-        this.transaction.sourceBankAccount = sourceBankAccount
+        this.transaction.sourceBankAccount =
+            swapNullToUndefined(sourceBankAccount)
         return this
     }
 
@@ -160,7 +160,8 @@ class TransactionBuilder {
         targetBankAccount: PickAndFlatten<BankAccount, 'account'>
     ): TransactionBuilder => {
         this.transaction.paymentMethod = paymentMethod
-        this.transaction.targetBankAccount = targetBankAccount
+        this.transaction.targetBankAccount =
+            swapNullToUndefined(targetBankAccount)
         return this
     }
 
@@ -170,38 +171,40 @@ class TransactionBuilder {
         targetBankAccount: PickAndFlatten<BankAccount, 'account'>
     ): TransactionBuilder => {
         this.transaction.paymentMethod = paymentMethod
-        this.transaction.sourceBankAccount = sourceBankAccount
-        this.transaction.targetBankAccount = targetBankAccount
+        this.transaction.sourceBankAccount =
+            swapNullToUndefined(sourceBankAccount)
+        this.transaction.targetBankAccount =
+            swapNullToUndefined(targetBankAccount)
         return this
     }
 
     withComment = (comment: string): TransactionBuilder => {
-        this.transaction.comment = comment
+        this.transaction.comment = swapNullToUndefined(comment)
         return this
     }
 
     withInvestment = (
         investment: PickAndFlatten<Investment, 'key'>
     ): TransactionBuilder => {
-        this.transaction.investment = investment
+        this.transaction.investment = swapNullToUndefined(investment)
         return this
     }
 
     withInvoice = (
         invoiceKey: PickAndFlatten<ProjectInvoice, 'key'>
     ): TransactionBuilder => {
-        this.transaction.invoiceKey = invoiceKey
+        this.transaction.invoiceKey = swapNullToUndefined(invoiceKey)
         return this
     }
 
     withVAT = (vat: number, taxationCountry: string): TransactionBuilder => {
-        this.transaction.vat = vat
-        this.transaction.country = taxationCountry
+        this.transaction.vat = swapNullToUndefined(vat)
+        this.transaction.country = swapNullToUndefined(taxationCountry)
         return this
     }
 
     withReceipt(receiptId: number) {
-        this.transaction.receiptId = receiptId
+        this.transaction.receiptId = swapNullToUndefined(receiptId)
         return this
     }
 
@@ -235,8 +238,7 @@ class TransactionBuilder {
             'bank accounts',
             sourceBankAccount || targetBankAccount
         )
-
-        this._throwIfDateInvalid(date)
+        this._throwIfFalsy('date', date)
 
         this._throwIfAmountInconsistentWithBankAccounts()
 
@@ -271,16 +273,6 @@ class TransactionBuilder {
         } else if (amount > 0 && !targetBankAccount) {
             throw new TransactionValidationError(
                 `A Transaction with amount > 0 should have a target (incoming) bank account set`
-            )
-        }
-    }
-
-    private _throwIfDateInvalid = (date: HomeAppDate): void => {
-        this._throwIfFalsy('date', date)
-
-        if (date.toString() === 'Invalid DateTime') {
-            throw new TransactionValidationError(
-                'The Transaction has an invalid date'
             )
         }
     }
@@ -368,7 +360,7 @@ export const deserializeTransaction = (data: any) => {
         .withContext(context)
         .withAmount(amount)
         .withCurrency(currency, exchangeRate)
-        .withDate(HomeAppDate.deserialize(date))
+        .withDate(new Date(date))
         .withPaymentDetails(paymentMethod, sourceBankAccount, targetBankAccount)
         .withTaxCategory(taxCategory)
         .withComment(comment)
@@ -384,3 +376,6 @@ export const deserializeTransaction = (data: any) => {
 
     return transaction
 }
+
+export const swapNullToUndefined = (value: any): any =>
+    value === null ? undefined : value

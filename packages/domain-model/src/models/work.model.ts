@@ -1,5 +1,4 @@
 import { PickAndFlatten } from '../helpers/handy-types'
-import { HomeAppDate } from './dates.model'
 
 export type Project = {
     key: string
@@ -9,8 +8,8 @@ export type ProjectInvoiceStatus = 'OPEN' | 'PAID'
 
 export type ProjectInvoice = {
     key: string
-    issuanceDate: HomeAppDate
-    dueDate: HomeAppDate
+    issuanceDate: Date
+    dueDate: Date
     project: PickAndFlatten<Project, 'key'>
     netAmount: number
     vat: number
