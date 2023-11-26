@@ -278,6 +278,7 @@ const _updateHomeDAO = async (
         values: [type, origin, description, transaction_id],
     }
     const queryResult = await client.query(query)
+
     if (queryResult.rows.length === 0) {
         const message = `No row has been updated in ${HOME_SCHEMA}.${table}! A row with transaction_id=${transaction_id} seems to not exist.`
         logger.error(message)
@@ -286,12 +287,12 @@ const _updateHomeDAO = async (
         const message = `Multiple rows have been updated in ${HOME_SCHEMA}.${table} for transaction_id=${transaction_id}! How is that even possible?! Check the database foreign key constraints!`
         logger.error(message)
         throw new DatabaseConfigurationError(message)
-    } else {
-        logger.trace(
-            `Updated a row in ${HOME_SCHEMA}.${table} with foreign key transaction_id=${transaction_id}.`
-        )
-        return queryResult.rows[0].id
     }
+
+    logger.trace(
+        `Updated a row in ${HOME_SCHEMA}.${table} with foreign key transaction_id=${transaction_id}.`
+    )
+    return queryResult.rows[0].id
 }
 
 // TECHNICAL DEBT: persistence of tags in DB needs to be refactored and simplified, cf. GitHub Issue #41
