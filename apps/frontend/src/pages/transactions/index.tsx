@@ -41,7 +41,7 @@ const TransactionsOverview = ({ systemInfo }: TransactionsOverviewProps) => {
 
     return (
         <>
-            <div className="relative flex h-full min-h-screen w-full flex-col justify-between p-4">
+            <div className="relative flex h-full w-full flex-col justify-between p-4">
                 <div className="flex flex-grow flex-col items-center justify-between gap-10">
                     <h1 className="mt-24 text-center text-xl font-bold text-primary lg:text-2xl">
                         Posipaki Home Accounts App: Transactions

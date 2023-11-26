@@ -18,7 +18,7 @@ const Congrats = () => {
     const heading =
         transactionType === 'expense' ? 'Money well spent😎' : 'Чеки растут🤑'
     return (
-        <div className="flex h-full min-h-screen w-full flex-col items-center justify-center gap-10">
+        <div className="flex h-full w-full flex-col items-center justify-center gap-10">
             <h1 className="text-xl font-bold text-primary lg:text-2xl">
                 {heading}
             </h1>
