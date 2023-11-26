@@ -79,9 +79,9 @@ export const getTransactions = async (
                 td.payment_method, td.tax_category, td.comment, td.receipt_id
             FROM
             (
-                SELECT * FROM ${INVESTMENTS_SCHEMA}.expenses
+                SELECT id, "type", origin, description, transaction_id, investment FROM ${INVESTMENTS_SCHEMA}.expenses
                 UNION ALL
-                SELECT * FROM ${INVESTMENTS_SCHEMA}.income
+                SELECT id, "type", origin, description, transaction_id, investment FROM ${INVESTMENTS_SCHEMA}.income
             ) i
             JOIN transactions.transactions tr ON i.transaction_id = tr.id
             JOIN transactions.transaction_details td ON tr.id = td.transaction_id
@@ -115,9 +115,9 @@ export const getTransactionById = async (
             td.payment_method, td.tax_category, td.comment, td.receipt_id
         FROM
         (
-            SELECT * FROM ${INVESTMENTS_SCHEMA}.expenses
+            SELECT id, "type", origin, description, transaction_id, investment FROM ${INVESTMENTS_SCHEMA}.expenses
             UNION ALL
-            SELECT * FROM ${INVESTMENTS_SCHEMA}.income
+            SELECT id, "type", origin, description, transaction_id, investment FROM ${INVESTMENTS_SCHEMA}.income
         ) i
         JOIN transactions.transactions tr ON i.transaction_id = tr.id
         JOIN transactions.transaction_details td ON tr.id = td.transaction_id
