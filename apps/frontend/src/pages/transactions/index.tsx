@@ -35,7 +35,7 @@ const useLatestTransactions = (context: TransactionContext, limit: number) => {
 
 const TransactionsOverview = ({ systemInfo }: TransactionsOverviewProps) => {
     const context = 'home'
-    const limit = 5
+    const limit = 25
 
     const transactions = useLatestTransactions(context, limit)
 
