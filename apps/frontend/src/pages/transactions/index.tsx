@@ -2,7 +2,7 @@ import {
     Transaction,
     TransactionContext,
     deserializeTransaction,
-    formatDateToWords,
+    formatDate,
 } from 'domain-model'
 import Link from 'next/link'
 import React, { Suspense, useEffect, useState } from 'react'
@@ -56,10 +56,13 @@ const TransactionsOverview = ({ systemInfo }: TransactionsOverviewProps) => {
                                     const {
                                         id,
                                         date,
+                                        category,
                                         origin,
                                         amount,
                                         currency,
                                         receiptId,
+                                        taxRelevant,
+                                        tags,
                                     } = transaction
                                     return (
                                         <Link
@@ -77,11 +80,18 @@ const TransactionsOverview = ({ systemInfo }: TransactionsOverviewProps) => {
                                                 </div>
                                                 <div className="flex w-full justify-between">
                                                     <p>
-                                                        {formatDateToWords(
-                                                            date
+                                                        {category} on{' '}
+                                                        {formatDate(date)}
+                                                    </p>
+                                                    <p>
+                                                        {taxRelevant() && (
+                                                            <>🤓</>
+                                                        )}
+                                                        {receiptId && <>📄</>}
+                                                        {tags.length > 0 && (
+                                                            <>#️⃣</>
                                                         )}
                                                     </p>
-                                                    {receiptId && <p>📄</p>}
                                                 </div>
                                             </div>
                                         </Link>
