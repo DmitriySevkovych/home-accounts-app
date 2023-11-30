@@ -20,4 +20,5 @@ module.exports = withPWA({
     images: {
         domains: ['media1.giphy.com', 'media4.giphy.com'],
     },
+    poweredByHeader: false,
 })
