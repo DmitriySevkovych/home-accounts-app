@@ -1,0 +1,4 @@
+{
+    "*.{yml,yaml}": "prettier --write",
+    "*.md": "prettier --write"
+}

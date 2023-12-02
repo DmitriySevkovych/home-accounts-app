@@ -1,0 +1,35 @@
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: false # true by default
+
+# (Optional) Log information
+log:
+  level: DEBUG # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  format: common # common, json, logfmt
+  filePath: /var/log/traefik/traefik.log
+
+# (Optional) Accesslog
+accessLog:
+  format: common # common, json, logfmt
+  filePath: /var/log/traefik/access.log
+
+providers:
+  docker:
+    exposedByDefault: false
+  file:
+    directory: "/etc/traefik/dynamic"
+
+entryPoints:
+  http:
+    address: ":80"
+  https:
+    address: ":443"
+
+certificatesResolvers:
+  lets-encrypt:
+    acme:
+      storage: "/etc/traefik/acme.json"
+      email: "d.sevkovych@varsandnumbers.com"
+      tlsChallenge: {}
+      # httpChallenge:
+      #   entryPoint: "http"
