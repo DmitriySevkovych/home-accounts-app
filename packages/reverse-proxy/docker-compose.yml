@@ -1,20 +1,32 @@
 services:
-  reverse-proxy:
-    image: traefik:2.10
-    container_name: homeapp-reverse-proxy
-    restart: always
-    networks:
-      - proxy_network
-    ports:
-      - '80:80'
-      - '443:443'
-    volumes:
-    - ./traefik:/etc/traefik
-    - ./logs:/var/log/traefik
-    # So that Traefik can listen to the Docker events
-    - /var/run/docker.sock:/var/run/docker.sock:ro
+    reverse-proxy:
+        image: traefik:2.10
+        container_name: homeapp-reverse-proxy
+        restart: always
+        networks:
+            - proxy_network
+        ports:
+            - '80:80'
+            - '443:443'
+        volumes:
+            - ./traefik:/etc/traefik
+            - ./logs:/var/log/traefik
+            # So that Traefik can listen to the Docker events
+            - /var/run/docker.sock:/var/run/docker.sock:ro
 
-networks: 
-  proxy_network:
-    external: true
-    
+    robots:
+        image: nginx:alpine
+        container_name: homeapp-robots
+        volumes:
+            - ./robots.txt:/usr/share/nginx/html/robots.txt:ro
+        networks:
+            - proxy_network
+        labels:
+            - traefik.enable=true
+            - traefik.http.routers.robots.rule=HostRegexp(`{host:.*}`) && Path(`/robots.txt`)
+            - traefik.http.routers.robots.entrypoints=http
+            - traefik.http.routers.robots.priority=99
+
+networks:
+    proxy_network:
+        external: true
