@@ -7,3 +7,5 @@ README.md
 docs
 .next
 .git
+
+.env*
