@@ -1,4 +1,5 @@
 services:
+
   frontend:
     hostname: home-app-frontend-${APP_ENV}
     container_name: home-app-frontend-container-${APP_ENV}
@@ -13,6 +14,7 @@ services:
     restart: "always"
     networks:
      - home-app-network
+
   backend:
     hostname: home-app-backend-${APP_ENV}
     container_name: home-app-backend-container-${APP_ENV}
@@ -38,6 +40,7 @@ services:
     networks:
      - home-app-network
      - home-db-network
+
   db:
     container_name: home-app-db-container-${APP_ENV}
     image: postgres:14
@@ -63,9 +66,11 @@ services:
      - home-app-network
      - home-db-network
 
+
 volumes:
   pgdata:
     name: pgdata_volume
+
 
 secrets:
   db_password:
@@ -74,6 +79,7 @@ secrets:
     file: ./db/.user.txt
   db_name:
     file: ./db/.name.txt
+
 
 networks:
   home-app-network:
