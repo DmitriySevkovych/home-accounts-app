@@ -44,10 +44,10 @@ ENV GIT_BRANCH=${GIT_BRANCH:-unknown}
 ARG GIT_COMMIT
 ENV GIT_COMMIT=${GIT_COMMIT:-unknown}
 RUN echo "The image is based on branch $GIT_BRANCH and commit $GIT_COMMIT"
-WORKDIR /app
 RUN addgroup --system --gid 1001 homeapp
 RUN adduser --system --uid 1001 frontend
 USER frontend
+WORKDIR /app
 COPY --from=installer /app/apps/frontend/next.config.js .
 COPY --from=installer /app/apps/frontend/package.json .
 
