@@ -9,7 +9,7 @@ import React, { Suspense, useEffect, useState } from 'react'
 
 import OverlayImage from '../../components/Overlay'
 import { SystemInfo, SystemInfoFooter } from '../../components/SystemInfoFooter'
-import { API, PAGES, SERVER_BACKEND_BASE_URL } from '../../helpers/routes'
+import { API, PAGES } from '../../helpers/routes'
 import { Button } from '../../lib/shadcn/Button'
 import { ScrollArea } from '../../lib/shadcn/ScrollArea'
 
@@ -113,7 +113,7 @@ export const getServerSideProps = async () => {
         backendInfo = await req.json()
     } catch (err) {
         backendInfo = {
-            error: `Fetch ${SERVER_BACKEND_BASE_URL} failed`,
+            error: `Fetch ${API.server.system.info} failed`,
         }
         console.error(err)
     }
