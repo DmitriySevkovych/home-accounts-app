@@ -15,6 +15,41 @@ export const backendHttpLogger = (
     next()
 }
 
+const APIKEY = process.env['APIKEY']
+const DISABLE_AUTH = process.env['DISABLE_AUTH']
+
+export const checkAuthHeader = (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): void => {
+
+    if (DISABLE_AUTH) {
+        next()
+        return
+    }
+
+    if (!APIKEY) {
+        res.status(500).json({
+            "message": "Application is misconfigured."
+        })
+        return
+    }
+
+    const token = req.get("Authorization")
+
+    if (!token) {
+        httpLogger.logger.error(`Received request from ${req.headers.host} without an auth token!`)
+        res.sendStatus(401)
+    }
+    else if (token !== APIKEY) {
+        httpLogger.logger.error(`Received request from ${req.headers.host} with a bad auth token!`)
+        res.sendStatus(403)
+    } else {
+        next()
+    }
+}
+
 export const checkIdIsInteger = (
     req: Request,
     res: Response,

@@ -1,11 +1,18 @@
 http:
     routers:
-        home-app-over-https:
+        frontend-over-https:
             entryPoints: ['http', 'https']
             middlewares: ['force-https', 'proxy-auth', 'proxy-ratelimit']
-            # rule: "HostRegexp(`{any:.+}`)"
+            # rule: 'HostRegexp(`{any:.+}`)'
             rule: 'Host (`<home-app-domain-name>`)'
-            service: 'home-app'
+            service: 'home-app-frontend'
+            tls:
+                certResolver: 'lets-encrypt'
+        backend-over-https:
+            entryPoints: ['http', 'https']
+            middlewares: ['force-https', 'proxy-ratelimit']
+            rule: 'Host (`<home-app-domain-name>`)'
+            service: 'home-app-backend'
             tls:
                 certResolver: 'lets-encrypt'
 
@@ -19,10 +26,15 @@ http:
                 headerField: 'X-Proxy-Authenticated-User'
         proxy-ratelimit:
             ratelimit:
-                average: 10
+                average: 50
 
     services:
-        home-app:
+        home-app-frontend:
+            loadBalancer:
+                servers:
+                    - url: 'http://<private-ip-server-1>:<private-port-server-1>/'
+                    - url: 'http://<private-ip-server-2>:<private-port-server-2>/'
+        home-app-backend:
             loadBalancer:
                 servers:
                     - url: 'http://<private-ip-server-1>:<private-port-server-1>/'

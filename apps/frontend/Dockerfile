@@ -1,5 +1,5 @@
 # For documentation, cf. https://turbo.build/repo/docs/handbook/deploying-with-docker
-FROM node:18.17.0-alpine AS base
+FROM node:18.19.0-alpine AS base
 
 
 FROM base AS turbosetup
@@ -28,9 +28,6 @@ COPY --from=turbosetup /app/out/package-lock.json ./package-lock.json
 RUN npm install
 # Build the project and its dependencies
 COPY --from=turbosetup /app/out/full/ .
-# ATTENTION: hack to set the correct environment variables for the production environment! 
-COPY --from=turbosetup /app/out/full/apps/frontend/docker/production/.env ./apps/frontend/.env
-COPY --from=turbosetup /app/out/full/apps/frontend/docker/production/.env.local ./apps/frontend/.env.local
 COPY turbo.json turbo.json
 RUN npx turbo run build --filter=frontend
 
@@ -44,10 +41,10 @@ ENV GIT_BRANCH=${GIT_BRANCH:-unknown}
 ARG GIT_COMMIT
 ENV GIT_COMMIT=${GIT_COMMIT:-unknown}
 RUN echo "The image is based on branch $GIT_BRANCH and commit $GIT_COMMIT"
-WORKDIR /app
 RUN addgroup --system --gid 1001 homeapp
 RUN adduser --system --uid 1001 frontend
 USER frontend
+WORKDIR /app
 COPY --from=installer /app/apps/frontend/next.config.js .
 COPY --from=installer /app/apps/frontend/package.json .
 
@@ -56,9 +53,6 @@ COPY --from=installer /app/apps/frontend/package.json .
 COPY --from=installer --chown=frontend:homeapp /app/apps/frontend/.next/standalone ./
 COPY --from=installer --chown=frontend:homeapp /app/apps/frontend/.next/static ./apps/frontend/.next/static
 COPY --from=installer --chown=frontend:homeapp /app/apps/frontend/public ./apps/frontend/public
-# ATTENTION: hack to set the correct environment variables for the production environment! 
-COPY --from=installer --chown=frontend:homeapp /app/apps/frontend/docker/production/.env ./apps/frontend/.env
-COPY --from=installer --chown=frontend:homeapp /app/apps/frontend/docker/production/.env.local ./apps/frontend/.env.local
 
 EXPOSE 3000
 CMD node apps/frontend/server.js

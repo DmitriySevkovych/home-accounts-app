@@ -9,7 +9,8 @@ import React, { Suspense, useEffect, useState } from 'react'
 
 import OverlayImage from '../../components/Overlay'
 import { SystemInfo, SystemInfoFooter } from '../../components/SystemInfoFooter'
-import { API, PAGES, SERVER_BACKEND_BASE_URL } from '../../helpers/routes'
+import { getFromBackend } from '../../helpers/requests'
+import { API, PAGES } from '../../helpers/routes'
 import { Button } from '../../lib/shadcn/Button'
 import { ScrollArea } from '../../lib/shadcn/ScrollArea'
 
@@ -21,7 +22,9 @@ const useLatestTransactions = (context: TransactionContext, limit: number) => {
     const [transactions, setTransactions] = useState<Transaction[]>([])
     useEffect(() => {
         const fetchTransactions = async () => {
-            const req = await fetch(API.client.transactions.get(context, limit))
+            const req = await getFromBackend(
+                API.client.transactions.get(context, limit)
+            )
             const reqData = await req.json()
             const fetchedTransactions = reqData.map((obj: any) =>
                 deserializeTransaction(obj)
@@ -109,11 +112,11 @@ const TransactionsOverview = ({ systemInfo }: TransactionsOverviewProps) => {
 export const getServerSideProps = async () => {
     let backendInfo
     try {
-        const req = await fetch(API.server.system.info)
+        const req = await getFromBackend(API.server.system.info)
         backendInfo = await req.json()
     } catch (err) {
         backendInfo = {
-            error: `Fetch ${SERVER_BACKEND_BASE_URL} failed`,
+            error: `Fetch ${API.server.system.info} failed`,
         }
         console.error(err)
     }

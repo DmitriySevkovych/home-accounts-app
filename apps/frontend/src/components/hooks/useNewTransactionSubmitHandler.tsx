@@ -2,6 +2,7 @@ import { NextRouter, useRouter } from 'next/router'
 import React from 'react'
 import { type SubmitHandler } from 'react-hook-form'
 
+import { ResponseError, postToBackend } from '../../helpers/requests'
 import { API, PAGES } from '../../helpers/routes'
 import { TransactionForm } from '../../helpers/zod-form-schemas'
 import { useToast } from '../../lib/shadcn/use-toast'
@@ -24,37 +25,31 @@ const _sendTransaction = async (
             formData.append('receipt', transaction.receipt)
         }
 
-        const response = await fetch(API.client.transactions.create, {
-            method: 'POST',
-            body: formData,
+        await postToBackend(API.client.transactions.create, formData)
+        toast({
+            title: 'A new transaction has been created!',
+            description: (
+                <>
+                    <p>You submitted the following values:</p>
+                    <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+                        <code className="text-white">
+                            {JSON.stringify(payload, null, 2)}
+                        </code>
+                    </pre>
+                </>
+            ),
         })
-        if (response.status === 201) {
-            toast({
-                title: 'A new transaction has been created!',
-                description: (
-                    <>
-                        <p>You submitted the following values:</p>
-                        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-                            <code className="text-white">
-                                {JSON.stringify(payload, null, 2)}
-                            </code>
-                        </pre>
-                    </>
-                ),
-            })
-            router.push(PAGES.transactions.success(transaction.type))
-        } else {
-            toast({
-                variant: 'destructive',
-                title: 'Something when wrong!',
-                description: `Received ${response.status} ${response.statusText}.`,
-            })
-        }
+        router.push(PAGES.transactions.success(transaction.type))
     } catch (error) {
+        let description = `An exception occurred. Please check the error log.`
+        if (error instanceof ResponseError) {
+            const { response } = error
+            description = `Received ${response.status} ${response.statusText}.`
+        }
         toast({
             variant: 'destructive',
             title: `Something when wrong!`,
-            description: `An exception occurred. Please check the error log.`,
+            description,
         })
         console.log(error)
     }
