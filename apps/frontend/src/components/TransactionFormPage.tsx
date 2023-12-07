@@ -1,4 +1,4 @@
-import { DevTool } from '@hookform/devtools'
+// import { DevTool } from '@hookform/devtools'
 import {
     BankAccount,
     DateCheck,
@@ -13,6 +13,7 @@ import Link from 'next/link'
 import React from 'react'
 import { SubmitHandler, UseFormReturn } from 'react-hook-form'
 
+import { getFromBackend } from '../helpers/requests'
 import { API, PAGES } from '../helpers/routes'
 import { Button } from '../lib/shadcn/Button'
 import { Form } from '../lib/shadcn/Form'
@@ -49,7 +50,7 @@ export const fetchTransactionConstants = async () => {
     const urls = API.server.transactions.constants
 
     const response = await Promise.all(
-        urls.map((url) => fetch(url).then((res) => res.json()))
+        urls.map((url) => getFromBackend(url).then((res) => res.json()))
     )
 
     return {
@@ -315,7 +316,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                 </form>
             </Form>
             <OverlayImage />
-            <DevTool control={form.control} />
+            {/* <DevTool control={form.control} /> */}
         </div>
     )
 }
