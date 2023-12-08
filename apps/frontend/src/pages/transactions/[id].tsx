@@ -1,4 +1,3 @@
-import { deserializeTransaction } from 'domain-model'
 import React from 'react'
 
 import TransactionFormPage, {
@@ -7,7 +6,7 @@ import TransactionFormPage, {
 } from '../../components/TransactionFormPage'
 import useTransactionForm from '../../components/hooks/useTransactionForm'
 import useUpdateTransactionSubmitHandler from '../../components/hooks/useUpdateTransactionSubmitHandler'
-import { getFromBackend } from '../../helpers/requests'
+import { serversideSafeFetch } from '../../helpers/requests'
 import { API } from '../../helpers/routes'
 import { TransactionForm } from '../../helpers/zod-form-schemas'
 
@@ -38,7 +37,7 @@ const EditTransactionPage = ({ transaction, constants }: EditPageProps) => {
 export async function getServerSideProps(context: any) {
     const { id } = context.query
     try {
-        const response = await getFromBackend(
+        const response = await serversideSafeFetch(
             API.server.transactions.getById(id)
         )
         const transaction = await response.json()
