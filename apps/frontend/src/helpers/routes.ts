@@ -1,7 +1,15 @@
 import { TransactionContext, TransactionType } from 'domain-model'
+import path from 'path'
 
-export const CLIENT_BACKEND_BASE_URL = process.env['NEXT_PUBLIC_BACKEND_URL']
-export const SERVER_BACKEND_BASE_URL = process.env['BACKEND_URL']
+export const BACKEND_HOST = process.env['BACKEND_HOST']!
+export const BACKEND_API_BASE = process.env['BACKEND_API_BASE']!
+
+const _getServersideUrl = (endpoint: string): string => {
+    return new URL(
+        path.join(BACKEND_API_BASE, endpoint),
+        BACKEND_HOST
+    ).toString()
+}
 
 export const PAGES = {
     transactions: {
@@ -15,25 +23,24 @@ export const PAGES = {
 export const API = {
     client: {
         transactions: {
-            create: `${CLIENT_BACKEND_BASE_URL}/transactions`,
-            update: `${CLIENT_BACKEND_BASE_URL}/transactions`,
+            create: `/transactions`,
+            update: `/transactions`,
             get: (context: TransactionContext, limit: number) =>
-                `${CLIENT_BACKEND_BASE_URL}/transactions?context=${context}&limit=${limit}`,
+                `/transactions?context=${context}&limit=${limit}`,
         },
     },
     server: {
         system: {
-            info: `${SERVER_BACKEND_BASE_URL}/system/info`,
+            info: () => _getServersideUrl('/system/info'),
         },
         transactions: {
-            constants: [
-                `${SERVER_BACKEND_BASE_URL}/utils/constants/transactions`,
-                `${SERVER_BACKEND_BASE_URL}/investments`,
-                `${SERVER_BACKEND_BASE_URL}/work/invoices`,
-                `${SERVER_BACKEND_BASE_URL}/transactions/origins`,
+            constants: () => [
+                _getServersideUrl('/utils/constants/transactions'),
+                _getServersideUrl('/investments'),
+                _getServersideUrl('/work/invoices'),
+                _getServersideUrl('/transactions/origins'),
             ],
-            getById: (id: number) =>
-                `${SERVER_BACKEND_BASE_URL}/transactions/${id}`,
+            getById: (id: number) => _getServersideUrl(`/transactions/${id}`),
         },
     },
 } as const

@@ -12,7 +12,9 @@ export class ResponseError extends Error {
     }
 }
 
-async function _throwingFetch(...options: [string, object?]) {
+export const throwingFetch = async (
+    ...options: [string, RequestInit?]
+): Promise<Response> => {
     const res = await fetch(...options)
     if (!res.ok) {
         throw new ResponseError('Bad fetch response', res)
@@ -20,59 +22,18 @@ async function _throwingFetch(...options: [string, object?]) {
     return res
 }
 
-/*
-    Helper functions
-*/
-
-const _withAuthorizationHeader = (): object => {
-    return {
-        Authorization: process.env['NEXT_PUBLIC_BACKEND_APIKEY'],
+export const serversideSafeFetch = async (
+    url: string,
+    options?: RequestInit
+) => {
+    const optionsWithAuthHeader = {
+        method: options?.method,
+        body: options?.body,
+        headers: {
+            authorization: process.env['BACKEND_API_KEY']!,
+            ...options?.headers,
+        },
     }
-}
 
-/*
-    Public wrappers around the throwing fetch requests
-*/
-
-export const getFromBackend = async (
-    url: string,
-    headers?: object
-): Promise<Response> => {
-    return await _throwingFetch(url, {
-        method: 'GET',
-        headers: {
-            ..._withAuthorizationHeader(),
-            ...headers,
-        },
-    })
-}
-
-export const postToBackend = async (
-    url: string,
-    body: object,
-    headers?: object
-): Promise<Response> => {
-    return await _throwingFetch(url, {
-        method: 'POST',
-        body: body,
-        headers: {
-            ..._withAuthorizationHeader(),
-            ...headers,
-        },
-    })
-}
-
-export const putToBackend = async (
-    url: string,
-    body: object,
-    headers?: object
-): Promise<Response> => {
-    return await _throwingFetch(url, {
-        method: 'PUT',
-        body: body,
-        headers: {
-            ..._withAuthorizationHeader(),
-            ...headers,
-        },
-    })
+    return await throwingFetch(url, optionsWithAuthHeader)
 }

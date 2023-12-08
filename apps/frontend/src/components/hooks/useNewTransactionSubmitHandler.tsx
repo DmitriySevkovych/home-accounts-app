@@ -2,13 +2,18 @@ import { NextRouter, useRouter } from 'next/router'
 import React from 'react'
 import { type SubmitHandler } from 'react-hook-form'
 
-import { ResponseError, postToBackend } from '../../helpers/requests'
+import { ResponseError } from '../../helpers/requests'
 import { API, PAGES } from '../../helpers/routes'
 import { TransactionForm } from '../../helpers/zod-form-schemas'
 import { useToast } from '../../lib/shadcn/use-toast'
+import { useSafeFetch } from './useSafeFetch'
 
 const _sendTransaction = async (
     transaction: TransactionForm,
+    safeFetch: (
+        endpoint: string,
+        options?: RequestInit | undefined
+    ) => Promise<Response>,
     router: NextRouter,
     toast: CallableFunction
 ) => {
@@ -25,7 +30,10 @@ const _sendTransaction = async (
             formData.append('receipt', transaction.receipt)
         }
 
-        await postToBackend(API.client.transactions.create, formData)
+        await safeFetch(API.client.transactions.create, {
+            method: 'POST',
+            body: formData,
+        })
         toast({
             title: 'A new transaction has been created!',
             description: (
@@ -59,9 +67,10 @@ const useNewTransactionSubmitHandler = () => {
     const { toast } = useToast()
 
     const router = useRouter()
+    const safeFetch = useSafeFetch()
 
     const onSubmit: SubmitHandler<TransactionForm> = async (data) => {
-        _sendTransaction(data, router, toast)
+        _sendTransaction(data, safeFetch, router, toast)
     }
 
     return { onSubmit }
