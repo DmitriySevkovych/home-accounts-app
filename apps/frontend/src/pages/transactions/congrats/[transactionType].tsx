@@ -1,15 +1,16 @@
+import { TransactionType } from 'domain-model'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 import React from 'react'
 
-import { PAGES } from '../../helpers/routes'
-import { Button } from '../../lib/shadcn/Button'
+import { PAGES } from '../../../helpers/routes'
+import { Button } from '../../../lib/shadcn/Button'
 
-const Congrats = () => {
-    const router = useRouter()
-    const { transactionType } = router.query
+type CongratsPageProps = {
+    transactionType: TransactionType
+}
 
+const CongratsPage = ({ transactionType }: CongratsPageProps) => {
     const gifURL =
         transactionType === 'expense'
             ? 'https://media1.giphy.com/media/LS33kDnx38ZxWm0X2k/giphy.gif?cid=ecf05e475dgt0umidy04jd6lcp4we6lu0hy4hbu9u7lve0x8&ep=v1_gifs_search&rid=giphy.gif&ct=g'
@@ -36,4 +37,13 @@ const Congrats = () => {
     )
 }
 
-export default Congrats
+export async function getServerSideProps(context: any) {
+    const { transactionType } = context.query
+    return {
+        props: {
+            transactionType,
+        },
+    }
+}
+
+export default CongratsPage

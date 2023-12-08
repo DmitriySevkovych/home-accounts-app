@@ -7,8 +7,7 @@ export const PAGES = {
     transactions: {
         index: '/transactions',
         new: '/transactions/new',
-        success: (type: TransactionType) =>
-            `/transactions/congrats?transactionType=${type}`,
+        success: (type: TransactionType) => `/transactions/congrats/${type}`,
         edit: (id: number) => `/transactions/${id}`,
     },
 } as const
