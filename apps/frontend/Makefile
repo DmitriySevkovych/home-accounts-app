@@ -19,4 +19,4 @@ build-production:
 		--push
 
 .PHONY: all
-all: build-development build-stage build-production
+all: build-stage build-production

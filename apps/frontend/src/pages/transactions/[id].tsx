@@ -6,7 +6,7 @@ import TransactionFormPage, {
 } from '../../components/TransactionFormPage'
 import useTransactionForm from '../../components/hooks/useTransactionForm'
 import useUpdateTransactionSubmitHandler from '../../components/hooks/useUpdateTransactionSubmitHandler'
-import { serversideSafeFetch } from '../../helpers/requests'
+import { safeFetch } from '../../helpers/requests'
 import { API } from '../../helpers/routes'
 import { TransactionForm } from '../../helpers/zod-form-schemas'
 
@@ -37,9 +37,7 @@ const EditTransactionPage = ({ transaction, constants }: EditPageProps) => {
 export async function getServerSideProps(context: any) {
     const { id } = context.query
     try {
-        const response = await serversideSafeFetch(
-            API.server.transactions.getById(id)
-        )
+        const response = await safeFetch(API.server.transactions.getById(id))
         const transaction = await response.json()
 
         return {
