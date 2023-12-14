@@ -1,8 +1,7 @@
-import https from 'https'
 import { getLogger } from 'logger'
 
-import { createSecureServer } from './server'
 import { RepositoryLocator } from './db/repositoryLocator'
+import { createServer } from './server'
 
 const logger = getLogger('backend')
 
@@ -15,7 +14,7 @@ if (!PORT || !API_BASE_URL) {
     process.exit(1)
 }
 
-createSecureServer()
+createServer()
     .then((server) => {
         server.listen(PORT, () => {
             logger.info(
@@ -23,19 +22,16 @@ createSecureServer()
             )
         })
 
-        handleSignal(server, 'SIGINT')
-        handleSignal(server, 'SIGTERM')
+        handleSignal('SIGINT')
+        handleSignal('SIGTERM')
     })
     .catch((err) => {
         logger.fatal(err)
     })
 
-const handleSignal = (server: https.Server, signal: string) => {
+const handleSignal = (signal: string) => {
     process.on(signal, async () => {
         logger.info(`Signal ${signal} received. Will terminate.`)
-        server.close(() => {
-            logger.info('HTTPS server closed.')
-        })
         await RepositoryLocator.closeRepository()
         logger.info('Database connection closed.')
         process.exit(0)
