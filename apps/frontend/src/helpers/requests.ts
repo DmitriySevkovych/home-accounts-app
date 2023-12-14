@@ -22,15 +22,12 @@ export const throwingFetch = async (
     return res
 }
 
-export const serversideSafeFetch = async (
-    url: string,
-    options?: RequestInit
-) => {
+export const safeFetch = async (url: string, options?: RequestInit) => {
     const optionsWithAuthHeader = {
         method: options?.method,
         body: options?.body,
         headers: {
-            authorization: process.env['BACKEND_API_KEY']!,
+            authorization: process.env['NEXT_PUBLIC_BACKEND_API_KEY']!,
             ...options?.headers,
         },
     }

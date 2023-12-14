@@ -1,15 +1,10 @@
-import App, { AppContext, AppInitialProps, AppProps } from 'next/app'
+import { AppProps } from 'next/app'
 import Head from 'next/head'
 
 import Toaster from '../components/Toaster'
-import { ClientContext, ClientContextProps } from '../helpers/clientContext'
 import '../styles/globals.css'
 
-export default function MyApp({
-    Component,
-    pageProps,
-    clientContext,
-}: { clientContext: ClientContextProps } & AppProps) {
+export default function MyApp({ Component, pageProps }: AppProps) {
     return (
         <>
             <Head>
@@ -21,7 +16,7 @@ export default function MyApp({
                 />
                 <meta name="description" content="Description" />
                 <meta name="keywords" content="Keywords" />
-                <title>{_getTitle(clientContext.appEnvironment)}</title>
+                <title>{_getTitle()}</title>
 
                 <link rel="manifest" href="/manifest.json" />
                 <link
@@ -39,33 +34,16 @@ export default function MyApp({
                 <link rel="apple-touch-icon" href="/apple-icon.png"></link>
                 <meta name="theme-color" content="#317EFB" />
             </Head>
-            <ClientContext.Provider value={clientContext}>
-                <Component {...pageProps} />
-                <Toaster />
-            </ClientContext.Provider>
+            <Component {...pageProps} />
+            <Toaster />
         </>
     )
 }
 
-MyApp.getInitialProps = async (
-    context: AppContext
-): Promise<{ clientContext: ClientContextProps } & AppInitialProps> => {
-    const ctx = await App.getInitialProps(context)
-
-    const clientContext: ClientContextProps = {
-        appEnvironment: process.env['APP_ENV']!,
-        backend: {
-            host: process.env['CLIENT_BACKEND_HOST']!,
-            apiBase: process.env['BACKEND_API_BASE']!,
-            apiKey: process.env['BACKEND_API_KEY']!,
-        },
-    }
-    return { ...ctx, clientContext }
-}
-
-const _getTitle = (appEnv: string): string => {
+const _getTitle = (): string => {
     let title = 'Home Accounts App'
-    switch (appEnv) {
+    const appEnvironment = process.env['NEXT_PUBLIC_APP_ENV']
+    switch (appEnvironment) {
         case 'production':
             return `PROD: ${title}`
         case 'stage':
@@ -73,6 +51,8 @@ const _getTitle = (appEnv: string): string => {
         case 'development':
             return `DEV: ${title}`
         default:
-            throw new Error(`Illegal application environment '${appEnv}`)
+            throw new Error(
+                `Illegal application environment '${appEnvironment}`
+            )
     }
 }

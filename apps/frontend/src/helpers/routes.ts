@@ -1,13 +1,17 @@
 import { TransactionContext, TransactionType } from 'domain-model'
 import path from 'path'
 
-export const BACKEND_HOST = process.env['BACKEND_HOST']!
-export const BACKEND_API_BASE = process.env['BACKEND_API_BASE']!
-
 const _getServersideUrl = (endpoint: string): string => {
     return new URL(
-        path.join(BACKEND_API_BASE, endpoint),
-        BACKEND_HOST
+        path.join(process.env['NEXT_PUBLIC_BACKEND_API_BASE']!, endpoint),
+        process.env['BACKEND_HOST']!
+    ).toString()
+}
+
+const _getClientsideUrl = (endpoint: string): string => {
+    return new URL(
+        path.join(process.env['NEXT_PUBLIC_BACKEND_API_BASE']!, endpoint),
+        process.env['NEXT_PUBLIC_BACKEND_HOST']!
     ).toString()
 }
 
@@ -23,10 +27,12 @@ export const PAGES = {
 export const API = {
     client: {
         transactions: {
-            create: `/transactions`,
-            update: `/transactions`,
+            create: _getClientsideUrl(`/transactions`),
+            update: _getClientsideUrl(`/transactions`),
             get: (context: TransactionContext, limit: number) =>
-                `/transactions?context=${context}&limit=${limit}`,
+                _getClientsideUrl(
+                    `/transactions?context=${context}&limit=${limit}`
+                ),
         },
     },
     server: {

@@ -9,8 +9,6 @@ services:
       - backend
     ports:
       - 3000:3000
-    volumes:
-      - ./frontend/.env:/app/apps/frontend/.env
     restart: "always"
     networks:
      - home-app-network

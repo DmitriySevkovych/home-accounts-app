@@ -9,8 +9,7 @@ import React, { Suspense, useEffect, useState } from 'react'
 
 import OverlayImage from '../../components/Overlay'
 import { SystemInfo, SystemInfoFooter } from '../../components/SystemInfoFooter'
-import { useSafeFetch } from '../../components/hooks/useSafeFetch'
-import { serversideSafeFetch } from '../../helpers/requests'
+import { safeFetch } from '../../helpers/requests'
 import { API, PAGES } from '../../helpers/routes'
 import { Button } from '../../lib/shadcn/Button'
 import { ScrollArea } from '../../lib/shadcn/ScrollArea'
@@ -20,8 +19,6 @@ type TransactionsOverviewProps = {
 }
 
 const useLatestTransactions = (context: TransactionContext, limit: number) => {
-    const safeFetch = useSafeFetch()
-
     const [transactions, setTransactions] = useState<Transaction[]>([])
     useEffect(() => {
         const fetchTransactions = async () => {
@@ -126,7 +123,7 @@ const TransactionsOverview = ({ systemInfo }: TransactionsOverviewProps) => {
 export const getServerSideProps = async () => {
     let backendInfo
     try {
-        const req = await serversideSafeFetch(API.server.system.info())
+        const req = await safeFetch(API.server.system.info())
         backendInfo = await req.json()
     } catch (err) {
         backendInfo = {
@@ -145,8 +142,6 @@ export const getServerSideProps = async () => {
                     commit: process.env['GIT_COMMIT']
                         ? process.env['GIT_COMMIT']
                         : '',
-                    tlsRejectUnauthorized:
-                        process.env['NODE_TLS_REJECT_UNAUTHORIZED'] !== '0',
                 },
                 backend: backendInfo,
             },
