@@ -142,8 +142,6 @@ export const getServerSideProps = async () => {
                     commit: process.env['GIT_COMMIT']
                         ? process.env['GIT_COMMIT']
                         : '',
-                    tlsRejectUnauthorized:
-                        process.env['NODE_TLS_REJECT_UNAUTHORIZED'] !== '0',
                 },
                 backend: backendInfo,
             },

@@ -2,11 +2,9 @@ import React from 'react'
 
 import { Label } from '../lib/shadcn/Label'
 import { Popover, PopoverContent, PopoverTrigger } from '../lib/shadcn/Popover'
-import { ScrollArea } from '../lib/shadcn/ScrollArea'
 
 type FrontendInfo = {
     environment: string
-    tlsRejectUnauthorized: boolean
     branch?: string
     commit?: string
 }
@@ -37,12 +35,6 @@ export const SystemInfoFooter = ({ frontend, backend }: SystemInfo) => {
                         <div className="grid grid-cols-2 gap-1">
                             <p>Environment:</p>
                             <p>{frontend.environment}</p>
-                            <p>TLS:</p>
-                            <p>
-                                {frontend.tlsRejectUnauthorized
-                                    ? 'active'
-                                    : 'deactivated'}
-                            </p>
                             {frontend.branch && (
                                 <>
                                     <p>Branch:</p>
