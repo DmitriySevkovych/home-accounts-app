@@ -4,7 +4,7 @@
     "private": true,
     "scripts": {
         "build": "next build",
-        "build:image": "make build-image",
+        "build:image": "make all",
         "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf .next && rm -rf coverage",
         "dev": "next dev -p 8080",
         "dev:stage": "npm run dev",

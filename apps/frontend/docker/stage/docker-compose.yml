@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  home-app-frontend-stage:
+    build:
+      context: ../../../../
+      dockerfile: apps/frontend/docker/stage/Dockerfile
+      args:
+        - GIT_BRANCH
+        - GIT_COMMIT
+    image: dsevkovych/home-app-frontend-stage
