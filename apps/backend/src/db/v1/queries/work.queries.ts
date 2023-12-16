@@ -451,6 +451,7 @@ const _mapToTransaction = async (
         payment_method: paymentMethod,
         tax_category: taxCategory,
         comment,
+        receipt_id: receiptId,
         invoice_key,
         country,
         vat,
@@ -468,6 +469,7 @@ const _mapToTransaction = async (
         .withTaxCategory(taxCategory)
         .withVAT(parseFloat(vat), country)
         .withInvoice(invoice_key)
+        .withReceipt(receiptId)
         .withAgent(agent)
 
     // TECHNICAL DEBT: persistence of tags in DB needs to be refactored and simplified, cf. GitHub Issue #41

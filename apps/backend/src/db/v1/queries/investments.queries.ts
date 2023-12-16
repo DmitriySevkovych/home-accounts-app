@@ -346,6 +346,7 @@ const _mapToTransaction = async (
         payment_method: paymentMethod,
         tax_category: taxCategory,
         comment,
+        receipt_id: receiptId,
         investment,
     } = row
     const transactionBuilder = createTransaction()
@@ -359,6 +360,7 @@ const _mapToTransaction = async (
         .withPaymentDetails(paymentMethod, sourceBankAccount, targetBankAccount)
         .withComment(comment)
         .withTaxCategory(taxCategory)
+        .withReceipt(receiptId)
         .withAgent(agent)
         .withInvestment(investment)
 
