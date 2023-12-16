@@ -42,13 +42,13 @@ export const TransactionsPreview = () => {
                 setContext(value as TransactionContext)
             }}
         >
-            <TabsList>
+            <TabsList className="w-full bg-inherit">
                 <TabsTrigger value="home">Home</TabsTrigger>
                 <TabsTrigger value="work">Work</TabsTrigger>
                 <TabsTrigger value="investments">Investments</TabsTrigger>
             </TabsList>
             <TabsContent value={context}>
-                <h1 className="text-md font-bold text-primary lg:text-xl">
+                <h1 className="text-md mb-2 font-bold text-primary lg:text-xl">
                     Latest {context} transactions
                 </h1>
                 <Suspense fallback={<p>Loading...</p>}>
