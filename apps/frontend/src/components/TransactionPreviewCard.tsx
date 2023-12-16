@@ -4,7 +4,7 @@ import React from 'react'
 
 import { PAGES } from '../helpers/routes'
 
-export const TransactionOverviewCard: React.FC<Transaction> = ({
+export const TransactionPreviewCard: React.FC<Transaction> = ({
     id,
     date,
     category,

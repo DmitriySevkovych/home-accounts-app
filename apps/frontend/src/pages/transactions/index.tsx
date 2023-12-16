@@ -8,7 +8,7 @@ import React, { Suspense, useEffect, useState } from 'react'
 
 import OverlayImage from '../../components/Overlay'
 import { SystemInfo, SystemInfoFooter } from '../../components/SystemInfoFooter'
-import { TransactionOverviewCard } from '../../components/TransactionOverviewCard'
+import { TransactionPreviewCard } from '../../components/TransactionPreviewCard'
 import { safeFetch } from '../../helpers/requests'
 import { API, PAGES } from '../../helpers/routes'
 import { Button } from '../../lib/shadcn/Button'
@@ -57,10 +57,7 @@ const TransactionsOverview = ({ systemInfo }: TransactionsOverviewProps) => {
                         <Suspense fallback={<p>Loading...</p>}>
                             <ScrollArea className="h-[190px]">
                                 {transactions.map((t) => (
-                                    <TransactionOverviewCard
-                                        key={t.id}
-                                        {...t}
-                                    />
+                                    <TransactionPreviewCard key={t.id} {...t} />
                                 ))}
                             </ScrollArea>
                         </Suspense>
