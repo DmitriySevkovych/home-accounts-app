@@ -14,7 +14,7 @@ import { API, PAGES } from '../../helpers/routes'
 import { Button } from '../../lib/shadcn/Button'
 import { ScrollArea } from '../../lib/shadcn/ScrollArea'
 
-type TransactionsOverviewProps = {
+type TransactionsPageProps = {
     systemInfo: SystemInfo
 }
 
@@ -37,7 +37,7 @@ const useLatestTransactions = (context: TransactionContext, limit: number) => {
     return transactions
 }
 
-const TransactionsOverview = ({ systemInfo }: TransactionsOverviewProps) => {
+const TransactionsPage = ({ systemInfo }: TransactionsPageProps) => {
     const context = 'home'
     const limit = 25
 
@@ -107,4 +107,4 @@ export const getServerSideProps = async () => {
     }
 }
 
-export default TransactionsOverview
+export default TransactionsPage
