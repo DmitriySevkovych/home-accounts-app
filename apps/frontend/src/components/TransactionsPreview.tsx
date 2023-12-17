@@ -54,7 +54,10 @@ export const TransactionsPreview = () => {
                 <Suspense fallback={<p>Loading...</p>}>
                     <ScrollArea className="h-[190px]">
                         {transactions.map((t) => (
-                            <TransactionPreviewCard key={t.id} {...t} />
+                            <TransactionPreviewCard
+                                key={t.id}
+                                transaction={t}
+                            />
                         ))}
                     </ScrollArea>
                 </Suspense>

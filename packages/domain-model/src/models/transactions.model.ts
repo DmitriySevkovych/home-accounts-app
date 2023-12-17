@@ -70,6 +70,13 @@ export class Transaction {
         return this.amount * this.exchangeRate
     }
 
+    exchangeRateWarning = (): boolean => {
+        return (
+            (this.currency !== 'EUR' && this.exchangeRate === 1) ||
+            (this.currency === 'EUR' && this.exchangeRate !== 1)
+        )
+    }
+
     taxRelevant = (): boolean => {
         return this.taxCategory !== undefined
     }

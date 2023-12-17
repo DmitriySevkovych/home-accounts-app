@@ -2,6 +2,7 @@
     @group unit
     @group domain
  */
+import { minimalDummyTransaction } from '../helpers/test-fixtures'
 import { TransactionValidationError } from '../models/errors.model'
 import {
     createTransaction,
@@ -151,6 +152,40 @@ describe('Transactions tests', () => {
             }
             // Assert
             expect(deserialization).toThrow(TransactionValidationError)
+        }
+    )
+
+    it.each`
+        currency | exchangeRate
+        ${'EUR'} | ${1}
+        ${'USD'} | ${0.9}
+        ${'UAH'} | ${1.1}
+    `('should issue no exchangeRate warning', ({ currency, exchangeRate }) => {
+        // Arrange
+        const transaction = minimalDummyTransaction('FEE', -7.33)
+        transaction.currency = currency
+        transaction.exchangeRate = exchangeRate
+        // Act
+        // Assert
+        expect(transaction.exchangeRateWarning()).toBe(false)
+    })
+
+    it.each`
+        currency | exchangeRate
+        ${'EUR'} | ${0.9}
+        ${'EUR'} | ${1.1}
+        ${'USD'} | ${1}
+        ${'CKZ'} | ${1}
+    `(
+        'should issue a warning when currency is $currency and exchangeRate is $exchangeRate',
+        ({ currency, exchangeRate }) => {
+            // Arrange
+            const transaction = minimalDummyTransaction('FEE', -7.34)
+            transaction.currency = currency
+            transaction.exchangeRate = exchangeRate
+            // Act
+            // Assert
+            expect(transaction.exchangeRateWarning()).toBe(true)
         }
     )
 })
