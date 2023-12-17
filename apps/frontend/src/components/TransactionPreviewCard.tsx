@@ -15,11 +15,17 @@ const _previewAmount = (transaction: Transaction): string => {
     return `${amount} ${currency}`
 }
 
+const _previewDetails = (transaction: Transaction): string => {
+    const { category, date, agent } = transaction
+    if (agent === 'cronjob_blueprint_update')
+        return `🤖 ${category} on ${formatDate(date)}`
+    return `${category} on ${formatDate(date)}`
+}
+
 export const TransactionPreviewCard: React.FC<TransactionPreviewCardProps> = ({
     transaction,
 }) => {
-    const { id, date, category, origin, receiptId, taxRelevant, tags } =
-        transaction
+    const { id, origin, receiptId, taxRelevant, tags } = transaction
     return (
         <Link href={PAGES.transactions.edit(id!)} key={id}>
             <div className="flex w-full flex-col gap-1 rounded-md border bg-background-overlay px-3 py-2 text-sm font-medium text-primary">
@@ -30,7 +36,7 @@ export const TransactionPreviewCard: React.FC<TransactionPreviewCardProps> = ({
                     </p>
                 </div>
                 <div className="flex w-full justify-between">
-                    <p>{`${category} on ${formatDate(date)}`}</p>
+                    <p>{_previewDetails(transaction)}</p>
                     <p>
                         {taxRelevant() && <>🤓</>}
                         {receiptId && <>📄</>}
