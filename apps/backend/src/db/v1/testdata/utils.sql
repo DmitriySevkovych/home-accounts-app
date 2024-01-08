@@ -1,9 +1,6 @@
 -- -- utils
 INSERT INTO
-  utils.expense_types (
-    type,
-    description
-  )
+  utils.expense_types (type, description)
 VALUES
   ('FOOD', NULL),
   (
@@ -24,10 +21,7 @@ VALUES
   ('GIFT', NULL);
 
 INSERT INTO
-  utils.income_types (
-    type,
-    description
-  )
+  utils.income_types (type, description)
 VALUES
   ('SALARY', NULL),
   ('PRIVATE_SALE', NULL),
@@ -48,6 +42,16 @@ VALUES
   ('EC', NULL),
   ('CREDIT_CARD', NULL),
   ('CASH', NULL);
+
+INSERT INTO
+  utils.payment_frequencies (frequency, step, times_per_year)
+VALUES
+  ('MONTHLY', 1, 12),
+  ('ANNUALLY', 12, 1),
+  ('SEMI-ANUALLY', 6, 2),
+  ('QUARTERLY', 3, 4),
+  ('ONE-TIME', 1, 0),
+  ('WEEKLY', 1, 52);
 
 INSERT INTO
   utils.bank_accounts (

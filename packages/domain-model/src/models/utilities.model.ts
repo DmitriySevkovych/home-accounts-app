@@ -8,6 +8,12 @@ export type PaymentMethod = {
     description?: string
 }
 
+export type PaymentFrequency = {
+    frequency: string
+    step: number
+    timesPerYear: number
+}
+
 export type BankAccount = {
     account: string
     bank: string
