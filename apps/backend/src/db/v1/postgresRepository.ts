@@ -13,6 +13,7 @@ import { Logger, getLogger } from 'logger'
 import type { Pool, PoolClient } from 'pg'
 
 import connectionPool from '.'
+import { ProcessedBlueprintResult } from '../../definitions/processes'
 import { UnsupportedTransactionContextError } from '../../helpers/errors'
 import { PaginationOptions } from '../../helpers/pagination'
 import { Repository } from '../repository'
@@ -193,6 +194,19 @@ export class PostgresRepository implements Repository {
     // Work
     getProjectInvoices = async (): Promise<ProjectInvoice[]> => {
         return await workQueries.getProjectInvoices(this.connectionPool)
+    }
+
+    // Blueprints
+    processBlueprints = async (): Promise<ProcessedBlueprintResult[]> => {
+        // const activeBlueprints = await utilsQueries.getActiveBlueprints(this.connectionPool)
+
+        // const progress = []
+        // for (let i = 0; i < activeBlueprints.length; i++) {
+        //     const status = await processBlueprint(this.connectionPool, activeBlueprints[i])
+        //     progress.push(status)
+        // }
+
+        return []
     }
 
     /*

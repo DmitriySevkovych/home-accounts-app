@@ -15,6 +15,7 @@ import {
     minimalDummyWorkTransaction,
 } from 'domain-model'
 
+import { ProcessedBlueprintResult } from '../../definitions/processes'
 import { NoRecordFoundInDatabaseError } from '../../helpers/errors'
 import { PaginationOptions } from '../../helpers/pagination'
 import { Repository } from '../repository'
@@ -258,6 +259,9 @@ export class StubbedRepository implements Repository {
             },
         ])
     }
+
+    // Blueprints
+    processBlueprints = async (): Promise<ProcessedBlueprintResult[]> => []
 
     /* 
         Private helper functions 

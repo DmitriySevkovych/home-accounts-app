@@ -10,6 +10,7 @@ import type {
     TransactionReceipt,
 } from 'domain-model'
 
+import { ProcessedBlueprintResult } from '../definitions/processes'
 import { PaginationOptions } from '../helpers/pagination'
 
 export interface Repository {
@@ -50,4 +51,7 @@ export interface Repository {
 
     // Work data
     getProjectInvoices: () => Promise<ProjectInvoice[]>
+
+    // Blueprints
+    processBlueprints: () => Promise<ProcessedBlueprintResult[]>
 }
