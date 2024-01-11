@@ -1,5 +1,5 @@
 import { minimalDummyTransaction } from '../helpers/test-fixtures'
-import { TransactionBlueprint } from '../models/blueprints.model'
+import { createTransactionBlueprint } from '../models/blueprints.model'
 
 /*
     @group unit
@@ -17,12 +17,11 @@ describe('Blueprints tests', () => {
         'Blueprint should have the attribute isActive=$expectedActive when startDate is $startDate and expirationDate is $expirationDate',
         ({ startDate, expirationDate, expectedActive }) => {
             // Arrange
-            const blueprint = new TransactionBlueprint(
-                'TEST_ISACTIVE_FLAG',
-                minimalDummyTransaction('FOOD', -1.02)
-            )
-            blueprint.startDate = startDate
-            blueprint.expirationDate = expirationDate
+            const blueprint = createTransactionBlueprint('TEST_ISACTIVE_FLAG')
+                .withTransaction(minimalDummyTransaction('FOOD', -1.02))
+                .from(startDate)
+                .until(expirationDate)
+                .build()
             // Act
             const isActive = blueprint.isActive()
             // Assert
@@ -42,11 +41,12 @@ describe('Blueprints tests', () => {
         'Blueprint should have the target table $expectedTargetTable when transaction context is $context and transaction amount is $type',
         ({ context, amount, expectedTargetTable }) => {
             // Arrange
-            const blueprint = new TransactionBlueprint(
-                'TEST_TARGET_TABLE',
-                minimalDummyTransaction('FEE', amount)
-            )
-            blueprint.transaction.context = context
+            const transaction = minimalDummyTransaction('FEE', amount)
+            transaction.context = context
+
+            const blueprint = createTransactionBlueprint('TEST_TARGET_TABLE')
+                .withTransaction(transaction)
+                .build()
             // Act
             const targetTable = blueprint.targetTable()
             // Assert

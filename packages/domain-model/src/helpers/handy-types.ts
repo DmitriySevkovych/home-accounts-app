@@ -4,3 +4,5 @@ type UnionToIntersection<U> = (
     ? I
     : never
 export type PickAndFlatten<T, K extends keyof T> = UnionToIntersection<T[K]>
+
+export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<T>
