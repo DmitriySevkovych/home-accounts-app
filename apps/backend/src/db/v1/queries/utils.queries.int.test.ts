@@ -84,4 +84,18 @@ describe('Database queries targeting the utils schema', () => {
             expect(item.category).toBeDefined()
         })
     })
+
+    describe('Blueprints tests', () => {
+        it('should retrieve active blueprints', async () => {
+            // Arrange -> test data is already imported into the db
+            // Act
+            const result =
+                await utilsQueries.getActiveBlueprints(connectionPool)
+            const blueprintKeys = result.map((r) => r.key)
+            // Assert
+            expect(result).toHaveLength(9)
+            expect(blueprintKeys).toContain('BP_HOME_3')
+            expect(blueprintKeys).not.toContain('BP_HOME_5_EXPIRED')
+        })
+    })
 })
