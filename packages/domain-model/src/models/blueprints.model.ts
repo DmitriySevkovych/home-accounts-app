@@ -70,6 +70,9 @@ class TransactionBlueprintBuilder {
     ): TransactionBlueprintBuilder => {
         this.blueprint.frequency = frequency
         this.blueprint.dueDay = dueDay
+        if (Number.parseInt(dueDay as string)) {
+            this.blueprint.dueDay = Number.parseInt(dueDay as string)
+        }
         return this
     }
 
@@ -142,12 +145,10 @@ class TransactionBlueprintBuilder {
         if (Number.isInteger(dueDay)) {
             if ((dueDay as number) < 1 || (dueDay as number) > 31) {
                 throw new BlueprintValidationError(
-                    `The transaction blueprint has an invalid due day '${dueDay}'.`
+                    `The transaction blueprint has an invalid due day ${dueDay}.`
                 )
             }
-        }
-
-        if (
+        } else if (
             ![
                 'LAST DAY',
                 'MONDAY',
