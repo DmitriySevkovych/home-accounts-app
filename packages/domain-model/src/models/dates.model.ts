@@ -1,3 +1,39 @@
+type Weekday = {
+    name: string
+    number: number
+}
+
+export const DAYS = [
+    {
+        name: 'MONDAY',
+        number: 1,
+    },
+    {
+        name: 'TUESDAY',
+        number: 2,
+    },
+    {
+        name: 'WEDNESDAY',
+        number: 3,
+    },
+    {
+        name: 'THURSDAY',
+        number: 4,
+    },
+    {
+        name: 'FRIDAY',
+        number: 5,
+    },
+    {
+        name: 'SATURDAY',
+        number: 6,
+    },
+    {
+        name: 'SUNDAY',
+        number: 0,
+    },
+] satisfies Weekday[]
+
 const _padZero = (value: number): string => {
     return value < 10 ? `0${value}` : value.toString()
 }
@@ -46,6 +82,37 @@ export const handleUnwantedTimezoneShift = (date: Date): Date => {
     } else {
         return utcDate
     }
+}
+
+export const getNumberOfDaysInMonth = (year: number, month: number): number => {
+    return new Date(year, month + 1, 0).getDate()
+}
+
+export const getMonthDifference = (start: Date, end: Date): number => {
+    return (
+        end.getMonth() -
+        start.getMonth() +
+        12 * (end.getFullYear() - start.getFullYear())
+    )
+}
+
+export const addDays = (date: Date, days: number): Date => {
+    const adjustedDate = new Date(date.valueOf())
+    adjustedDate.setDate(date.getDate() + days)
+    return handleUnwantedTimezoneShift(adjustedDate)
+}
+
+export const getNextDay = (date: Date): Date => addDays(date, 1)
+
+export const getTomorrow = (): Date => addDays(new Date(), 1)
+
+export const getNextWorkday = (date: Date): Date => {
+    if (date.getUTCDay() === 6) {
+        return addDays(date, 2)
+    } else if (date.getUTCDay() === 0) {
+        return addDays(date, 1)
+    }
+    return date
 }
 
 const _utcDate = (date: Date): Date => {
