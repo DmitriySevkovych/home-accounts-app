@@ -122,30 +122,75 @@ const _utcDate = (date: Date): Date => {
     return new Date(Date.UTC(year, month, day))
 }
 
+export type DateCheckPrecision = 'exact' | 'day-wise'
+
 export class DateCheck {
     private date: Date
 
-    constructor(date: Date) {
+    private constructor(date: Date) {
         this.date = date
+    }
+
+    static check(date: Date) {
+        return new DateCheck(date)
     }
 
     static today() {
         return new DateCheck(new Date())
     }
 
-    isBefore(otherDate: Date) {
-        return this.date.valueOf() - otherDate.valueOf() < 0
+    isBefore(
+        otherDate: Date,
+        precision: DateCheckPrecision = 'exact'
+    ): boolean {
+        switch (precision) {
+            case 'day-wise':
+                return (
+                    this.date.valueOf() - otherDate.valueOf() < 0 &&
+                    this.isNotSameDay(otherDate)
+                )
+            case 'exact':
+            default:
+                return this.date.valueOf() - otherDate.valueOf() < 0
+        }
     }
 
-    isNotBefore(otherDate: Date) {
-        return !this.isBefore(otherDate)
+    isNotBefore(
+        otherDate: Date,
+        precision: DateCheckPrecision = 'exact'
+    ): boolean {
+        return !this.isBefore(otherDate, precision)
     }
 
-    isAfter(otherDate: Date) {
-        return this.date.valueOf() - otherDate.valueOf() > 0
+    isAfter(otherDate: Date, precision: DateCheckPrecision = 'exact'): boolean {
+        switch (precision) {
+            case 'day-wise':
+                return (
+                    this.date.valueOf() - otherDate.valueOf() > 0 &&
+                    this.isNotSameDay(otherDate)
+                )
+            case 'exact':
+            default:
+                return this.date.valueOf() - otherDate.valueOf() > 0
+        }
     }
 
-    isNotAfter(otherDate: Date) {
-        return !this.isAfter(otherDate)
+    isNotAfter(
+        otherDate: Date,
+        precision: DateCheckPrecision = 'exact'
+    ): boolean {
+        return !this.isAfter(otherDate, precision)
+    }
+
+    isSameDay(otherDate: Date): boolean {
+        return (
+            this.date.getUTCFullYear() === otherDate.getUTCFullYear() &&
+            this.date.getUTCMonth() === otherDate.getUTCMonth() &&
+            this.date.getUTCDate() === otherDate.getUTCDate()
+        )
+    }
+
+    isNotSameDay(otherDate: Date): boolean {
+        return !this.isSameDay(otherDate)
     }
 }
