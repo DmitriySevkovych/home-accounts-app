@@ -45,14 +45,14 @@ VALUES
   ('SEPA', NULL);
 
 INSERT INTO
-  utils.payment_frequencies (frequency, step, times_per_year)
+  utils.payment_frequencies (frequency)
 VALUES
-  ('MONTHLY', 1, 12),
-  ('ANNUALLY', 12, 1),
-  ('SEMI-ANUALLY', 6, 2),
-  ('QUARTERLY', 3, 4),
-  ('ONE-TIME', 1, 0),
-  ('WEEKLY', 1, 52);
+  ('MONTHLY'),
+  ('ANNUALLY'),
+  ('SEMI-ANUALLY'),
+  ('QUARTERLY'),
+  ('ONE-TIME'),
+  ('WEEKLY');
 
 INSERT INTO
   utils.bank_accounts (

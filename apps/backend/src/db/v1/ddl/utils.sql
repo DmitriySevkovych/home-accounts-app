@@ -24,11 +24,7 @@ CREATE TABLE IF NOT EXISTS utils.payment_methods (
 );
 
 --
-CREATE TABLE IF NOT EXISTS utils.payment_frequencies (
-  frequency CHARACTER VARYING PRIMARY KEY,
-  step INTEGER NOT NULL,
-  times_per_year INTEGER NOT NULL
-);
+CREATE TABLE IF NOT EXISTS utils.payment_frequencies (frequency CHARACTER VARYING PRIMARY KEY);
 
 --
 CREATE TABLE IF NOT EXISTS utils.bank_accounts (

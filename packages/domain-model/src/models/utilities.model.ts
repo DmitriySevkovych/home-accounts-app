@@ -8,11 +8,13 @@ export type PaymentMethod = {
     description?: string
 }
 
-export type PaymentFrequency = {
-    frequency: string
-    step: number
-    timesPerYear: number
-}
+export type PaymentFrequency =
+    | 'ONE-TIME'
+    | 'WEEKLY'
+    | 'MONTHLY'
+    | 'QUARTERLY'
+    | 'SEMI-ANUALLY'
+    | 'ANUALLY'
 
 export type BankAccount = {
     account: string

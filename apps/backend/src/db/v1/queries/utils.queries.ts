@@ -1,7 +1,6 @@
 import {
     BankAccount,
     BlueprintKey,
-    PaymentFrequency,
     PaymentMethod,
     TaxCategory,
     TransactionBlueprint,
@@ -61,22 +60,6 @@ export const getPaymentMethods = async (
         description: row.description,
     }))
     return paymentMethods
-}
-
-export const getPaymentFrequencies = async (
-    connectionPool: Pool
-): Promise<PaymentFrequency[]> => {
-    const queryResult = await connectionPool.query(
-        'SELECT frequency, step, times_per_year FROM utils.payment_frequencies'
-    )
-    const paymentFrequencies: PaymentFrequency[] = queryResult.rows.map(
-        (row) => ({
-            frequency: row.frequency,
-            step: row.step,
-            timesPerYear: row.times_per_year,
-        })
-    )
-    return paymentFrequencies
 }
 
 export const getBankAccounts = async (

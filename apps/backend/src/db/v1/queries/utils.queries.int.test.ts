@@ -1,6 +1,5 @@
 import {
     BankAccount,
-    PaymentFrequency,
     PaymentMethod,
     TaxCategory,
     TransactionCategory,
@@ -56,18 +55,6 @@ describe('Database queries targeting the utils schema', () => {
         expect(result).toBeInstanceOf(Array)
         result.forEach((item: PaymentMethod) => {
             expect(item.method).toBeDefined()
-        })
-    })
-
-    it('getPaymentFrequencies returns an array of payment frequencies with expected fields', async () => {
-        // Arrange
-        // Act
-        const result = await utilsQueries.getPaymentFrequencies(connectionPool)
-        // Assert
-        expect(result).toBeInstanceOf(Array)
-        result.forEach((item: PaymentFrequency) => {
-            expect(item.frequency).toBeDefined()
-            expect(item.step).toBeDefined()
         })
     })
 
