@@ -1,4 +1,12 @@
 import { PartialBy } from '../helpers/handy-types'
+import {
+    DAYS,
+    DateCheck,
+    getMonthDifference,
+    getNextDay,
+    getNextWorkday,
+    getNumberOfDaysInMonth,
+} from './dates.model'
 import { BlueprintValidationError } from './errors.model'
 import { Transaction, TransactionContext } from './transactions.model'
 import { PaymentFrequency } from './utilities.model'
@@ -32,28 +40,96 @@ export class TransactionBlueprint {
     // data from utils.blueprint_details table (db v1)
     transaction!: PartialBy<Transaction, 'date'>
 
-    /* Data derived from attributes */
-    isActive = (): boolean => {
-        const today = new Date()
-        const hasStarted = this.startDate <= today
-        const hasNotYetExpired =
-            !this.expirationDate || this.expirationDate >= today
-        return hasStarted && hasNotYetExpired
-    }
-
-    targetTable = (): BlueprintTargetTable => {
-        const schema = this.transaction.context
-        // TODO technical debt: 'expense' vs 'expenses'...
-        const table =
-            this.transaction.type !== 'expense'
-                ? this.transaction.type
-                : 'expenses'
-        return `${schema}.${table}`
-    }
-
     /* Constructors */
     constructor(key: BlueprintKey) {
         this.key = key
+    }
+
+    /* Public methods */
+    expiresToday = (): boolean => {
+        const today = new Date()
+        return this.expirationDate?.toDateString() === today.toDateString()
+    }
+
+    getDatesWhenTransactionIsDue = (): Date[] => {
+        const dates = []
+        let checkDate = this.lastUpdate
+        const { today, check } = DateCheck
+        while (today().isNotBefore(checkDate, 'day-wise')) {
+            if (
+                this.expirationDate &&
+                check(checkDate).isAfter(this.expirationDate, 'day-wise')
+            )
+                break
+
+            if (this._isDueOn(checkDate)) {
+                dates.push(getNextWorkday(checkDate))
+            }
+            checkDate = getNextDay(checkDate)
+        }
+        return dates
+    }
+
+    /* Private helper methods */
+    private _isDueOn = (checkDate: Date): boolean => {
+        const { frequency, dueDay, startDate } = this
+
+        if (DateCheck.check(checkDate).isBefore(startDate, 'day-wise')) {
+            return false
+        }
+
+        switch (frequency) {
+            case 'ONE-TIME': {
+                return DateCheck.check(startDate).isSameDay(checkDate)
+            }
+            case 'WEEKLY': {
+                const weekday = DAYS.find((day) => day.name === dueDay)
+                return checkDate.getUTCDay() === weekday?.number
+            }
+            case 'MONTHLY': {
+                return this._checkDay(checkDate)
+            }
+            case 'QUARTERLY':
+                return (
+                    this._checkDay(checkDate) && this._checkMonth(checkDate, 3)
+                )
+            case 'SEMI-ANNUALLY':
+                return (
+                    this._checkDay(checkDate) && this._checkMonth(checkDate, 6)
+                )
+            case 'ANNUALLY':
+                return (
+                    this._checkDay(checkDate) && this._checkMonth(checkDate, 12)
+                )
+            default:
+                throw new Error()
+        }
+    }
+
+    private _checkDay = (date: Date): boolean => {
+        const { dueDay } = this
+        const daysInMonth = getNumberOfDaysInMonth(
+            date.getUTCFullYear(),
+            date.getUTCMonth()
+        )
+
+        if (Number.isInteger(parseInt(dueDay as any))) {
+            return (
+                date.getUTCDate() ===
+                Math.min(parseInt(dueDay as any), daysInMonth)
+            )
+        }
+
+        if (dueDay === 'LAST DAY') {
+            return date.getUTCDate() === daysInMonth
+        }
+        // Should never reach here
+        throw new Error()
+    }
+
+    private _checkMonth = (date: Date, step: number): boolean => {
+        const { startDate } = this
+        return getMonthDifference(startDate, date) % step === 0
     }
 }
 

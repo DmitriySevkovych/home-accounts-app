@@ -49,7 +49,7 @@ INSERT INTO
 VALUES
   ('MONTHLY'),
   ('ANNUALLY'),
-  ('SEMI-ANUALLY'),
+  ('SEMI-ANNUALLY'),
   ('QUARTERLY'),
   ('ONE-TIME'),
   ('WEEKLY');

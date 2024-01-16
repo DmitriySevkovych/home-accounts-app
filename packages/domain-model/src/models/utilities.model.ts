@@ -13,8 +13,8 @@ export type PaymentFrequency =
     | 'WEEKLY'
     | 'MONTHLY'
     | 'QUARTERLY'
-    | 'SEMI-ANUALLY'
-    | 'ANUALLY'
+    | 'SEMI-ANNUALLY'
+    | 'ANNUALLY'
 
 export type BankAccount = {
     account: string
