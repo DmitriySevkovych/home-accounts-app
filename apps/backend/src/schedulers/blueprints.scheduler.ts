@@ -1,7 +1,9 @@
+import { Transaction } from 'domain-model'
 import { getLogger } from 'logger'
 import * as cron from 'node-cron'
 
 import { RepositoryLocator } from '../db/repositoryLocator'
+import { ProcessedBlueprintResult } from '../definitions/processes'
 
 const logger = getLogger('backend')
 
@@ -16,14 +18,39 @@ if (!processBlueprintsSchedule) {
 export const PROCESS_BLUEPRINTS_TASK: cron.ScheduledTask = cron.schedule(
     processBlueprintsSchedule,
     async () => {
-        try {
-            // Process blueprints (basically insert into db if blueprint transaction is due, or skip otherwise)
-            await RepositoryLocator.getRepository().processBlueprints()
-            // Send success notification
-        } catch (error) {
-            // Log error
-            // Send failure notification
+        const repository = RepositoryLocator.getRepository()
+        // Process blueprints (basically insert into db if blueprint transaction is due, or skip otherwise)
+        const activeBlueprints = await repository.getActiveBlueprints()
+
+        const results: ProcessedBlueprintResult[] = []
+        for (let i = 0; i < activeBlueprints.length; i++) {
+            const blueprint = activeBlueprints[i]
+            try {
+                // Perform transaction inserts for every passed dueDate since the last uptade of the blueprint
+                for (const dueDate of blueprint.getDatesWhenTransactionIsDue()) {
+                    await repository.createTransaction({
+                        ...blueprint.transaction,
+                        date: dueDate,
+                    } satisfies Transaction)
+                    results.push({
+                        blueprintKey: blueprint.key,
+                        status: 'OK',
+                        datetime: dueDate,
+                    })
+                }
+                await repository.markBlueprintAsProcessed(blueprint.key)
+            } catch (error) {
+                logger.error(error)
+                results.push({
+                    blueprintKey: blueprint.key,
+                    status: 'ERROR',
+                    datetime: new Date(),
+                    message: `Inserting the blueprint ${blueprint.key} failed with error: ${error}`,
+                })
+            }
         }
+
+        // Send notification -> TODO
     },
     {
         scheduled: false,
