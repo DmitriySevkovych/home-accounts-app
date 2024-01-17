@@ -80,7 +80,7 @@ export class TransactionBlueprint {
 
         switch (frequency) {
             case 'ONE-TIME': {
-                return DateCheck.check(startDate).isSameDay(checkDate)
+                return DateCheck.check(startDate).isSameDayAs(checkDate)
             }
             case 'WEEKLY': {
                 const weekday = DAYS.find((day) => day.name === dueDay)

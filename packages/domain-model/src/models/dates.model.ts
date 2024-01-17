@@ -147,7 +147,7 @@ export class DateCheck {
             case 'day-wise':
                 return (
                     this.date.valueOf() - otherDate.valueOf() < 0 &&
-                    this.isNotSameDay(otherDate)
+                    this.isNotSameDayAs(otherDate)
                 )
             case 'exact':
             default:
@@ -167,7 +167,7 @@ export class DateCheck {
             case 'day-wise':
                 return (
                     this.date.valueOf() - otherDate.valueOf() > 0 &&
-                    this.isNotSameDay(otherDate)
+                    this.isNotSameDayAs(otherDate)
                 )
             case 'exact':
             default:
@@ -182,7 +182,7 @@ export class DateCheck {
         return !this.isAfter(otherDate, precision)
     }
 
-    isSameDay(otherDate: Date): boolean {
+    isSameDayAs(otherDate: Date): boolean {
         return (
             this.date.getUTCFullYear() === otherDate.getUTCFullYear() &&
             this.date.getUTCMonth() === otherDate.getUTCMonth() &&
@@ -190,7 +190,7 @@ export class DateCheck {
         )
     }
 
-    isNotSameDay(otherDate: Date): boolean {
-        return !this.isSameDay(otherDate)
+    isNotSameDayAs(otherDate: Date): boolean {
+        return !this.isSameDayAs(otherDate)
     }
 }

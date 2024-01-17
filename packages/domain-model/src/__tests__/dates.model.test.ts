@@ -69,10 +69,10 @@ describe('Tests for dealing with dates', () => {
                 const date = new Date(Date.parse(dateStr))
                 const otherDate = new Date(Date.parse(otherDateStr))
                 // Act & Assert
-                expect(DateCheck.check(date).isSameDay(otherDate)).toBe(
+                expect(DateCheck.check(date).isSameDayAs(otherDate)).toBe(
                     expectedSameDay
                 )
-                expect(DateCheck.check(date).isNotSameDay(otherDate)).toBe(
+                expect(DateCheck.check(date).isNotSameDayAs(otherDate)).toBe(
                     !expectedSameDay
                 )
             }
