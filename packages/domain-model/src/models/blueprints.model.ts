@@ -46,11 +46,6 @@ export class TransactionBlueprint {
     }
 
     /* Public methods */
-    expiresToday = (): boolean => {
-        const today = new Date()
-        return this.expirationDate?.toDateString() === today.toDateString()
-    }
-
     getDatesWhenTransactionIsDue = (): Date[] => {
         const dates = []
         let checkDate = this.lastUpdate
