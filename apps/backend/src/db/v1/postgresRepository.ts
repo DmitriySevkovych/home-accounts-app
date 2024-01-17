@@ -1,10 +1,12 @@
 import type {
     BankAccount,
+    BlueprintKey,
     Investment,
     PaymentMethod,
     ProjectInvoice,
     TaxCategory,
     Transaction,
+    TransactionBlueprint,
     TransactionCategory,
     TransactionContext,
     TransactionReceipt,
@@ -13,7 +15,6 @@ import { Logger, getLogger } from 'logger'
 import type { Pool, PoolClient } from 'pg'
 
 import connectionPool from '.'
-import { ProcessedBlueprintResult } from '../../definitions/processes'
 import { UnsupportedTransactionContextError } from '../../helpers/errors'
 import { PaginationOptions } from '../../helpers/pagination'
 import { Repository } from '../repository'
@@ -197,16 +198,17 @@ export class PostgresRepository implements Repository {
     }
 
     // Blueprints
-    processBlueprints = async (): Promise<ProcessedBlueprintResult[]> => {
-        // const activeBlueprints = await utilsQueries.getActiveBlueprints(this.connectionPool)
+    getActiveBlueprints = async (): Promise<TransactionBlueprint[]> => {
+        return await utilsQueries.getActiveBlueprints(this.connectionPool)
+    }
 
-        // const progress = []
-        // for (let i = 0; i < activeBlueprints.length; i++) {
-        //     const status = await processBlueprint(this.connectionPool, activeBlueprints[i])
-        //     progress.push(status)
-        // }
-
-        return []
+    markBlueprintAsProcessed = async (
+        blueprintKey: BlueprintKey
+    ): Promise<void> => {
+        await utilsQueries.markBlueprintAsProcessed(
+            this.connectionPool,
+            blueprintKey
+        )
     }
 
     /*

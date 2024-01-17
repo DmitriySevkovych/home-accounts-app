@@ -1,16 +1,17 @@
 import type {
     BankAccount,
+    BlueprintKey,
     Investment,
     PaymentMethod,
     ProjectInvoice,
     TaxCategory,
     Transaction,
+    TransactionBlueprint,
     TransactionCategory,
     TransactionContext,
     TransactionReceipt,
 } from 'domain-model'
 
-import { ProcessedBlueprintResult } from '../definitions/processes'
 import { PaginationOptions } from '../helpers/pagination'
 
 export interface Repository {
@@ -53,5 +54,7 @@ export interface Repository {
     getProjectInvoices: () => Promise<ProjectInvoice[]>
 
     // Blueprints
-    processBlueprints: () => Promise<ProcessedBlueprintResult[]>
+    getActiveBlueprints: () => Promise<TransactionBlueprint[]>
+
+    markBlueprintAsProcessed: (_blueprintKey: BlueprintKey) => Promise<void>
 }

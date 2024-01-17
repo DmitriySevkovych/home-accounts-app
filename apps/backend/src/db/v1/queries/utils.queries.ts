@@ -8,6 +8,7 @@ import {
     createTransaction,
     createTransactionBlueprint,
     dateFromString,
+    formatDate,
 } from 'domain-model'
 import type { Pool } from 'pg'
 
@@ -116,6 +117,21 @@ export const getActiveBlueprints = async (
 
     // TODO remove Promise.all once the issue with the tags is corrected -> mapping will be synchronous
     return await Promise.all(blueprintsFromRows)
+}
+
+export const markBlueprintAsProcessed = async (
+    connectionPool: Pool,
+    blueprintKey: BlueprintKey
+): Promise<void> => {
+    const query = {
+        name: `update-utils.blueprints-set-last_update`,
+        text: `
+            UPDATE utils.blueprints b
+            SET b.last_update = $1
+            WHERE b.key = $2;`,
+        values: [formatDate(new Date()), blueprintKey],
+    }
+    await connectionPool.query(query)
 }
 
 const _getBlueprintTags = async (

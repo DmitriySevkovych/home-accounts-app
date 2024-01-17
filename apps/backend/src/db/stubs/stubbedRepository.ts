@@ -6,6 +6,7 @@ import {
     ProjectInvoice,
     TaxCategory,
     Transaction,
+    TransactionBlueprint,
     TransactionCategory,
     TransactionContext,
     TransactionReceipt,
@@ -15,7 +16,6 @@ import {
     minimalDummyWorkTransaction,
 } from 'domain-model'
 
-import { ProcessedBlueprintResult } from '../../definitions/processes'
 import { NoRecordFoundInDatabaseError } from '../../helpers/errors'
 import { PaginationOptions } from '../../helpers/pagination'
 import { Repository } from '../repository'
@@ -261,7 +261,9 @@ export class StubbedRepository implements Repository {
     }
 
     // Blueprints
-    processBlueprints = async (): Promise<ProcessedBlueprintResult[]> => []
+    getActiveBlueprints = async (): Promise<TransactionBlueprint[]> => []
+
+    markBlueprintAsProcessed = async (_blueprintKey: Uppercase<string>) => {}
 
     /* 
         Private helper functions 
