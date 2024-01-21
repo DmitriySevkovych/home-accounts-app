@@ -4,6 +4,7 @@ import * as cron from 'node-cron'
 
 import { RepositoryLocator } from '../db/repositoryLocator'
 import { ProcessedBlueprintResult } from '../definitions/processes'
+import { sendProcessedBlueprintResults } from '../helpers/mails'
 
 const logger = getLogger('backend')
 
@@ -18,8 +19,10 @@ if (!processBlueprintsSchedule) {
 export const PROCESS_BLUEPRINTS_TASK: cron.ScheduledTask = cron.schedule(
     processBlueprintsSchedule,
     async () => {
-        const repository = RepositoryLocator.getRepository()
+        logger.info('Start processing blueprints')
+
         // Process blueprints (basically insert into db if blueprint transaction is due, or skip otherwise)
+        const repository = RepositoryLocator.getRepository()
         const activeBlueprints = await repository.getActiveBlueprints()
 
         const results: ProcessedBlueprintResult[] = []
@@ -55,7 +58,10 @@ export const PROCESS_BLUEPRINTS_TASK: cron.ScheduledTask = cron.schedule(
             }
         }
 
-        // Send notification -> TODO
+        // Send notification
+        await sendProcessedBlueprintResults(results)
+
+        logger.info('Finished processing blueprints')
     },
     {
         scheduled: false,

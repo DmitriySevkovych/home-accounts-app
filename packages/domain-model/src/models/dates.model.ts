@@ -45,11 +45,31 @@ export const formatDate = (date: Date): string => {
     return `${YYYY}-${MM}-${DD}`
 }
 
-export const formatDateToWords = (date: Date): string => {
+type FormatDateToWordsOptions = Partial<{
+    addTime: boolean
+    locale: Intl.LocalesArgument
+}>
+
+export const formatDateToWords = (
+    date: Date,
+    options?: FormatDateToWordsOptions
+): string => {
     const year = date.getFullYear().toString()
-    const month = date.toLocaleString('default', { month: 'long' })
+    const month = date.toLocaleString(
+        options?.locale ? options.locale : 'default',
+        { month: 'long' }
+    )
     const day = _padZero(date.getDate())
-    return `${day}. ${month} ${year}`
+
+    let dateString = `${day}. ${month} ${year}`
+
+    if (options?.addTime) {
+        const hours = _padZero(date.getHours())
+        const minutes = _padZero(date.getMinutes())
+        dateString = `${dateString}, ${hours}:${minutes}`
+    }
+
+    return dateString
 }
 
 export const timestampFromString = (dateString: string): number => {

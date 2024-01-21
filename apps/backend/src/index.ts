@@ -2,6 +2,7 @@ import https from 'https'
 import { getLogger } from 'logger'
 
 import { RepositoryLocator } from './db/repositoryLocator'
+import { MAIL_TRANSPORTER } from './helpers/mails'
 import { PROCESS_BLUEPRINTS_TASK } from './schedulers/blueprints.scheduler'
 import { createSecureServer } from './server'
 
@@ -32,6 +33,8 @@ createSecureServer()
     .catch((err) => {
         logger.fatal(err)
         PROCESS_BLUEPRINTS_TASK.stop()
+        MAIL_TRANSPORTER.close()
+        process.exit(1)
     })
 
 const handleSignal = (server: https.Server, signal: string) => {
@@ -40,8 +43,11 @@ const handleSignal = (server: https.Server, signal: string) => {
         server.close(() => {
             logger.info('HTTPS server closed.')
         })
+        // Tear down singletons
         PROCESS_BLUEPRINTS_TASK.stop()
+        MAIL_TRANSPORTER.close()
         await RepositoryLocator.closeRepository()
+
         logger.info('Database connection closed.')
         process.exit(0)
     })
