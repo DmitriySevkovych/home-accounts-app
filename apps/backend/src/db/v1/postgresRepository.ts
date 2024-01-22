@@ -203,11 +203,13 @@ export class PostgresRepository implements Repository {
     }
 
     markBlueprintAsProcessed = async (
-        blueprintKey: BlueprintKey
+        blueprintKey: BlueprintKey,
+        dateProcessed: Date
     ): Promise<void> => {
         await utilsQueries.markBlueprintAsProcessed(
             this.connectionPool,
-            blueprintKey
+            blueprintKey,
+            dateProcessed
         )
     }
 

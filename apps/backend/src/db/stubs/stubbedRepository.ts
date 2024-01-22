@@ -263,7 +263,10 @@ export class StubbedRepository implements Repository {
     // Blueprints
     getActiveBlueprints = async (): Promise<TransactionBlueprint[]> => []
 
-    markBlueprintAsProcessed = async (_blueprintKey: Uppercase<string>) => {}
+    markBlueprintAsProcessed = async (
+        _blueprintKey: Uppercase<string>,
+        _dateProcessed: Date
+    ) => {}
 
     /* 
         Private helper functions 

@@ -121,15 +121,13 @@ export const getActiveBlueprints = async (
 
 export const markBlueprintAsProcessed = async (
     connectionPool: Pool,
-    blueprintKey: BlueprintKey
+    blueprintKey: BlueprintKey,
+    dateProcessed: Date
 ): Promise<void> => {
     const query = {
         name: `update-utils.blueprints-set-last_update`,
-        text: `
-            UPDATE utils.blueprints b
-            SET b.last_update = $1
-            WHERE b.key = $2;`,
-        values: [formatDate(new Date()), blueprintKey],
+        text: `UPDATE utils.blueprints SET last_update = $1 WHERE key = $2;`,
+        values: [formatDate(dateProcessed), blueprintKey],
     }
     await connectionPool.query(query)
 }

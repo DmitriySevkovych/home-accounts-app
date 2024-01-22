@@ -56,5 +56,8 @@ export interface Repository {
     // Blueprints
     getActiveBlueprints: () => Promise<TransactionBlueprint[]>
 
-    markBlueprintAsProcessed: (_blueprintKey: BlueprintKey) => Promise<void>
+    markBlueprintAsProcessed: (
+        _blueprintKey: BlueprintKey,
+        _dateProcessed: Date
+    ) => Promise<void>
 }
