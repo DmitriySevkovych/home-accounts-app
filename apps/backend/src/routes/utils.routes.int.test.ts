@@ -14,7 +14,7 @@ import { createServer } from '../server'
     @group no-real-database
  */
 describe('Utils router tests', () => {
-    const apiBaseUrl = process.env['API_BASE_URL']
+    const apiBaseUrl = process.env.API_BASE_URL
     const routerBaseUrl = `${apiBaseUrl}/utils`
 
     let server: Express

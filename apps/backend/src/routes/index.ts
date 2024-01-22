@@ -7,7 +7,7 @@ import utils from './utils.routes'
 import work from './work.routes'
 
 const mountRoutes = (app: Express) => {
-    const baseUrl = process.env['API_BASE_URL']
+    const baseUrl = process.env.API_BASE_URL
     app.use(`${baseUrl}/system`, system())
     app.use(`${baseUrl}/utils`, utils())
     app.use(`${baseUrl}/transactions`, transactions())

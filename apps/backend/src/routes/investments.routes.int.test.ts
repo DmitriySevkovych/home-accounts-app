@@ -8,7 +8,7 @@ import { createServer } from '../server'
     @group no-real-database
  */
 describe('Utils router tests', () => {
-    const routerBaseUrl = `${process.env['API_BASE_URL']}/investments`
+    const routerBaseUrl = `${process.env.API_BASE_URL}/investments`
 
     let server: Express
     beforeAll(async () => {

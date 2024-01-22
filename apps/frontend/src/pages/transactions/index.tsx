@@ -53,12 +53,12 @@ export const getServerSideProps = async () => {
         props: {
             systemInfo: {
                 frontend: {
-                    environment: process.env['APP_ENV'],
-                    branch: process.env['GIT_BRANCH']
-                        ? process.env['GIT_BRANCH']
+                    environment: process.env.APP_ENV,
+                    branch: process.env.GIT_BRANCH
+                        ? process.env.GIT_BRANCH
                         : '',
-                    commit: process.env['GIT_COMMIT']
-                        ? process.env['GIT_COMMIT']
+                    commit: process.env.GIT_COMMIT
+                        ? process.env.GIT_COMMIT
                         : '',
                 },
                 backend: backendInfo,

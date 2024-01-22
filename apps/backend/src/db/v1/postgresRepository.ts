@@ -34,7 +34,7 @@ export class PostgresRepository implements Repository {
         this.connectionPool = connectionPool
         this.initialize()
         this.logger.debug(
-            `Initialized a new PostgresRepository object. Environment: '${process.env['APP_ENV']}'.`
+            `Initialized a new PostgresRepository object. Environment: '${process.env.APP_ENV}'.`
         )
     }
 
@@ -86,13 +86,13 @@ export class PostgresRepository implements Repository {
                 'SELECT NOW() as now'
             )
             this.logger.debug(
-                `Database ping. Successfully queried timestamp '${result.rows[0].now}' from ${process.env['APP_ENV']} database.`
+                `Database ping. Successfully queried timestamp '${result.rows[0].now}' from ${process.env.APP_ENV} database.`
             )
             return true
         } catch (err) {
             this.logger.error(
                 err,
-                `Database ping. Querying the ${process.env['APP_ENV']} database failed with and error.`
+                `Database ping. Querying the ${process.env.APP_ENV} database failed with and error.`
             )
             return false
         }

@@ -180,7 +180,7 @@ const _toTransactionBlueprint = async (
         .withPaymentDetails(paymentMethod, sourceBankAccount, targetBankAccount)
         .withComment(comment)
         .withTaxCategory(taxCategory)
-        .withAgent(process.env['PROCESS_BLUEPRINTS_AGENT']!)
+        .withAgent(process.env.PROCESS_BLUEPRINTS_AGENT!)
 
     if (row.additional_data) {
         if (schema === 'work') {

@@ -32,7 +32,7 @@ const asMultiform = (
     @group no-real-database
  */
 describe('Transactions router tests', () => {
-    const apiBaseUrl = process.env['API_BASE_URL']
+    const apiBaseUrl = process.env.API_BASE_URL
     const routerBaseUrl = `${apiBaseUrl}/transactions`
 
     let server: Express

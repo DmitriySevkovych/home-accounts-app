@@ -8,7 +8,7 @@ import { sendProcessedBlueprintResults } from '../helpers/mails'
 
 const logger = getLogger('backend')
 
-let processBlueprintsSchedule = process.env['NODECRON_PROCESS_BLUEPRINTS']
+let processBlueprintsSchedule = process.env.NODECRON_PROCESS_BLUEPRINTS
 if (!processBlueprintsSchedule) {
     processBlueprintsSchedule = '7 3 * * *'
     logger.warn(

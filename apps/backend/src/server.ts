@@ -33,12 +33,10 @@ export const createSecureServer = async (): Promise<https.Server> => {
     return https.createServer(
         {
             key: readFileSync(
-                process.env['TLS_KEY'] ||
-                    path.join(__dirname, 'cert', 'key.pem')
+                process.env.TLS_KEY || path.join(__dirname, 'cert', 'key.pem')
             ),
             cert: readFileSync(
-                process.env['TLS_CERT'] ||
-                    path.join(__dirname, 'cert', 'cert.pem')
+                process.env.TLS_CERT || path.join(__dirname, 'cert', 'cert.pem')
             ),
         },
         app
