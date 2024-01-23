@@ -48,7 +48,7 @@ export class TransactionBlueprint {
     /* Public methods */
     getDatesWhenTransactionIsDue = (): Date[] => {
         const dates = []
-        let checkDate = this.lastUpdate
+        let checkDate = getNextDay(this.lastUpdate)
         const { today, check } = DateCheck
         while (today().isNotBefore(checkDate, 'day-wise')) {
             if (
@@ -108,15 +108,14 @@ export class TransactionBlueprint {
             date.getUTCMonth()
         )
 
+        if (dueDay === 'LAST DAY') {
+            return date.getUTCDate() === daysInMonth
+        }
         if (Number.isInteger(parseInt(dueDay as any))) {
             return (
                 date.getUTCDate() ===
                 Math.min(parseInt(dueDay as any), daysInMonth)
             )
-        }
-
-        if (dueDay === 'LAST DAY') {
-            return date.getUTCDate() === daysInMonth
         }
         // Should never reach here
         throw new Error()
