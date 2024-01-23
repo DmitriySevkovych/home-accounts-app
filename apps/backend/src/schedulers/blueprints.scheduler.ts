@@ -59,7 +59,9 @@ export const PROCESS_BLUEPRINTS_TASK: cron.ScheduledTask = cron.schedule(
         }
 
         // Send notification
-        await sendProcessedBlueprintResults(results)
+        if (results.length > 0) {
+            await sendProcessedBlueprintResults(results)
+        }
 
         logger.info('Finished processing blueprints')
     },
