@@ -8,6 +8,14 @@ export type PaymentMethod = {
     description?: string
 }
 
+export type PaymentFrequency =
+    | 'ONE-TIME'
+    | 'WEEKLY'
+    | 'MONTHLY'
+    | 'QUARTERLY'
+    | 'SEMI-ANNUALLY'
+    | 'ANNUALLY'
+
 export type BankAccount = {
     account: string
     bank: string

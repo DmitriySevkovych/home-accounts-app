@@ -1,0 +1,18 @@
+<h1>Automatic update of {{database}}</h1>
+<h2>{{date}}</h2>
+
+{{#each resultsAggregate}}
+<section>
+    <h4>Blueprint key: {{this.blueprintKey}}</h4>
+    {{#each this.actions}}
+    <ul>
+        <li>
+            <p>{{this.datetime}} - status: {{this.status}}</p>
+            {{#if this.message}}
+            <p>Message: {{this.message}}</p>
+            {{/if}}
+        </li>
+    </ul>
+    {{/each}}
+</section>
+{{/each}}

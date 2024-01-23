@@ -2,6 +2,7 @@
     Resources
         - https://jamesknelson.com/re-exporting-es6-modules/
  */
+export * from './models/blueprints.model'
 export * from './models/dates.model'
 export * from './models/errors.model'
 export * from './models/investments.model'

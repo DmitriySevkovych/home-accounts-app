@@ -221,11 +221,29 @@ class TransactionBuilder {
     }
 
     validate = (): TransactionBuilder => {
+        this._commonValidations()
+
+        const { date } = this.transaction
+        this._throwIfFalsy('date', date)
+
+        return this
+    }
+
+    validateForBlueprint = (): TransactionBuilder => {
+        this._commonValidations()
+
+        return this
+    }
+
+    build = (): Transaction => {
+        return this.transaction
+    }
+
+    private _commonValidations = (): TransactionBuilder => {
         const {
             category,
             origin,
             amount,
-            date,
             paymentMethod,
             sourceBankAccount,
             targetBankAccount,
@@ -245,19 +263,14 @@ class TransactionBuilder {
             'bank accounts',
             sourceBankAccount || targetBankAccount
         )
-        this._throwIfFalsy('date', date)
 
         this._throwIfAmountInconsistentWithBankAccounts()
 
         this._throwIfAmountInconsistentWithType(amount, type)
 
-        this._throwIfContextDataMissing()
+        this._throwIfContextSpecificsAreMissing()
 
         return this
-    }
-
-    build = (): Transaction => {
-        return this.transaction
     }
 
     private _throwIfFalsy = (property: string, value: any): void => {
@@ -298,7 +311,7 @@ class TransactionBuilder {
         }
     }
 
-    private _throwIfContextDataMissing = (): void => {
+    private _throwIfContextSpecificsAreMissing = (): void => {
         const { context, type: transactionType } = this.transaction
 
         if (context === 'work' && transactionType === 'expense') {

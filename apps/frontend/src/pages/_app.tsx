@@ -42,7 +42,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
 
 const _getTitle = (): string => {
     let title = 'Home Accounts App'
-    const appEnvironment = process.env['NEXT_PUBLIC_APP_ENV']
+    const appEnvironment = process.env.NEXT_PUBLIC_APP_ENV
     switch (appEnvironment) {
         case 'production':
             return `PROD: ${title}`

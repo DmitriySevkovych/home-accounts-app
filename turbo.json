@@ -1,6 +1,27 @@
 {
     "$schema": "https://turbo.build/schema.json",
-    "globalEnv": ["NODE_ENV", "PORT", "API_BASE_URL"],
+    "globalEnv": [
+        "NODE_ENV",
+        "APP_ENV",
+        "PORT",
+        "API_BASE_URL",
+        "LOG_LEVEL",
+        "GIT_*",
+        "AUTH_*",
+        "TLS_*",
+        "PG*",
+        "PAGINATION_*",
+        "NODECRON_PROCESS_BLUEPRINTS",
+        "PROCESS_BLUEPRINTS_AGENT",
+        "MAIL_*",
+        "NEXT_PUBLIC_*",
+        "NODE*",
+        "BACKEND_HOST"
+    ],
+    "globalDotEnv": [
+        ".env.local",
+        ".env"
+    ],
     "pipeline": {
         "build": {
             "outputs": [
@@ -11,32 +32,49 @@
                 "api/**",
                 "public/build/**"
             ],
-            "dependsOn": ["^build"],
-            "dotEnv": [".env.local", ".env"]
+            "dependsOn": [
+                "^build"
+            ]
         },
         "build:image": {
-            "dependsOn": ["^build"]
+            "dependsOn": [
+                "^build"
+            ]
         },
         "test": {
-            "outputs": ["coverage/**"],
-            "dependsOn": [],
-            "dotEnv": [".env.test.local", ".env.test"]
+            "outputs": [
+                "coverage/**"
+            ],
+            "dependsOn": [
+                "^build"
+            ],
+            "dotEnv": [
+                ".env.test.local",
+                ".env.test"
+            ]
         },
         "lint": {
-            "dependsOn": ["^build"],
-            "dotEnv": [".env.local", ".env"]
+            "dependsOn": [
+                "^build"
+            ]
         },
         "dev": {
-            "dependsOn": ["^build"],
+            "dependsOn": [
+                "^build"
+            ],
             "cache": false,
-            "persistent": true,
-            "dotEnv": [".env.local", ".env"]
+            "persistent": true
         },
         "dev:stage": {
-            "dependsOn": ["^build"],
+            "dependsOn": [
+                "^build"
+            ],
             "cache": false,
             "persistent": true,
-            "dotEnv": [".env.stage.local", ".env"]
+            "dotEnv": [
+                ".env.stage.local",
+                ".env"
+            ]
         },
         "clean": {
             "cache": false

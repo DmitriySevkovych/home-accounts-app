@@ -1,10 +1,12 @@
 import type {
     BankAccount,
+    BlueprintKey,
     Investment,
     PaymentMethod,
     ProjectInvoice,
     TaxCategory,
     Transaction,
+    TransactionBlueprint,
     TransactionCategory,
     TransactionContext,
     TransactionReceipt,
@@ -50,4 +52,12 @@ export interface Repository {
 
     // Work data
     getProjectInvoices: () => Promise<ProjectInvoice[]>
+
+    // Blueprints
+    getActiveBlueprints: () => Promise<TransactionBlueprint[]>
+
+    markBlueprintAsProcessed: (
+        _blueprintKey: BlueprintKey,
+        _dateProcessed: Date
+    ) => Promise<void>
 }

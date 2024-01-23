@@ -3,15 +3,15 @@ import path from 'path'
 
 const _getServersideUrl = (endpoint: string): string => {
     return new URL(
-        path.join(process.env['NEXT_PUBLIC_BACKEND_API_BASE']!, endpoint),
-        process.env['BACKEND_HOST']!
+        path.join(process.env.NEXT_PUBLIC_BACKEND_API_BASE!, endpoint),
+        process.env.BACKEND_HOST!
     ).toString()
 }
 
 const _getClientsideUrl = (endpoint: string): string => {
     return new URL(
-        path.join(process.env['NEXT_PUBLIC_BACKEND_API_BASE']!, endpoint),
-        process.env['NEXT_PUBLIC_BACKEND_HOST']!
+        path.join(process.env.NEXT_PUBLIC_BACKEND_API_BASE!, endpoint),
+        process.env.NEXT_PUBLIC_BACKEND_HOST!
     ).toString()
 }
 
