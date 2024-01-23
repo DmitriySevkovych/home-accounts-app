@@ -2,7 +2,7 @@ import https from 'https'
 import { getLogger } from 'logger'
 
 import { RepositoryLocator } from './db/repositoryLocator'
-import { MAIL_TRANSPORTER } from './helpers/mails'
+import { MAIL_TRANSPORTER } from './mails/send'
 import { PROCESS_BLUEPRINTS_TASK } from './schedulers/blueprints.scheduler'
 import { createSecureServer } from './server'
 

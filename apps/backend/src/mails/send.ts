@@ -2,12 +2,12 @@ import { getLogger } from 'logger'
 import nodemailer from 'nodemailer'
 
 import { ProcessedBlueprintResult } from '../definitions/processes'
+import { getInfo } from '../helpers/system'
 import {
     BlueprintMailTemplateContext,
     aggregateBlueprintResults,
     compileBlueprintsHtml,
 } from './mailTemplates'
-import { getInfo } from './system'
 
 const logger = getLogger('backend')
 

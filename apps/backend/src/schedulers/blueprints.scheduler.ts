@@ -4,7 +4,7 @@ import * as cron from 'node-cron'
 
 import { RepositoryLocator } from '../db/repositoryLocator'
 import { ProcessedBlueprintResult } from '../definitions/processes'
-import { sendProcessedBlueprintResults } from '../helpers/mails'
+import { sendProcessedBlueprintResults } from '../mails/send'
 
 const logger = getLogger('backend')
 
