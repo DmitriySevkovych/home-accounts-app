@@ -46,6 +46,9 @@ export const PROCESS_BLUEPRINTS_TASK: cron.ScheduledTask = cron.schedule(
                         status: 'OK',
                         datetime: dueDate,
                     })
+                    logger.info(
+                        `Successfully processed blueprint ${blueprint.key} on ${dueDate}`
+                    )
                 }
             } catch (error) {
                 logger.error(error)
