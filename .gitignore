@@ -12,6 +12,8 @@ public/dist
 out
 coverage
 
+.vscode/settings.json
+
 **/private/
 **/pgdata/
 **/cert/
