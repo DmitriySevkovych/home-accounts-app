@@ -76,6 +76,32 @@ describe('Blueprints tests', () => {
             }
         )
 
+        it.each`
+            lastUpdate
+            ${'2023-12-31T00:00:00.000Z'}
+            ${'2023-12-31T18:00:00.000Z'}
+            ${'2023-12-31T23:00:00.000Z'}
+            ${'2024-01-01T00:00:00.000Z'}
+            ${'2024-01-01T00:01:00.000Z'}
+        `(
+            'lastUpdate date should not be considered a second time, input $lastUpdate',
+            ({ lastUpdate }) => {
+                // Arrange
+                const blueprint = createTransactionBlueprint(
+                    'TEST_MONTHLY_DUE_LAST_DAY'
+                )
+                    .due('MONTHLY', 'LAST DAY')
+                    .from(new Date('2023-01-01'))
+                    .until(new Date('2024-01-25'))
+                    .lastUpdatedOn(new Date(lastUpdate))
+                    .build()
+                // Act
+                let dates = blueprint.getDatesWhenTransactionIsDue()
+                // Assert
+                expect(dates).toStrictEqual([])
+            }
+        )
+
         /* QUARTERLY payment frequency */
         it.each`
             dueDay | unadjustedExpectedDatesStr
