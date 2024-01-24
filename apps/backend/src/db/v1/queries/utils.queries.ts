@@ -142,7 +142,7 @@ const _getBlueprintTags = async (
         values: [key],
     }
     const queryResult = await connectionPool.query(query)
-    return queryResult.rows
+    return queryResult.rows.map((row) => row.tag)
 }
 
 const _toTransactionBlueprint = async (

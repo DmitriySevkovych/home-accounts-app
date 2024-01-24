@@ -131,7 +131,7 @@ export const getTagsByExpenseOrIncomeId = async (
 
     const query = {
         name: `select-${schema}.${table}`,
-        text: `SELECT tag from ${schema}.${table} WHERE ${idColumn} = $1;`,
+        text: `SELECT tag FROM ${schema}.${table} WHERE ${idColumn} = $1;`,
         values: [expense_or_income_id],
     }
     const queryResult = await dbConnection.query(query)
