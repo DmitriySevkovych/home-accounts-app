@@ -26,13 +26,7 @@ export const TransactionFormSchema = z
         investment: z.optional(z.string()),
         invoiceKey: z.optional(z.string()),
         country: z.optional(z.string().toUpperCase().length(2)),
-        vat: z.optional(
-            z.coerce
-                .number()
-                .nonnegative()
-                .max(100)
-                .transform((val) => val / 100)
-        ),
+        vat: z.optional(z.coerce.number().nonnegative().max(1)),
         receipt: z.optional(z.custom<FileWithPath>()),
     })
     .transform((form) => {
