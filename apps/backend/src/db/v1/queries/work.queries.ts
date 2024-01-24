@@ -110,7 +110,7 @@ export const getTransactionById = async (
         //TODO extract logic to DB view?
         text: `
         SELECT
-            w.id as home_id, w.type as category, w.origin, w.description, w.invoice_key, w.vat, w.country,
+            w.id as work_id, w.type as category, w.origin, w.description, w.invoice_key, w.vat, w.country,
             tr.id, tr.context, tr.amount, tr.date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
             td.payment_method, td.tax_category, td.comment, td.receipt_id
         FROM
