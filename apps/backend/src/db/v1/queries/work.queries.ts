@@ -456,13 +456,16 @@ const _mapToTransaction = async (
         country,
         vat,
     } = row
+
+    const transactionType = amount > 0 ? 'income' : 'expense'
+
     const transactionBuilder = createTransaction()
         .about(category, origin, description)
         .withId(id)
         .withContext(context)
         .withDate(dateFromString(date))
         .withAmount(parseFloat(amount))
-        .withType(amount > 0 ? 'income' : 'expense')
+        .withType(transactionType)
         .withCurrency(currency, parseFloat(exchangeRate))
         .withPaymentDetails(paymentMethod, sourceBankAccount, targetBankAccount)
         .withComment(comment)
@@ -477,7 +480,7 @@ const _mapToTransaction = async (
     // TODO remove this function call from here!!! This is unclean and bad for performance
     const tags = await getTagsByExpenseOrIncomeId(
         work_id,
-        parseFloat(amount) >= 0.0 ? 'income' : 'expense',
+        transactionType,
         context,
         connectionPool
     )
