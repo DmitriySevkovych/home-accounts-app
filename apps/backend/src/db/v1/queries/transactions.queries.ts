@@ -141,10 +141,9 @@ export const insertTransactionDetailsDAO = async (
 ): Promise<void> => {
     const query = {
         name: 'insert-into-transactions.transaction_details',
-        text: 'INSERT INTO transactions.transaction_details(payment_method, tax_relevant, tax_category, comment, transaction_id, receipt_id) VALUES ($1, $2, $3, $4, $5, $6);',
+        text: 'INSERT INTO transactions.transaction_details(payment_method, tax_category, comment, transaction_id, receipt_id) VALUES ($1, $2, $3, $4, $5);',
         values: [
             transactionDetailsDAO.paymentMethod,
-            !!transactionDetailsDAO.taxCategory,
             transactionDetailsDAO.taxCategory,
             transactionDetailsDAO.comment,
             transactionDetailsDAO.transaction_id,
@@ -223,10 +222,9 @@ export const updateTransactionDetailsDAO = async (
 ): Promise<void> => {
     const query = {
         name: 'update-transactions.transaction_details',
-        text: 'UPDATE transactions.transaction_details SET payment_method=$1, tax_relevant=$2, tax_category=$3, comment=$4, receipt_id=$5 WHERE transaction_id=$6;',
+        text: 'UPDATE transactions.transaction_details SET payment_method=$1, tax_category=$2, comment=$3, receipt_id=$4 WHERE transaction_id=$5;',
         values: [
             transactionDetailsDAO.paymentMethod,
-            !!transactionDetailsDAO.taxCategory,
             transactionDetailsDAO.taxCategory,
             transactionDetailsDAO.comment,
             transactionDetailsDAO.receipt_id,
