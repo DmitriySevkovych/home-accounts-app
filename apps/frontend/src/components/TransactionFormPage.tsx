@@ -307,15 +307,12 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                         )}
 
                     <div className="lg:col-span-2">
-                        <>
-                            <Separator />
-                            <TagsManager
-                                id="tags"
-                                form={form}
-                                label="Tags"
-                                initialTags={tags}
-                            />
-                        </>
+                        <TagsManager
+                            id="tags"
+                            form={form}
+                            label="Tags"
+                            initialTags={tags}
+                        />
                     </div>
 
                     <div className="lg:col-span-2">
