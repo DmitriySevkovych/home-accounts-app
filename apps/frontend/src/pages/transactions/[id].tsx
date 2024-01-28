@@ -9,6 +9,8 @@ import useUpdateTransactionSubmitHandler from '../../components/hooks/useUpdateT
 import { safeFetch } from '../../helpers/requests'
 import { API } from '../../helpers/routes'
 import { TransactionForm } from '../../helpers/zod-form-schemas'
+import { Button } from '../../lib/shadcn/Button'
+import { Separator } from '../../lib/shadcn/Separator'
 
 type EditPageProps = {
     transaction: TransactionForm
@@ -24,13 +26,29 @@ const EditTransactionPage = ({ transaction, constants }: EditPageProps) => {
     const { onSubmit } = useUpdateTransactionSubmitHandler()
 
     return (
-        <TransactionFormPage
-            heading="Edit Transaction"
-            form={form}
-            constants={constants}
-            onSubmit={onSubmit}
-            submitLabel="Update"
-        />
+        <>
+            <TransactionFormPage
+                heading="Edit Transaction"
+                form={form}
+                constants={constants}
+                onSubmit={onSubmit}
+                submitLabel="Update"
+            />
+            <Separator />
+            <div className="relative mx-auto  max-w-4xl bg-background px-3 py-8 text-darkest">
+                <h2 className="mb-6 flex-grow text-xl font-bold leading-none text-primary lg:text-2xl">
+                    Danger Zone ☢️
+                </h2>
+                <Button
+                    className="flex w-full md:ml-auto md:mr-0 md:w-auto lg:col-span-2"
+                    variant="secondary"
+                    type="button"
+                    size={'lg'}
+                >
+                    Delete
+                </Button>
+            </div>
+        </>
     )
 }
 
