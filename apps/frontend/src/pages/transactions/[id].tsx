@@ -1,5 +1,6 @@
 import React from 'react'
 
+import { Dialog } from '../../components/Dialog'
 import TransactionFormPage, {
     TransactionFormConstants,
     fetchTransactionConstants,
@@ -39,14 +40,8 @@ const EditTransactionPage = ({ transaction, constants }: EditPageProps) => {
                 <h2 className="mb-6 flex-grow text-xl font-bold leading-none text-primary lg:text-2xl">
                     Danger Zone ☢️
                 </h2>
-                <Button
-                    className="flex w-full md:ml-auto md:mr-0 md:w-auto lg:col-span-2"
-                    variant="secondary"
-                    type="button"
-                    size={'lg'}
-                >
-                    Delete
-                </Button>
+
+                <Dialog />
             </div>
         </>
     )
