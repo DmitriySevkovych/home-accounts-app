@@ -20,7 +20,7 @@ export const dummyTransaction = (
         .addTags(['Dummy', 'Test'])
 
     if (amount > 0) {
-        transactionBuilder.withPaymentTo('TRANSFER', 'BUSINESS_ACCOUNT')
+        transactionBuilder.withPaymentTo('TRANSFER', 'WORK_ACCOUNT')
         transactionBuilder.addTags(['IncomeTag'])
     } else {
         transactionBuilder.withPaymentFrom('EC', 'HOME_ACCOUNT')
@@ -42,7 +42,7 @@ export const minimalDummyTransaction = (
         .withAgent('IntegrationTest-Agent')
 
     if (amount > 0) {
-        transactionBuilder.withPaymentTo('TRANSFER', 'BUSINESS_ACCOUNT')
+        transactionBuilder.withPaymentTo('TRANSFER', 'WORK_ACCOUNT')
     } else {
         transactionBuilder.withPaymentFrom('EC', 'HOME_ACCOUNT')
     }
