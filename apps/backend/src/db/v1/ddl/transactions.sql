@@ -5,11 +5,13 @@ CREATE TABLE IF NOT EXISTS transactions.transactions (
   context varchar NOT NULL,
   date date NOT NULL,
   amount numeric(10, 2) NOT NULL,
-  source_bank_account character varying,
-  target_bank_account character varying,
-  currency character varying,
+  source_bank_account varchar,
+  target_bank_account varchar,
+  currency varchar,
   exchange_rate numeric,
-  agent character varying NOT NULL
+  agent varchar NOT NULL,
+  CONSTRAINT fk_source_bank_account FOREIGN KEY (source_bank_account) REFERENCES utils.bank_accounts(account) ON UPDATE CASCADE,
+	CONSTRAINT fk_target_bank_account FOREIGN KEY (target_bank_account) REFERENCES utils.bank_accounts(account) ON UPDATE CASCADE
 );
 
 CREATE SEQUENCE transactions.transactions_id_seq AS integer START
@@ -46,8 +48,8 @@ SET DEFAULT nextval(
 CREATE TABLE IF NOT EXISTS transactions.transaction_details (
   id integer PRIMARY KEY,
   transaction_id integer NOT NULL REFERENCES transactions.transactions (id),
-  tax_category character varying REFERENCES utils.tax_categories (category),
-  payment_method character varying REFERENCES utils.payment_methods (name),
+  tax_category varchar REFERENCES utils.tax_categories (category),
+  payment_method varchar REFERENCES utils.payment_methods (name),
   comment text,
   receipt_id integer REFERENCES transactions.transaction_receipts (id)
 );
