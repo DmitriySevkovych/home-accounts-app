@@ -75,8 +75,8 @@ export const getTransactions = async (
         text: `
             SELECT
                 w.id as work_id, w.type as category, w.origin, w.description, w.invoice_key, w.vat, w.country,
-                tr.id, tr.context, tr.amount, tr.date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
-                td.payment_method, td.tax_category, td.comment, td.receipt_id
+                tr.id, tr.context, tr.amount, tr.date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent, tr.receipt_id,
+                td.payment_method, td.tax_category, td.comment
             FROM
             (
                 SELECT id, transaction_id, type, origin, description, country, vat, NULL AS invoice_key FROM ${WORK_SCHEMA}.expenses
@@ -111,8 +111,8 @@ export const getTransactionById = async (
         text: `
         SELECT
             w.id as work_id, w.type as category, w.origin, w.description, w.invoice_key, w.vat, w.country,
-            tr.id, tr.context, tr.amount, tr.date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
-            td.payment_method, td.tax_category, td.comment, td.receipt_id
+            tr.id, tr.context, tr.amount, tr.date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent, tr.receipt_id,
+            td.payment_method, td.tax_category, td.comment
         FROM
         (
             SELECT id, transaction_id, type, origin, description, country, vat, NULL AS invoice_key FROM ${WORK_SCHEMA}.expenses
@@ -144,15 +144,18 @@ export const insertTransaction = async (
     try {
         await client.query('BEGIN')
 
-        const transaction_id = await insertTransactionDAO(transaction, client)
-
         const receipt_id = await insertTransactionReceiptDAO(
             transactionReceipt,
             client
         )
 
+        const transaction_id = await insertTransactionDAO(
+            { ...transaction, receiptId: receipt_id },
+            client
+        )
+
         await insertTransactionDetailsDAO(
-            { ...transaction, transaction_id, receipt_id },
+            { ...transaction, transaction_id },
             client
         )
 
@@ -208,9 +211,6 @@ export const updateTransaction = async (
         // Update work table based on context
         const expense_or_income_id = await _updateWorkDAO(transaction, client)
 
-        // Update transaction table
-        await updateTransactionDAO(transaction, client)
-
         // Update transaction receipt table
         const receipt_id = await updateTransactionReceiptDAO(
             {
@@ -220,12 +220,17 @@ export const updateTransaction = async (
             client
         )
 
+        // Update transaction table
+        await updateTransactionDAO(
+            { ...transaction, receiptId: receipt_id },
+            client
+        )
+
         // Update transaction details table
         await updateTransactionDetailsDAO(
             {
                 ...transaction,
                 transaction_id: id,
-                receipt_id: receipt_id,
             },
             client
         )

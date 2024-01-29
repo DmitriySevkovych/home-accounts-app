@@ -1,30 +1,5 @@
 ---- transactions
 --
-CREATE TABLE IF NOT EXISTS transactions.transactions (
-  id integer PRIMARY KEY,
-  context varchar NOT NULL,
-  date date NOT NULL,
-  amount numeric(10, 2) NOT NULL,
-  source_bank_account varchar,
-  target_bank_account varchar,
-  currency varchar,
-  exchange_rate numeric,
-  agent varchar NOT NULL,
-  CONSTRAINT fk_source_bank_account FOREIGN KEY (source_bank_account) REFERENCES utils.bank_accounts(account) ON UPDATE CASCADE,
-	CONSTRAINT fk_target_bank_account FOREIGN KEY (target_bank_account) REFERENCES utils.bank_accounts(account) ON UPDATE CASCADE
-);
-
-CREATE SEQUENCE transactions.transactions_id_seq AS integer START
-WITH
-  1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
-
-ALTER SEQUENCE transactions.transactions_id_seq OWNED BY transactions.transactions.id;
-
-ALTER TABLE ONLY transactions.transactions
-ALTER COLUMN id
-SET DEFAULT nextval('transactions.transactions_id_seq'::regclass);
-
---
 CREATE TABLE IF NOT EXISTS transactions.transaction_receipts (
   id integer PRIMARY KEY,
   name varchar NOT NULL,
@@ -45,13 +20,39 @@ SET DEFAULT nextval(
 );
 
 --
+CREATE TABLE IF NOT EXISTS transactions.transactions (
+  id integer PRIMARY KEY,
+  context varchar NOT NULL,
+  date date NOT NULL,
+  amount numeric(10, 2) NOT NULL,
+  source_bank_account varchar,
+  target_bank_account varchar,
+  currency varchar,
+  exchange_rate numeric,
+  agent varchar NOT NULL,
+  receipt_id integer NULL,
+  CONSTRAINT fk_source_bank_account FOREIGN KEY (source_bank_account) REFERENCES utils.bank_accounts (account) ON UPDATE CASCADE,
+  CONSTRAINT fk_target_bank_account FOREIGN KEY (target_bank_account) REFERENCES utils.bank_accounts (account) ON UPDATE CASCADE,
+  CONSTRAINT fk_transaction_receipt FOREIGN KEY (receipt_id) REFERENCES transactions.transaction_receipts (id) ON DELETE SET NULL
+);
+
+CREATE SEQUENCE transactions.transactions_id_seq AS integer START
+WITH
+  1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
+
+ALTER SEQUENCE transactions.transactions_id_seq OWNED BY transactions.transactions.id;
+
+ALTER TABLE ONLY transactions.transactions
+ALTER COLUMN id
+SET DEFAULT nextval('transactions.transactions_id_seq'::regclass);
+
+--
 CREATE TABLE IF NOT EXISTS transactions.transaction_details (
   id integer PRIMARY KEY,
   transaction_id integer NOT NULL REFERENCES transactions.transactions (id),
   tax_category varchar REFERENCES utils.tax_categories (category),
   payment_method varchar REFERENCES utils.payment_methods (name),
-  comment text,
-  receipt_id integer REFERENCES transactions.transaction_receipts (id)
+  comment text
 );
 
 CREATE SEQUENCE transactions.transaction_details_id_seq AS integer START
@@ -64,4 +65,14 @@ ALTER TABLE ONLY transactions.transaction_details
 ALTER COLUMN id
 SET DEFAULT nextval(
   'transactions.transaction_details_id_seq'::regclass
+);
+
+--
+CREATE TABLE transactions.transaction_tags (
+  id serial NOT NULL,
+  transaction_id integer NOT NULL,
+  tag varchar NOT NULL,
+  CONSTRAINT transaction_tags_pk PRIMARY KEY (id),
+  CONSTRAINT transaction_tags_fk FOREIGN KEY (transaction_id) REFERENCES transactions.transactions (id) ON DELETE CASCADE,
+  CONSTRAINT transaction_tags_fk_1 FOREIGN KEY (tag) REFERENCES utils.tags (tag) ON DELETE CASCADE ON UPDATE CASCADE
 );

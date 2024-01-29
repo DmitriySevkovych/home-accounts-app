@@ -24,6 +24,7 @@ export type TransactionDAO = Pick<
     | 'currency'
     | 'exchangeRate'
     | 'agent'
+    | 'receiptId'
 > & { id?: number }
 
 export type TransactionDetailsDAO = Pick<
@@ -31,7 +32,6 @@ export type TransactionDetailsDAO = Pick<
     'paymentMethod' | 'taxCategory' | 'comment'
 > & {
     transaction_id: number
-    receipt_id?: number
 }
 
 type TransactionReceiptDAO = TransactionReceipt
@@ -114,8 +114,8 @@ export const insertTransactionDAO = async (
     const query = {
         name: 'insert-into-transactions.transactions',
         text: `
-        INSERT INTO transactions.transactions(context, date, amount, source_bank_account, target_bank_account, currency, exchange_rate, agent)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        INSERT INTO transactions.transactions(context, date, amount, source_bank_account, target_bank_account, currency, exchange_rate, agent, receipt_id)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         RETURNING id;`,
         values: [
             transactionDAO.context,
@@ -126,6 +126,7 @@ export const insertTransactionDAO = async (
             transactionDAO.currency,
             transactionDAO.exchangeRate,
             transactionDAO.agent,
+            transactionDAO.receiptId,
         ],
     }
     const queryResult = await client.query(query)
@@ -141,13 +142,12 @@ export const insertTransactionDetailsDAO = async (
 ): Promise<void> => {
     const query = {
         name: 'insert-into-transactions.transaction_details',
-        text: 'INSERT INTO transactions.transaction_details(payment_method, tax_category, comment, transaction_id, receipt_id) VALUES ($1, $2, $3, $4, $5);',
+        text: 'INSERT INTO transactions.transaction_details(payment_method, tax_category, comment, transaction_id) VALUES ($1, $2, $3, $4);',
         values: [
             transactionDetailsDAO.paymentMethod,
             transactionDetailsDAO.taxCategory,
             transactionDetailsDAO.comment,
             transactionDetailsDAO.transaction_id,
-            transactionDetailsDAO.receipt_id,
         ],
     }
     await client.query(query)
@@ -196,8 +196,8 @@ export const updateTransactionDAO = async (
         name: 'update-transactions.transactions',
         text: `
         UPDATE transactions.transactions 
-        SET context=$1, date=$2, amount=$3, source_bank_account=$4, target_bank_account=$5, currency=$6, exchange_rate=$7, agent=$8
-        WHERE id=$9;`,
+        SET context=$1, date=$2, amount=$3, source_bank_account=$4, target_bank_account=$5, currency=$6, exchange_rate=$7, agent=$8, receipt_id=$9
+        WHERE id=$10;`,
         values: [
             transactionDAO.context,
             transactionDAO.date.toISOString(),
@@ -207,6 +207,7 @@ export const updateTransactionDAO = async (
             transactionDAO.currency,
             transactionDAO.exchangeRate,
             transactionDAO.agent,
+            transactionDAO.receiptId,
             transactionDAO.id,
         ],
     }
@@ -222,12 +223,11 @@ export const updateTransactionDetailsDAO = async (
 ): Promise<void> => {
     const query = {
         name: 'update-transactions.transaction_details',
-        text: 'UPDATE transactions.transaction_details SET payment_method=$1, tax_category=$2, comment=$3, receipt_id=$4 WHERE transaction_id=$5;',
+        text: 'UPDATE transactions.transaction_details SET payment_method=$1, tax_category=$2, comment=$3 WHERE transaction_id=$4;',
         values: [
             transactionDetailsDAO.paymentMethod,
             transactionDetailsDAO.taxCategory,
             transactionDetailsDAO.comment,
-            transactionDetailsDAO.receipt_id,
             transactionDetailsDAO.transaction_id,
         ],
     }

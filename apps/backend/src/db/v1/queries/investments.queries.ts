@@ -111,8 +111,8 @@ export const getTransactionById = async (
         text: `
         SELECT
             i.id as investment_id, i.type as category, i.origin, i.description, i.investment,
-            tr.id, tr.context, tr.amount, tr.date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
-            td.payment_method, td.tax_category, td.comment, td.receipt_id
+            tr.id, tr.context, tr.amount, tr.date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent, tr.receipt_id,
+            td.payment_method, td.tax_category, td.comment
         FROM
         (
             SELECT id, "type", origin, description, transaction_id, investment FROM ${INVESTMENTS_SCHEMA}.expenses
@@ -144,15 +144,21 @@ export const insertTransaction = async (
     try {
         await client.query('BEGIN')
 
-        const transaction_id = await insertTransactionDAO(transaction, client)
-
         const receipt_id = await insertTransactionReceiptDAO(
             transactionReceipt,
             client
         )
 
+        const transaction_id = await insertTransactionDAO(
+            {
+                ...transaction,
+                receiptId: receipt_id,
+            },
+            client
+        )
+
         await insertTransactionDetailsDAO(
-            { ...transaction, transaction_id, receipt_id },
+            { ...transaction, transaction_id },
             client
         )
 
@@ -216,9 +222,6 @@ export const updateTransaction = async (
             client
         )
 
-        // Update transaction table
-        await updateTransactionDAO(transaction, client)
-
         // Update transaction receipt table
         const receipt_id = await updateTransactionReceiptDAO(
             {
@@ -228,12 +231,20 @@ export const updateTransaction = async (
             client
         )
 
+        // Update transaction table
+        await updateTransactionDAO(
+            {
+                ...transaction,
+                receiptId: receipt_id,
+            },
+            client
+        )
+
         // Update transaction details table
         await updateTransactionDetailsDAO(
             {
                 ...transaction,
                 transaction_id: id,
-                receipt_id: receipt_id,
             },
             client
         )
