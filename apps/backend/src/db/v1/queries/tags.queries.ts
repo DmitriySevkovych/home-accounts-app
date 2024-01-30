@@ -1,48 +1,28 @@
-import { TransactionContext, TransactionType } from 'domain-model'
 import { getLogger } from 'logger'
 import type { Pool, PoolClient } from 'pg'
 
 const logger = getLogger('db')
 
-// TECHNICAL DEBT: persistence of tags in DB needs to be refactored and simplified, cf. GitHub Issue #41
-// TODO: remove cashflow argument once DB has been adjusted
-type TagTable = 'tags2expenses' | 'tags2income'
-
-// TECHNICAL DEBT: persistence of tags in DB needs to be refactored and simplified, cf. GitHub Issue #41
-// TODO: remove TransactionType argument once DB has been adjusted
-// TODO: replace home_id with transaction_id once DB has been adjusted
 export type TagDAO = {
     tag: string
-    type: TransactionType
-    context: TransactionContext
-    expense_or_income_id: number
+    transaction_id: number
 }
 
 export type TransactionTagsBatchDAO = {
     tags: string[]
-    type: TransactionType
-    context: TransactionContext
-    expense_or_income_id: number
+    transaction_id: number
 }
 
-// TECHNICAL DEBT: persistence of tags in DB needs to be refactored and simplified, cf. GitHub Issue #41
 export const insertTagDAO = async (
     tagDAO: TagDAO,
     client: PoolClient
 ): Promise<void> => {
-    // TODO: replace expense_or_income_id with transaction_id once DB has been adjusted
-    // TODO: remove TransactionType argument once DB has been adjusted
-    const { tag, expense_or_income_id, type, context } = tagDAO
-
-    // TODO: remove once DB has been adjusted
-    const table: TagTable = type === 'income' ? 'tags2income' : 'tags2expenses'
-    // TODO: remove once DB has been adjusted
-    const idColumn = `${type}_id`
+    const { tag, transaction_id } = tagDAO
 
     const query = {
-        name: `insert-into-${context}.${table}`,
-        text: `INSERT INTO ${context}.${table}(tag, ${idColumn}) VALUES ($1, $2);`,
-        values: [tag, expense_or_income_id],
+        name: `insert-into-transactions.transaction_tags`,
+        text: `INSERT INTO transactions.transaction_tags(tag, transaction_id) VALUES ($1, $2);`,
+        values: [tag, transaction_id],
     }
 
     // Create new tag if necessary
@@ -57,39 +37,30 @@ export const updateTransactionTags = async (
     transactionTagsDAO: TransactionTagsBatchDAO,
     client: PoolClient
 ): Promise<void> => {
-    const { tags, expense_or_income_id, context, type } = transactionTagsDAO
+    const { tags, transaction_id } = transactionTagsDAO
     // Create a 'tag diff' (in-flight transaction tags vs already stored tags)
-    const storedTags = await getTagsByExpenseOrIncomeId(
-        expense_or_income_id,
-        type,
-        context,
-        client
-    )
+    const storedTags = await getTagsByTransactionId(transaction_id, client)
 
     const newTags = tags.filter((tag) => !storedTags.includes(tag))
     const obsoleteTags = storedTags.filter((tag) => !tags.includes(tag))
 
-    // Insert new transaction tags into DB
+    // Insert new transaction tags into DB // TODO batch inserts!
     newTags.forEach((tag) =>
         insertTagDAO(
             {
                 tag,
-                expense_or_income_id,
-                type,
-                context,
+                transaction_id,
             },
             client
         )
     )
 
-    // Delete obsolete transaction tags from DB
+    // Delete obsolete transaction tags from DB // TODO batch deletes with something like WHERE tags IN(...)
     obsoleteTags.forEach((tag) =>
         _untag(
             {
                 tag,
-                expense_or_income_id,
-                type,
-                context,
+                transaction_id,
             },
             client
         )
@@ -97,42 +68,23 @@ export const updateTransactionTags = async (
 }
 
 const _untag = async (tagDAO: TagDAO, client: PoolClient): Promise<void> => {
-    // TECHNICAL DEBT: persistence of tags in DB needs to be refactored and simplified, cf. GitHub Issue #41
-    // TODO: remove type argument once DB has been adjusted
-    // TODO: replace expense_or_income_id with transaction_id once DB has been adjusted
-    // TODO: remove 'table' and 'column_id', they should no longer be necessary
-    const { tag, expense_or_income_id, type, context } = tagDAO
-    const table: TagTable = type === 'income' ? 'tags2income' : 'tags2expenses'
-    const id_column: string = type === 'income' ? 'income_id' : 'expense_id'
+    const { tag, transaction_id } = tagDAO
     const query = {
-        name: `delet-from-${context}.${table}`,
-        text: `DELETE FROM ${context}.${table} WHERE tag=$1 AND ${id_column}=$2;`,
-        values: [tag, expense_or_income_id],
+        name: `delet-from-transactions.transaction_tags`,
+        text: `DELETE FROM transactions.transaction_tags WHERE tag=$1 AND transaction_id=$2;`,
+        values: [tag, transaction_id],
     }
     await client.query(query)
 }
 
-// TECHNICAL DEBT: persistence of tags in DB needs to be refactored and simplified, cf. GitHub Issue #41
-// TODO: remove type argument once DB has been adjusted
-// TODO: replace expense_or_income_id with transaction_id once DB has been adjusted
-// TODO: rename function once DB has been adjusted
-export const getTagsByExpenseOrIncomeId = async (
-    expense_or_income_id: number,
-    type: TransactionType,
-    context: TransactionContext,
+export const getTagsByTransactionId = async (
+    transaction_id: number,
     dbConnection: Pool | PoolClient
 ): Promise<string[]> => {
-    // TODO: remove once DB has been adjusted
-    const schema = context
-    // TODO: remove once DB has been adjusted
-    const table: TagTable = type === 'income' ? 'tags2income' : 'tags2expenses'
-    // TODO: remove once DB has been adjusted
-    const idColumn = `${type}_id`
-
     const query = {
-        name: `select-${schema}.${table}`,
-        text: `SELECT tag FROM ${schema}.${table} WHERE ${idColumn} = $1;`,
-        values: [expense_or_income_id],
+        name: `select-transactions.transaction_tags`,
+        text: `SELECT tag FROM transactions.transaction_tags WHERE transaction_id = $1;`,
+        values: [transaction_id],
     }
     const queryResult = await dbConnection.query(query)
     return queryResult.rowCount > 0

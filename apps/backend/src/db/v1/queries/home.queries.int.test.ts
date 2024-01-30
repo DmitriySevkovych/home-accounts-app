@@ -29,7 +29,7 @@ describe('Database queries targeting the home schema', () => {
         ${20}    | ${'SALARY'}
         ${-2.99} | ${'FOOD'}
     `(
-        'insertTransaction should return a new transaction ID after successfully inserting into multiple tables',
+        'insertTransaction ($amount, $category) should return a new transaction ID after successfully inserting into multiple tables',
         async ({ amount, category }) => {
             // Arrange
             const transaction: Transaction = dummyTransaction(
@@ -150,6 +150,6 @@ describe('Database queries targeting the home schema', () => {
         expect(transaction.agent).toBe('IntegrationTest-Agent') // value comes from dummyTransaction()
         expect(transaction.paymentMethod).toBe('TRANSFER') // value comes from dummyTransaction()
         expect(transaction.sourceBankAccount).toBeUndefined()
-        expect(transaction.targetBankAccount).toBe('BUSINESS_ACCOUNT') // value comes from dummyTransaction()
+        expect(transaction.targetBankAccount).toBe('WORK_ACCOUNT') // value comes from dummyTransaction()
     })
 })
