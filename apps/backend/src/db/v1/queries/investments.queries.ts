@@ -17,7 +17,7 @@ import {
 import { PaginationOptions } from '../../../helpers/pagination'
 import {
     TagDAO,
-    getTagsByExpenseOrIncomeId,
+    getTagsByTransactionId,
     insertTagDAO,
     updateTransactionTags,
 } from './tags.queries'
@@ -74,14 +74,14 @@ export const getTransactions = async (
         name: `select-${INVESTMENTS_SCHEMA}-transactions`,
         text: `
             SELECT
-                i.id as investment_id, i.type as category, i.origin, i.description, i.investment,
+                i.type as category, i.origin, i.description, i.investment,
                 tr.id, tr.context, tr.amount, tr.date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent,
                 td.payment_method, td.tax_category, td.comment, td.receipt_id
             FROM
             (
-                SELECT id, "type", origin, description, transaction_id, investment FROM ${INVESTMENTS_SCHEMA}.expenses
+                SELECT "type", origin, description, transaction_id, investment FROM ${INVESTMENTS_SCHEMA}.expenses
                 UNION ALL
-                SELECT id, "type", origin, description, transaction_id, investment FROM ${INVESTMENTS_SCHEMA}.income
+                SELECT "type", origin, description, transaction_id, investment FROM ${INVESTMENTS_SCHEMA}.income
             ) i
             JOIN transactions.transactions tr ON i.transaction_id = tr.id
             JOIN transactions.transaction_details td ON tr.id = td.transaction_id
@@ -110,14 +110,14 @@ export const getTransactionById = async (
         //TODO extract logic to DB view?
         text: `
         SELECT
-            i.id as investment_id, i.type as category, i.origin, i.description, i.investment,
+            i.type as category, i.origin, i.description, i.investment,
             tr.id, tr.context, tr.amount, tr.date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent, tr.receipt_id,
             td.payment_method, td.tax_category, td.comment
         FROM
         (
-            SELECT id, "type", origin, description, transaction_id, investment FROM ${INVESTMENTS_SCHEMA}.expenses
+            SELECT "type", origin, description, transaction_id, investment FROM ${INVESTMENTS_SCHEMA}.expenses
             UNION ALL
-            SELECT id, "type", origin, description, transaction_id, investment FROM ${INVESTMENTS_SCHEMA}.income
+            SELECT "type", origin, description, transaction_id, investment FROM ${INVESTMENTS_SCHEMA}.income
         ) i
         JOIN transactions.transactions tr ON i.transaction_id = tr.id
         JOIN transactions.transaction_details td ON tr.id = td.transaction_id
@@ -152,7 +152,7 @@ export const insertTransaction = async (
         const transaction_id = await insertTransactionDAO(
             {
                 ...transaction,
-                receiptId: receipt_id,
+                receipt_id,
             },
             client
         )
@@ -162,7 +162,7 @@ export const insertTransaction = async (
             client
         )
 
-        const investment_id = await _insertInvestmentDAO(
+        await _insertInvestmentDAO(
             {
                 ...transaction,
                 transaction_id,
@@ -171,12 +171,9 @@ export const insertTransaction = async (
         )
 
         for (let i = 0; i < transaction.tags.length; i++) {
-            // TODO: replace expense_or_income_id with transaction_id once DB has been adjusted
             const tagDAO: TagDAO = {
-                type: transaction.type,
-                context: transaction.context,
                 tag: transaction.tags[i],
-                expense_or_income_id: investment_id,
+                transaction_id,
             }
             await insertTagDAO(tagDAO, client)
         }
@@ -214,7 +211,7 @@ export const updateTransaction = async (
         await client.query('BEGIN')
 
         // Update investments table based on context
-        const expense_or_income_id = await _updateInvestmentDAO(
+        await _updateInvestmentDAO(
             {
                 ...transaction,
                 transaction_id: id,
@@ -235,7 +232,7 @@ export const updateTransaction = async (
         await updateTransactionDAO(
             {
                 ...transaction,
-                receiptId: receipt_id,
+                receipt_id,
             },
             client
         )
@@ -253,7 +250,7 @@ export const updateTransaction = async (
         await updateTransactionTags(
             {
                 ...transaction,
-                expense_or_income_id,
+                transaction_id: id,
             },
             client
         )
@@ -342,7 +339,6 @@ const _mapToTransaction = async (
 ): Promise<Transaction> => {
     const {
         id,
-        investment_id,
         context,
         category,
         origin,
@@ -378,15 +374,8 @@ const _mapToTransaction = async (
         .withAgent(agent)
         .withInvestment(investment)
 
-    // TECHNICAL DEBT: persistence of tags in DB needs to be refactored and simplified, cf. GitHub Issue #41
-    // TODO remove differentiation income/expense once DB is adjusted
-    // TODO remove this function call from here!!! This is unclean and bad for performance
-    const tags = await getTagsByExpenseOrIncomeId(
-        investment_id,
-        transactionType,
-        context,
-        connectionPool
-    )
+    // TODO remove this function call from here!!! This is unclean and bad for performance -> Join instead?
+    const tags = await getTagsByTransactionId(id, connectionPool)
     transactionBuilder.addTags(tags)
     return transactionBuilder.build()
 }

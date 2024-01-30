@@ -24,8 +24,7 @@ export type TransactionDAO = Pick<
     | 'currency'
     | 'exchangeRate'
     | 'agent'
-    | 'receiptId'
-> & { id?: number }
+> & { id?: number; receipt_id?: number }
 
 export type TransactionDetailsDAO = Pick<
     Transaction,
@@ -126,7 +125,7 @@ export const insertTransactionDAO = async (
             transactionDAO.currency,
             transactionDAO.exchangeRate,
             transactionDAO.agent,
-            transactionDAO.receiptId,
+            transactionDAO.receipt_id,
         ],
     }
     const queryResult = await client.query(query)
@@ -207,7 +206,7 @@ export const updateTransactionDAO = async (
             transactionDAO.currency,
             transactionDAO.exchangeRate,
             transactionDAO.agent,
-            transactionDAO.receiptId,
+            transactionDAO.receipt_id,
             transactionDAO.id,
         ],
     }
