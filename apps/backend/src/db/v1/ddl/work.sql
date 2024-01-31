@@ -56,7 +56,7 @@ SET DEFAULT nextval(
 -- expenses 
 CREATE TABLE work.expenses (
   id integer PRIMARY KEY,
-  type varchar NOT NULL REFERENCES utils.expense_types (type),
+  type varchar NOT NULL,
   origin varchar NOT NULL,
   description varchar,
   vat numeric,
@@ -77,7 +77,7 @@ SET DEFAULT nextval('work.expenses_id_seq'::regclass);
 -- income
 CREATE TABLE work.income (
   id integer PRIMARY KEY,
-  type varchar NOT NULL REFERENCES utils.income_types (type),
+  type varchar NOT NULL,
   origin varchar NOT NULL,
   description varchar NOT NULL,
   transaction_id integer NOT NULL REFERENCES transactions.transactions (id),

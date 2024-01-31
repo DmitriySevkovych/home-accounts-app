@@ -7,6 +7,8 @@ import {
     ProjectInvoice,
     TaxCategory,
     TransactionCategory,
+    TransactionContext,
+    TransactionType,
 } from 'domain-model'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
@@ -58,6 +60,26 @@ export const fetchTransactionConstants = async () => {
         ...response[1],
         ...response[2],
         ...response[3],
+    }
+}
+
+const _eligibleCategories = (
+    categories: TransactionCategory[],
+    type: TransactionType,
+    context: TransactionContext
+) => {
+    if (type === 'expense') {
+        return categories
+            .filter((c) => c.canBeExpense && c.context === context)
+            .map((obj) => obj.category)
+            .sort()
+    } else if (type === 'income') {
+        return categories
+            .filter((c) => c.canBeIncome && c.context === context)
+            .map((obj) => obj.category)
+            .sort()
+    } else {
+        throw new Error(`Unknown transaction type ${type}`)
     }
 }
 
@@ -134,12 +156,11 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                         id="category"
                         form={form}
                         label="Category"
-                        options={transactionCategories
-                            .filter((cat) =>
-                                cat.allowedTypes.includes(transactionType)
-                            )
-                            .map((obj) => obj.category)
-                            .sort()}
+                        options={_eligibleCategories(
+                            transactionCategories,
+                            transactionType,
+                            transactionContext
+                        )}
                     />
 
                     <AutocompleteInput

@@ -2,7 +2,7 @@
 -- expenses 
 CREATE TABLE home.expenses (
   id integer PRIMARY KEY,
-  type character varying NOT NULL REFERENCES utils.expense_types (type),
+  type character varying NOT NULL,
   origin character varying NOT NULL,
   description character varying,
   transaction_id integer NOT NULL REFERENCES transactions.transactions (id)
@@ -21,7 +21,7 @@ SET DEFAULT nextval('home.expenses_id_seq'::regclass);
 -- income
 CREATE TABLE home.income (
   id integer PRIMARY KEY,
-  type character varying NOT NULL REFERENCES utils.income_types (type),
+  type character varying NOT NULL,
   origin character varying NOT NULL,
   description character varying,
   transaction_id integer NOT NULL REFERENCES transactions.transactions (id)

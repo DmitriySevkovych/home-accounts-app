@@ -1,5 +1,21 @@
 ---- transactions
 --
+CREATE TABLE IF NOT EXISTS transactions.transaction_contexts (
+  context VARCHAR NOT NULL,
+  CONSTRAINT transaction_contexts_pk PRIMARY KEY (context)
+);
+
+--
+CREATE TABLE transactions.transaction_categories (
+  category VARCHAR NOT NULL,
+  context VARCHAR NOT NULL,
+  can_be_expense BOOLEAN,
+  can_be_income BOOLEAN,
+  CONSTRAINT transaction_categories_pk PRIMARY KEY (category, context),
+  CONSTRAINT transaction_categories_fk FOREIGN KEY (context) REFERENCES transactions.transaction_contexts (context) ON UPDATE CASCADE
+);
+
+--
 CREATE TABLE IF NOT EXISTS transactions.transaction_receipts (
   id integer PRIMARY KEY,
   name varchar NOT NULL,
@@ -33,7 +49,8 @@ CREATE TABLE IF NOT EXISTS transactions.transactions (
   receipt_id integer NULL,
   CONSTRAINT fk_source_bank_account FOREIGN KEY (source_bank_account) REFERENCES utils.bank_accounts (account) ON UPDATE CASCADE,
   CONSTRAINT fk_target_bank_account FOREIGN KEY (target_bank_account) REFERENCES utils.bank_accounts (account) ON UPDATE CASCADE,
-  CONSTRAINT fk_transaction_receipt FOREIGN KEY (receipt_id) REFERENCES transactions.transaction_receipts (id) ON DELETE SET NULL
+  CONSTRAINT fk_transaction_receipt FOREIGN KEY (receipt_id) REFERENCES transactions.transaction_receipts (id) ON DELETE SET NULL,
+  CONSTRAINT fk_transaction_context FOREIGN KEY (context) REFERENCES transactions.transaction_contexts (context) ON UPDATE CASCADE
 );
 
 CREATE SEQUENCE transactions.transactions_id_seq AS integer START

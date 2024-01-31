@@ -100,7 +100,9 @@ export class PostgresRepository implements Repository {
 
     // Utility data
     getTransactionCategories = async (): Promise<TransactionCategory[]> => {
-        return await utilsQueries.getTransactionCategories(this.connectionPool)
+        return await transactionsQueries.getTransactionCategories(
+            this.connectionPool
+        )
     }
 
     getTaxCategories = async (): Promise<TaxCategory[]> => {

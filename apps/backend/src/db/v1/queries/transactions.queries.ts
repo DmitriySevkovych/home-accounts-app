@@ -1,5 +1,6 @@
 import {
     Transaction,
+    TransactionCategory,
     TransactionContext,
     TransactionReceipt,
 } from 'domain-model'
@@ -59,6 +60,24 @@ export const getTransactionContext = async (
         )
     }
     return queryResult.rows[0].context
+}
+
+export const getTransactionCategories = async (
+    connectionPool: Pool
+): Promise<TransactionCategory[]> => {
+    const query = {
+        text: `SELECT category, context, can_be_expense, can_be_income from transactions.transaction_categories;`,
+    }
+    const queryResult = await connectionPool.query(query)
+    const transactionCategories: TransactionCategory[] = queryResult.rows.map(
+        (row) => ({
+            category: row.category,
+            context: row.context,
+            canBeExpense: Boolean(row.can_be_expense),
+            canBeIncome: Boolean(row.can_be_income),
+        })
+    )
+    return transactionCategories
 }
 
 export const getTransactionOrigins = async (
