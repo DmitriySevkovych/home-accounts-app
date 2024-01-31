@@ -24,15 +24,11 @@ export type TransactionDAO = Pick<
     | 'targetBankAccount'
     | 'currency'
     | 'exchangeRate'
+    | 'paymentMethod'
+    | 'taxCategory'
+    | 'comment'
     | 'agent'
 > & { id?: number; receipt_id?: number }
-
-export type TransactionDetailsDAO = Pick<
-    Transaction,
-    'paymentMethod' | 'taxCategory' | 'comment'
-> & {
-    transaction_id: number
-}
 
 type TransactionReceiptDAO = TransactionReceipt
 
@@ -132,8 +128,8 @@ export const insertTransactionDAO = async (
     const query = {
         name: 'insert-into-transactions.transactions',
         text: `
-        INSERT INTO transactions.transactions(context, date, amount, source_bank_account, target_bank_account, currency, exchange_rate, agent, receipt_id)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        INSERT INTO transactions.transactions(context, date, amount, source_bank_account, target_bank_account, currency, exchange_rate, payment_method, tax_category, comment, agent, receipt_id)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
         RETURNING id;`,
         values: [
             transactionDAO.context,
@@ -143,6 +139,9 @@ export const insertTransactionDAO = async (
             transactionDAO.targetBankAccount,
             transactionDAO.currency,
             transactionDAO.exchangeRate,
+            transactionDAO.paymentMethod,
+            transactionDAO.taxCategory,
+            transactionDAO.comment,
             transactionDAO.agent,
             transactionDAO.receipt_id,
         ],
@@ -152,26 +151,6 @@ export const insertTransactionDAO = async (
         `Inserted a new row in transactions.transactions with primary key id=${queryResult.rows[0].id}.`
     )
     return queryResult.rows[0].id
-}
-
-export const insertTransactionDetailsDAO = async (
-    transactionDetailsDAO: TransactionDetailsDAO,
-    client: PoolClient
-): Promise<void> => {
-    const query = {
-        name: 'insert-into-transactions.transaction_details',
-        text: 'INSERT INTO transactions.transaction_details(payment_method, tax_category, comment, transaction_id) VALUES ($1, $2, $3, $4);',
-        values: [
-            transactionDetailsDAO.paymentMethod,
-            transactionDetailsDAO.taxCategory,
-            transactionDetailsDAO.comment,
-            transactionDetailsDAO.transaction_id,
-        ],
-    }
-    await client.query(query)
-    logger.trace(
-        `Inserted a new row in transactions.transaction_details with foreign key transaction_id=${transactionDetailsDAO.transaction_id}.`
-    )
 }
 
 export const insertTransactionReceiptDAO = async (
@@ -214,8 +193,8 @@ export const updateTransactionDAO = async (
         name: 'update-transactions.transactions',
         text: `
         UPDATE transactions.transactions 
-        SET context=$1, date=$2, amount=$3, source_bank_account=$4, target_bank_account=$5, currency=$6, exchange_rate=$7, agent=$8, receipt_id=$9
-        WHERE id=$10;`,
+        SET context=$1, date=$2, amount=$3, source_bank_account=$4, target_bank_account=$5, currency=$6, exchange_rate=$7, payment_method=$8, tax_category=$9, comment=$10, agent=$11, receipt_id=$12
+        WHERE id=$13;`,
         values: [
             transactionDAO.context,
             transactionDAO.date.toISOString(),
@@ -224,6 +203,9 @@ export const updateTransactionDAO = async (
             transactionDAO.targetBankAccount,
             transactionDAO.currency,
             transactionDAO.exchangeRate,
+            transactionDAO.paymentMethod,
+            transactionDAO.taxCategory,
+            transactionDAO.comment,
             transactionDAO.agent,
             transactionDAO.receipt_id,
             transactionDAO.id,
@@ -232,26 +214,6 @@ export const updateTransactionDAO = async (
     await client.query(query)
     logger.trace(
         `Updated row with id=${transactionDAO.id} in transactions.transactions.`
-    )
-}
-
-export const updateTransactionDetailsDAO = async (
-    transactionDetailsDAO: TransactionDetailsDAO,
-    client: PoolClient
-): Promise<void> => {
-    const query = {
-        name: 'update-transactions.transaction_details',
-        text: 'UPDATE transactions.transaction_details SET payment_method=$1, tax_category=$2, comment=$3 WHERE transaction_id=$4;',
-        values: [
-            transactionDetailsDAO.paymentMethod,
-            transactionDetailsDAO.taxCategory,
-            transactionDetailsDAO.comment,
-            transactionDetailsDAO.transaction_id,
-        ],
-    }
-    await client.query(query)
-    logger.trace(
-        `Updated row with transaction_id=${transactionDetailsDAO.transaction_id} in transactions.transaction_details.`
     )
 }
 

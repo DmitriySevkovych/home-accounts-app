@@ -21,10 +21,8 @@ import {
 } from './tags.queries'
 import {
     insertTransactionDAO,
-    insertTransactionDetailsDAO,
     insertTransactionReceiptDAO,
     updateTransactionDAO,
-    updateTransactionDetailsDAO,
     updateTransactionReceiptDAO,
 } from './transactions.queries'
 
@@ -49,8 +47,8 @@ export const getTransactions = async (
         text: `
             SELECT
                 h.type as category, h.origin, h.description,
-                tr.id, tr.context, tr.amount, tr.date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent, tr.receipt_id,
-                td.payment_method, td.tax_category, td.comment
+                tr.id, tr.context, tr.amount, tr.date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, 
+                tr.payment_method, tr.tax_category, tr.comment, tr.agent, tr.receipt_id
             FROM
             (
                 SELECT "type", origin, description, transaction_id FROM ${HOME_SCHEMA}.expenses
@@ -58,7 +56,6 @@ export const getTransactions = async (
                 SELECT "type", origin, description, transaction_id FROM ${HOME_SCHEMA}.income
             ) h
             JOIN transactions.transactions tr ON h.transaction_id = tr.id
-            JOIN transactions.transaction_details td ON tr.id = td.transaction_id
             ORDER by tr.id desc
             LIMIT $1
             OFFSET $2;`,
@@ -85,8 +82,8 @@ export const getTransactionById = async (
         text: `
         SELECT
             h.type as category, h.origin, h.description,
-            tr.id, tr.context, tr.amount, tr.date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent, tr.receipt_id,
-            td.payment_method, td.tax_category, td.comment
+            tr.id, tr.context, tr.amount, tr.date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account,
+            tr.payment_method, tr.tax_category, tr.comment, tr.agent, tr.receipt_id
         FROM
         (
             SELECT "type", origin, description, transaction_id FROM ${HOME_SCHEMA}.expenses
@@ -94,7 +91,6 @@ export const getTransactionById = async (
             SELECT "type", origin, description, transaction_id FROM ${HOME_SCHEMA}.income
         ) h
         JOIN transactions.transactions tr ON h.transaction_id = tr.id
-        JOIN transactions.transaction_details td ON tr.id = td.transaction_id
         WHERE tr.id = $1;`,
         values: [id],
     }
@@ -128,11 +124,6 @@ export const insertTransaction = async (
                 ...transaction,
                 receipt_id,
             },
-            client
-        )
-
-        await insertTransactionDetailsDAO(
-            { ...transaction, transaction_id },
             client
         )
 
@@ -207,15 +198,6 @@ export const updateTransaction = async (
             {
                 ...transaction,
                 receipt_id,
-            },
-            client
-        )
-
-        // Update transaction details table
-        await updateTransactionDetailsDAO(
-            {
-                ...transaction,
-                transaction_id: id,
             },
             client
         )

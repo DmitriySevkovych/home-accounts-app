@@ -54,6 +54,7 @@ describe('Database queries targeting only the transactions schema', () => {
             exchangeRate: 1,
             agent: 'IntegrationTest-Agent',
             sourceBankAccount: 'HOME_ACCOUNT',
+            paymentMethod: 'CASH',
         }
         const client = await connectionPool.connect()
         // Act

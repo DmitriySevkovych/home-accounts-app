@@ -23,10 +23,8 @@ import {
 } from './tags.queries'
 import {
     insertTransactionDAO,
-    insertTransactionDetailsDAO,
     insertTransactionReceiptDAO,
     updateTransactionDAO,
-    updateTransactionDetailsDAO,
     updateTransactionReceiptDAO,
 } from './transactions.queries'
 
@@ -75,8 +73,8 @@ export const getTransactions = async (
         text: `
             SELECT
                 w.type as category, w.origin, w.description, w.invoice_key, w.vat, w.country,
-                tr.id, tr.context, tr.amount, tr.date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent, tr.receipt_id,
-                td.payment_method, td.tax_category, td.comment
+                tr.id, tr.context, tr.amount, tr.date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, 
+                tr.payment_method, tr.tax_category, tr.comment, tr.agent, tr.receipt_id
             FROM
             (
                 SELECT transaction_id, type, origin, description, country, vat, NULL AS invoice_key FROM ${WORK_SCHEMA}.expenses
@@ -84,7 +82,6 @@ export const getTransactions = async (
                 SELECT transaction_id, type, origin, description, NULL AS country, NULL AS vat, invoice_key FROM ${WORK_SCHEMA}.income
             ) w
             JOIN transactions.transactions tr ON w.transaction_id = tr.id
-            JOIN transactions.transaction_details td ON tr.id = td.transaction_id
             ORDER by tr.id desc
             LIMIT $1
             OFFSET $2;`,
@@ -111,8 +108,8 @@ export const getTransactionById = async (
         text: `
         SELECT
             w.type as category, w.origin, w.description, w.invoice_key, w.vat, w.country,
-            tr.id, tr.context, tr.amount, tr.date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent, tr.receipt_id,
-            td.payment_method, td.tax_category, td.comment
+            tr.id, tr.context, tr.amount, tr.date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account,
+            tr.payment_method, tr.tax_category, tr.comment, tr.agent, tr.receipt_id
         FROM
         (
             SELECT transaction_id, type, origin, description, country, vat, NULL AS invoice_key FROM ${WORK_SCHEMA}.expenses
@@ -120,7 +117,6 @@ export const getTransactionById = async (
             SELECT transaction_id, type, origin, description, NULL AS country, NULL AS vat, invoice_key FROM ${WORK_SCHEMA}.income
         ) w
         JOIN transactions.transactions tr ON w.transaction_id = tr.id
-        JOIN transactions.transaction_details td ON tr.id = td.transaction_id
         WHERE tr.id = $1;`,
         values: [id],
     }
@@ -151,11 +147,6 @@ export const insertTransaction = async (
 
         const transaction_id = await insertTransactionDAO(
             { ...transaction, receipt_id },
-            client
-        )
-
-        await insertTransactionDetailsDAO(
-            { ...transaction, transaction_id },
             client
         )
 
@@ -216,15 +207,6 @@ export const updateTransaction = async (
 
         // Update transaction table
         await updateTransactionDAO({ ...transaction, receipt_id }, client)
-
-        // Update transaction details table
-        await updateTransactionDetailsDAO(
-            {
-                ...transaction,
-                transaction_id: id,
-            },
-            client
-        )
 
         // Update tags
         await updateTransactionTags(
