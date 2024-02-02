@@ -8,7 +8,7 @@ import {
     getNextWorkday,
     getNumberOfDaysInMonth,
     timestampFromString,
-} from '../models/dates.model'
+} from './dates.model'
 
 /*
     @group unit
