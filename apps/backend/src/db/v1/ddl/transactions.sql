@@ -39,6 +39,9 @@ SET DEFAULT nextval(
 CREATE TABLE IF NOT EXISTS transactions.transactions (
   id integer PRIMARY KEY,
   context varchar NOT NULL,
+  category varchar NOT NULL,
+  origin varchar NOT NULL,
+  description varchar,
   date date NOT NULL,
   amount numeric(10, 2) NOT NULL,
   source_bank_account varchar,
@@ -53,7 +56,7 @@ CREATE TABLE IF NOT EXISTS transactions.transactions (
   CONSTRAINT fk_source_bank_account FOREIGN KEY (source_bank_account) REFERENCES utils.bank_accounts (account) ON UPDATE CASCADE,
   CONSTRAINT fk_target_bank_account FOREIGN KEY (target_bank_account) REFERENCES utils.bank_accounts (account) ON UPDATE CASCADE,
   CONSTRAINT fk_transaction_receipt FOREIGN KEY (receipt_id) REFERENCES transactions.transaction_receipts (id) ON DELETE SET NULL,
-  CONSTRAINT fk_transaction_context FOREIGN KEY (context) REFERENCES transactions.transaction_contexts (context) ON UPDATE CASCADE
+  CONSTRAINT fk_transaction_category_and_context FOREIGN KEY (category, context) REFERENCES transactions.transaction_categories (category, context) ON UPDATE CASCADE
 );
 
 CREATE SEQUENCE transactions.transactions_id_seq AS integer START

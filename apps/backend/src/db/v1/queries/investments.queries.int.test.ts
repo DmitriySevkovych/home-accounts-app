@@ -1,8 +1,15 @@
-import { Transaction, dateFromString, dummyTransaction } from 'domain-model'
+import {
+    minimalDummyInvestmentTransaction,
+    minimalDummyTransaction,
+} from 'domain-model'
 import type { Pool } from 'pg'
 
 import { PostgresRepository } from '../postgresRepository'
-import { getTransactionById, insertTransaction } from './investments.queries'
+import {
+    associateTransactionWithInvestment,
+    getInvestmentForTransactionId,
+} from './investments.queries'
+import { getTransactionById, insertTransaction } from './transactions.queries'
 
 /*
     @group integration
@@ -18,70 +25,50 @@ describe('Database queries targeting the investments schema', () => {
         await connectionPool.end()
     })
 
-    it.each`
-        amount   | category  | investment
-        ${20}    | ${'RENT'} | ${'Apartment'}
-        ${-2.99} | ${'TAX'}  | ${'Apartment'}
-    `(
-        'insertTransaction should return a new transaction ID',
-        async ({ amount, category, investment }) => {
-            // Arrange
-            const transaction: Transaction = dummyTransaction(
-                category,
-                amount,
-                dateFromString('2020-01-15')
-            )
-            transaction.context = 'investments'
-            transaction.investment = investment
-            // Act
-            const transactionId = await insertTransaction(
-                connectionPool,
-                transaction
-            )
-            // Assert
-            expect(transactionId).toBeDefined()
-        }
-    )
-
-    it('getTransactionById should return an investment expense', async () => {
+    it('An investment transaction should be deserialized with the relevant investment field', async () => {
         // Arrange
-        const context = 'investments'
-        const investment = 'Apartment'
-        const transactionToInsert = dummyTransaction(
-            'MAINTENANCE',
-            -5.99,
-            dateFromString('2020-02-16')
+        const transaction = minimalDummyInvestmentTransaction(
+            'TAX',
+            -23.77,
+            'Homebrew'
         )
-        transactionToInsert.context = context
-        transactionToInsert.investment = investment
-        const id = await insertTransaction(connectionPool, transactionToInsert)
+        const transactionId = await insertTransaction(
+            connectionPool,
+            transaction
+        )
         // Act
-        const transaction = await getTransactionById(connectionPool, id)
+        const queriedTransaction = await getTransactionById(
+            connectionPool,
+            transactionId
+        )
         // Assert
-        expect(transaction.id).toBe(id)
-        expect(transaction.type).toBe('expense')
-        expect(transaction.context).toBe(context)
-        expect(transaction.investment).toBe(investment)
+        expect(queriedTransaction.investment).toBe('Homebrew')
     })
 
-    it('getTransactionById should return an invesment income', async () => {
+    it('Associating a transaction_id with an investment twice should override the former investment with the latter', async () => {
         // Arrange
-        const context = 'investments'
-        const investment = 'Apartment'
-        const transactionToInsert = dummyTransaction(
-            'RENT',
-            19.99,
-            dateFromString('2020-05-05')
+        const transaction = minimalDummyTransaction('TAX', -222.13)
+        const transactionId = await insertTransaction(
+            connectionPool,
+            transaction
         )
-        transactionToInsert.context = context
-        transactionToInsert.investment = investment
-        const id = await insertTransaction(connectionPool, transactionToInsert)
+        const client = await connectionPool.connect()
         // Act
-        const transaction = await getTransactionById(connectionPool, id)
+        await client.query('BEGIN')
+        associateTransactionWithInvestment(transactionId, 'Homebrew', client)
+        await client.query('COMMIT')
+        await client.query('BEGIN')
+        associateTransactionWithInvestment(
+            transactionId,
+            'Precious_Metals',
+            client
+        )
+        await client.query('COMMIT')
         // Assert
-        expect(transaction.id).toBe(id)
-        expect(transaction.type).toBe('income')
-        expect(transaction.context).toBe(context)
-        expect(transaction.investment).toBe(investment)
+        const investment = await getInvestmentForTransactionId(
+            transactionId,
+            connectionPool
+        )
+        expect(investment).toBe('Precious_Metals')
     })
 })

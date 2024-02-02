@@ -24,6 +24,7 @@ VALUES
   ('TRANSPORTATION', 'work', TRUE, FALSE),
   ('TRANSPORTATION', 'investments', TRUE, FALSE),
   ('VACATION', 'home', TRUE, FALSE),
+  ('BEAUTY', 'home', TRUE, FALSE),
   ('LEISURE', 'home', TRUE, FALSE),
   ('SALARY', 'home', FALSE, TRUE),
   ('SALARY', 'work', TRUE, TRUE),
