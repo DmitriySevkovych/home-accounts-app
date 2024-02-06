@@ -15,12 +15,12 @@ cat ${db_data}/ddl/schemas.sql >>$db_init_script
 echo $'\n-- Tables' >>$db_init_script
 cat ${db_data}/ddl/utils.sql >>$db_init_script
 cat ${db_data}/ddl/transactions.sql >>$db_init_script
-cat ${db_data}/ddl/home.sql >>$db_init_script
 cat ${db_data}/ddl/investments.sql >>$db_init_script
 cat ${db_data}/ddl/work.sql >>$db_init_script
 
 echo $'\n-- Testdata' >>$db_init_script
 cat ${db_data}/testdata/utils.sql >>$db_init_script
+cat ${db_data}/testdata/transactions.sql >>$db_init_script
 cat ${db_data}/testdata/investments.sql >>$db_init_script
 cat ${db_data}/testdata/work.sql >>$db_init_script
 

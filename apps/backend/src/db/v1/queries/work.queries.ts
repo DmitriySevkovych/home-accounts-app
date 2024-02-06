@@ -1,49 +1,5 @@
-import {
-    ProjectInvoice,
-    Transaction,
-    TransactionReceipt,
-    createTransaction,
-    dateFromString,
-} from 'domain-model'
-import { getLogger } from 'logger'
+import { ProjectInvoice, Transaction, dateFromString } from 'domain-model'
 import type { Pool, PoolClient } from 'pg'
-
-import {
-    DataConsistencyError,
-    DatabaseConfigurationError,
-    NoRecordFoundInDatabaseError,
-    UndefinedOperationError,
-} from '../../../helpers/errors'
-import { PaginationOptions } from '../../../helpers/pagination'
-import {
-    TagDAO,
-    getTagsByTransactionId,
-    insertTagDAO,
-    updateTransactionTags,
-} from './tags.queries'
-import {
-    insertTransactionDAO,
-    insertTransactionDetailsDAO,
-    insertTransactionReceiptDAO,
-    updateTransactionDAO,
-    updateTransactionDetailsDAO,
-    updateTransactionReceiptDAO,
-} from './transactions.queries'
-
-const WORK_SCHEMA = 'work'
-
-type WorkDAO = Pick<
-    Transaction,
-    'type' | 'category' | 'origin' | 'description'
-> & {
-    transaction_id: number
-}
-
-type WorkExpenseDAO = WorkDAO & Pick<Transaction, 'country' | 'vat'>
-
-type WorkIncomeDAO = WorkDAO & Pick<Transaction, 'invoiceKey'>
-
-const logger = getLogger('db')
 
 export const getProjectInvoices = async (
     connectionPool: Pool
@@ -65,415 +21,69 @@ export const getProjectInvoices = async (
     }))
 }
 
-export const getTransactions = async (
-    connectionPool: Pool,
-    paginationOptions: PaginationOptions
-): Promise<Transaction[]> => {
-    //TODO extract logic to DB view?
-    const query = {
-        name: `select-${WORK_SCHEMA}-transactions`,
-        text: `
-            SELECT
-                w.type as category, w.origin, w.description, w.invoice_key, w.vat, w.country,
-                tr.id, tr.context, tr.amount, tr.date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent, tr.receipt_id,
-                td.payment_method, td.tax_category, td.comment
-            FROM
-            (
-                SELECT transaction_id, type, origin, description, country, vat, NULL AS invoice_key FROM ${WORK_SCHEMA}.expenses
-                UNION ALL
-                SELECT transaction_id, type, origin, description, NULL AS country, NULL AS vat, invoice_key FROM ${WORK_SCHEMA}.income
-            ) w
-            JOIN transactions.transactions tr ON w.transaction_id = tr.id
-            JOIN transactions.transaction_details td ON tr.id = td.transaction_id
-            ORDER by tr.id desc
-            LIMIT $1
-            OFFSET $2;`,
-        values: [paginationOptions.limit, paginationOptions.offset],
-    }
-    const queryResult = await connectionPool.query(query)
-
-    // TODO remove connectionPool argument once the issue with the tags is corrected
-    const transactionsFromRows = queryResult.rows.map((row) =>
-        _mapToTransaction(row, connectionPool)
-    )
-
-    // TODO remove Promise.all once the issue with the tags is corrected -> mapping will be synchronous
-    return await Promise.all(transactionsFromRows)
-}
-
-export const getTransactionById = async (
-    connectionPool: Pool,
-    id: number
-): Promise<Transaction> => {
-    const query = {
-        name: `select-${WORK_SCHEMA}-transaction-by-id`,
-        //TODO extract logic to DB view?
-        text: `
-        SELECT
-            w.type as category, w.origin, w.description, w.invoice_key, w.vat, w.country,
-            tr.id, tr.context, tr.amount, tr.date, tr.currency, tr.exchange_rate, tr.source_bank_account, tr.target_bank_account, tr.agent, tr.receipt_id,
-            td.payment_method, td.tax_category, td.comment
-        FROM
-        (
-            SELECT transaction_id, type, origin, description, country, vat, NULL AS invoice_key FROM ${WORK_SCHEMA}.expenses
-            UNION ALL
-            SELECT transaction_id, type, origin, description, NULL AS country, NULL AS vat, invoice_key FROM ${WORK_SCHEMA}.income
-        ) w
-        JOIN transactions.transactions tr ON w.transaction_id = tr.id
-        JOIN transactions.transaction_details td ON tr.id = td.transaction_id
-        WHERE tr.id = $1;`,
-        values: [id],
-    }
-    const queryResult = await connectionPool.query(query)
-    if (queryResult.rowCount === 0) {
-        logger.warn(`The database does not hold a transaction with id=${id}.`)
-        throw new NoRecordFoundInDatabaseError(
-            `The database does not hold a transaction with id=${id}.`
-        )
-    }
-
-    return await _mapToTransaction(queryResult.rows[0], connectionPool)
-}
-
-export const insertTransaction = async (
-    connectionPool: Pool,
-    transaction: Transaction,
-    transactionReceipt?: TransactionReceipt
-): Promise<number> => {
-    const client: PoolClient = await connectionPool.connect()
-    try {
-        await client.query('BEGIN')
-
-        const receipt_id = await insertTransactionReceiptDAO(
-            transactionReceipt,
-            client
-        )
-
-        const transaction_id = await insertTransactionDAO(
-            { ...transaction, receipt_id },
-            client
-        )
-
-        await insertTransactionDetailsDAO(
-            { ...transaction, transaction_id },
-            client
-        )
-
-        await _insertWorkDAO(transaction, transaction_id, client)
-
-        for (let i = 0; i < transaction.tags.length; i++) {
-            // TODO: replace expense_or_income_id with transaction_id once DB has been adjusted
-            const tagDAO: TagDAO = {
-                tag: transaction.tags[i],
-                transaction_id,
-            }
-            await insertTagDAO(tagDAO, client)
-        }
-
-        await client.query('COMMIT')
-        logger.trace(
-            `Committed the database transaction for inserting a new domain-model transaction with id=${transaction_id}.`
-        )
-        return transaction_id
-    } catch (e) {
-        await client.query('ROLLBACK')
-        logger.warn(
-            `Something went wrong while inserting a new domain-model transaction. Database transaction has been rolled back.`
-        )
-        throw e
-    } finally {
-        client.release()
-    }
-}
-
-export const updateTransaction = async (
-    connectionPool: Pool,
-    transaction: Transaction,
-    transactionReceipt?: TransactionReceipt
-): Promise<void> => {
-    const { id } = transaction
-    if (id === undefined) {
-        const message = `Can not update ${WORK_SCHEMA} transaction, transaction.id is missing!`
-        logger.warn(message)
-        throw new DataConsistencyError(message)
-    }
-
-    const client: PoolClient = await connectionPool.connect()
-    try {
-        await client.query('BEGIN')
-
-        // Update work table based on context
-        await _updateWorkDAO(transaction, client)
-
-        // Update transaction receipt table
-        const receipt_id = await updateTransactionReceiptDAO(
-            {
-                ...transactionReceipt,
-                id: transaction.receiptId,
-            },
-            client
-        )
-
-        // Update transaction table
-        await updateTransactionDAO({ ...transaction, receipt_id }, client)
-
-        // Update transaction details table
-        await updateTransactionDetailsDAO(
-            {
-                ...transaction,
-                transaction_id: id,
-            },
-            client
-        )
-
-        // Update tags
-        await updateTransactionTags(
-            {
-                ...transaction,
-                transaction_id: id,
-            },
-            client
-        )
-
-        await client.query('COMMIT')
-        logger.trace(
-            `Domain-model transaction with transaction_id=${id} has been updated.`
-        )
-    } catch (e) {
-        await client.query('ROLLBACK')
-        logger.warn(
-            `Something went wrong while updating the domain-model transaction with transaction_id=${id}. Database transaction has been rolled back.`
-        )
-        throw e
-    } finally {
-        client.release()
-    }
-}
-
-const _insertWorkDAO = async (
-    transaction: Transaction,
-    transaction_id: number,
-    client: PoolClient
-): Promise<number> => {
-    let handleWorkDAOInsertion
-    if (transaction.type === 'expense') {
-        handleWorkDAOInsertion = _insertWorkExpenseDAO
-    } else if (transaction.type === 'income') {
-        handleWorkDAOInsertion = _insertWorkIncomeDAO
-    } else {
-        throw new UndefinedOperationError(
-            "Transaction type should be either 'expense' or 'income'."
-        )
-    }
-    const work_id = await handleWorkDAOInsertion(
-        {
-            ...transaction,
-            transaction_id: transaction_id,
-        },
-        client
-    )
-    return work_id
-}
-
-const _insertWorkExpenseDAO = async (
-    work: WorkExpenseDAO,
-    client: PoolClient
-): Promise<number> => {
-    const {
-        category: type,
-        origin,
-        description,
-        transaction_id,
-        country,
-        vat,
-    } = work
-    const query = {
-        name: `insert-into-${WORK_SCHEMA}.expenses`,
-        text: `INSERT INTO ${WORK_SCHEMA}.expenses(type, origin, description, vat, country, transaction_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id;`,
-        values: [type, origin, description, vat, country, transaction_id],
-    }
-    const queryResult = await client.query(query)
-    const work_id = queryResult.rows[0].id
-    logger.trace(
-        `Inserted a new row in ${WORK_SCHEMA}.expenses with id=${work_id} and foreign key transaction_id=${transaction_id}.`
-    )
-    return work_id
-}
-
-const _insertWorkIncomeDAO = async (
-    work: WorkIncomeDAO,
-    client: PoolClient
-): Promise<number> => {
-    const {
-        category: type,
-        origin,
-        description,
-        transaction_id,
-        invoiceKey,
-    } = work
-    const query = {
-        name: `insert-into-${WORK_SCHEMA}.income`,
-        text: `INSERT INTO ${WORK_SCHEMA}.income(type, origin, description, invoice_key, transaction_id) VALUES ($1, $2, $3, $4, $5) RETURNING id;`,
-        values: [type, origin, description, invoiceKey, transaction_id],
-    }
-    const queryResult = await client.query(query)
-    const work_id = queryResult.rows[0].id
-    logger.trace(
-        `Inserted a new row in ${WORK_SCHEMA}.income with id=${work_id} and foreign key transaction_id=${transaction_id}.`
-    )
-    return work_id
-}
-
-const _updateWorkDAO = async (
-    transaction: Transaction,
-    client: PoolClient
-): Promise<number> => {
-    if (transaction.id === undefined) {
-        const message = `Can not update ${WORK_SCHEMA} transaction: transaction.id is missing!`
-        logger.warn(message)
-        throw new DataConsistencyError(message)
-    }
-
-    let handleWorkDAOUpdate
-    if (transaction.type === 'expense') {
-        handleWorkDAOUpdate = _updateWorkExpenseDAO
-    } else if (transaction.type === 'income') {
-        handleWorkDAOUpdate = _updateWorkIncomeDAO
-    } else {
-        throw new UndefinedOperationError(
-            "Transaction type should be either 'expense' or 'income'."
-        )
-    }
-    return await handleWorkDAOUpdate(
-        {
-            ...transaction,
-            transaction_id: transaction.id,
-        },
-        client
-    )
-}
-
-const _updateWorkExpenseDAO = async (
-    work: WorkExpenseDAO,
-    client: PoolClient
-): Promise<number> => {
-    const {
-        category: type,
-        origin,
-        description,
-        transaction_id,
-        country,
-        vat,
-    } = work
-
-    const query = {
-        name: `update-${WORK_SCHEMA}.expenses`,
-        text: `UPDATE ${WORK_SCHEMA}.expenses SET type=$1, origin=$2, description=$3, vat=$4, country=$5 WHERE transaction_id=$6 RETURNING id;`,
-        values: [type, origin, description, vat, country, transaction_id],
-    }
-
-    const queryResult = await client.query(query)
-
-    if (queryResult.rows.length === 0) {
-        const message = `No row has been updated in ${WORK_SCHEMA}.expenses! A row with transaction_id=${transaction_id} seems to not exist.`
-        logger.error(message)
-        throw new DatabaseConfigurationError(message)
-    } else if (queryResult.rows.length > 1) {
-        const message = `Multiple rows have been updated in ${WORK_SCHEMA}.expenses for transaction_id=${transaction_id}! How is that even possible?! Check the database foreign key constraints!`
-        logger.error(message)
-        throw new DatabaseConfigurationError(message)
-    }
-
-    logger.trace(
-        `Updated a row in ${WORK_SCHEMA}.expenses with foreign key transaction_id=${transaction_id}.`
-    )
-    return queryResult.rows[0].id
-}
-
-const _updateWorkIncomeDAO = async (
-    work: WorkIncomeDAO,
-    client: PoolClient
-): Promise<number> => {
-    const {
-        category: type,
-        origin,
-        description,
-        transaction_id,
-        invoiceKey,
-    } = work
-    const query = {
-        name: `update-${WORK_SCHEMA}.income`,
-        text: `UPDATE ${WORK_SCHEMA}.income SET type=$1, origin=$2, description=$3, invoice_key=$4 WHERE transaction_id=$5 RETURNING id;`,
-        values: [type, origin, description, invoiceKey, transaction_id],
-    }
-    const queryResult = await client.query(query)
-
-    if (queryResult.rows.length === 0) {
-        const message = `No row has been updated in ${WORK_SCHEMA}.expenses! A row with transaction_id=${transaction_id} seems to not exist.`
-        logger.error(message)
-        throw new DatabaseConfigurationError(message)
-    } else if (queryResult.rows.length > 1) {
-        const message = `Multiple rows have been updated in ${WORK_SCHEMA}.expenses for transaction_id=${transaction_id}! How is that even possible?! Check the database foreign key constraints!`
-        logger.error(message)
-        throw new DatabaseConfigurationError(message)
-    }
-
-    logger.trace(
-        `Updated a row in ${WORK_SCHEMA}.expenses with foreign key transaction_id=${transaction_id}.`
-    )
-    return queryResult.rows[0].id
-}
-
-// TECHNICAL DEBT: persistence of tags in DB needs to be refactored and simplified, cf. GitHub Issue #41
-// TODO remove connectionPool argument once the issue with the tags is corrected
-const _mapToTransaction = async (
-    row: any,
+export const getInvoiceKeyForTransactionId = async (
+    transactionId: number,
     connectionPool: Pool
-): Promise<Transaction> => {
-    const {
-        id,
-        context,
-        category,
-        origin,
-        description,
-        amount,
-        date,
-        currency,
-        exchange_rate: exchangeRate,
-        source_bank_account: sourceBankAccount,
-        target_bank_account: targetBankAccount,
-        agent,
-        payment_method: paymentMethod,
-        tax_category: taxCategory,
-        comment,
-        receipt_id: receiptId,
-        invoice_key,
-        country,
-        vat,
-    } = row
+): Promise<string> => {
+    const query = {
+        name: 'select-from-work.project_invoice_transactions-where-id',
+        text: `SELECT invoice FROM work.project_invoice_transactions WHERE transaction_id = $1`,
+        values: [transactionId],
+    }
+    const queryResult = await connectionPool.query(query)
+    return queryResult.rows[0].invoice
+}
 
-    const transactionType = amount > 0 ? 'income' : 'expense'
+export const getVATForTransactionId = async (
+    transactionId: number,
+    connectionPool: Pool
+): Promise<Required<Pick<Transaction, 'vat' | 'country'>>> => {
+    const query = {
+        name: 'select-from-work.transaction_vat-where-id',
+        text: `SELECT vat, country FROM work.transaction_vat WHERE transaction_id = $1`,
+        values: [transactionId],
+    }
+    const queryResult = await connectionPool.query(query)
+    return {
+        vat: parseFloat(queryResult.rows[0].vat),
+        country: queryResult.rows[0].country,
+    }
+}
 
-    const transactionBuilder = createTransaction()
-        .about(category, origin, description)
-        .withId(id)
-        .withContext(context)
-        .withDate(dateFromString(date))
-        .withAmount(parseFloat(amount))
-        .withType(transactionType)
-        .withCurrency(currency, parseFloat(exchangeRate))
-        .withPaymentDetails(paymentMethod, sourceBankAccount, targetBankAccount)
-        .withComment(comment)
-        .withTaxCategory(taxCategory)
-        .withVAT(parseFloat(vat), country)
-        .withInvoice(invoice_key)
-        .withReceipt(receiptId)
-        .withAgent(agent)
+export const associateTransactionWithProjectInvoice = async (
+    transactionId: number,
+    invoiceKey: string,
+    client: PoolClient
+): Promise<void> => {
+    const query = {
+        name: 'insert-into-work.project_invoice_transactions',
+        text: `
+            INSERT INTO work.project_invoice_transactions (invoice, transaction_id) 
+            VALUES ($1, $2)
+            ON CONFLICT (transaction_id) DO UPDATE
+            SET invoice = $1`,
+        values: [invoiceKey, transactionId],
+    }
+    await client.query(query)
+}
 
-    // TECHNICAL DEBT: persistence of tags in DB needs to be refactored and simplified, cf. GitHub Issue #41
-    // TODO remove differentiation income/expense once DB is adjusted
-    // TODO remove this function call from here!!! This is unclean and bad for performance
-    const tags = await getTagsByTransactionId(id, connectionPool)
-    transactionBuilder.addTags(tags)
-    return transactionBuilder.build()
+export type TransactionVATDAO = Required<
+    Pick<Transaction, 'id' | 'vat' | 'country'>
+>
+
+export const insertTransactionVAT = async (
+    vatDAO: TransactionVATDAO,
+    client: PoolClient
+): Promise<void> => {
+    const { id, vat, country } = vatDAO
+    const query = {
+        name: 'insert-into-work.transaction_vat',
+        text: `
+            INSERT INTO work.transaction_vat (transaction_id, vat, country) 
+            VALUES ($1, $2, $3)
+            ON CONFLICT (transaction_id) DO UPDATE
+            SET vat = $2, country = $3`,
+        values: [id, vat, country],
+    }
+    await client.query(query)
 }

@@ -1,8 +1,13 @@
-import { Transaction, dateFromString, dummyTransaction } from 'domain-model'
+import { minimalDummyWorkTransaction } from 'domain-model'
 import type { Pool } from 'pg'
 
 import { PostgresRepository } from '../postgresRepository'
-import { getTransactionById, insertTransaction } from './work.queries'
+import { getTransactionById, insertTransaction } from './transactions.queries'
+import {
+    associateTransactionWithProjectInvoice,
+    getInvoiceKeyForTransactionId,
+    insertTransactionVAT,
+} from './work.queries'
 
 /*
     @group integration
@@ -18,85 +23,115 @@ describe('Database queries targeting the work schema', () => {
         await connectionPool.end()
     })
 
-    it("insertTransaction with type 'expense' should return a new transaction ID", async () => {
+    it('A work income should be deserialized with the relevant vat and country fields', async () => {
         // Arrange
-        const transaction: Transaction = dummyTransaction(
+        const transaction = minimalDummyWorkTransaction(
             'SALARY',
-            -500,
-            dateFromString('2021-05-17')
+            1846.39,
+            'INV-0123456'
         )
-        transaction.context = 'work'
+        const transactionId = await insertTransaction(
+            connectionPool,
+            transaction
+        )
+        // Act
+        const queriedTransaction = await getTransactionById(
+            connectionPool,
+            transactionId
+        )
+        // Assert
+        expect(queriedTransaction.invoiceKey).toBe('INV-0123456')
+    })
+
+    it('Associating a transaction_id with an invoice twice should override the former invoice with the latter', async () => {
+        // Arrange
+        const transaction = minimalDummyWorkTransaction(
+            'SALARY',
+            2432.11,
+            'INV-0123456'
+        )
+        const transactionId = await insertTransaction(
+            connectionPool,
+            transaction
+        )
+        const client = await connectionPool.connect()
+        // Act
+        await client.query('BEGIN')
+        associateTransactionWithProjectInvoice(
+            transactionId,
+            'INV-0123456',
+            client
+        )
+        await client.query('COMMIT')
+        await client.query('BEGIN')
+        associateTransactionWithProjectInvoice(
+            transactionId,
+            'INV-0123457',
+            client
+        )
+        await client.query('COMMIT')
+        // Assert
+        const investment = await getInvoiceKeyForTransactionId(
+            transactionId,
+            connectionPool
+        )
+        expect(investment).toEqual('INV-0123457')
+    })
+
+    it('Updating VAT information for a transaction_id should be possible', async () => {
+        // Arrange
+        const transaction = minimalDummyWorkTransaction('FEE', -47.69)
+        const transactionId = await insertTransaction(
+            connectionPool,
+            transaction
+        )
+        const client = await connectionPool.connect()
+        // Act
+        await client.query('BEGIN')
+        insertTransactionVAT(
+            {
+                id: transactionId,
+                vat: 0,
+                country: 'UA',
+            },
+            client
+        )
+        await client.query('COMMIT')
+        await client.query('BEGIN')
+        insertTransactionVAT(
+            {
+                id: transactionId,
+                vat: 0.19,
+                country: 'DE',
+            },
+            client
+        )
+        await client.query('COMMIT')
+        // Assert
+        const queriedTransaction = await getTransactionById(
+            connectionPool,
+            transactionId
+        )
+        expect(queriedTransaction.vat).toBe(0.19)
+        expect(queriedTransaction.country).toBe('DE')
+    })
+
+    it('A work expense should be deserialized with the relevant vat and country fields', async () => {
+        // Arrange
+        const transaction = minimalDummyWorkTransaction('FEE', -47.69)
         transaction.vat = 0.19
         transaction.country = 'DE'
-        // Act
         const transactionId = await insertTransaction(
             connectionPool,
             transaction
         )
-        // Assert
-        expect(transactionId).toBeDefined()
-    })
-
-    it('getTransactionById should return a work expense', async () => {
-        // Arrange
-        const context = 'work'
-        const vat = 0.19
-        const country = 'UK'
-        const transactionToInsert = dummyTransaction(
-            'FEE',
-            -5.99,
-            dateFromString('2023-07-26')
-        )
-        transactionToInsert.context = context
-        transactionToInsert.vat = vat
-        transactionToInsert.country = country
-        const id = await insertTransaction(connectionPool, transactionToInsert)
         // Act
-        const transaction = await getTransactionById(connectionPool, id)
-        // Assert
-        expect(transaction.id).toBe(id)
-        expect(transaction.type).toBe('expense')
-        expect(transaction.context).toBe(context)
-        expect(transaction.vat).toBe(vat)
-        expect(transaction.country).toBe(country)
-    })
-
-    it("insertTransaction with type 'income' should return a new transaction ID", async () => {
-        // Arrange
-        const transaction: Transaction = dummyTransaction(
-            'SALARY',
-            2000,
-            dateFromString('2021-01-27')
-        )
-        transaction.context = 'work'
-        transaction.invoiceKey = 'INV-0123456' // REM: testdata that is present in the database
-        // Act
-        const transactionId = await insertTransaction(
+        const queriedTransaction = await getTransactionById(
             connectionPool,
-            transaction
+            transactionId
         )
         // Assert
-        expect(transactionId).toBeDefined()
-    })
-
-    it('getTransactionById should return an work income', async () => {
-        // Arrange
-        const context = 'work'
-        const invoiceKey = 'INV-0123456'
-        const transactionToInsert = dummyTransaction(
-            'RENT',
-            198.99,
-            dateFromString('2020-11-11')
-        )
-        transactionToInsert.context = context
-        transactionToInsert.invoiceKey = invoiceKey
-        const id = await insertTransaction(connectionPool, transactionToInsert)
-        // Act
-        const transaction = await getTransactionById(connectionPool, id)
-        // Assert
-        expect(transaction.id).toBe(id)
-        expect(transaction.type).toBe('income')
-        expect(transaction.context).toBe(context)
-        expect(transaction.invoiceKey).toBe(invoiceKey)
+        expect(queriedTransaction.vat).toBe(0.19)
+        expect(queriedTransaction.country).toBe('DE')
     })
 })

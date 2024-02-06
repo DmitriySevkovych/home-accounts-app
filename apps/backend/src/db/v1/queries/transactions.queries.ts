@@ -1,39 +1,37 @@
 import {
     Transaction,
+    TransactionCategory,
     TransactionContext,
     TransactionReceipt,
+    createTransaction,
+    dateFromString,
 } from 'domain-model'
 import { getLogger } from 'logger'
 import type { Pool, PoolClient } from 'pg'
 
-import { NoRecordFoundInDatabaseError } from '../../../helpers/errors'
+import {
+    DataConsistencyError,
+    NoRecordFoundInDatabaseError,
+} from '../../../helpers/errors'
+import { PaginationOptions } from '../../../helpers/pagination'
+import {
+    associateTransactionWithInvestment,
+    getInvestmentForTransactionId,
+} from './investments.queries'
+import {
+    TagDAO,
+    getTagsByTransactionId,
+    insertTagDAO,
+    updateTransactionTags,
+} from './tags.queries'
+import {
+    associateTransactionWithProjectInvoice,
+    getInvoiceKeyForTransactionId,
+    getVATForTransactionId,
+    insertTransactionVAT,
+} from './work.queries'
 
 const logger = getLogger('db')
-
-/*
-    Types
- */
-
-export type TransactionDAO = Pick<
-    Transaction,
-    | 'context'
-    | 'date'
-    | 'amount'
-    | 'sourceBankAccount'
-    | 'targetBankAccount'
-    | 'currency'
-    | 'exchangeRate'
-    | 'agent'
-> & { id?: number; receipt_id?: number }
-
-export type TransactionDetailsDAO = Pick<
-    Transaction,
-    'paymentMethod' | 'taxCategory' | 'comment'
-> & {
-    transaction_id: number
-}
-
-type TransactionReceiptDAO = TransactionReceipt
 
 /*
     'database-specific' CRUD methods
@@ -61,27 +59,198 @@ export const getTransactionContext = async (
     return queryResult.rows[0].context
 }
 
+export const getTransactionCategories = async (
+    connectionPool: Pool
+): Promise<TransactionCategory[]> => {
+    const query = {
+        text: `SELECT category, context, can_be_expense, can_be_income from transactions.transaction_categories;`,
+    }
+    const queryResult = await connectionPool.query(query)
+    const transactionCategories: TransactionCategory[] = queryResult.rows.map(
+        (row) => ({
+            category: row.category,
+            context: row.context,
+            canBeExpense: Boolean(row.can_be_expense),
+            canBeIncome: Boolean(row.can_be_income),
+        })
+    )
+    return transactionCategories
+}
+
 export const getTransactionOrigins = async (
     connectionPool: Pool
 ): Promise<string[]> => {
     const query = {
-        name: 'select-origins-union-over-all-schemas',
-        text: `
-        SELECT origin FROM home.expenses
-        UNION
-        SELECT origin FROM home.income
-        UNION
-        SELECT origin FROM work.expenses
-        UNION
-        SELECT origin FROM work.income
-        UNION
-        SELECT origin FROM investments.expenses
-        UNION
-        SELECT origin FROM investments.income
-        `,
+        name: 'select-distinct-origins-from-transactions.transactions',
+        text: `SELECT DISTINCT origin FROM transactions.transactions`,
     }
     const queryResult = await connectionPool.query(query)
     return queryResult.rows.map((row) => row.origin)
+}
+
+export const getTransactions = async (
+    connectionPool: Pool,
+    context: TransactionContext,
+    paginationOptions: PaginationOptions
+): Promise<Transaction[]> => {
+    //TODO extract logic to DB view?
+    const query = {
+        name: `select-transactions`,
+        text: `
+            SELECT
+                id, context, category, origin, description, amount, date, currency, exchange_rate, 
+                source_bank_account, target_bank_account, payment_method, tax_category, comment, agent, receipt_id
+            FROM transactions.transactions
+            WHERE context = $1
+            ORDER BY id DESC
+            LIMIT $2
+            OFFSET $3;`,
+        values: [context, paginationOptions.limit, paginationOptions.offset],
+    }
+    const queryResult = await connectionPool.query(query)
+
+    const transactionsFromRows = queryResult.rows.map((row) =>
+        _mapToTransaction(row, connectionPool)
+    )
+
+    return await Promise.all(transactionsFromRows)
+}
+
+export const getTransactionById = async (
+    connectionPool: Pool,
+    id: number
+): Promise<Transaction> => {
+    //TODO extract logic to DB view?
+    const query = {
+        name: `select-transaction-by-id`,
+        text: `
+        SELECT
+            id, context, category, origin, description, amount, date, currency, exchange_rate, 
+            source_bank_account, target_bank_account, payment_method, tax_category, comment, agent, receipt_id
+        FROM transactions.transactions
+        WHERE id = $1;`,
+        values: [id],
+    }
+    const queryResult = await connectionPool.query(query)
+    if (queryResult.rowCount === 0) {
+        logger.warn(`The database does not hold a transaction with id=${id}.`)
+        throw new NoRecordFoundInDatabaseError(
+            `The database does not hold a transaction with id=${id}.`
+        )
+    }
+
+    return await _mapToTransaction(queryResult.rows[0], connectionPool)
+}
+
+export const insertTransaction = async (
+    connectionPool: Pool,
+    transaction: Transaction,
+    transactionReceipt?: TransactionReceipt
+): Promise<number> => {
+    const client: PoolClient = await connectionPool.connect()
+    try {
+        await client.query('BEGIN')
+
+        const receiptId = await _insertTransactionReceiptDAO(
+            transactionReceipt,
+            client
+        )
+
+        const transaction_id = await _insertTransactionDAO(
+            {
+                ...transaction,
+                receiptId,
+            },
+            client
+        )
+
+        for (let i = 0; i < transaction.tags.length; i++) {
+            const tagDAO: TagDAO = {
+                tag: transaction.tags[i],
+                transaction_id,
+            }
+            await insertTagDAO(tagDAO, client)
+        }
+
+        await _upsertContextSpecificInformation(
+            transaction_id,
+            transaction,
+            client
+        )
+
+        await client.query('COMMIT')
+        logger.trace(
+            `Committed the database transaction for inserting a new domain-model transaction with id=${transaction_id}.`
+        )
+        return transaction_id
+    } catch (e) {
+        await client.query('ROLLBACK')
+        logger.warn(
+            `Something went wrong while inserting a new domain-model transaction. Database transaction has been rolled back.`
+        )
+        throw e
+    } finally {
+        client.release()
+    }
+}
+
+export const updateTransaction = async (
+    connectionPool: Pool,
+    transaction: Transaction,
+    transactionReceipt?: TransactionReceipt
+): Promise<void> => {
+    const { id } = transaction
+    if (id === undefined) {
+        const message = `Cannot update transaction: transaction.id is missing!`
+        logger.warn(message)
+        throw new DataConsistencyError(message)
+    }
+
+    const client: PoolClient = await connectionPool.connect()
+    try {
+        await client.query('BEGIN')
+        // Update transaction receipt table
+        const receiptId = await _updateTransactionReceiptDAO(
+            {
+                ...transactionReceipt,
+                id: transaction.receiptId,
+            },
+            client
+        )
+
+        // Update transaction table
+        await _updateTransactionDAO(
+            {
+                ...transaction,
+                receiptId,
+            },
+            client
+        )
+
+        // Update tags
+        await updateTransactionTags(
+            {
+                ...transaction,
+                transaction_id: id,
+            },
+            client
+        )
+
+        await _upsertContextSpecificInformation(id, transaction, client)
+
+        await client.query('COMMIT')
+        logger.trace(
+            `Domain-model transaction with transaction_id=${id} has been updated.`
+        )
+    } catch (e) {
+        await client.query('ROLLBACK')
+        logger.warn(
+            `Something went wrong while updating the domain-model transaction with transaction_id=${id}. Database transaction has been rolled back.`
+        )
+        throw e
+    } finally {
+        client.release()
+    }
 }
 
 export const getTransactionReceipt = async (
@@ -106,26 +275,32 @@ export const getTransactionReceipt = async (
     return queryResult.rows[0]
 }
 
-export const insertTransactionDAO = async (
-    transactionDAO: TransactionDAO,
+const _insertTransactionDAO = async (
+    transaction: Transaction,
     client: PoolClient
 ): Promise<number> => {
     const query = {
         name: 'insert-into-transactions.transactions',
         text: `
-        INSERT INTO transactions.transactions(context, date, amount, source_bank_account, target_bank_account, currency, exchange_rate, agent, receipt_id)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        INSERT INTO transactions.transactions(context, category, origin, description, date, amount, source_bank_account, target_bank_account, currency, exchange_rate, payment_method, tax_category, comment, agent, receipt_id)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
         RETURNING id;`,
         values: [
-            transactionDAO.context,
-            transactionDAO.date.toISOString(),
-            transactionDAO.amount,
-            transactionDAO.sourceBankAccount,
-            transactionDAO.targetBankAccount,
-            transactionDAO.currency,
-            transactionDAO.exchangeRate,
-            transactionDAO.agent,
-            transactionDAO.receipt_id,
+            transaction.context,
+            transaction.category,
+            transaction.origin,
+            transaction.description,
+            transaction.date.toISOString(),
+            transaction.amount,
+            transaction.sourceBankAccount,
+            transaction.targetBankAccount,
+            transaction.currency,
+            transaction.exchangeRate,
+            transaction.paymentMethod,
+            transaction.taxCategory,
+            transaction.comment,
+            transaction.agent,
+            transaction.receiptId,
         ],
     }
     const queryResult = await client.query(query)
@@ -135,28 +310,8 @@ export const insertTransactionDAO = async (
     return queryResult.rows[0].id
 }
 
-export const insertTransactionDetailsDAO = async (
-    transactionDetailsDAO: TransactionDetailsDAO,
-    client: PoolClient
-): Promise<void> => {
-    const query = {
-        name: 'insert-into-transactions.transaction_details',
-        text: 'INSERT INTO transactions.transaction_details(payment_method, tax_category, comment, transaction_id) VALUES ($1, $2, $3, $4);',
-        values: [
-            transactionDetailsDAO.paymentMethod,
-            transactionDetailsDAO.taxCategory,
-            transactionDetailsDAO.comment,
-            transactionDetailsDAO.transaction_id,
-        ],
-    }
-    await client.query(query)
-    logger.trace(
-        `Inserted a new row in transactions.transaction_details with foreign key transaction_id=${transactionDetailsDAO.transaction_id}.`
-    )
-}
-
-export const insertTransactionReceiptDAO = async (
-    transactionReceipt: TransactionReceiptDAO | undefined,
+const _insertTransactionReceiptDAO = async (
+    transactionReceipt: TransactionReceipt | undefined,
     client: PoolClient
 ): Promise<number | undefined> => {
     if (
@@ -187,80 +342,68 @@ export const insertTransactionReceiptDAO = async (
     return queryResult.rows[0].id
 }
 
-export const updateTransactionDAO = async (
-    transactionDAO: TransactionDAO,
+const _updateTransactionDAO = async (
+    transaction: Transaction,
     client: PoolClient
 ): Promise<void> => {
     const query = {
         name: 'update-transactions.transactions',
         text: `
         UPDATE transactions.transactions 
-        SET context=$1, date=$2, amount=$3, source_bank_account=$4, target_bank_account=$5, currency=$6, exchange_rate=$7, agent=$8, receipt_id=$9
-        WHERE id=$10;`,
+        SET 
+            context=$1, category=$2, origin=$3, description=$4, date=$5, amount=$6, source_bank_account=$7, target_bank_account=$8, 
+            currency=$9, exchange_rate=$10, payment_method=$11, tax_category=$12, comment=$13, agent=$14, receipt_id=$15
+        WHERE id=$16;`,
         values: [
-            transactionDAO.context,
-            transactionDAO.date.toISOString(),
-            transactionDAO.amount,
-            transactionDAO.sourceBankAccount,
-            transactionDAO.targetBankAccount,
-            transactionDAO.currency,
-            transactionDAO.exchangeRate,
-            transactionDAO.agent,
-            transactionDAO.receipt_id,
-            transactionDAO.id,
+            transaction.context,
+            transaction.category,
+            transaction.origin,
+            transaction.description,
+            transaction.date.toISOString(),
+            transaction.amount,
+            transaction.sourceBankAccount,
+            transaction.targetBankAccount,
+            transaction.currency,
+            transaction.exchangeRate,
+            transaction.paymentMethod,
+            transaction.taxCategory,
+            transaction.comment,
+            transaction.agent,
+            transaction.receiptId,
+            transaction.id,
         ],
     }
     await client.query(query)
     logger.trace(
-        `Updated row with id=${transactionDAO.id} in transactions.transactions.`
+        `Updated row with id=${transaction.id} in transactions.transactions.`
     )
 }
 
-export const updateTransactionDetailsDAO = async (
-    transactionDetailsDAO: TransactionDetailsDAO,
-    client: PoolClient
-): Promise<void> => {
-    const query = {
-        name: 'update-transactions.transaction_details',
-        text: 'UPDATE transactions.transaction_details SET payment_method=$1, tax_category=$2, comment=$3 WHERE transaction_id=$4;',
-        values: [
-            transactionDetailsDAO.paymentMethod,
-            transactionDetailsDAO.taxCategory,
-            transactionDetailsDAO.comment,
-            transactionDetailsDAO.transaction_id,
-        ],
-    }
-    await client.query(query)
-    logger.trace(
-        `Updated row with transaction_id=${transactionDetailsDAO.transaction_id} in transactions.transaction_details.`
-    )
-}
-
-export const updateTransactionReceiptDAO = async (
-    transactionReceiptDAO: Partial<TransactionReceiptDAO>,
+const _updateTransactionReceiptDAO = async (
+    transactionReceipt: Partial<TransactionReceipt>,
     client: PoolClient
 ): Promise<number | undefined> => {
-    if (!transactionReceiptDAO.id) {
+    if (!transactionReceipt.id) {
         // If no transaction receipt is yet present in the database, handle insert
-        return await insertTransactionReceiptDAO(
-            transactionReceiptDAO as TransactionReceiptDAO,
+        return await _insertTransactionReceiptDAO(
+            transactionReceipt as TransactionReceipt,
             client
         )
     }
 
     // Check if old receipt is present
     logger.trace(
-        `The transaction has the property receipt_id=${transactionReceiptDAO.id}. Will query the database for this receipt.`
+        `The transaction has the property receipt_id=${transactionReceipt.id}. Will query the database for this receipt.`
     )
     const oldReceipt = await getTransactionReceipt(
         client,
-        transactionReceiptDAO.id
+        transactionReceipt.id
     )
     logger.trace(
-        `Found a receipt ${oldReceipt.name} with receipt_id=${transactionReceiptDAO.id}.`
+        `Found a receipt ${oldReceipt.name} with receipt_id=${transactionReceipt.id}.`
     )
 
-    if (!transactionReceiptDAO?.buffer) {
+    if (!transactionReceipt?.buffer) {
         logger.trace(
             'No new transaction receipt provided for this transaction.'
         )
@@ -268,7 +411,7 @@ export const updateTransactionReceiptDAO = async (
     }
 
     // Update receipt
-    const { name, mimetype, buffer, id } = transactionReceiptDAO
+    const { name, mimetype, buffer, id } = transactionReceipt
 
     const query = {
         name: 'update-transactions.transaction_receipts',
@@ -280,4 +423,105 @@ export const updateTransactionReceiptDAO = async (
         `Updated row in transactions.transaction_receipts with id=${id}.`
     )
     return id
+}
+
+const _upsertContextSpecificInformation = async (
+    transaction_id: number,
+    transaction: Transaction,
+    client: PoolClient
+) => {
+    if (transaction.context === 'investments') {
+        await associateTransactionWithInvestment(
+            transaction_id,
+            transaction.investment!,
+            client
+        )
+    } else if (transaction.context === 'work') {
+        if (transaction.type === 'expense') {
+            await insertTransactionVAT(
+                {
+                    id: transaction_id,
+                    vat: transaction.vat!,
+                    country: transaction.country!,
+                },
+                client
+            )
+        } else if (transaction.type === 'income') {
+            await associateTransactionWithProjectInvoice(
+                transaction_id,
+                transaction.invoiceKey!,
+                client
+            )
+        } else {
+            throw new Error(`Unknown transaction type ${transaction.type}`)
+        }
+    }
+}
+
+const _mapToTransaction = async (
+    row: any,
+    connectionPool: Pool
+): Promise<Transaction> => {
+    const {
+        id,
+        context,
+        category,
+        origin,
+        description,
+        amount,
+        date,
+        currency,
+        exchange_rate: exchangeRate,
+        source_bank_account: sourceBankAccount,
+        target_bank_account: targetBankAccount,
+        agent,
+        payment_method: paymentMethod,
+        tax_category: taxCategory,
+        comment,
+        receipt_id: receiptId,
+    } = row
+
+    const transactionType = amount > 0 ? 'income' : 'expense'
+
+    const transactionBuilder = createTransaction()
+        .about(category, origin, description)
+        .withId(id)
+        .withContext(context)
+        .withDate(dateFromString(date))
+        .withAmount(parseFloat(amount))
+        .withType(transactionType)
+        .withCurrency(currency, parseFloat(exchangeRate))
+        .withPaymentDetails(paymentMethod, sourceBankAccount, targetBankAccount)
+        .withComment(comment)
+        .withTaxCategory(taxCategory)
+        .withReceipt(receiptId)
+        .withAgent(agent)
+
+    // TODO maybe remove these function calls from here and work with joins, if feasible
+    // TODO remove connectionPool argument if the above TODO is done
+    const tags = await getTagsByTransactionId(id, connectionPool)
+    transactionBuilder.addTags(tags)
+
+    if (context === 'investments') {
+        const investment = await getInvestmentForTransactionId(
+            id,
+            connectionPool
+        )
+        transactionBuilder.withInvestment(investment)
+    } else if (context === 'work') {
+        if (transactionType === 'expense') {
+            const { vat, country } = await getVATForTransactionId(
+                id,
+                connectionPool
+            )
+            transactionBuilder.withVAT(vat, country)
+        } else if (transactionType === 'income') {
+            const invoiceKey = await getInvoiceKeyForTransactionId(
+                id,
+                connectionPool
+            )
+            transactionBuilder.withInvoice(invoiceKey)
+        }
+    }
+    return transactionBuilder.build()
 }

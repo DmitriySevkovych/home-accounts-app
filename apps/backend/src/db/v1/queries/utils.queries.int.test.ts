@@ -1,9 +1,4 @@
-import {
-    BankAccount,
-    PaymentMethod,
-    TaxCategory,
-    TransactionCategory,
-} from 'domain-model'
+import { BankAccount, PaymentMethod, TaxCategory } from 'domain-model'
 import type { Pool } from 'pg'
 
 import { PostgresRepository } from '../postgresRepository'
@@ -21,19 +16,6 @@ describe('Database queries targeting the utils schema', () => {
     })
     afterAll(async () => {
         await connectionPool.end()
-    })
-
-    it('getTransactionCategories returns an array of transaction categories with expected fields', async () => {
-        // Arrange
-        // Act
-        const result =
-            await utilsQueries.getTransactionCategories(connectionPool)
-        // Assert
-        expect(result).toBeInstanceOf(Array)
-        result.forEach((item: TransactionCategory) => {
-            expect(item.category).toBeDefined()
-            expect(item.allowedTypes.length).toBeGreaterThan(0)
-        })
     })
 
     it('getTaxCategories returns an array of tax categories with expected fields', async () => {

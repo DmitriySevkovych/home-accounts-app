@@ -1,17 +1,5 @@
 ---- utils
 --
-CREATE TABLE IF NOT EXISTS utils.expense_types (
-  type CHARACTER VARYING PRIMARY KEY,
-  description TEXT
-);
-
---
-CREATE TABLE IF NOT EXISTS utils.income_types (
-  type CHARACTER VARYING PRIMARY KEY,
-  description TEXT
-);
-
---
 CREATE TABLE IF NOT EXISTS utils.tax_categories (
   category CHARACTER VARYING PRIMARY KEY,
   description TEXT

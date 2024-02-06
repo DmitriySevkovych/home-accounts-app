@@ -3,11 +3,8 @@
     @group domain
  */
 import { minimalDummyTransaction } from '../helpers/test-fixtures'
-import { TransactionValidationError } from '../models/errors.model'
-import {
-    createTransaction,
-    deserializeTransaction,
-} from '../models/transactions.model'
+import { TransactionValidationError } from './errors.model'
+import { createTransaction, deserializeTransaction } from './transactions.model'
 
 describe('Transactions tests', () => {
     it('should return right equivalent in EUR', () => {

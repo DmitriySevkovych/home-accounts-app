@@ -22,8 +22,9 @@ export const transactionContexts: ReadonlyArray<TransactionContext> = [
 
 export type TransactionCategory = {
     category: string
-    allowedTypes: TransactionType[]
-    description?: string
+    context: TransactionContext
+    canBeExpense: boolean
+    canBeIncome: boolean
 }
 
 export type TransactionReceipt = HomeAppFile

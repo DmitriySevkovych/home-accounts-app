@@ -92,7 +92,6 @@ export const getTagsByTransactionId = async (
         : []
 }
 
-// TECHNICAL DEBT: persistence of tags in DB needs to be refactored and simplified, cf. GitHub Issue #41
 export const tagExists = async (
     dbConnection: Pool | PoolClient,
     tag: string
@@ -106,7 +105,6 @@ export const tagExists = async (
     return queryResult.rowCount === 1
 }
 
-// TECHNICAL DEBT: persistence of tags in DB needs to be refactored and simplified, cf. GitHub Issue #41
 export const insertTag = async (
     dbConnection: Pool | PoolClient,
     tag: string
