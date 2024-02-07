@@ -1,5 +1,5 @@
 # For documentation, cf. https://turbo.build/repo/docs/handbook/deploying-with-docker
-FROM node:18.17.0-alpine AS base
+FROM node:20.11.0-alpine AS base
 
 
 FROM base AS turbosetup
