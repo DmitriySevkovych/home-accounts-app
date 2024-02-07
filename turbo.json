@@ -11,6 +11,7 @@
         "TLS_*",
         "PG*",
         "PAGINATION_*",
+        "SCHEDULER_*",
         "NODECRON_PROCESS_BLUEPRINTS",
         "PROCESS_BLUEPRINTS_AGENT",
         "MAIL_*",

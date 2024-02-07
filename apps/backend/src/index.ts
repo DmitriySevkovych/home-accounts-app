@@ -25,7 +25,7 @@ createSecureServer()
             )
         })
 
-        PROCESS_BLUEPRINTS_TASK.start()
+        if (!process.env.SCHEDULER_DISABLED) PROCESS_BLUEPRINTS_TASK.start()
 
         handleSignal(server, 'SIGINT')
         handleSignal(server, 'SIGTERM')
