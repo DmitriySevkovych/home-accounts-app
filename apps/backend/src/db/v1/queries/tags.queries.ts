@@ -87,7 +87,8 @@ export const getTagsByTransactionId = async (
         values: [transaction_id],
     }
     const queryResult = await dbConnection.query(query)
-    return queryResult.rowCount > 0
+    const { rowCount } = queryResult
+    return rowCount && rowCount > 0
         ? queryResult.rows.map((row) => row.tag)
         : []
 }
