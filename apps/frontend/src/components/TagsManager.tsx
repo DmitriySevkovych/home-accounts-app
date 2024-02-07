@@ -18,7 +18,7 @@ import { ScrollArea } from '../lib/shadcn/ScrollArea'
 
 type TagsManagerProps = {
     id: keyof TransactionForm
-    form: UseFormReturn<any, any, undefined>
+    form: UseFormReturn<any, any>
     label: string
     initialTags: string[]
 }

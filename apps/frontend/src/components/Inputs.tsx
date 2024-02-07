@@ -8,7 +8,7 @@ import { Textarea } from '../lib/shadcn/Textarea'
 
 type InputProps = {
     id: keyof TransactionForm
-    form: UseFormReturn<any>
+    form: UseFormReturn<any, any>
     label: string
     placeholder?: string
 }

@@ -14,7 +14,7 @@ import { FormControl, FormField, FormItem, FormLabel } from '../lib/shadcn/Form'
 import { Popover, PopoverContent, PopoverTrigger } from '../lib/shadcn/Popover'
 
 type CalendarProps = {
-    form: UseFormReturn<any, any, undefined>
+    form: UseFormReturn<any, any>
     label: string
     id: keyof Transaction
 }

@@ -15,7 +15,7 @@ import { ScrollArea } from '../lib/shadcn/ScrollArea'
 
 type AutocompleteInputProps = {
     id: keyof TransactionForm
-    form: UseFormReturn<any, any, undefined>
+    form: UseFormReturn<any, any>
     label: string
     placeholder?: string
     autocompleteOptions: string[]

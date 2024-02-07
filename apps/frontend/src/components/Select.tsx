@@ -19,7 +19,7 @@ import {
 } from '../lib/shadcn/Select'
 
 type SelectProps = {
-    form: UseFormReturn<any, any, undefined>
+    form: UseFormReturn<any, any>
     label: string
     id: keyof Transaction
     options: string[]
