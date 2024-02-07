@@ -62,7 +62,7 @@ export const PROCESS_BLUEPRINTS_TASK: cron.ScheduledTask = cron.schedule(
         }
 
         // Send notification
-        if (results.length > 0) {
+        if (results.length > 0 && !process.env.MAIL_DISABLED) {
             await sendProcessedBlueprintResults(results)
         }
 

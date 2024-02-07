@@ -33,7 +33,7 @@ createSecureServer()
     .catch((err) => {
         logger.fatal(err)
         PROCESS_BLUEPRINTS_TASK.stop()
-        MAIL_TRANSPORTER.close()
+        if (!process.env.MAIL_DISABLED) MAIL_TRANSPORTER.close()
         process.exit(1)
     })
 
@@ -45,7 +45,7 @@ const handleSignal = (server: https.Server, signal: string) => {
         })
         // Tear down singletons
         PROCESS_BLUEPRINTS_TASK.stop()
-        MAIL_TRANSPORTER.close()
+        if (!process.env.MAIL_DISABLED) MAIL_TRANSPORTER.close()
         await RepositoryLocator.closeRepository()
 
         logger.info('Database connection closed.')
