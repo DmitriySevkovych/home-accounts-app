@@ -8,7 +8,7 @@ import { createSecureServer } from './server'
 
 const logger = getLogger('backend')
 
-const { PORT, API_BASE_URL } = process.env
+const { PORT, API_BASE_URL, SCHEDULER_DISABLED, MAIL_DISABLED } = process.env
 
 if (!PORT || !API_BASE_URL) {
     logger.error(
@@ -25,15 +25,27 @@ createSecureServer()
             )
         })
 
-        if (!process.env.SCHEDULER_DISABLED) PROCESS_BLUEPRINTS_TASK.start()
+        if (SCHEDULER_DISABLED) {
+            logger.warn(
+                'Scheduler is disabled. If you want to enable it, adjust the configuration.'
+            )
+        } else {
+            PROCESS_BLUEPRINTS_TASK.start()
+        }
+
+        if (MAIL_DISABLED) {
+            logger.warn(
+                'Sending notification mails is disabled. If you want to enable it, adjust the configuration.'
+            )
+        }
 
         handleSignal(server, 'SIGINT')
         handleSignal(server, 'SIGTERM')
     })
     .catch((err) => {
         logger.fatal(err)
-        PROCESS_BLUEPRINTS_TASK.stop()
-        if (!process.env.MAIL_DISABLED) MAIL_TRANSPORTER.close()
+        if (!SCHEDULER_DISABLED) PROCESS_BLUEPRINTS_TASK.stop()
+        if (!MAIL_DISABLED) MAIL_TRANSPORTER.close()
         process.exit(1)
     })
 
@@ -44,8 +56,8 @@ const handleSignal = (server: https.Server, signal: string) => {
             logger.info('HTTPS server closed.')
         })
         // Tear down singletons
-        PROCESS_BLUEPRINTS_TASK.stop()
-        if (!process.env.MAIL_DISABLED) MAIL_TRANSPORTER.close()
+        if (!SCHEDULER_DISABLED) PROCESS_BLUEPRINTS_TASK.stop()
+        if (!MAIL_DISABLED) MAIL_TRANSPORTER.close()
         await RepositoryLocator.closeRepository()
 
         logger.info('Database connection closed.')
