@@ -64,6 +64,7 @@ describe('Database queries targeting the investments schema', () => {
             client
         )
         await client.query('COMMIT')
+        await client.release()
         // Assert
         const investment = await getInvestmentForTransactionId(
             transactionId,

@@ -70,6 +70,7 @@ describe('Database queries targeting the work schema', () => {
             client
         )
         await client.query('COMMIT')
+        await client.release()
         // Assert
         const investment = await getInvoiceKeyForTransactionId(
             transactionId,
@@ -107,6 +108,7 @@ describe('Database queries targeting the work schema', () => {
             client
         )
         await client.query('COMMIT')
+        await client.release()
         // Assert
         const queriedTransaction = await getTransactionById(
             connectionPool,
