@@ -174,6 +174,10 @@ export class StubbedRepository implements Repository {
         Promise.resolve()
     }
 
+    deleteTransaction = async (_id: number): Promise<void> => {
+        Promise.resolve()
+    }
+
     getTransactions = (
         context: TransactionContext,
         paginationOptions: PaginationOptions

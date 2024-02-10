@@ -147,6 +147,18 @@ export class PostgresRepository implements Repository {
         )
     }
 
+    deleteTransaction = async (id: number): Promise<void> => {
+        const transaction = await transactionsQueries.getTransactionById(
+            this.connectionPool,
+            id
+        )
+        this.logger.warn(`Deleting transaction with ${transaction.id}`)
+        await transactionsQueries.deleteTransaction(
+            this.connectionPool,
+            transaction
+        )
+    }
+
     getTransactions = async (
         context: TransactionContext,
         paginationOptions: PaginationOptions

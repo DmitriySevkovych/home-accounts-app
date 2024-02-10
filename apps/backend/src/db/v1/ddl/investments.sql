@@ -13,5 +13,5 @@ CREATE TABLE investments.investments (
 CREATE TABLE investments.investment_transactions (
   id serial PRIMARY KEY,
   investment varchar NOT NULL REFERENCES investments.investments ("key"),
-  transaction_id integer UNIQUE NOT NULL REFERENCES transactions.transactions (id)
+  transaction_id integer UNIQUE NOT NULL REFERENCES transactions.transactions (id) ON DELETE CASCADE
 );

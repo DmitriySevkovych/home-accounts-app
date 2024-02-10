@@ -56,7 +56,7 @@ SET DEFAULT nextval(
 -- vat tax
 CREATE TABLE work.transaction_vat (
   id serial PRIMARY KEY,
-  transaction_id integer UNIQUE NOT NULL REFERENCES transactions.transactions (id),
+  transaction_id integer UNIQUE NOT NULL REFERENCES transactions.transactions (id) ON DELETE CASCADE,
   vat numeric,
   country varchar(2)
 );

@@ -12,6 +12,7 @@ import type { Pool, PoolClient } from 'pg'
 import {
     DataConsistencyError,
     NoRecordFoundInDatabaseError,
+    UnsupportedTransactionOperationError,
 } from '../../../helpers/errors'
 import { PaginationOptions } from '../../../helpers/pagination'
 import {
@@ -230,6 +231,53 @@ export const updateTransaction = async (
     }
 }
 
+export const deleteTransaction = async (
+    connectionPool: Pool,
+    transaction: Transaction
+): Promise<void> => {
+    const { id } = transaction
+    if (id === undefined) {
+        const message = `Cannot delete transaction: transaction.id is missing!`
+        logger.warn(message)
+        throw new DataConsistencyError(message)
+    }
+
+    // Do not delete work project invoice information. This is intended!
+    if (
+        transaction.context === 'investments' &&
+        transaction.type === 'income'
+    ) {
+        throw new UnsupportedTransactionOperationError(
+            'Deleting work income transactions is dangerous and can mess up project invoice information. Will not delete...'
+        )
+    }
+
+    const client: PoolClient = await connectionPool.connect()
+    try {
+        await client.query('BEGIN')
+
+        await _deleteTransactionReceiptDAO(transaction.receiptId, client)
+
+        await _deleteTransactionDAO(id, client)
+        // Deleting transaction tags is handled by DB cascade
+        // Deleting investment associations is handled by DB cascade
+        // Deleting work vat information is handled by DB cascade
+
+        await client.query('COMMIT')
+        logger.trace(
+            `Domain-model transaction with transaction_id=${id} has been updated.`
+        )
+    } catch (e) {
+        await client.query('ROLLBACK')
+        logger.warn(
+            `Something went wrong while updating the domain-model transaction with transaction_id=${id}. Database transaction has been rolled back.`
+        )
+        throw e
+    } finally {
+        client.release()
+    }
+}
+
 export const getTransactionReceipt = async (
     connection: Pool | PoolClient,
     receiptId: number
@@ -285,6 +333,18 @@ const _insertTransactionDAO = async (
         `Inserted a new row in transactions.transactions with primary key id=${queryResult.rows[0].id}.`
     )
     return queryResult.rows[0].id
+}
+
+const _deleteTransactionDAO = async (
+    id: number,
+    client: PoolClient
+): Promise<void> => {
+    const query = {
+        name: 'delete-from-transactions.transactions',
+        text: `DELETE FROM transactions.transactions WHERE id=$1;`,
+        values: [id],
+    }
+    await client.query(query)
 }
 
 const _insertTransactionReceiptDAO = async (
@@ -400,6 +460,23 @@ const _updateTransactionReceiptDAO = async (
         `Updated row in transactions.transaction_receipts with id=${id}.`
     )
     return id
+}
+
+const _deleteTransactionReceiptDAO = async (
+    receiptId: number | undefined,
+    client: PoolClient
+): Promise<void> => {
+    if (!receiptId) {
+        logger.trace('No receiptId given, nothing to delete.')
+        return
+    }
+
+    const query = {
+        name: 'delete-from-transactions.transaction_receipts',
+        text: 'DELETE FROM transactions.transaction_receipts WHERE id=$1;',
+        values: [receiptId],
+    }
+    await client.query(query)
 }
 
 const _upsertContextSpecificInformation = async (

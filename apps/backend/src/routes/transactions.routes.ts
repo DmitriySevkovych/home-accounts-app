@@ -10,6 +10,7 @@ import { GetTransactionsRequest } from '../definitions/requests'
 import {
     BadQueryParameterInRequestError,
     NoRecordFoundInDatabaseError,
+    UnsupportedTransactionOperationError,
 } from '../helpers/errors'
 import * as middleware from '../helpers/middleware'
 import upload, { deserializeTransactionReceipt } from '../helpers/upload'
@@ -91,8 +92,9 @@ const getRouter = (): Router => {
         async (req, res) => {
             const receiptId = parseInt(req.params.receiptId)
             try {
-                const receipt =
-                    await repository.getTransactionReceipt(receiptId)
+                const receipt = await repository.getTransactionReceipt(
+                    receiptId
+                )
 
                 res.status(200)
                 res.set(
@@ -145,6 +147,28 @@ const getRouter = (): Router => {
         }
     })
 
+    router.delete('/:id', middleware.checkIdIsInteger, async (req, res) => {
+        const id = parseInt(req.params.id)
+        try {
+            await repository.deleteTransaction(id)
+            return res.sendStatus(204)
+        } catch (err) {
+            req.log.error(err)
+            if (err instanceof UnsupportedTransactionOperationError) {
+                res.status(400).json({
+                    message: err.message,
+                })
+            } else if (err instanceof NoRecordFoundInDatabaseError) {
+                res.status(404).json({
+                    message: 'No record found in the database.',
+                    cause: err.message,
+                })
+            } else {
+                res.status(500).json({ message: 'Something went wrong' })
+            }
+        }
+    })
+
     router.put('/', upload.single('receipt'), async (req, res) => {
         try {
             // Deserialize payload
@@ -155,12 +179,10 @@ const getRouter = (): Router => {
 
             // Little sanity check
             if (!transaction.id) {
-                return res
-                    .status(400)
-                    .json({
-                        message:
-                            'The sent transaction does not have an id. Can not update.',
-                    })
+                return res.status(400).json({
+                    message:
+                        'The sent transaction does not have an id. Can not update.',
+                })
             }
 
             // Update
