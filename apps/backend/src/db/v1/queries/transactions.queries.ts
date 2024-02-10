@@ -36,29 +36,6 @@ const logger = getLogger('db')
 /*
     'database-specific' CRUD methods
  */
-
-export const getTransactionContext = async (
-    connectionPool: Pool,
-    transactionId: number
-): Promise<TransactionContext> => {
-    const query = {
-        name: 'select-context-from-transactions.transactions-where-id',
-        text: `
-        SELECT context
-        FROM transactions.transactions
-        WHERE id = $1
-        `,
-        values: [transactionId],
-    }
-    const queryResult = await connectionPool.query(query)
-    if (queryResult.rowCount === 0) {
-        throw new NoRecordFoundInDatabaseError(
-            `No transaction with id='${transactionId}' found.`
-        )
-    }
-    return queryResult.rows[0].context
-}
-
 export const getTransactionCategories = async (
     connectionPool: Pool
 ): Promise<TransactionCategory[]> => {
