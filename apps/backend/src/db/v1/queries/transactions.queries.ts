@@ -300,6 +300,11 @@ export const getTransactionReceipt = async (
     return queryResult.rows[0]
 }
 
+/* 
+    Private helper methods 
+*/
+
+/* Transaction DAO */
 const _insertTransactionDAO = async (
     transaction: Transaction,
     client: PoolClient
@@ -331,50 +336,6 @@ const _insertTransactionDAO = async (
     const queryResult = await client.query(query)
     logger.info(
         `Inserted a new row in transactions.transactions with primary key id=${queryResult.rows[0].id}.`
-    )
-    return queryResult.rows[0].id
-}
-
-const _deleteTransactionDAO = async (
-    id: number,
-    client: PoolClient
-): Promise<void> => {
-    const query = {
-        name: 'delete-from-transactions.transactions',
-        text: `DELETE FROM transactions.transactions WHERE id=$1;`,
-        values: [id],
-    }
-    await client.query(query)
-}
-
-const _insertTransactionReceiptDAO = async (
-    transactionReceipt: TransactionReceipt | undefined,
-    client: PoolClient
-): Promise<number | undefined> => {
-    if (
-        !transactionReceipt ||
-        !(
-            transactionReceipt.buffer &&
-            transactionReceipt.mimetype &&
-            transactionReceipt.name
-        )
-    ) {
-        logger.trace(
-            'No transaction receipt provided for this transaction. Will return undefined for receipt_id'
-        )
-        return undefined
-    }
-
-    const { name, mimetype, buffer } = transactionReceipt
-
-    const query = {
-        name: 'insert-into-transactions.transaction_receipts',
-        text: 'INSERT INTO transactions.transaction_receipts(name, mimetype, buffer) VALUES ($1, $2, $3) RETURNING id;',
-        values: [name, mimetype, buffer],
-    }
-    const queryResult = await client.query(query)
-    logger.info(
-        `Inserted a new row in transactions.transaction_receipts with primary key id=${queryResult.rows[0].id}.`
     )
     return queryResult.rows[0].id
 }
@@ -414,6 +375,51 @@ const _updateTransactionDAO = async (
     logger.trace(
         `Updated row with id=${transaction.id} in transactions.transactions.`
     )
+}
+
+const _deleteTransactionDAO = async (
+    id: number,
+    client: PoolClient
+): Promise<void> => {
+    const query = {
+        name: 'delete-from-transactions.transactions',
+        text: `DELETE FROM transactions.transactions WHERE id=$1;`,
+        values: [id],
+    }
+    await client.query(query)
+}
+
+/* Transaction Receipt DAO */
+const _insertTransactionReceiptDAO = async (
+    transactionReceipt: TransactionReceipt | undefined,
+    client: PoolClient
+): Promise<number | undefined> => {
+    if (
+        !transactionReceipt ||
+        !(
+            transactionReceipt.buffer &&
+            transactionReceipt.mimetype &&
+            transactionReceipt.name
+        )
+    ) {
+        logger.trace(
+            'No transaction receipt provided for this transaction. Will return undefined for receipt_id'
+        )
+        return undefined
+    }
+
+    const { name, mimetype, buffer } = transactionReceipt
+
+    const query = {
+        name: 'insert-into-transactions.transaction_receipts',
+        text: 'INSERT INTO transactions.transaction_receipts(name, mimetype, buffer) VALUES ($1, $2, $3) RETURNING id;',
+        values: [name, mimetype, buffer],
+    }
+    const queryResult = await client.query(query)
+    logger.info(
+        `Inserted a new row in transactions.transaction_receipts with primary key id=${queryResult.rows[0].id}.`
+    )
+    return queryResult.rows[0].id
 }
 
 const _updateTransactionReceiptDAO = async (
@@ -479,6 +485,8 @@ const _deleteTransactionReceiptDAO = async (
     await client.query(query)
 }
 
+/* Transaction-related data specific to transaction context */
+
 const _upsertContextSpecificInformation = async (
     transaction_id: number,
     transaction: Transaction,
@@ -512,6 +520,7 @@ const _upsertContextSpecificInformation = async (
     }
 }
 
+/* Other */
 const _mapToTransaction = async (
     row: any,
     connectionPool: Pool
