@@ -277,7 +277,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                                         id="vat"
                                         form={form}
                                         label="VAT (Value-Added Tax)"
-                                        placeholder="Enter a number between 0 and 100, e.g. 19"
+                                        placeholder="Enter a number between 0 and 1, e.g. 0.19"
                                     />
                                 </div>
                                 <div>
