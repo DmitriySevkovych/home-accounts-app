@@ -69,6 +69,7 @@ export const TextAreaInput: React.FC<InputProps> = (props) => {
                     <FormLabel>{label}</FormLabel>
                     <Textarea
                         onChange={field.onChange}
+                        value={field.value || ''}
                         placeholder={placeholder}
                     />
                     <FormMessage />
