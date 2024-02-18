@@ -33,6 +33,7 @@ export const API = {
                 _getClientsideUrl(
                     `/transactions?context=${context}&limit=${limit}`
                 ),
+            delete: (id: number) => _getClientsideUrl(`/transactions/${id}`),
         },
     },
     server: {
