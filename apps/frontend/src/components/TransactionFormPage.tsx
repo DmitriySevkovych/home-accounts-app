@@ -104,7 +104,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
     const transactionContext = form.watch('context')
 
     return (
-        <div className="relative mx-auto  max-w-4xl bg-background px-3 pb-3 text-darkest md:py-8">
+        <div className="relative mx-auto  max-w-4xl bg-background px-3 pb-12 text-darkest md:py-8">
             <div className="sticky top-0 z-10 flex items-center justify-between gap-2 bg-inherit py-3">
                 <h1 className="flex-grow text-xl font-bold leading-none text-primary lg:text-2xl">
                     {heading}
@@ -277,7 +277,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                                         id="vat"
                                         form={form}
                                         label="VAT (Value-Added Tax)"
-                                        placeholder="Enter a number between 0 and 100, e.g. 19"
+                                        placeholder="Enter a number between 0 and 1, e.g. 0.19"
                                     />
                                 </div>
                                 <div>
@@ -307,15 +307,12 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                         )}
 
                     <div className="lg:col-span-2">
-                        <>
-                            <Separator />
-                            <TagsManager
-                                id="tags"
-                                form={form}
-                                label="Tags"
-                                initialTags={tags}
-                            />
-                        </>
+                        <TagsManager
+                            id="tags"
+                            form={form}
+                            label="Tags"
+                            initialTags={tags}
+                        />
                     </div>
 
                     <div className="lg:col-span-2">

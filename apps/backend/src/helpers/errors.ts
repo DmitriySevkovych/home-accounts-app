@@ -3,6 +3,8 @@ export class BadQueryParameterInRequestError extends Error {}
 
 export class UnsupportedTransactionContextError extends Error {}
 
+export class UnsupportedTransactionOperationError extends Error {}
+
 export class NoRecordFoundInDatabaseError extends Error {}
 
 /* 5xx */

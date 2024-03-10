@@ -58,6 +58,7 @@
         "jest-presets": "*",
         "postcss": "^8.4.27",
         "prettier-config-custom": "*",
+        "prettier-plugin-tailwindcss": "^0.5.11",
         "tailwindcss": "^3.3.3",
         "tsconfig": "*",
         "typescript": "^4.8.3"

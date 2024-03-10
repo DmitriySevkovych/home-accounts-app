@@ -60,6 +60,9 @@ Content-Type: application/json
     "test": "hello"
 }
 
+### Delete
+DELETE https://localhost:8070/api/v1/transactions/1
+
 ### Get transaction receipt
 GET https://localhost:8070/api/v1/transactions/receipt/1
 

@@ -1,14 +1,18 @@
 import React from 'react'
 
+import { DeleteDialog } from '../../components/Dialog'
 import TransactionFormPage, {
     TransactionFormConstants,
     fetchTransactionConstants,
 } from '../../components/TransactionFormPage'
+import useDeleteTransactionHandler from '../../components/hooks/useDeleteTransactionHandler'
 import useTransactionForm from '../../components/hooks/useTransactionForm'
 import useUpdateTransactionSubmitHandler from '../../components/hooks/useUpdateTransactionSubmitHandler'
 import { safeFetch } from '../../helpers/requests'
 import { API } from '../../helpers/routes'
 import { TransactionForm } from '../../helpers/zod-form-schemas'
+import { Button } from '../../lib/shadcn/Button'
+import { Separator } from '../../lib/shadcn/Separator'
 
 type EditPageProps = {
     transaction: TransactionForm
@@ -23,14 +27,28 @@ const EditTransactionPage = ({ transaction, constants }: EditPageProps) => {
 
     const { onSubmit } = useUpdateTransactionSubmitHandler()
 
+    const { deleteTransaction } = useDeleteTransactionHandler()
+
     return (
-        <TransactionFormPage
-            heading="Edit Transaction"
-            form={form}
-            constants={constants}
-            onSubmit={onSubmit}
-            submitLabel="Update"
-        />
+        <>
+            <TransactionFormPage
+                heading="Edit Transaction"
+                form={form}
+                constants={constants}
+                onSubmit={onSubmit}
+                submitLabel="Update"
+            />
+            <Separator />
+            <div className="relative mx-auto  max-w-4xl bg-background px-3 py-8 text-darkest">
+                <h2 className="mb-6 flex-grow text-xl font-bold leading-none text-primary lg:text-2xl">
+                    Danger Zone ☢️
+                </h2>
+
+                <DeleteDialog
+                    onConfirm={() => deleteTransaction(transaction.id!)}
+                />
+            </div>
+        </>
     )
 }
 
