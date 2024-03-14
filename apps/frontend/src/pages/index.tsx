@@ -1,78 +1,46 @@
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
+import { SystemInfo, SystemInfoFooter } from '../components/SystemInfoFooter'
+import { safeFetch } from '../helpers/requests'
+import { API } from '../helpers/routes'
 
-export default function Home() {
+// import styles from '../styles/Home.module.css'
+
+type HomePageProps = {
+    systemInfo: SystemInfo
+}
+
+export default function Home({ systemInfo }: HomePageProps) {
     return (
-        <div className={styles.container}>
-            <main className={styles.main}>
-                <h1 className={styles.title}>
-                    Welcome to <a href="https://nextjs.org">Next.js!</a>
-                </h1>
-
-                <p className={styles.description}>
-                    Get started by editing{' '}
-                    <code className={styles.code}>pages/index.js</code>
-                </p>
-
-                <div className={styles.grid}>
-                    <a href="https://nextjs.org/docs" className={styles.card}>
-                        <h3>Documentation &rarr;</h3>
-                        <p>
-                            Find in-depth information about Next.js features and
-                            API.
-                        </p>
-                    </a>
-
-                    <a href="https://nextjs.org/learn" className={styles.card}>
-                        <h3>Learn &rarr;</h3>
-                        <p>
-                            Learn about Next.js in an interactive course with
-                            quizzes!
-                        </p>
-                    </a>
-
-                    <a
-                        href="https://github.com/vercel/next.js/tree/canary/examples"
-                        className={styles.card}
-                    >
-                        <h3>Examples &rarr;</h3>
-                        <p>
-                            Discover and deploy boilerplate example Next.js
-                            projects.
-                        </p>
-                    </a>
-
-                    <a
-                        href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.card}
-                    >
-                        <h3>Deploy &rarr;</h3>
-                        <p>
-                            Instantly deploy your Next.js site to a public URL
-                            with Vercel.
-                        </p>
-                    </a>
-                </div>
-            </main>
-
-            <footer className={styles.footer}>
-                <a
-                    href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Powered by{' '}
-                    <Image
-                        src="/vercel.svg"
-                        alt="Vercel Logo"
-                        width={100}
-                        height={100}
-                        className={styles.logo}
-                    />
-                </a>
-            </footer>
-        </div>
+        <>
+            <SystemInfoFooter {...systemInfo} />
+        </>
     )
+}
+
+export const getServerSideProps = async () => {
+    let backendInfo
+    try {
+        const req = await safeFetch(API.server.system.info())
+        backendInfo = await req.json()
+    } catch (err) {
+        backendInfo = {
+            error: `Fetch ${API.server.system.info()} failed`,
+        }
+        console.error(err)
+    }
+    return {
+        props: {
+            systemInfo: {
+                frontend: {
+                    environment: process.env.APP_ENV,
+                    branch: process.env.GIT_BRANCH
+                        ? process.env.GIT_BRANCH
+                        : '',
+                    commit: process.env.GIT_COMMIT
+                        ? process.env.GIT_COMMIT
+                        : '',
+                },
+                backend: backendInfo,
+            },
+        },
+    }
 }
