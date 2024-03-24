@@ -25,7 +25,7 @@ export const PAGES = {
     transactions: {
         index: '/transactions',
         new: '/transactions/new',
-        search: '/transactions/#',
+        search: '/transactions/search',
         success: (type: TransactionType) => `/transactions/congrats/${type}`,
         edit: (id: number) => `/transactions/${id}`,
     },
