@@ -35,22 +35,21 @@ export default function Home({ systemInfo }: HomePageProps) {
                                 <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
                                     <NavigationListItem
                                         href={PAGES.transactions.index}
-                                        title="Overview"
+                                        title="List"
                                     >
-                                        See latest home, work and investments
-                                        transactions.
+                                        See the latest transactions.
                                     </NavigationListItem>
                                     <NavigationListItem
                                         href={PAGES.transactions.new}
-                                        title="New Transaction"
+                                        title="Create"
                                     >
                                         Create a new transaction.
                                     </NavigationListItem>
                                     <NavigationListItem
                                         href={PAGES.transactions.search}
-                                        title="TODO Search Transaction"
+                                        title="Search"
                                     >
-                                        Search based on different criteria.
+                                        Search transactions.
                                     </NavigationListItem>
                                 </ul>
                             </NavigationMenuContent>

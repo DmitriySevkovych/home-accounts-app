@@ -17,11 +17,18 @@ const TransactionsPage = () => {
                         <TransactionsPreview />
                     </div>
 
-                    <Link className="w-full" href={PAGES.transactions.new}>
-                        <Button className="w-full" variant="primary">
-                            New
-                        </Button>
-                    </Link>
+                    <div className="grid w-full grid-cols-1 gap-3 lg:grid-cols-2">
+                        <Link href={PAGES.transactions.new}>
+                            <Button className="w-full" variant="primary">
+                                New
+                            </Button>
+                        </Link>
+                        <Link href={PAGES.transactions.search}>
+                            <Button className="w-full" variant="secondary">
+                                Search
+                            </Button>
+                        </Link>
+                    </div>
                 </div>
                 <OverlayImage />
             </div>
