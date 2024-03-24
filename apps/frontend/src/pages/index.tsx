@@ -1,78 +1,127 @@
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
+import React from 'react'
 
-export default function Home() {
+import { SystemInfo, SystemInfoFooter } from '../components/SystemInfoFooter'
+import { safeFetch } from '../helpers/requests'
+import { API, PAGES } from '../helpers/routes'
+import {
+    NavigationListItem,
+    NavigationMenu,
+    NavigationMenuContent,
+    NavigationMenuItem,
+    NavigationMenuList,
+    NavigationMenuTrigger,
+} from '../lib/shadcn/NavigationMenu'
+
+type HomePageProps = {
+    systemInfo: SystemInfo
+}
+
+export default function Home({ systemInfo }: HomePageProps) {
     return (
-        <div className={styles.container}>
-            <main className={styles.main}>
-                <h1 className={styles.title}>
-                    Welcome to <a href="https://nextjs.org">Next.js!</a>
-                </h1>
+        <div className="flex h-full flex-col items-center p-5">
+            <h1 className="py-10 text-xl">Home Accounting App</h1>
 
-                <p className={styles.description}>
-                    Get started by editing{' '}
-                    <code className={styles.code}>pages/index.js</code>
-                </p>
+            {/* A flex-growing wrapper for the navigation menu */}
+            <div className="flex-grow">
+                <NavigationMenu className="relative top-1/3">
+                    <NavigationMenuList>
+                        {/* Transactions */}
+                        <NavigationMenuItem>
+                            <NavigationMenuTrigger>
+                                Transactions
+                            </NavigationMenuTrigger>
+                            <NavigationMenuContent>
+                                <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+                                    <NavigationListItem
+                                        href={PAGES.transactions.index}
+                                        title="Overview"
+                                    >
+                                        See latest home, work and investments
+                                        transactions.
+                                    </NavigationListItem>
+                                    <NavigationListItem
+                                        href={PAGES.transactions.new}
+                                        title="New Transaction"
+                                    >
+                                        Create a new transaction.
+                                    </NavigationListItem>
+                                    <NavigationListItem
+                                        href={PAGES.transactions.search}
+                                        title="TODO Search Transaction"
+                                    >
+                                        Search based on different criteria.
+                                    </NavigationListItem>
+                                </ul>
+                            </NavigationMenuContent>
+                        </NavigationMenuItem>
 
-                <div className={styles.grid}>
-                    <a href="https://nextjs.org/docs" className={styles.card}>
-                        <h3>Documentation &rarr;</h3>
-                        <p>
-                            Find in-depth information about Next.js features and
-                            API.
-                        </p>
-                    </a>
+                        {/* Analysis */}
+                        <NavigationMenuItem>
+                            <NavigationMenuTrigger>
+                                Analysis
+                            </NavigationMenuTrigger>
+                            <NavigationMenuContent>
+                                <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+                                    <NavigationListItem
+                                        href={PAGES.analysis.cashflow}
+                                        title="TODO Cashflow"
+                                    >
+                                        See current cashflow diagram.
+                                    </NavigationListItem>
+                                </ul>
+                            </NavigationMenuContent>
+                        </NavigationMenuItem>
 
-                    <a href="https://nextjs.org/learn" className={styles.card}>
-                        <h3>Learn &rarr;</h3>
-                        <p>
-                            Learn about Next.js in an interactive course with
-                            quizzes!
-                        </p>
-                    </a>
+                        {/* Analysis */}
+                        <NavigationMenuItem>
+                            <NavigationMenuTrigger>
+                                Administration
+                            </NavigationMenuTrigger>
+                            <NavigationMenuContent>
+                                <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+                                    <NavigationListItem
+                                        href={PAGES.admin.blueprints}
+                                        title="TODO Blueprints"
+                                    >
+                                        Configure transaction blueprints.
+                                    </NavigationListItem>
+                                </ul>
+                            </NavigationMenuContent>
+                        </NavigationMenuItem>
+                    </NavigationMenuList>
+                </NavigationMenu>
+            </div>
 
-                    <a
-                        href="https://github.com/vercel/next.js/tree/canary/examples"
-                        className={styles.card}
-                    >
-                        <h3>Examples &rarr;</h3>
-                        <p>
-                            Discover and deploy boilerplate example Next.js
-                            projects.
-                        </p>
-                    </a>
-
-                    <a
-                        href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.card}
-                    >
-                        <h3>Deploy &rarr;</h3>
-                        <p>
-                            Instantly deploy your Next.js site to a public URL
-                            with Vercel.
-                        </p>
-                    </a>
-                </div>
-            </main>
-
-            <footer className={styles.footer}>
-                <a
-                    href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Powered by{' '}
-                    <Image
-                        src="/vercel.svg"
-                        alt="Vercel Logo"
-                        width={100}
-                        height={100}
-                        className={styles.logo}
-                    />
-                </a>
-            </footer>
+            <SystemInfoFooter {...systemInfo} />
         </div>
     )
+}
+
+export const getServerSideProps = async () => {
+    let backendInfo
+    try {
+        const req = await safeFetch(API.server.system.info())
+        backendInfo = await req.json()
+    } catch (err) {
+        backendInfo = {
+            error: `Fetch ${API.server.system.info()} failed`,
+        }
+        console.error(err)
+    }
+    return {
+        props: {
+            systemInfo: {
+                frontend: {
+                    environment: process.env.APP_ENV,
+                    branch: process.env.GIT_BRANCH
+                        ? process.env.GIT_BRANCH
+                        : '',
+                    commit: process.env.GIT_COMMIT
+                        ? process.env.GIT_COMMIT
+                        : '',
+                },
+                backend: backendInfo,
+            },
+        },
+    }
 }

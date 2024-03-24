@@ -1,17 +1,11 @@
 import Link from 'next/link'
 
 import OverlayImage from '../../components/Overlay'
-import { SystemInfo, SystemInfoFooter } from '../../components/SystemInfoFooter'
 import { TransactionsPreview } from '../../components/TransactionsPreview'
-import { safeFetch } from '../../helpers/requests'
-import { API, PAGES } from '../../helpers/routes'
+import { PAGES } from '../../helpers/routes'
 import { Button } from '../../lib/shadcn/Button'
 
-type TransactionsPageProps = {
-    systemInfo: SystemInfo
-}
-
-const TransactionsPage = ({ systemInfo }: TransactionsPageProps) => {
+const TransactionsPage = () => {
     return (
         <>
             <div className="relative flex h-full w-full flex-col justify-between p-4">
@@ -30,41 +24,9 @@ const TransactionsPage = ({ systemInfo }: TransactionsPageProps) => {
                     </Link>
                 </div>
                 <OverlayImage />
-                {systemInfo.frontend.environment !== 'production' && (
-                    <SystemInfoFooter {...systemInfo} />
-                )}
             </div>
         </>
     )
-}
-
-export const getServerSideProps = async () => {
-    let backendInfo
-    try {
-        const req = await safeFetch(API.server.system.info())
-        backendInfo = await req.json()
-    } catch (err) {
-        backendInfo = {
-            error: `Fetch ${API.server.system.info()} failed`,
-        }
-        console.error(err)
-    }
-    return {
-        props: {
-            systemInfo: {
-                frontend: {
-                    environment: process.env.APP_ENV,
-                    branch: process.env.GIT_BRANCH
-                        ? process.env.GIT_BRANCH
-                        : '',
-                    commit: process.env.GIT_COMMIT
-                        ? process.env.GIT_COMMIT
-                        : '',
-                },
-                backend: backendInfo,
-            },
-        },
-    }
 }
 
 export default TransactionsPage

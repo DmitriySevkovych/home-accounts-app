@@ -16,9 +16,16 @@ const _getClientsideUrl = (endpoint: string): string => {
 }
 
 export const PAGES = {
+    admin: {
+        blueprints: '/#',
+    },
+    analysis: {
+        cashflow: '/#',
+    },
     transactions: {
         index: '/transactions',
         new: '/transactions/new',
+        search: '/transactions/#',
         success: (type: TransactionType) => `/transactions/congrats/${type}`,
         edit: (id: number) => `/transactions/${id}`,
     },
