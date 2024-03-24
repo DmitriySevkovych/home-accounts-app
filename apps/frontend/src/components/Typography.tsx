@@ -1,10 +1,21 @@
 import React from 'react'
 
-type HeadingProps = {
-    label: string
-}
+import { cn } from '../helpers/utils'
 
-export const Heading = (props: HeadingProps) => {
-    const { label } = props
-    return <h1>{label}</h1>
+interface HeadingProps extends React.HTMLAttributes<HTMLHeadingElement> {}
+
+export const MainHeading: React.FC<HeadingProps> = ({
+    className,
+    children,
+}) => {
+    return (
+        <h1
+            className={cn(
+                'py-6 text-xl font-bold leading-none text-primary lg:text-2xl',
+                className
+            )}
+        >
+            {children}
+        </h1>
+    )
 }

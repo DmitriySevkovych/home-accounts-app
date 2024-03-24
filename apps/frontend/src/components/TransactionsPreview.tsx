@@ -48,9 +48,9 @@ export const TransactionsPreview = () => {
                 <TabsTrigger value="investments">Investments</TabsTrigger>
             </TabsList>
             <TabsContent value={context}>
-                <h1 className="text-md mb-2 font-bold text-primary lg:text-xl">
+                <h2 className="text-md mb-2 font-bold text-primary lg:text-xl">
                     Latest {context} transactions
-                </h1>
+                </h2>
                 <Suspense fallback={<p>Loading...</p>}>
                     <ScrollArea className="h-[190px]">
                         {transactions.map((t) => (

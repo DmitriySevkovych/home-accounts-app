@@ -2,6 +2,7 @@ import Link from 'next/link'
 
 import OverlayImage from '../../components/Overlay'
 import { TransactionsPreview } from '../../components/TransactionsPreview'
+import { MainHeading } from '../../components/Typography'
 import { PAGES } from '../../helpers/routes'
 import { Button } from '../../lib/shadcn/Button'
 
@@ -10,9 +11,8 @@ const TransactionsPage = () => {
         <>
             <div className="relative flex h-full w-full flex-col justify-between p-4">
                 <div className="flex flex-grow flex-col items-center justify-between gap-10">
-                    <h1 className="mt-24 text-center text-xl font-bold text-primary lg:text-2xl">
-                        Transactions
-                    </h1>
+                    <MainHeading>Transactions</MainHeading>
+
                     <div className="flex w-full flex-col gap-1">
                         <TransactionsPreview />
                     </div>

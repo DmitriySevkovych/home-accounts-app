@@ -28,6 +28,7 @@ import OverlayImage from './Overlay'
 import Radio from './Radio'
 import Select from './Select'
 import TagsManager from './TagsManager'
+import { MainHeading } from './Typography'
 
 export type TransactionFormConstants = {
     transactionOrigins: string[]
@@ -106,9 +107,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
     return (
         <div className="relative mx-auto  max-w-4xl bg-background px-3 pb-12 text-darkest md:py-8">
             <div className="sticky top-0 z-10 flex items-center justify-between gap-2 bg-inherit py-3">
-                <h1 className="flex-grow text-xl font-bold leading-none text-primary lg:text-2xl">
-                    {heading}
-                </h1>
+                <MainHeading>{heading}</MainHeading>
                 <Link href={PAGES.transactions.index}>
                     <Button
                         className="min-w-[40px] p-0"

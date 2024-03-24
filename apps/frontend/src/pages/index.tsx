@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { SystemInfo, SystemInfoFooter } from '../components/SystemInfoFooter'
+import { MainHeading } from '../components/Typography'
 import { safeFetch } from '../helpers/requests'
 import { API, PAGES } from '../helpers/routes'
 import {
@@ -19,7 +20,7 @@ type HomePageProps = {
 export default function Home({ systemInfo }: HomePageProps) {
     return (
         <div className="flex h-full flex-col items-center p-5">
-            <h1 className="py-10 text-xl">Home Accounting App</h1>
+            <MainHeading className="py-10">Home Accounting App</MainHeading>
 
             {/* A flex-growing wrapper for the navigation menu */}
             <div className="flex-grow">
