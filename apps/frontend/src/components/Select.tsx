@@ -1,7 +1,7 @@
-import { Transaction } from 'domain-model'
-import React from 'react'
-import { UseFormReturn } from 'react-hook-form'
+import React, { useState } from 'react'
+import { ControllerRenderProps, UseFormReturn } from 'react-hook-form'
 
+import { Button } from '../lib/shadcn/Button'
 import {
     FormControl,
     FormField,
@@ -50,6 +50,98 @@ export default function Select<T>(props: SelectProps<T>) {
                 </FormItem>
             )}
         />
+    )
+}
+
+export function SelectMany<T>(props: SelectProps<T>) {
+    const { form, label, id, options } = props
+
+    const _addSelectComponent = (field: ControllerRenderProps<any, string>) => {
+        if (field.value) {
+            field.onChange([...field.value, null])
+        } else {
+            field.onChange([null])
+        }
+    }
+
+    const _removeSelectComponent = (
+        field: ControllerRenderProps<any, string>,
+        index: number
+    ) => {
+        field.value.splice(index, 1)
+        field.onChange(field.value)
+    }
+
+    const _updateSelection = (
+        field: ControllerRenderProps<any, string>,
+        index: number,
+        selection: string
+    ) => {
+        field.value[index] = selection
+        field.onChange(field.value)
+    }
+
+    const _getSelectValue = (
+        field: ControllerRenderProps<any, string>,
+        index: number
+    ): string => {
+        return field.value[index]
+    }
+
+    return (
+        <>
+            <FormField
+                control={form.control}
+                name={id as string}
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>{label}</FormLabel>
+                        {field.value?.map((_: any, index: number) => {
+                            return (
+                                <div key={index} className="flex gap-2">
+                                    <ShadcnSelect
+                                        onValueChange={(selection) =>
+                                            _updateSelection(
+                                                field,
+                                                index,
+                                                selection
+                                            )
+                                        }
+                                        value={_getSelectValue(field, index)}
+                                    >
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <ScrollableSelectContent
+                                            options={options}
+                                        />
+                                    </ShadcnSelect>
+                                    <Button
+                                        type="button"
+                                        variant="destructive"
+                                        onClick={() =>
+                                            _removeSelectComponent(field, index)
+                                        }
+                                    >
+                                        x
+                                    </Button>
+                                </div>
+                            )
+                        })}
+
+                        <Button
+                            type="button"
+                            onClick={() => _addSelectComponent(field)}
+                        >
+                            +
+                        </Button>
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
+        </>
     )
 }
 

@@ -3,7 +3,10 @@
     "display": "Default",
     "compilerOptions": {
         "target": "ES2022",
-        "lib": ["ES2022"],
+        "lib": [
+            "ES2022",
+            "ES2022.Array",
+        ],
         "composite": false,
         "declaration": true,
         "declarationMap": true,
@@ -19,5 +22,7 @@
         "sourceMap": true,
         "strict": true
     },
-    "exclude": ["node_modules"]
+    "exclude": [
+        "node_modules"
+    ]
 }

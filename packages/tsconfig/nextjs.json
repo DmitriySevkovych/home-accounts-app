@@ -8,8 +8,13 @@
         "declarationMap": false,
         "incremental": true,
         "jsx": "preserve",
-        "lib": ["dom", "dom.iterable", "esnext"],
-        "module": "esnext",
+        "lib": [
+            "DOM",
+            "DOM.Iterable",
+            "ES2022",
+            "ES2022.Array",
+        ],
+        "module": "ES2022",
         "noEmit": true,
         "resolveJsonModule": true
     }
