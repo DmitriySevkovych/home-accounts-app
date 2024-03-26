@@ -19,3 +19,19 @@ export const MainHeading: React.FC<HeadingProps> = ({
         </h1>
     )
 }
+
+export const SectionHeading: React.FC<HeadingProps> = ({
+    className,
+    children,
+}) => {
+    return (
+        <h2
+            className={cn(
+                'text-md mb-2 font-bold text-primary lg:text-xl',
+                className
+            )}
+        >
+            {children}
+        </h2>
+    )
+}
