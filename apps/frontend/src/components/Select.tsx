@@ -18,20 +18,20 @@ import {
     Select as ShadcnSelect,
 } from '../lib/shadcn/Select'
 
-type SelectProps = {
+type SelectProps<T> = {
     form: UseFormReturn<any, any>
     label: string
-    id: keyof Transaction
+    id: keyof T
     options: string[]
 }
 
-export default function Select(props: SelectProps) {
+export default function Select<T>(props: SelectProps<T>) {
     const { form, label, id, options } = props
 
     return (
         <FormField
             control={form.control}
-            name={id}
+            name={id as string}
             render={({ field }) => (
                 <FormItem>
                     <FormLabel>{label}</FormLabel>

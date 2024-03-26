@@ -6,6 +6,7 @@ import {
     PaymentMethod,
     ProjectInvoice,
     TaxCategory,
+    Transaction,
     TransactionCategory,
     TransactionContext,
     TransactionType,
@@ -151,7 +152,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                         />
                     </div>
 
-                    <Select
+                    <Select<Transaction>
                         id="category"
                         form={form}
                         label="Category"
@@ -194,7 +195,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                         label="Exchange Rate"
                     />
 
-                    <Select
+                    <Select<Transaction>
                         id="paymentMethod"
                         form={form}
                         label="Payment Method"
@@ -202,7 +203,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                     />
 
                     {transactionType === 'expense' && (
-                        <Select
+                        <Select<Transaction>
                             id="sourceBankAccount"
                             form={form}
                             label="Source Bank Account"
@@ -220,7 +221,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                     )}
 
                     {transactionType === 'income' && (
-                        <Select
+                        <Select<Transaction>
                             id="targetBankAccount"
                             form={form}
                             label="Target Bank Account"
@@ -237,7 +238,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                         />
                     )}
 
-                    <Select
+                    <Select<Transaction>
                         id="taxCategory"
                         form={form}
                         label="Tax Category"
@@ -257,7 +258,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
 
                     {transactionContext === 'investments' && (
                         <div>
-                            <Select
+                            <Select<Transaction>
                                 id="investment"
                                 form={form}
                                 label="Investment"
@@ -293,7 +294,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                     {transactionContext === 'work' &&
                         transactionType === 'income' && (
                             <div>
-                                <Select
+                                <Select<Transaction>
                                     id="invoiceKey"
                                     form={form}
                                     label="Project invoice for this transaction"
