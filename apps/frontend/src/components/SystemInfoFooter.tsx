@@ -1,3 +1,4 @@
+import { Router } from 'lucide-react'
 import React from 'react'
 
 import { Label } from '../lib/shadcn/Label'
@@ -28,7 +29,9 @@ export const SystemInfoFooter = ({ frontend, backend }: SystemInfo) => {
     return (
         <footer className="mt-3 place-self-center">
             <Popover>
-                <PopoverTrigger>System information</PopoverTrigger>
+                <PopoverTrigger>
+                    <Router size={28} className="text-secondary" />
+                </PopoverTrigger>
                 <PopoverContent className="grid gap-8 border">
                     <div>
                         <Label>Frontend Info</Label>
