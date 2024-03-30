@@ -25,11 +25,10 @@ export default function Home({ systemInfo }: HomePageProps) {
         <div className="flex h-full flex-col items-center justify-between p-5">
             <MainHeading className="py-10">Home Accounting App</MainHeading>
 
-            {/* A flex-growing wrapper for the navigation menu */}
             <div className="grid items-center gap-8">
+                {/* Transactions */}
                 <NavigationMenu>
                     <NavigationMenuList>
-                        {/* Transactions */}
                         <NavigationMenuItem>
                             <NavigationMenuTrigger className="flex w-[175px] justify-start md:w-[400px] lg:w-[500px]">
                                 <Coins
@@ -64,9 +63,10 @@ export default function Home({ systemInfo }: HomePageProps) {
                         </NavigationMenuItem>
                     </NavigationMenuList>
                 </NavigationMenu>
+
+                {/* Analysis */}
                 <NavigationMenu>
                     <NavigationMenuList>
-                        {/* Analysis */}
                         <NavigationMenuItem>
                             <NavigationMenuTrigger className="flex w-[175px] justify-start md:w-[400px] lg:w-[500px]">
                                 <LineChart
@@ -88,9 +88,10 @@ export default function Home({ systemInfo }: HomePageProps) {
                         </NavigationMenuItem>
                     </NavigationMenuList>
                 </NavigationMenu>
+
+                {/* Administration */}
                 <NavigationMenu>
                     <NavigationMenuList>
-                        {/* Administration */}
                         <NavigationMenuItem>
                             <NavigationMenuTrigger className="flex w-[175px] justify-start md:w-[400px] lg:w-[500px]">
                                 <UserCog
