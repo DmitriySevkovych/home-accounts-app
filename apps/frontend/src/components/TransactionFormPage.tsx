@@ -178,7 +178,11 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                         placeholder={`What characterizes the ${transactionType}?`}
                     />
 
-                    <Calendar id="date" form={form} label="Transaction date" />
+                    <Calendar<Transaction>
+                        id="date"
+                        form={form}
+                        label="Transaction date"
+                    />
 
                     <NumberInput
                         id="amount"
