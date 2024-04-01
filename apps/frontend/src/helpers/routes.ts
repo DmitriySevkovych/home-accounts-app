@@ -16,6 +16,7 @@ const _getClientsideUrl = (endpoint: string): string => {
 }
 
 export const PAGES = {
+    home: '/',
     admin: {
         blueprints: '/#',
     },

@@ -2,17 +2,19 @@ import Link from 'next/link'
 
 import OverlayImage from '../../components/Overlay'
 import { TransactionsPreview } from '../../components/TransactionsPreview'
-import { MainHeading } from '../../components/Typography'
+import { PageWithBackButton } from '../../components/pages/PageWithBackButton'
 import { PAGES } from '../../helpers/routes'
 import { Button } from '../../lib/shadcn/Button'
 
 const TransactionsPage = () => {
     return (
-        <>
-            <div className="relative flex h-full w-full flex-col justify-between p-4">
+        <PageWithBackButton
+            heading="Transactions"
+            goBackLink={PAGES.home}
+            className="flex h-full flex-col justify-between"
+        >
+            <div className="relative flex flex-col justify-between">
                 <div className="flex flex-grow flex-col items-center justify-between gap-10">
-                    <MainHeading>Transactions</MainHeading>
-
                     <div className="flex w-full flex-col gap-1">
                         <TransactionsPreview />
                     </div>
@@ -32,7 +34,7 @@ const TransactionsPage = () => {
                 </div>
                 <OverlayImage />
             </div>
-        </>
+        </PageWithBackButton>
     )
 }
 
