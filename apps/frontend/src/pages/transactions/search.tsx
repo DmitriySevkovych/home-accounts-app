@@ -1,8 +1,6 @@
 // import { DevTool } from '@hookform/devtools'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Transaction } from 'domain-model'
-import { ArrowLeft } from 'lucide-react'
-import Link from 'next/link'
 import { useMemo, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -10,7 +8,7 @@ import { z } from 'zod'
 import { Calendar } from '../../components/Calendar'
 import { TextInput } from '../../components/Inputs'
 import { SelectMany } from '../../components/Select'
-import { MainHeading, SectionHeading } from '../../components/Typography'
+import { SectionHeading } from '../../components/Typography'
 import { PageWithBackButton } from '../../components/pages/PageWithBackButton'
 import {
     TransactionFormConstants,

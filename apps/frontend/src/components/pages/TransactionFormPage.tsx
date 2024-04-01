@@ -11,8 +11,6 @@ import {
     TransactionContext,
     TransactionType,
 } from 'domain-model'
-import { ArrowLeft } from 'lucide-react'
-import Link from 'next/link'
 import React from 'react'
 import { SubmitHandler, UseFormReturn } from 'react-hook-form'
 
@@ -20,7 +18,6 @@ import { safeFetch } from '../../helpers/requests'
 import { API, PAGES } from '../../helpers/routes'
 import { Button } from '../../lib/shadcn/Button'
 import { Form } from '../../lib/shadcn/Form'
-import { Separator } from '../../lib/shadcn/Separator'
 import AutocompleteInput from '../AutocompleteInput'
 import { Calendar } from '../Calendar'
 import { DropzoneFormField } from '../Dropzone'
@@ -29,7 +26,6 @@ import OverlayImage from '../Overlay'
 import Radio from '../Radio'
 import Select from '../Select'
 import TagsManager from '../TagsManager'
-import { MainHeading } from '../Typography'
 import { PageWithBackButton } from './PageWithBackButton'
 
 export type TransactionFormConstants = {
