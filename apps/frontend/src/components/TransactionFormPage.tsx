@@ -30,6 +30,7 @@ import Radio from './Radio'
 import Select from './Select'
 import TagsManager from './TagsManager'
 import { MainHeading } from './Typography'
+import { PageWithBackButton } from './pages/PageWithBackButton'
 
 export type TransactionFormConstants = {
     transactionOrigins: string[]
@@ -106,19 +107,10 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
     const transactionContext = form.watch('context')
 
     return (
-        <div className="relative mx-auto  max-w-4xl bg-background px-3 pb-12 text-darkest md:py-8">
-            <div className="sticky top-0 z-10 flex items-center justify-between gap-2 bg-inherit py-3">
-                <MainHeading>{heading}</MainHeading>
-                <Link href={PAGES.transactions.index}>
-                    <Button
-                        className="min-w-[40px] p-0"
-                        variant="secondary"
-                        type="button"
-                    >
-                        <ArrowLeft size={18} />
-                    </Button>
-                </Link>
-            </div>
+        <PageWithBackButton
+            heading={heading}
+            goBackLink={PAGES.transactions.index}
+        >
             <Form {...form}>
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}
@@ -339,7 +331,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
             </Form>
             <OverlayImage />
             {/* <DevTool control={form.control} /> */}
-        </div>
+        </PageWithBackButton>
     )
 }
 

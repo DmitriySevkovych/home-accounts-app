@@ -15,6 +15,7 @@ import {
     fetchTransactionConstants,
 } from '../../components/TransactionFormPage'
 import { MainHeading, SectionHeading } from '../../components/Typography'
+import { PageWithBackButton } from '../../components/pages/PageWithBackButton'
 import { PAGES } from '../../helpers/routes'
 import { Button } from '../../lib/shadcn/Button'
 import { Form } from '../../lib/shadcn/Form'
@@ -71,20 +72,10 @@ const SearchTransactionsPage: React.FC<SearchTransactionsPageProps> = ({
 
     // Render
     return (
-        <main className="relative mx-auto  max-w-4xl bg-background px-3 pb-12 text-darkest md:py-8">
-            <div className="sticky top-0 z-10 flex items-center justify-between gap-2 bg-inherit py-3">
-                <MainHeading>Search transactions</MainHeading>
-                <Link href={PAGES.transactions.index}>
-                    <Button
-                        className="min-w-[40px] p-0"
-                        variant="secondary"
-                        type="button"
-                    >
-                        <ArrowLeft size={18} />
-                    </Button>
-                </Link>
-            </div>
-
+        <PageWithBackButton
+            heading="Search transactions"
+            goBackLink={PAGES.transactions.index}
+        >
             <section className="mb-12">
                 <Form {...form}>
                     <form
@@ -147,7 +138,7 @@ const SearchTransactionsPage: React.FC<SearchTransactionsPageProps> = ({
             <section>
                 <SectionHeading>Results</SectionHeading>
             </section>
-        </main>
+        </PageWithBackButton>
     )
 }
 
