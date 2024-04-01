@@ -1,11 +1,11 @@
 import React from 'react'
 
+import useNewTransactionSubmitHandler from '../../components/hooks/useNewTransactionSubmitHandler'
+import useTransactionForm from '../../components/hooks/useTransactionForm'
 import TransactionFormPage, {
     TransactionFormConstants,
     fetchTransactionConstants,
-} from '../../components/TransactionFormPage'
-import useNewTransactionSubmitHandler from '../../components/hooks/useNewTransactionSubmitHandler'
-import useTransactionForm from '../../components/hooks/useTransactionForm'
+} from '../../components/pages/TransactionFormPage'
 import { TransactionForm } from '../../helpers/zod-form-schemas'
 
 // Type of arguments for export function (from getServerSideProps)

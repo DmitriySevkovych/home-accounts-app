@@ -10,12 +10,12 @@ import { z } from 'zod'
 import { Calendar } from '../../components/Calendar'
 import { TextInput } from '../../components/Inputs'
 import { SelectMany } from '../../components/Select'
+import { MainHeading, SectionHeading } from '../../components/Typography'
+import { PageWithBackButton } from '../../components/pages/PageWithBackButton'
 import {
     TransactionFormConstants,
     fetchTransactionConstants,
-} from '../../components/TransactionFormPage'
-import { MainHeading, SectionHeading } from '../../components/Typography'
-import { PageWithBackButton } from '../../components/pages/PageWithBackButton'
+} from '../../components/pages/TransactionFormPage'
 import { PAGES } from '../../helpers/routes'
 import { Button } from '../../lib/shadcn/Button'
 import { Form } from '../../lib/shadcn/Form'
