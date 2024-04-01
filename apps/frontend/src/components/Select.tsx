@@ -1,3 +1,4 @@
+import { Minus, Plus } from 'lucide-react'
 import React, { useState } from 'react'
 import { ControllerRenderProps, UseFormReturn } from 'react-hook-form'
 
@@ -120,23 +121,28 @@ export function SelectMany<T>(props: SelectProps<T>) {
                                     </ShadcnSelect>
                                     <Button
                                         type="button"
-                                        variant="destructive"
+                                        className="min-w-[40px] p-0"
+                                        variant="secondary"
                                         onClick={() =>
                                             _removeSelectComponent(field, index)
                                         }
                                     >
-                                        x
+                                        <Minus size={18} />
                                     </Button>
                                 </div>
                             )
                         })}
 
-                        <Button
-                            type="button"
-                            onClick={() => _addSelectComponent(field)}
-                        >
-                            +
-                        </Button>
+                        <div className="flex justify-start">
+                            <Button
+                                type="button"
+                                className="min-w-[40px] p-0"
+                                onClick={() => _addSelectComponent(field)}
+                            >
+                                <Plus size={18} />
+                            </Button>
+                        </div>
+
                         <FormMessage />
                     </FormItem>
                 )}

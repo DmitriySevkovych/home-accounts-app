@@ -1,6 +1,8 @@
 // import { DevTool } from '@hookform/devtools'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Transaction } from 'domain-model'
+import { ArrowLeft } from 'lucide-react'
+import Link from 'next/link'
 import { useMemo, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -13,6 +15,7 @@ import {
     fetchTransactionConstants,
 } from '../../components/TransactionFormPage'
 import { MainHeading, SectionHeading } from '../../components/Typography'
+import { PAGES } from '../../helpers/routes'
 import { Button } from '../../lib/shadcn/Button'
 import { Form } from '../../lib/shadcn/Form'
 
@@ -68,14 +71,26 @@ const SearchTransactionsPage: React.FC<SearchTransactionsPageProps> = ({
 
     // Render
     return (
-        <main className="flex h-full w-full flex-col p-5">
-            <MainHeading>Search transactions</MainHeading>
+        <main className="relative mx-auto  max-w-4xl bg-background px-3 pb-12 text-darkest md:py-8">
+            <div className="sticky top-0 z-10 flex items-center justify-between gap-2 bg-inherit py-3">
+                <MainHeading>Search transactions</MainHeading>
+                <Link href={PAGES.transactions.index}>
+                    <Button
+                        className="min-w-[40px] p-0"
+                        variant="secondary"
+                        type="button"
+                    >
+                        <ArrowLeft size={18} />
+                    </Button>
+                </Link>
+            </div>
 
-            <section>
-                <SectionHeading>Search parameters</SectionHeading>
-
+            <section className="mb-12">
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(_search)}>
+                    <form
+                        onSubmit={form.handleSubmit(_search)}
+                        className="w-full grid-cols-2 gap-4 space-y-6 lg:grid"
+                    >
                         <Calendar<SearchParameters>
                             id="dateFrom"
                             form={form}
@@ -116,7 +131,12 @@ const SearchTransactionsPage: React.FC<SearchTransactionsPageProps> = ({
                             placeholder="Description fuzzy search"
                         />
 
-                        <Button variant="primary" type="submit" size={'lg'}>
+                        <Button
+                            className="flex w-full md:ml-auto md:mr-0 md:w-auto lg:col-span-2"
+                            variant="primary"
+                            type="submit"
+                            size={'lg'}
+                        >
                             Search
                         </Button>
                     </form>
@@ -125,7 +145,7 @@ const SearchTransactionsPage: React.FC<SearchTransactionsPageProps> = ({
             </section>
 
             <section>
-                <SectionHeading>Search results</SectionHeading>
+                <SectionHeading>Results</SectionHeading>
             </section>
         </main>
     )
