@@ -6,7 +6,13 @@ import { ControllerRenderProps, UseFormReturn } from 'react-hook-form'
 import { cn } from '../helpers/utils'
 import { Button } from '../lib/shadcn/Button'
 import { Calendar as ShadcnCalendar } from '../lib/shadcn/Calendar'
-import { FormControl, FormField, FormItem, FormLabel } from '../lib/shadcn/Form'
+import {
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from '../lib/shadcn/Form'
 import { Popover, PopoverContent, PopoverTrigger } from '../lib/shadcn/Popover'
 
 type CalendarProps<T> = {
@@ -66,6 +72,7 @@ export function Calendar<T>(props: CalendarProps<T>) {
                             />
                         </PopoverContent>
                     </Popover>
+                    <FormMessage />
                 </FormItem>
             )}
         />
