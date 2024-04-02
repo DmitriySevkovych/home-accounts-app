@@ -1,6 +1,6 @@
 // import { DevTool } from '@hookform/devtools'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Transaction } from 'domain-model'
+import { Transaction, deserializeTransaction } from 'domain-model'
 import { useMemo, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -8,13 +8,16 @@ import { z } from 'zod'
 import { Calendar } from '../../components/Calendar'
 import { TextInput } from '../../components/Inputs'
 import { SelectMany } from '../../components/Select'
+import { TransactionPreviewCard } from '../../components/TransactionPreviewCard'
 import { SectionHeading } from '../../components/Typography'
 import { PageWithBackButton } from '../../components/pages/PageWithBackButton'
 import {
     TransactionFormConstants,
     fetchTransactionConstants,
 } from '../../components/pages/TransactionFormPage'
+import { safeFetch } from '../../helpers/requests'
 import { PAGES } from '../../helpers/routes'
+import { API } from '../../helpers/routes'
 import { Button } from '../../lib/shadcn/Button'
 import { Form } from '../../lib/shadcn/Form'
 
@@ -56,7 +59,9 @@ const SearchTransactionsPage: React.FC<SearchTransactionsPageProps> = ({
     constants,
 }) => {
     // State
-    const [searchResults, setSearchResults] = useState<Transaction | null>(null)
+    const [searchResults, setSearchResults] = useState<Transaction[] | null>(
+        null
+    )
 
     const { tags } = constants
     // Input data
@@ -76,8 +81,19 @@ const SearchTransactionsPage: React.FC<SearchTransactionsPageProps> = ({
     const _search: SubmitHandler<SearchParameters> = async (
         parameters: SearchParameters
     ) => {
-        //TODO
-        console.log(parameters)
+        const response = await safeFetch(API.client.transactions.search, {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json',
+            },
+            body: JSON.stringify({ parameters }),
+        })
+
+        const responseData: { transactions: Transaction[] } =
+            await response.json()
+        setSearchResults(
+            responseData.transactions.map((t) => deserializeTransaction(t))
+        )
     }
 
     // Render
@@ -147,6 +163,13 @@ const SearchTransactionsPage: React.FC<SearchTransactionsPageProps> = ({
 
             <section>
                 <SectionHeading>Results</SectionHeading>
+
+                {searchResults?.map((transaction) => (
+                    <TransactionPreviewCard
+                        key={transaction.id}
+                        transaction={transaction}
+                    />
+                ))}
             </section>
         </PageWithBackButton>
     )

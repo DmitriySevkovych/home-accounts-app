@@ -42,6 +42,7 @@ export const API = {
                     `/transactions?context=${context}&limit=${limit}`
                 ),
             delete: (id: number) => _getClientsideUrl(`/transactions/${id}`),
+            search: _getClientsideUrl(`/transactions/search`),
         },
     },
     server: {
