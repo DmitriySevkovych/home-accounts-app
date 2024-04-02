@@ -1,8 +1,8 @@
 import { useCommandState } from 'cmdk'
+import { TransactionForm } from 'domain-model'
 import React, { useRef, useState } from 'react'
 import { ControllerRenderProps, UseFormReturn } from 'react-hook-form'
 
-import { TransactionForm } from '../helpers/zod-form-schemas'
 import { Badge } from '../lib/shadcn/Badge'
 import { Button } from '../lib/shadcn/Button'
 import {

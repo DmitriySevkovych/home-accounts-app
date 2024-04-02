@@ -1,9 +1,9 @@
+import { TransactionForm } from 'domain-model'
 import { NextRouter, useRouter } from 'next/router'
 import { type SubmitHandler } from 'react-hook-form'
 
 import { ResponseError, safeFetch } from '../../helpers/requests'
 import { API, PAGES } from '../../helpers/routes'
-import { TransactionForm } from '../../helpers/zod-form-schemas'
 import { useToast } from '../../lib/shadcn/use-toast'
 
 const _sendTransaction = async (

@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { FileWithPath } from './utils'
+import { FileWithPath } from '../helpers/handy-types'
 
 // TODO add validation texts
 export const TransactionFormSchema = z
