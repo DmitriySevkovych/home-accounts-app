@@ -1,8 +1,7 @@
-import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 
 import { cn } from '../../helpers/utils'
-import { Button } from '../../lib/shadcn/Button'
+import { IconButton } from '../Buttons'
 import { MainHeading } from '../Typography'
 
 interface PageProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -27,13 +26,7 @@ export const PageWithBackButton: React.FC<PageProps> = ({
             <div className="sticky top-0 z-10 flex items-center justify-between gap-2 bg-inherit py-3">
                 <MainHeading>{heading}</MainHeading>
                 <Link href={goBackLink}>
-                    <Button
-                        className="min-w-[40px] p-0"
-                        variant="secondary"
-                        type="button"
-                    >
-                        <ArrowLeft size={18} />
-                    </Button>
+                    <IconButton action="back" />
                 </Link>
             </div>
 

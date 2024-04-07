@@ -1,8 +1,6 @@
-import { Minus, Plus } from 'lucide-react'
 import React from 'react'
 import { ControllerRenderProps, UseFormReturn } from 'react-hook-form'
 
-import { Button } from '../lib/shadcn/Button'
 import {
     FormControl,
     FormField,
@@ -18,6 +16,7 @@ import {
     SelectValue,
     Select as ShadcnSelect,
 } from '../lib/shadcn/Select'
+import { IconButton } from './Buttons'
 
 type SelectProps<T> = {
     form: UseFormReturn<any, any>
@@ -119,28 +118,21 @@ export function SelectMany<T>(props: SelectProps<T>) {
                                             options={options}
                                         />
                                     </ShadcnSelect>
-                                    <Button
-                                        type="button"
-                                        className="min-w-[40px] p-0"
-                                        variant="secondary"
-                                        onClick={() =>
+                                    <IconButton
+                                        action="delete"
+                                        clickHandler={() =>
                                             _removeSelectComponent(field, index)
                                         }
-                                    >
-                                        <Minus size={18} />
-                                    </Button>
+                                    />
                                 </div>
                             )
                         })}
 
                         <div className="flex justify-start">
-                            <Button
-                                type="button"
-                                className="min-w-[40px] p-0"
-                                onClick={() => _addSelectComponent(field)}
-                            >
-                                <Plus size={18} />
-                            </Button>
+                            <IconButton
+                                action="add"
+                                clickHandler={() => _addSelectComponent(field)}
+                            />
                         </div>
 
                         <FormMessage />
