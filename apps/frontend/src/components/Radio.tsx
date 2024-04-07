@@ -1,4 +1,3 @@
-import { Transaction } from 'domain-model'
 import React from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
@@ -11,9 +10,9 @@ import {
 } from '../lib/shadcn/Form'
 import { RadioGroup, RadioGroupItem } from '../lib/shadcn/Radio'
 
-type RadioProps = {
+type RadioProps<T> = {
     form: UseFormReturn<any, any>
-    id: keyof Transaction
+    id: keyof T
     options: RadioOption[]
     label?: string
 }
@@ -23,12 +22,12 @@ type RadioOption = {
     value: string
 }
 
-const Radio: React.FC<RadioProps> = (props: RadioProps) => {
+export default function Radio<T>(props: RadioProps<T>) {
     const { form, id, options, label } = props
     return (
         <FormField
             control={form.control}
-            name={id}
+            name={id as string}
             render={({ field }) => (
                 <FormItem className="space-y-3">
                     {label && <FormLabel>{label}</FormLabel>}
@@ -59,5 +58,3 @@ const Radio: React.FC<RadioProps> = (props: RadioProps) => {
         />
     )
 }
-
-export default Radio

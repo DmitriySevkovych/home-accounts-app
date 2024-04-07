@@ -2,6 +2,7 @@ import { z } from 'zod'
 
 export const SearchParametersFormSchema = z
     .object({
+        searchCombination: z.union([z.literal('and'), z.literal('or')]),
         categories: z.optional(z.string().array()),
         origin: z.optional(z.string()),
         description: z.optional(z.string()),

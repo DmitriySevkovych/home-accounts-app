@@ -11,6 +11,7 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 
 import { Calendar } from '../../components/Calendar'
 import { TextInput } from '../../components/Inputs'
+import Radio from '../../components/Radio'
 import { SelectMany } from '../../components/Select'
 import { TransactionPreviewCard } from '../../components/TransactionPreviewCard'
 import { SectionHeading } from '../../components/Typography'
@@ -50,6 +51,9 @@ const SearchTransactionsPage: React.FC<SearchTransactionsPageProps> = ({
     // Form setup
     const form = useForm<SearchParameters>({
         resolver: zodResolver(SearchParametersFormSchema),
+        defaultValues: {
+            searchCombination: 'and',
+        },
     })
 
     const _search: SubmitHandler<SearchParameters> = async (
@@ -82,6 +86,16 @@ const SearchTransactionsPage: React.FC<SearchTransactionsPageProps> = ({
                         onSubmit={form.handleSubmit(_search)}
                         className="w-full grid-cols-2 gap-4 space-y-6 lg:grid"
                     >
+                        <Radio<SearchParameters>
+                            id="searchCombination"
+                            form={form}
+                            options={[
+                                { label: 'And', value: 'and' },
+                                { label: 'Or', value: 'or' },
+                            ]}
+                            label="Search combination"
+                        />
+
                         <Calendar<SearchParameters>
                             id="dateFrom"
                             form={form}
