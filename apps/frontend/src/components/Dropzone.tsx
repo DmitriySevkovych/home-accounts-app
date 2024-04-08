@@ -1,9 +1,8 @@
-import { TransactionForm } from 'domain-model'
+import { FileWithPath, TransactionForm } from 'domain-model'
 import React, { useCallback, useMemo, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { ControllerRenderProps, UseFormReturn } from 'react-hook-form'
 
-import { FileWithPath } from '../helpers/utils'
 import { FormField, FormItem, FormLabel, FormMessage } from '../lib/shadcn/Form'
 
 type DropzoneProps = {
