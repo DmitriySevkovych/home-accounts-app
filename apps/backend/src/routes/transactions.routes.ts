@@ -1,11 +1,6 @@
 import {
-    Transaction,
     TransactionValidationError,
     deserializeTransaction,
-    dummyTransaction,
-    minimalDummyInvestmentTransaction,
-    minimalDummyTransaction,
-    minimalDummyWorkTransaction,
 } from 'domain-model'
 import express, { type Response, type Router } from 'express'
 import stream from 'stream'
@@ -208,35 +203,14 @@ const getRouter = (): Router => {
     })
 
     router.post('/search', async (req, res) => {
-        // TODO add search logic
-
-        // TODO delete dummy code below
-        const withId = (transaction: Transaction, id: number) => {
-            transaction.id = id
-            return transaction
+        try {
+            const { parameters } = req.body
+            const transactions = await repository.searchTransactions(parameters)
+            return res.status(200).json({ transactions })
+        } catch (err) {
+            req.log.error(err)
+            res.status(500).json({ message: 'Something went wrong' })
         }
-        res.status(200).json({
-            transactions: [
-                withId(dummyTransaction('FOOD', -3.5, new Date()), 111),
-                withId(minimalDummyTransaction('HOUSEHOLD', -4.23), 222),
-                withId(
-                    minimalDummyWorkTransaction(
-                        'SALARY',
-                        12345.67,
-                        'INVOICE-123'
-                    ),
-                    333
-                ),
-                withId(
-                    minimalDummyInvestmentTransaction(
-                        'HOUSEHOLD',
-                        -4.23,
-                        'ZiegelBiegel'
-                    ),
-                    444
-                ),
-            ],
-        })
     })
 
     return router

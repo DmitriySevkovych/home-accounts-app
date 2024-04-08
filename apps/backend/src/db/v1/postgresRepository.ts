@@ -4,6 +4,7 @@ import type {
     Investment,
     PaymentMethod,
     ProjectInvoice,
+    SearchParameters,
     TaxCategory,
     Transaction,
     TransactionBlueprint,
@@ -19,6 +20,7 @@ import { PaginationOptions } from '../../helpers/pagination'
 import { Repository } from '../repository'
 import * as investmentsQueries from './queries/investments.queries'
 import * as tagsQueries from './queries/tags.queries'
+import * as transactionSearchQueries from './queries/transactionSearch.queries'
 import * as transactionsQueries from './queries/transactions.queries'
 import * as utilsQueries from './queries/utils.queries'
 import * as workQueries from './queries/work.queries'
@@ -171,9 +173,17 @@ export class PostgresRepository implements Repository {
     }
 
     getTransactionById = async (id: number): Promise<Transaction> => {
-        return await transactionsQueries.getTransactionById(
+        const result = await transactionsQueries.getTransactionById(
             this.connectionPool,
             id
+        )
+        return result
+    }
+
+    getTransactionByIds = async (ids: number[]): Promise<Transaction[]> => {
+        return await transactionsQueries.getTransactionByIds(
+            this.connectionPool,
+            ids
         )
     }
 
@@ -190,6 +200,16 @@ export class PostgresRepository implements Repository {
         return await transactionsQueries.getTransactionOrigins(
             this.connectionPool
         )
+    }
+
+    searchTransactions = async (
+        parameters: SearchParameters
+    ): Promise<Transaction[]> => {
+        const foundTransactionIds = await transactionSearchQueries.search(
+            this.connectionPool,
+            parameters
+        )
+        return await this.getTransactionByIds(foundTransactionIds)
     }
 
     // Investments

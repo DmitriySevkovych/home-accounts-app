@@ -34,9 +34,9 @@ const SearchTransactionsPage: React.FC<SearchTransactionsPageProps> = ({
     constants,
 }) => {
     // State
-    const [searchResults, setSearchResults] = useState<Transaction[] | null>(
-        null
-    )
+    const [searchResults, setSearchResults] = useState<
+        Transaction[] | null | undefined
+    >(undefined)
 
     const { tags } = constants
     // Input data
@@ -69,9 +69,13 @@ const SearchTransactionsPage: React.FC<SearchTransactionsPageProps> = ({
 
         const responseData: { transactions: Transaction[] } =
             await response.json()
-        setSearchResults(
-            responseData.transactions.map((t) => deserializeTransaction(t))
-        )
+        if (responseData.transactions.length > 0) {
+            setSearchResults(
+                responseData.transactions.map((t) => deserializeTransaction(t))
+            )
+        } else {
+            setSearchResults(null)
+        }
     }
 
     // Render
@@ -151,6 +155,10 @@ const SearchTransactionsPage: React.FC<SearchTransactionsPageProps> = ({
 
             <section>
                 <SectionHeading>Results</SectionHeading>
+
+                {searchResults === null && (
+                    <p>Nothing found. Try adjusting the search parameters...</p>
+                )}
 
                 {searchResults?.map((transaction) => (
                     <TransactionPreviewCard

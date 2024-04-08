@@ -4,6 +4,7 @@ import type {
     Investment,
     PaymentMethod,
     ProjectInvoice,
+    SearchParameters,
     TaxCategory,
     Transaction,
     TransactionBlueprint,
@@ -45,9 +46,15 @@ export interface Repository {
 
     getTransactionById: (_id: number) => Promise<Transaction>
 
+    getTransactionByIds: (_ids: number[]) => Promise<Transaction[]>
+
     getTransactionReceipt: (_receiptId: number) => Promise<TransactionReceipt>
 
     getTransactionOrigins: () => Promise<string[]>
+
+    searchTransactions: (
+        _parameters: SearchParameters
+    ) => Promise<Transaction[]>
 
     // Investments data
     getInvestments: () => Promise<Investment[]>
