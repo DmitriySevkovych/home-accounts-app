@@ -1,6 +1,8 @@
 import { SearchParameters } from 'domain-model'
 import { Pool, QueryConfig } from 'pg'
 
+import { PaginationOptions } from '../../../helpers/pagination'
+
 type TransactionIds = number[]
 
 type QueryConditionState = {
@@ -104,7 +106,10 @@ const _getDateCondition = (
 
 const _getTagsCondition = (_tags: string[] | undefined) => undefined //TODO
 
-const _getQuery = (parameters: SearchParameters): QueryConfig => {
+const _getQuery = (
+    parameters: SearchParameters,
+    paginationOptions: PaginationOptions
+): QueryConfig => {
     const {
         searchCombination,
         categories,
@@ -114,6 +119,7 @@ const _getQuery = (parameters: SearchParameters): QueryConfig => {
         dateUntil,
         tags,
     } = parameters
+    const { limit, offset } = paginationOptions
 
     let state: QueryConditionState = {
         counter: 0,
@@ -128,7 +134,10 @@ const _getQuery = (parameters: SearchParameters): QueryConfig => {
     _getTagsCondition(tags)
 
     if (state.conditions.length === 0) {
-        return { text: 'SELECT id FROM transactions.transactions' }
+        return {
+            text: 'SELECT id FROM transactions.transactions ORDER BY id DESC LIMIT $1 OFFSET $2',
+            values: [limit, offset],
+        }
     }
 
     const conditions = state.conditions.join(` ${searchCombination} `)
@@ -136,16 +145,21 @@ const _getQuery = (parameters: SearchParameters): QueryConfig => {
         text: `
         SELECT id
         FROM transactions.transactions
-        WHERE ${conditions};`,
-        values: state.values,
+        WHERE ${conditions}
+        ORDER BY id DESC 
+        LIMIT ${_to$(state)} OFFSET ${_to$(state)};`,
+        values: [...state.values, limit, offset],
     }
 }
 
 export const search = async (
     connectionPool: Pool,
-    parameters: SearchParameters
+    parameters: SearchParameters,
+    paginationOptions: PaginationOptions
 ): Promise<TransactionIds> => {
-    const queryResult = await connectionPool.query(_getQuery(parameters))
+    const queryResult = await connectionPool.query(
+        _getQuery(parameters, paginationOptions)
+    )
 
     const { rowCount, rows } = queryResult
     if (rowCount === 0) {

@@ -203,11 +203,13 @@ export class PostgresRepository implements Repository {
     }
 
     searchTransactions = async (
-        parameters: SearchParameters
+        parameters: SearchParameters,
+        paginationOptions: PaginationOptions
     ): Promise<Transaction[]> => {
         const foundTransactionIds = await transactionSearchQueries.search(
             this.connectionPool,
-            parameters
+            parameters,
+            paginationOptions
         )
         return await this.getTransactionByIds(foundTransactionIds)
     }

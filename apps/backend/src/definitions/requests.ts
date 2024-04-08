@@ -14,3 +14,5 @@ export interface RequestWithPagination extends Request {
 export interface GetTransactionsRequest
     extends RequestWithTransactionContext,
         RequestWithPagination {}
+
+export interface GetTransactionSearchRequest extends RequestWithPagination {}

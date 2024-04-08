@@ -53,7 +53,8 @@ export interface Repository {
     getTransactionOrigins: () => Promise<string[]>
 
     searchTransactions: (
-        _parameters: SearchParameters
+        _parameters: SearchParameters,
+        _paginationOptions: PaginationOptions
     ) => Promise<Transaction[]>
 
     // Investments data

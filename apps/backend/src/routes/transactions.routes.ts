@@ -6,7 +6,10 @@ import express, { type Response, type Router } from 'express'
 import stream from 'stream'
 
 import { RepositoryLocator } from '../db/repositoryLocator'
-import { GetTransactionsRequest } from '../definitions/requests'
+import {
+    GetTransactionSearchRequest,
+    GetTransactionsRequest,
+} from '../definitions/requests'
 import {
     BadQueryParameterInRequestError,
     NoRecordFoundInDatabaseError,
@@ -202,16 +205,23 @@ const getRouter = (): Router => {
         }
     })
 
-    router.post('/search', async (req, res) => {
-        try {
-            const { parameters } = req.body
-            const transactions = await repository.searchTransactions(parameters)
-            return res.status(200).json({ transactions })
-        } catch (err) {
-            req.log.error(err)
-            res.status(500).json({ message: 'Something went wrong' })
+    router.post(
+        '/search',
+        middleware.pagination,
+        async (req: GetTransactionSearchRequest, res) => {
+            try {
+                const { parameters } = req.body
+                const transactions = await repository.searchTransactions(
+                    parameters,
+                    req.paginationOptions!
+                )
+                return res.status(200).json({ transactions })
+            } catch (err) {
+                req.log.error(err)
+                res.status(500).json({ message: 'Something went wrong' })
+            }
         }
-    })
+    )
 
     return router
 }

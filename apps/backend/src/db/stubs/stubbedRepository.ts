@@ -251,7 +251,8 @@ export class StubbedRepository implements Repository {
     }
 
     searchTransactions = async (
-        _parameters: SearchParameters
+        _parameters: SearchParameters,
+        _paginationOptions: PaginationOptions
     ): Promise<Transaction[]> => {
         throw new Error('stub not implemented')
     }
