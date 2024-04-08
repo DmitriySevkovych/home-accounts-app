@@ -18,7 +18,7 @@ import {
 } from 'domain-model'
 
 import { NoRecordFoundInDatabaseError } from '../../helpers/errors'
-import { PaginationOptions } from '../../helpers/pagination'
+import { Paginated, PaginationOptions } from '../../helpers/pagination'
 import { Repository } from '../repository'
 
 export class StubbedRepository implements Repository {
@@ -253,7 +253,7 @@ export class StubbedRepository implements Repository {
     searchTransactions = async (
         _parameters: SearchParameters,
         _paginationOptions: PaginationOptions
-    ): Promise<Transaction[]> => {
+    ): Promise<{ transactions: Transaction[] } & Paginated> => {
         throw new Error('stub not implemented')
     }
 

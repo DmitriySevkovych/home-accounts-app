@@ -1,9 +1,11 @@
 import { SearchParameters } from 'domain-model'
 import { Pool, QueryConfig } from 'pg'
 
-import { PaginationOptions } from '../../../helpers/pagination'
-
-type TransactionIds = number[]
+import {
+    PAGE_SIZE,
+    Paginated,
+    PaginationOptions,
+} from '../../../helpers/pagination'
 
 type QueryConditionState = {
     counter: number
@@ -156,14 +158,17 @@ export const search = async (
     connectionPool: Pool,
     parameters: SearchParameters,
     paginationOptions: PaginationOptions
-): Promise<TransactionIds> => {
+): Promise<{ ids: number[] } & Paginated> => {
     const queryResult = await connectionPool.query(
         _getQuery(parameters, paginationOptions)
     )
 
     const { rowCount, rows } = queryResult
     if (rowCount === 0) {
-        return []
+        return { ids: [], endReached: true }
     }
-    return rows.map((row) => row.id)
+    return {
+        ids: rows.map((row) => row.id),
+        endReached: rowCount! < PAGE_SIZE,
+    }
 }

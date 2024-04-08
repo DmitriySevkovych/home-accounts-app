@@ -13,7 +13,7 @@ import type {
     TransactionReceipt,
 } from 'domain-model'
 
-import { PaginationOptions } from '../helpers/pagination'
+import { Paginated, PaginationOptions } from '../helpers/pagination'
 
 export interface Repository {
     close: () => Promise<void>
@@ -55,7 +55,7 @@ export interface Repository {
     searchTransactions: (
         _parameters: SearchParameters,
         _paginationOptions: PaginationOptions
-    ) => Promise<Transaction[]>
+    ) => Promise<{ transactions: Transaction[] } & Paginated>
 
     // Investments data
     getInvestments: () => Promise<Investment[]>

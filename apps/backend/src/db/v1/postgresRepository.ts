@@ -16,7 +16,7 @@ import { Logger, getLogger } from 'logger'
 import type { Pool, PoolClient } from 'pg'
 
 import connectionPool from '.'
-import { PaginationOptions } from '../../helpers/pagination'
+import { Paginated, PaginationOptions } from '../../helpers/pagination'
 import { Repository } from '../repository'
 import * as investmentsQueries from './queries/investments.queries'
 import * as tagsQueries from './queries/tags.queries'
@@ -205,13 +205,17 @@ export class PostgresRepository implements Repository {
     searchTransactions = async (
         parameters: SearchParameters,
         paginationOptions: PaginationOptions
-    ): Promise<Transaction[]> => {
-        const foundTransactionIds = await transactionSearchQueries.search(
-            this.connectionPool,
-            parameters,
-            paginationOptions
-        )
-        return await this.getTransactionByIds(foundTransactionIds)
+    ): Promise<{ transactions: Transaction[] } & Paginated> => {
+        const { ids: foundTransactionIds, endReached } =
+            await transactionSearchQueries.search(
+                this.connectionPool,
+                parameters,
+                paginationOptions
+            )
+        return {
+            transactions: await this.getTransactionByIds(foundTransactionIds),
+            endReached,
+        }
     }
 
     // Investments

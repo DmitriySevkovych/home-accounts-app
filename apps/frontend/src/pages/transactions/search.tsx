@@ -37,6 +37,9 @@ const SearchTransactionsPage: React.FC<SearchTransactionsPageProps> = ({
     const [searchResults, setSearchResults] = useState<
         Transaction[] | null | undefined
     >(undefined)
+    const [moreResultsAvailable, setMoreResultsAvailable] = useState<
+        boolean | undefined
+    >(undefined)
 
     const { tags } = constants
     // Input data
@@ -67,12 +70,14 @@ const SearchTransactionsPage: React.FC<SearchTransactionsPageProps> = ({
             body: JSON.stringify({ parameters }),
         })
 
-        const responseData: { transactions: Transaction[] } =
-            await response.json()
-        if (responseData.transactions.length > 0) {
-            setSearchResults(
-                responseData.transactions.map((t) => deserializeTransaction(t))
-            )
+        const responseData: {
+            transactions: Transaction[]
+            endReached: boolean
+        } = await response.json()
+        const { transactions, endReached } = responseData
+        setMoreResultsAvailable(!endReached)
+        if (transactions.length > 0) {
+            setSearchResults(transactions.map((t) => deserializeTransaction(t)))
         } else {
             setSearchResults(null)
         }
@@ -166,6 +171,8 @@ const SearchTransactionsPage: React.FC<SearchTransactionsPageProps> = ({
                         transaction={transaction}
                     />
                 ))}
+
+                {moreResultsAvailable && <Button>Load more</Button>}
             </section>
         </PageWithBackButton>
     )

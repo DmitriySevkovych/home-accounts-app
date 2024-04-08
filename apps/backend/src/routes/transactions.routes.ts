@@ -211,11 +211,11 @@ const getRouter = (): Router => {
         async (req: GetTransactionSearchRequest, res) => {
             try {
                 const { parameters } = req.body
-                const transactions = await repository.searchTransactions(
+                const searchResult = await repository.searchTransactions(
                     parameters,
                     req.paginationOptions!
                 )
-                return res.status(200).json({ transactions })
+                return res.status(200).json(searchResult)
             } catch (err) {
                 req.log.error(err)
                 res.status(500).json({ message: 'Something went wrong' })
