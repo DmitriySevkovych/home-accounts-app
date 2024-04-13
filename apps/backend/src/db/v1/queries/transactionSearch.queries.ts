@@ -7,7 +7,7 @@ import {
     PaginationOptions,
 } from '../../../helpers/pagination'
 
-type QueryConditionState = {
+export type QueryConditionState = {
     counter: number
     conditions: string[]
     values: any[]
@@ -89,21 +89,21 @@ const _whereBetween = (
     }
 }
 
-const _getDateCondition = (
+const _whereInInterval = (
     column: string,
-    dateFrom: Date | undefined,
-    dateUntil: Date | undefined,
+    from: Date | number | undefined,
+    until: Date | number | undefined,
     state: QueryConditionState
 ): QueryConditionState => {
-    if (!(dateFrom || dateUntil)) return state
+    if (!(from || until)) return state
 
-    if (!dateUntil) {
-        return _whereGreaterOrEqual('date', dateFrom!, state)
+    if (!until) {
+        return _whereGreaterOrEqual(column, from!, state)
     }
-    if (!dateFrom) {
-        return _whereLessOrEqual('date', dateUntil, state)
+    if (!from) {
+        return _whereLessOrEqual(column, until, state)
     }
-    return _whereBetween('date', dateFrom, dateUntil, state)
+    return _whereBetween(column, from, until, state)
 }
 
 const _getTagsCondition = (_tags: string[] | undefined) => undefined //TODO
@@ -132,7 +132,7 @@ const _getQuery = (
     state = _whereIn('category', categories, state)
     state = _whereLike('origin', origin, state)
     state = _whereLike('description', description, state)
-    state = _getDateCondition('date', dateFrom, dateUntil, state)
+    state = _whereInInterval('date', dateFrom, dateUntil, state)
     _getTagsCondition(tags)
 
     if (state.conditions.length === 0) {
@@ -171,4 +171,14 @@ export const search = async (
         ids: rows.map((row) => row.id),
         endReached: rowCount! < PAGE_SIZE,
     }
+}
+
+export const forTest = {
+    _to$,
+    _whereIn,
+    _whereLike,
+    _whereBetween,
+    _whereGreaterOrEqual,
+    _whereLessOrEqual,
+    _whereInInterval,
 }
