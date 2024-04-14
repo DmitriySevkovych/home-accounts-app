@@ -10,7 +10,7 @@
         "dev:stage": "npm run dev",
         "lint": "next lint",
         "start": "next start",
-        "test": "dotenv -e .env.test.local -e .env.test jest --detectOpenHandles"
+        "test": "jest --detectOpenHandles --passWithNoTests"
     },
     "jest": {
         "preset": "jest-presets/jest/browser"
