@@ -78,6 +78,20 @@ export class Transaction {
         )
     }
 
+    cashWarning = (): boolean => {
+        const cashPaymentFromWrongAccount =
+            this.paymentMethod === 'CASH' &&
+            !(
+                this.sourceBankAccount === 'CASH' ||
+                this.targetBankAccount === 'CASH'
+            )
+        const cashAccountWithWrongPaymentType =
+            (this.sourceBankAccount === 'CASH' ||
+                this.targetBankAccount === 'CASH') &&
+            this.paymentMethod !== 'CASH'
+        return cashPaymentFromWrongAccount || cashAccountWithWrongPaymentType
+    }
+
     taxRelevant = (): boolean => {
         return this.taxCategory !== undefined
     }

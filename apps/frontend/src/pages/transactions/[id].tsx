@@ -1,16 +1,16 @@
+import { TransactionForm } from 'domain-model'
 import React from 'react'
 
 import { DeleteDialog } from '../../components/Dialog'
-import TransactionFormPage, {
-    TransactionFormConstants,
-    fetchTransactionConstants,
-} from '../../components/TransactionFormPage'
 import useDeleteTransactionHandler from '../../components/hooks/useDeleteTransactionHandler'
 import useTransactionForm from '../../components/hooks/useTransactionForm'
 import useUpdateTransactionSubmitHandler from '../../components/hooks/useUpdateTransactionSubmitHandler'
+import TransactionFormPage, {
+    TransactionFormConstants,
+    fetchTransactionConstants,
+} from '../../components/pages/TransactionFormPage'
 import { safeFetch } from '../../helpers/requests'
 import { API } from '../../helpers/routes'
-import { TransactionForm } from '../../helpers/zod-form-schemas'
 import { Button } from '../../lib/shadcn/Button'
 import { Separator } from '../../lib/shadcn/Separator'
 

@@ -1,7 +1,7 @@
-import { minimalDummyTransaction } from 'domain-model'
 import { ZodError } from 'zod'
 
-import { TransactionFormSchema } from './zod-form-schemas'
+import { minimalDummyTransaction } from '../helpers/test-fixtures'
+import { TransactionFormSchema } from './transactionForm.model'
 
 describe('Zod TransactionFormSchema tests', () => {
     it('should succeed for a valid transaction', () => {

@@ -1,7 +1,7 @@
+import { TransactionForm } from 'domain-model'
 import React from 'react'
 import { type UseFormReturn } from 'react-hook-form'
 
-import { TransactionForm } from '../helpers/zod-form-schemas'
 import { FormField, FormItem, FormLabel, FormMessage } from '../lib/shadcn/Form'
 import { Input } from '../lib/shadcn/Input'
 import { Textarea } from '../lib/shadcn/Textarea'

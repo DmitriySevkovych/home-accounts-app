@@ -1,9 +1,8 @@
 import { useCommandState } from 'cmdk'
-import { Plus } from 'lucide-react'
+import { TransactionForm } from 'domain-model'
 import React, { useRef, useState } from 'react'
 import { ControllerRenderProps, UseFormReturn } from 'react-hook-form'
 
-import { TransactionForm } from '../helpers/zod-form-schemas'
 import { Badge } from '../lib/shadcn/Badge'
 import { Button } from '../lib/shadcn/Button'
 import {
@@ -15,6 +14,7 @@ import {
 } from '../lib/shadcn/Command'
 import { FormField, FormItem, FormLabel } from '../lib/shadcn/Form'
 import { ScrollArea } from '../lib/shadcn/ScrollArea'
+import { IconButton } from './Buttons'
 
 type TagsManagerProps = {
     id: keyof TransactionForm
@@ -99,19 +99,15 @@ const TagsManager: React.FC<TagsManagerProps> = (props) => {
                             />
                         </Command>
 
-                        <Button
-                            className="min-w-[40px] p-0"
-                            variant="secondary"
-                            type="button"
-                            onClick={() => {
+                        <IconButton
+                            action="add"
+                            clickHandler={() => {
                                 if (!currentTag) {
                                     return
                                 }
                                 addTag(currentTag, field)
                             }}
-                        >
-                            <Plus size={18} />
-                        </Button>
+                        />
                     </div>
 
                     <div className="flex flex-wrap gap-2 pt-3">

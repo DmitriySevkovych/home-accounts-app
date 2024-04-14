@@ -3,6 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 
+import { MainHeading } from '../../../components/Typography'
 import { PAGES } from '../../../helpers/routes'
 import { Button } from '../../../lib/shadcn/Button'
 
@@ -20,9 +21,7 @@ const CongratsPage = ({ transactionType }: CongratsPageProps) => {
         transactionType === 'expense' ? 'Money well spent😎' : 'Чеки растут🤑'
     return (
         <div className="flex h-full w-full flex-col items-center justify-center gap-10">
-            <h1 className="text-xl font-bold text-primary lg:text-2xl">
-                {heading}
-            </h1>
+            <MainHeading>{heading}</MainHeading>
             <Image
                 className="rounded-full border-4 border-primary-foreground"
                 width="480"

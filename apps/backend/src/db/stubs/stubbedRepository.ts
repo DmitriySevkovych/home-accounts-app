@@ -4,6 +4,7 @@ import {
     Investment,
     PaymentMethod,
     ProjectInvoice,
+    SearchParameters,
     TaxCategory,
     Transaction,
     TransactionBlueprint,
@@ -17,7 +18,7 @@ import {
 } from 'domain-model'
 
 import { NoRecordFoundInDatabaseError } from '../../helpers/errors'
-import { PaginationOptions } from '../../helpers/pagination'
+import { Paginated, PaginationOptions } from '../../helpers/pagination'
 import { Repository } from '../repository'
 
 export class StubbedRepository implements Repository {
@@ -219,6 +220,16 @@ export class StubbedRepository implements Repository {
         return Promise.resolve(transaction)
     }
 
+    getTransactionByIds = (ids: number[]): Promise<Transaction[]> => {
+        const transactions = ids.map((id) => {
+            const transaction = this._getDummyTransaction('FEE', -1 * id)
+            transaction.id = id
+            return transaction
+        })
+
+        return Promise.resolve(transactions)
+    }
+
     getTransactionReceipt = (
         receiptId: number
     ): Promise<TransactionReceipt> => {
@@ -237,6 +248,13 @@ export class StubbedRepository implements Repository {
 
     getTransactionOrigins = (): Promise<string[]> => {
         return Promise.resolve(['Gas station', 'Supermarket', 'Post office'])
+    }
+
+    searchTransactions = async (
+        _parameters: SearchParameters,
+        _paginationOptions: PaginationOptions
+    ): Promise<{ transactions: Transaction[] } & Paginated> => {
+        throw new Error('stub not implemented')
     }
 
     // Investments

@@ -16,6 +16,7 @@ const _getClientsideUrl = (endpoint: string): string => {
 }
 
 export const PAGES = {
+    home: '/',
     admin: {
         blueprints: '/#',
     },
@@ -25,7 +26,7 @@ export const PAGES = {
     transactions: {
         index: '/transactions',
         new: '/transactions/new',
-        search: '/transactions/#',
+        search: '/transactions/search',
         success: (type: TransactionType) => `/transactions/congrats/${type}`,
         edit: (id: number) => `/transactions/${id}`,
     },
@@ -41,6 +42,7 @@ export const API = {
                     `/transactions?context=${context}&limit=${limit}`
                 ),
             delete: (id: number) => _getClientsideUrl(`/transactions/${id}`),
+            search: _getClientsideUrl(`/transactions/search`),
         },
     },
     server: {

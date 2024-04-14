@@ -1,8 +1,4 @@
-import {
-    Transaction,
-    formatDateToWords,
-    handleUnwantedTimezoneShift,
-} from 'domain-model'
+import { formatDateToWords, handleUnwantedTimezoneShift } from 'domain-model'
 import { CalendarIcon } from 'lucide-react'
 import React, { useState } from 'react'
 import { ControllerRenderProps, UseFormReturn } from 'react-hook-form'
@@ -10,22 +6,28 @@ import { ControllerRenderProps, UseFormReturn } from 'react-hook-form'
 import { cn } from '../helpers/utils'
 import { Button } from '../lib/shadcn/Button'
 import { Calendar as ShadcnCalendar } from '../lib/shadcn/Calendar'
-import { FormControl, FormField, FormItem, FormLabel } from '../lib/shadcn/Form'
+import {
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from '../lib/shadcn/Form'
 import { Popover, PopoverContent, PopoverTrigger } from '../lib/shadcn/Popover'
 
-type CalendarProps = {
+type CalendarProps<T> = {
     form: UseFormReturn<any, any>
     label: string
-    id: keyof Transaction
+    id: keyof T
 }
 
-export const Calendar = (props: CalendarProps) => {
+export function Calendar<T>(props: CalendarProps<T>) {
     const { form, label, id } = props
 
     const [isOpen, setIsOpen] = useState<boolean>(false)
 
     const handleSelect = (
-        field: ControllerRenderProps<any, keyof Transaction>,
+        field: ControllerRenderProps<any, string>,
         selectedDate: Date
     ) => {
         field.onChange(handleUnwantedTimezoneShift(selectedDate))
@@ -35,7 +37,7 @@ export const Calendar = (props: CalendarProps) => {
     return (
         <FormField
             control={form.control}
-            name={id}
+            name={id as string}
             render={({ field }) => (
                 <FormItem>
                     <FormLabel>{label}</FormLabel>
@@ -70,6 +72,7 @@ export const Calendar = (props: CalendarProps) => {
                             />
                         </PopoverContent>
                     </Popover>
+                    <FormMessage />
                 </FormItem>
             )}
         />

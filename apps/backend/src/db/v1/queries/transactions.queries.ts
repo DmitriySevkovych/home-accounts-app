@@ -94,10 +94,14 @@ export const getTransactions = async (
     return await Promise.all(transactionsFromRows)
 }
 
-export const getTransactionById = async (
+export const getTransactionByIds = async (
     connectionPool: Pool,
-    id: number
-): Promise<Transaction> => {
+    ids: number[]
+): Promise<Transaction[]> => {
+    if (ids.length === 0) {
+        return Promise.resolve([])
+    }
+
     //TODO extract logic to DB view?
     const query = {
         name: `select-transaction-by-id`,
@@ -106,18 +110,34 @@ export const getTransactionById = async (
             id, context, category, origin, description, amount, date, currency, exchange_rate, 
             source_bank_account, target_bank_account, payment_method, tax_category, comment, agent, receipt_id
         FROM transactions.transactions
-        WHERE id = $1;`,
-        values: [id],
+        WHERE id = ANY($1::int[]);`,
+        values: [ids],
     }
     const queryResult = await connectionPool.query(query)
-    if (queryResult.rowCount === 0) {
-        logger.warn(`The database does not hold a transaction with id=${id}.`)
+
+    const { rowCount, rows } = queryResult
+    if (rowCount === 0) {
+        logger.warn(
+            `The database does not hold any transactions with id in ${ids}.`
+        )
         throw new NoRecordFoundInDatabaseError(
-            `The database does not hold a transaction with id=${id}.`
+            `The database does not hold a transaction with with id in ${ids}.`
         )
     }
 
-    return await _mapToTransaction(queryResult.rows[0], connectionPool)
+    const transactionsFromRows = rows.map((row) =>
+        _mapToTransaction(row, connectionPool)
+    )
+
+    return Promise.all(transactionsFromRows)
+}
+
+export const getTransactionById = async (
+    connectionPool: Pool,
+    id: number
+): Promise<Transaction> => {
+    const transactions = await getTransactionByIds(connectionPool, [id])
+    return transactions[0]
 }
 
 export const insertTransaction = async (

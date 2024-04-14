@@ -1,6 +1,5 @@
-import { Transaction } from 'domain-model'
 import React from 'react'
-import { UseFormReturn } from 'react-hook-form'
+import { ControllerRenderProps, UseFormReturn } from 'react-hook-form'
 
 import {
     FormControl,
@@ -17,21 +16,22 @@ import {
     SelectValue,
     Select as ShadcnSelect,
 } from '../lib/shadcn/Select'
+import { IconButton } from './Buttons'
 
-type SelectProps = {
+type SelectProps<T> = {
     form: UseFormReturn<any, any>
     label: string
-    id: keyof Transaction
+    id: keyof T
     options: string[]
 }
 
-export default function Select(props: SelectProps) {
+export default function Select<T>(props: SelectProps<T>) {
     const { form, label, id, options } = props
 
     return (
         <FormField
             control={form.control}
-            name={id}
+            name={id as string}
             render={({ field }) => (
                 <FormItem>
                     <FormLabel>{label}</FormLabel>
@@ -50,6 +50,96 @@ export default function Select(props: SelectProps) {
                 </FormItem>
             )}
         />
+    )
+}
+
+export function SelectMany<T>(props: SelectProps<T>) {
+    const { form, label, id, options } = props
+
+    const _addSelectComponent = (field: ControllerRenderProps<any, string>) => {
+        if (field.value) {
+            field.onChange([...field.value, null])
+        } else {
+            field.onChange([null])
+        }
+    }
+
+    const _removeSelectComponent = (
+        field: ControllerRenderProps<any, string>,
+        index: number
+    ) => {
+        field.value.splice(index, 1)
+        field.onChange(field.value)
+    }
+
+    const _updateSelection = (
+        field: ControllerRenderProps<any, string>,
+        index: number,
+        selection: string
+    ) => {
+        field.value[index] = selection
+        field.onChange(field.value)
+    }
+
+    const _getSelectValue = (
+        field: ControllerRenderProps<any, string>,
+        index: number
+    ): string => {
+        return field.value[index]
+    }
+
+    return (
+        <>
+            <FormField
+                control={form.control}
+                name={id as string}
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>{label}</FormLabel>
+                        {field.value?.map((_: any, index: number) => {
+                            return (
+                                <div key={index} className="flex gap-2">
+                                    <ShadcnSelect
+                                        onValueChange={(selection) =>
+                                            _updateSelection(
+                                                field,
+                                                index,
+                                                selection
+                                            )
+                                        }
+                                        value={_getSelectValue(field, index)}
+                                    >
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <ScrollableSelectContent
+                                            options={options}
+                                        />
+                                    </ShadcnSelect>
+                                    <IconButton
+                                        action="delete"
+                                        clickHandler={() =>
+                                            _removeSelectComponent(field, index)
+                                        }
+                                    />
+                                </div>
+                            )
+                        })}
+
+                        <div className="flex justify-start">
+                            <IconButton
+                                action="add"
+                                clickHandler={() => _addSelectComponent(field)}
+                            />
+                        </div>
+
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
+        </>
     )
 }
 

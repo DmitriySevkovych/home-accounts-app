@@ -1,6 +1,8 @@
+import { Coins, LineChart, UserCog } from 'lucide-react'
 import React from 'react'
 
 import { SystemInfo, SystemInfoFooter } from '../components/SystemInfoFooter'
+import { MainHeading } from '../components/Typography'
 import { safeFetch } from '../helpers/requests'
 import { API, PAGES } from '../helpers/routes'
 import {
@@ -16,52 +18,64 @@ type HomePageProps = {
     systemInfo: SystemInfo
 }
 
+const ICONSIZE = 28
+
 export default function Home({ systemInfo }: HomePageProps) {
     return (
-        <div className="flex h-full flex-col items-center p-5">
-            <h1 className="py-10 text-xl">Home Accounting App</h1>
+        <div className="flex h-full flex-col items-center justify-between p-5">
+            <MainHeading className="py-10">Home Accounting App</MainHeading>
 
-            {/* A flex-growing wrapper for the navigation menu */}
-            <div className="flex-grow">
-                <NavigationMenu className="relative top-1/3">
+            <div className="grid items-center gap-8">
+                {/* Transactions */}
+                <NavigationMenu>
                     <NavigationMenuList>
-                        {/* Transactions */}
                         <NavigationMenuItem>
-                            <NavigationMenuTrigger>
+                            <NavigationMenuTrigger className="flex w-[175px] justify-start md:w-[400px] lg:w-[500px]">
+                                <Coins
+                                    size={ICONSIZE}
+                                    className="mr-4 text-primary"
+                                />
                                 Transactions
                             </NavigationMenuTrigger>
                             <NavigationMenuContent>
-                                <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+                                <ul className="grid w-[175px] gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
                                     <NavigationListItem
                                         href={PAGES.transactions.index}
-                                        title="Overview"
+                                        title="List"
                                     >
-                                        See latest home, work and investments
-                                        transactions.
+                                        See the latest transactions.
                                     </NavigationListItem>
                                     <NavigationListItem
                                         href={PAGES.transactions.new}
-                                        title="New Transaction"
+                                        title="Create"
                                     >
                                         Create a new transaction.
                                     </NavigationListItem>
                                     <NavigationListItem
                                         href={PAGES.transactions.search}
-                                        title="TODO Search Transaction"
+                                        title="Search"
                                     >
-                                        Search based on different criteria.
+                                        Search transactions.
                                     </NavigationListItem>
                                 </ul>
                             </NavigationMenuContent>
                         </NavigationMenuItem>
+                    </NavigationMenuList>
+                </NavigationMenu>
 
-                        {/* Analysis */}
+                {/* Analysis */}
+                <NavigationMenu>
+                    <NavigationMenuList>
                         <NavigationMenuItem>
-                            <NavigationMenuTrigger>
+                            <NavigationMenuTrigger className="flex w-[175px] justify-start md:w-[400px] lg:w-[500px]">
+                                <LineChart
+                                    size={ICONSIZE}
+                                    className="mr-4 text-primary"
+                                />
                                 Analysis
                             </NavigationMenuTrigger>
                             <NavigationMenuContent>
-                                <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+                                <ul className="grid w-[175px] gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
                                     <NavigationListItem
                                         href={PAGES.analysis.cashflow}
                                         title="TODO Cashflow"
@@ -71,14 +85,22 @@ export default function Home({ systemInfo }: HomePageProps) {
                                 </ul>
                             </NavigationMenuContent>
                         </NavigationMenuItem>
+                    </NavigationMenuList>
+                </NavigationMenu>
 
-                        {/* Analysis */}
+                {/* Administration */}
+                <NavigationMenu>
+                    <NavigationMenuList>
                         <NavigationMenuItem>
-                            <NavigationMenuTrigger>
+                            <NavigationMenuTrigger className="flex w-[175px] justify-start md:w-[400px] lg:w-[500px]">
+                                <UserCog
+                                    size={ICONSIZE}
+                                    className="mr-4 text-primary"
+                                />
                                 Administration
                             </NavigationMenuTrigger>
                             <NavigationMenuContent>
-                                <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+                                <ul className="grid w-[175px] gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
                                     <NavigationListItem
                                         href={PAGES.admin.blueprints}
                                         title="TODO Blueprints"

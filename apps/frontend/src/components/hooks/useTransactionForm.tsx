@@ -1,10 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { TransactionForm, TransactionFormSchema } from 'domain-model'
 import { useForm } from 'react-hook-form'
-
-import {
-    TransactionForm,
-    TransactionFormSchema,
-} from '../../helpers/zod-form-schemas'
 
 const useTransactionForm = (formDefaultValues: Partial<TransactionForm>) => {
     const form = useForm<TransactionForm>({

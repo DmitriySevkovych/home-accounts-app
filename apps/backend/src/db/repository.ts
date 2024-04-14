@@ -4,6 +4,7 @@ import type {
     Investment,
     PaymentMethod,
     ProjectInvoice,
+    SearchParameters,
     TaxCategory,
     Transaction,
     TransactionBlueprint,
@@ -12,7 +13,7 @@ import type {
     TransactionReceipt,
 } from 'domain-model'
 
-import { PaginationOptions } from '../helpers/pagination'
+import { Paginated, PaginationOptions } from '../helpers/pagination'
 
 export interface Repository {
     close: () => Promise<void>
@@ -45,9 +46,16 @@ export interface Repository {
 
     getTransactionById: (_id: number) => Promise<Transaction>
 
+    getTransactionByIds: (_ids: number[]) => Promise<Transaction[]>
+
     getTransactionReceipt: (_receiptId: number) => Promise<TransactionReceipt>
 
     getTransactionOrigins: () => Promise<string[]>
+
+    searchTransactions: (
+        _parameters: SearchParameters,
+        _paginationOptions: PaginationOptions
+    ) => Promise<{ transactions: Transaction[] } & Paginated>
 
     // Investments data
     getInvestments: () => Promise<Investment[]>

@@ -4,6 +4,7 @@ import type {
     Investment,
     PaymentMethod,
     ProjectInvoice,
+    SearchParameters,
     TaxCategory,
     Transaction,
     TransactionBlueprint,
@@ -15,10 +16,11 @@ import { Logger, getLogger } from 'logger'
 import type { Pool, PoolClient } from 'pg'
 
 import connectionPool from '.'
-import { PaginationOptions } from '../../helpers/pagination'
+import { Paginated, PaginationOptions } from '../../helpers/pagination'
 import { Repository } from '../repository'
 import * as investmentsQueries from './queries/investments.queries'
 import * as tagsQueries from './queries/tags.queries'
+import * as transactionSearchQueries from './queries/transactionSearch.queries'
 import * as transactionsQueries from './queries/transactions.queries'
 import * as utilsQueries from './queries/utils.queries'
 import * as workQueries from './queries/work.queries'
@@ -171,9 +173,17 @@ export class PostgresRepository implements Repository {
     }
 
     getTransactionById = async (id: number): Promise<Transaction> => {
-        return await transactionsQueries.getTransactionById(
+        const result = await transactionsQueries.getTransactionById(
             this.connectionPool,
             id
+        )
+        return result
+    }
+
+    getTransactionByIds = async (ids: number[]): Promise<Transaction[]> => {
+        return await transactionsQueries.getTransactionByIds(
+            this.connectionPool,
+            ids
         )
     }
 
@@ -190,6 +200,22 @@ export class PostgresRepository implements Repository {
         return await transactionsQueries.getTransactionOrigins(
             this.connectionPool
         )
+    }
+
+    searchTransactions = async (
+        parameters: SearchParameters,
+        paginationOptions: PaginationOptions
+    ): Promise<{ transactions: Transaction[] } & Paginated> => {
+        const { ids: foundTransactionIds, endReached } =
+            await transactionSearchQueries.search(
+                this.connectionPool,
+                parameters,
+                paginationOptions
+            )
+        return {
+            transactions: await this.getTransactionByIds(foundTransactionIds),
+            endReached,
+        }
     }
 
     // Investments

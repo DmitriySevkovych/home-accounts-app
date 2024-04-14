@@ -6,28 +6,27 @@ import {
     PaymentMethod,
     ProjectInvoice,
     TaxCategory,
+    Transaction,
     TransactionCategory,
     TransactionContext,
     TransactionType,
 } from 'domain-model'
-import { ArrowLeft } from 'lucide-react'
-import Link from 'next/link'
 import React from 'react'
 import { SubmitHandler, UseFormReturn } from 'react-hook-form'
 
-import { safeFetch } from '../helpers/requests'
-import { API, PAGES } from '../helpers/routes'
-import { Button } from '../lib/shadcn/Button'
-import { Form } from '../lib/shadcn/Form'
-import { Separator } from '../lib/shadcn/Separator'
-import AutocompleteInput from './AutocompleteInput'
-import { Calendar } from './Calendar'
-import { DropzoneFormField } from './Dropzone'
-import { NumberInput, TextAreaInput, TextInput } from './Inputs'
-import OverlayImage from './Overlay'
-import Radio from './Radio'
-import Select from './Select'
-import TagsManager from './TagsManager'
+import { safeFetch } from '../../helpers/requests'
+import { API, PAGES } from '../../helpers/routes'
+import { Button } from '../../lib/shadcn/Button'
+import { Form } from '../../lib/shadcn/Form'
+import AutocompleteInput from '../AutocompleteInput'
+import { Calendar } from '../Calendar'
+import { DropzoneFormField } from '../Dropzone'
+import { NumberInput, TextAreaInput, TextInput } from '../Inputs'
+import OverlayImage from '../Overlay'
+import Radio from '../Radio'
+import Select from '../Select'
+import TagsManager from '../TagsManager'
+import { PageWithBackButton } from './PageWithBackButton'
 
 export type TransactionFormConstants = {
     transactionOrigins: string[]
@@ -104,21 +103,10 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
     const transactionContext = form.watch('context')
 
     return (
-        <div className="relative mx-auto  max-w-4xl bg-background px-3 pb-12 text-darkest md:py-8">
-            <div className="sticky top-0 z-10 flex items-center justify-between gap-2 bg-inherit py-3">
-                <h1 className="flex-grow text-xl font-bold leading-none text-primary lg:text-2xl">
-                    {heading}
-                </h1>
-                <Link href={PAGES.transactions.index}>
-                    <Button
-                        className="min-w-[40px] p-0"
-                        variant="secondary"
-                        type="button"
-                    >
-                        <ArrowLeft size={18} />
-                    </Button>
-                </Link>
-            </div>
+        <PageWithBackButton
+            heading={heading}
+            goBackLink={PAGES.transactions.index}
+        >
             <Form {...form}>
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}
@@ -152,7 +140,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                         />
                     </div>
 
-                    <Select
+                    <Select<Transaction>
                         id="category"
                         form={form}
                         label="Category"
@@ -178,7 +166,11 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                         placeholder={`What characterizes the ${transactionType}?`}
                     />
 
-                    <Calendar id="date" form={form} label="Transaction date" />
+                    <Calendar<Transaction>
+                        id="date"
+                        form={form}
+                        label="Transaction date"
+                    />
 
                     <NumberInput
                         id="amount"
@@ -195,7 +187,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                         label="Exchange Rate"
                     />
 
-                    <Select
+                    <Select<Transaction>
                         id="paymentMethod"
                         form={form}
                         label="Payment Method"
@@ -203,7 +195,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                     />
 
                     {transactionType === 'expense' && (
-                        <Select
+                        <Select<Transaction>
                             id="sourceBankAccount"
                             form={form}
                             label="Source Bank Account"
@@ -221,7 +213,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                     )}
 
                     {transactionType === 'income' && (
-                        <Select
+                        <Select<Transaction>
                             id="targetBankAccount"
                             form={form}
                             label="Target Bank Account"
@@ -238,7 +230,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                         />
                     )}
 
-                    <Select
+                    <Select<Transaction>
                         id="taxCategory"
                         form={form}
                         label="Tax Category"
@@ -258,7 +250,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
 
                     {transactionContext === 'investments' && (
                         <div>
-                            <Select
+                            <Select<Transaction>
                                 id="investment"
                                 form={form}
                                 label="Investment"
@@ -294,7 +286,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                     {transactionContext === 'work' &&
                         transactionType === 'income' && (
                             <div>
-                                <Select
+                                <Select<Transaction>
                                     id="invoiceKey"
                                     form={form}
                                     label="Project invoice for this transaction"
@@ -335,7 +327,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
             </Form>
             <OverlayImage />
             {/* <DevTool control={form.control} /> */}
-        </div>
+        </PageWithBackButton>
     )
 }
 

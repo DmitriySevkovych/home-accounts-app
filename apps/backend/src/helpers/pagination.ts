@@ -1,45 +1,17 @@
 import { Request } from 'express'
+
 import {
     BadEnvironmentVariableError,
     BadQueryParameterInRequestError,
 } from './errors'
 
+export type Paginated = {
+    endReached: boolean
+}
+
 export type PaginationOptions = {
     limit: number
     offset: number
-}
-
-export const DEFAULT_LIMIT = 200
-export const DEFAULT_PAGE_SIZE = 50
-export const DEFAULT_OFFSET = 0
-
-export const getPaginationOptionsFromRequest = (
-    req: Request
-): PaginationOptions => {
-    if (!req.query) {
-        return {
-            limit: _parseEnvironmentVariable('PAGINATION_LIMIT', DEFAULT_LIMIT),
-            offset: DEFAULT_OFFSET,
-        }
-    }
-
-    let limit = _parseQueryParameter('limit', req.query.limit)
-    if (limit === undefined) {
-        limit = _parseEnvironmentVariable('PAGINATION_LIMIT', DEFAULT_LIMIT)
-    }
-
-    const page = _parseQueryParameter('page', req.query.page)
-    let pageSize = _parseEnvironmentVariable(
-        'PAGINATION_PAGE_SIZE',
-        DEFAULT_PAGE_SIZE
-    )
-
-    const paginationOptions: PaginationOptions = {
-        limit: limit,
-        offset: page && page > 1 ? (page - 1) * pageSize : DEFAULT_OFFSET,
-    }
-
-    return paginationOptions
 }
 
 const _parseQueryParameter = (
@@ -74,4 +46,37 @@ const _parseEnvironmentVariable = (
         )
     }
     return parsedValue
+}
+
+export const DEFAULT_LIMIT = 200
+export const DEFAULT_OFFSET = 0
+export const DEFAULT_PAGE_SIZE = 50
+export const PAGE_SIZE = _parseEnvironmentVariable(
+    'PAGINATION_PAGE_SIZE',
+    DEFAULT_PAGE_SIZE
+)
+
+export const getPaginationOptionsFromRequest = (
+    req: Request
+): PaginationOptions => {
+    if (!req.query) {
+        return {
+            limit: _parseEnvironmentVariable('PAGINATION_LIMIT', DEFAULT_LIMIT),
+            offset: DEFAULT_OFFSET,
+        }
+    }
+
+    let limit = _parseQueryParameter('limit', req.query.limit)
+    if (limit === undefined) {
+        limit = _parseEnvironmentVariable('PAGINATION_LIMIT', DEFAULT_LIMIT)
+    }
+
+    const page = _parseQueryParameter('page', req.query.page)
+
+    const paginationOptions: PaginationOptions = {
+        limit: limit,
+        offset: page && page > 1 ? (page - 1) * PAGE_SIZE : DEFAULT_OFFSET,
+    }
+
+    return paginationOptions
 }

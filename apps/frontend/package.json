@@ -10,7 +10,7 @@
         "dev:stage": "npm run dev",
         "lint": "next lint",
         "start": "next start",
-        "test": "dotenv -e .env.test.local -e .env.test jest --detectOpenHandles"
+        "test": "jest --detectOpenHandles --passWithNoTests"
     },
     "jest": {
         "preset": "jest-presets/jest/browser"
@@ -45,8 +45,7 @@
         "react-hook-form": "^7.45.2",
         "sharp": "^0.33.0",
         "tailwind-merge": "^1.14.0",
-        "tailwindcss-animate": "^1.0.6",
-        "zod": "^3.21.4"
+        "tailwindcss-animate": "^1.0.6"
     },
     "devDependencies": {
         "@hookform/devtools": "^4.3.1",
