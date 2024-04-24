@@ -52,6 +52,25 @@ describe('Unit tests for generated search conditions', () => {
         expect(state.counter).toBe(1)
     })
 
+    it('should return correct case insensitive WHERE-LIKE SQL condition', () => {
+        // Arrange
+        let state: queries.QueryConditionState = {
+            counter: 0,
+            conditions: [],
+            values: [],
+        }
+        // Act
+        state = queries.forTest._whereLike('origin', 'aldi', state, {
+            caseInsensitive: true,
+        })
+        // Assert
+        expect(state.conditions).toStrictEqual([
+            "UPPER(origin) LIKE '%' || UPPER($1) || '%'",
+        ])
+        expect(state.values).toStrictEqual(['aldi'])
+        expect(state.counter).toBe(1)
+    })
+
     it('should return correct WHERE-LEQ SQL condition', () => {
         // Arrange
         let state: queries.QueryConditionState = {
