@@ -13,10 +13,16 @@ export type QueryConditionState = {
     values: any[]
 }
 
-const _to$ = (state: QueryConditionState) => {
+type QueryConditionOptions = {
+    caseInsensitive?: boolean
+}
+
+const _to$ = (state: QueryConditionState): string => {
     state.counter++
     return `$${state.counter}`
 }
+
+const _toUpper = (input: string): string => `UPPER(${input})`
 
 const _whereIn = (
     column: string,
@@ -37,11 +43,20 @@ const _whereIn = (
 const _whereLike = (
     column: string,
     value: string | undefined,
-    state: QueryConditionState
+    state: QueryConditionState,
+    options: QueryConditionOptions = {}
 ): QueryConditionState => {
     if (!value) return state
 
-    const newCondition = `${column} LIKE '%' || ${_to$(state)} || '%'`
+    let newCondition
+    if (options.caseInsensitive) {
+        newCondition = `${_toUpper(column)} LIKE '%' || ${_toUpper(
+            _to$(state)
+        )} || '%'`
+    } else {
+        newCondition = `${column} LIKE '%' || ${_to$(state)} || '%'`
+    }
+
     return {
         counter: state.counter,
         conditions: [...state.conditions, newCondition],
@@ -130,8 +145,10 @@ const _getQuery = (
     }
 
     state = _whereIn('category', categories, state)
-    state = _whereLike('origin', origin, state)
-    state = _whereLike('description', description, state)
+    state = _whereLike('origin', origin, state, { caseInsensitive: true })
+    state = _whereLike('description', description, state, {
+        caseInsensitive: true,
+    })
     state = _whereInInterval('date', dateFrom, dateUntil, state)
     _getTagsCondition(tags)
 

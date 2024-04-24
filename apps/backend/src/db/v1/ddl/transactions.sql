@@ -69,6 +69,12 @@ ALTER TABLE ONLY transactions.transactions
 ALTER COLUMN id
 SET DEFAULT nextval('transactions.transactions_id_seq'::regclass);
 
+CREATE INDEX idx_transactions_origins ON transactions.transactions (UPPER(origin));
+
+CREATE INDEX idx_transactions_descriptions ON transactions.transactions (UPPER("description"));
+
+CREATE INDEX idx_transactions_dates ON transactions.transactions ("date");
+
 --
 CREATE TABLE transactions.transaction_tags (
   id serial NOT NULL,

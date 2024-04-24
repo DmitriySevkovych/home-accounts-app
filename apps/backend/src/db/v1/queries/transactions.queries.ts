@@ -110,7 +110,8 @@ export const getTransactionByIds = async (
             id, context, category, origin, description, amount, date, currency, exchange_rate, 
             source_bank_account, target_bank_account, payment_method, tax_category, comment, agent, receipt_id
         FROM transactions.transactions
-        WHERE id = ANY($1::int[]);`,
+        WHERE id = ANY($1::int[])
+        ORDER BY id DESC;`,
         values: [ids],
     }
     const queryResult = await connectionPool.query(query)
