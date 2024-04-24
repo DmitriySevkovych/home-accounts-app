@@ -146,7 +146,9 @@ const _getQuery = (
 
     state = _whereIn('category', categories, state)
     state = _whereLike('origin', origin, state, { caseInsensitive: true })
-    state = _whereLike('description', description, state)
+    state = _whereLike('description', description, state, {
+        caseInsensitive: true,
+    })
     state = _whereInInterval('date', dateFrom, dateUntil, state)
     _getTagsCondition(tags)
 
