@@ -25,11 +25,11 @@ const _withPagination = (
 ): string => {
     if (!paginationOptions) return endpoint
 
-    const { limit, offset, forceFetchAll } = paginationOptions
+    const { page, forceFetchAll } = paginationOptions
 
     if (forceFetchAll) return `${endpoint}?forceFetchAll=true`
 
-    return `${endpoint}?limit=${limit}&offset=${offset}`
+    return `${endpoint}?page=${page}`
 }
 
 export const PAGES = {
@@ -54,10 +54,8 @@ export const API = {
         transactions: {
             create: _getClientsideUrl(`/transactions`),
             update: _getClientsideUrl(`/transactions`),
-            get: (context: TransactionContext, limit: number) =>
-                _getClientsideUrl(
-                    `/transactions?context=${context}&limit=${limit}`
-                ),
+            get: (context: TransactionContext) =>
+                _getClientsideUrl(`/transactions?context=${context}`),
             delete: (id: number) => _getClientsideUrl(`/transactions/${id}`),
             search: (paginationOptions?: Partial<PaginationOptions>) =>
                 _withPagination(

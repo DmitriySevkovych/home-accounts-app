@@ -12,13 +12,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../lib/shadcn/Tabs'
 import { TransactionPreviewCard } from './TransactionPreviewCard'
 import { SectionHeading } from './Typography'
 
-const useLatestTransactions = (context: TransactionContext, limit: number) => {
+const useLatestTransactions = (context: TransactionContext) => {
     const [transactions, setTransactions] = useState<Transaction[]>([])
     useEffect(() => {
         const fetchTransactions = async () => {
-            const req = await safeFetch(
-                API.client.transactions.get(context, limit)
-            )
+            const req = await safeFetch(API.client.transactions.get(context))
             const reqData = await req.json()
             const fetchedTransactions = reqData.map((obj: any) =>
                 deserializeTransaction(obj)
@@ -27,15 +25,14 @@ const useLatestTransactions = (context: TransactionContext, limit: number) => {
         }
         fetchTransactions()
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [context, limit])
+    }, [context])
     return transactions
 }
 
 export const TransactionsPreview = () => {
     const [context, setContext] = useState<TransactionContext>('home')
-    const limit = 25
 
-    const transactions = useLatestTransactions(context, limit)
+    const transactions = useLatestTransactions(context)
     return (
         <Tabs
             defaultValue={context}

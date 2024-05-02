@@ -15,6 +15,7 @@ import {
     NoRecordFoundInDatabaseError,
     UnsupportedTransactionOperationError,
 } from '../../../helpers/errors'
+import { getLimitAndOffset } from '../../../helpers/pagination'
 import {
     associateTransactionWithInvestment,
     getInvestmentForTransactionId,
@@ -71,8 +72,13 @@ export const getTransactions = async (
     context: TransactionContext,
     paginationOptions: PaginationOptions
 ): Promise<Transaction[]> => {
-    const { limit, offset, forceFetchAll } = paginationOptions
-    const paginationValues = forceFetchAll ? [] : [limit, offset]
+    const { forceFetchAll } = paginationOptions
+
+    let paginationValues: number[] = []
+    if (!forceFetchAll) {
+        const { limit, offset } = getLimitAndOffset(paginationOptions)
+        paginationValues = [limit, offset]
+    }
     //TODO extract logic to DB view?
     const query = {
         name: `select-transactions`,

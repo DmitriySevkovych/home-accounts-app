@@ -1,7 +1,7 @@
 import { Paginated, PaginationOptions, SearchParameters } from 'domain-model'
 import { Pool, QueryConfig } from 'pg'
 
-import { PAGE_SIZE } from '../../../helpers/pagination'
+import { PAGE_SIZE, getLimitAndOffset } from '../../../helpers/pagination'
 
 export type QueryConditionState = {
     counter: number
@@ -123,10 +123,11 @@ const _getPaginationCondition = (
     paginationOptions: PaginationOptions,
     state: QueryConditionState
 ): { paginationCondition: string; paginationValues: number[] } => {
-    const { limit, offset, forceFetchAll } = paginationOptions
+    const { forceFetchAll } = paginationOptions
 
     if (forceFetchAll) return { paginationCondition: '', paginationValues: [] }
 
+    const { limit, offset } = getLimitAndOffset(paginationOptions)
     return {
         paginationCondition: `LIMIT ${_to$(state)} OFFSET ${_to$(state)}`,
         paginationValues: [limit, offset],

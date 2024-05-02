@@ -20,6 +20,7 @@ import {
 } from 'domain-model'
 
 import { NoRecordFoundInDatabaseError } from '../../helpers/errors'
+import { getLimitAndOffset } from '../../helpers/pagination'
 import { Repository } from '../repository'
 
 export class StubbedRepository implements Repository {
@@ -201,8 +202,7 @@ export class StubbedRepository implements Repository {
             transactions.push(transaction)
         }
 
-        const offset = paginationOptions?.offset ? paginationOptions?.offset : 0
-        const limit = paginationOptions?.limit
+        const { limit, offset } = getLimitAndOffset(paginationOptions)
 
         const start = offset
         const end = offset + limit

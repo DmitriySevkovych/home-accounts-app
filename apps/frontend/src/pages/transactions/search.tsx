@@ -1,7 +1,6 @@
 // import { DevTool } from '@hookform/devtools'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
-    DEFAULT_PAGE_SIZE,
     SearchParameters,
     SearchParametersFormSchema,
     Transaction,
@@ -41,6 +40,7 @@ const SearchTransactionsPage: React.FC<SearchTransactionsPageProps> = ({
     const [moreResultsAvailable, setMoreResultsAvailable] = useState<
         boolean | undefined
     >(undefined)
+    const [nextResultPage, setNextResultPage] = useState<number>(1)
 
     const { tags } = constants
     // Input data
@@ -64,8 +64,7 @@ const SearchTransactionsPage: React.FC<SearchTransactionsPageProps> = ({
         parameters: SearchParameters
     ) => {
         const url = API.client.transactions.search({
-            limit: DEFAULT_PAGE_SIZE,
-            offset: searchResults ? searchResults.length : 0,
+            page: nextResultPage,
         })
         const response = await safeFetch(url, {
             method: 'POST',
@@ -81,6 +80,7 @@ const SearchTransactionsPage: React.FC<SearchTransactionsPageProps> = ({
         } = await response.json()
         const { transactions, endReached } = responseData
         setMoreResultsAvailable(!endReached)
+        setNextResultPage((previousPage) => previousPage + 1)
         if (transactions.length > 0) {
             setSearchResults(transactions.map((t) => deserializeTransaction(t)))
         } else {
