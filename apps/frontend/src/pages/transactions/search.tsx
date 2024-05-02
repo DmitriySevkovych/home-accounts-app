@@ -1,6 +1,7 @@
 // import { DevTool } from '@hookform/devtools'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
+    DEFAULT_PAGE_SIZE,
     SearchParameters,
     SearchParametersFormSchema,
     Transaction,
@@ -62,7 +63,11 @@ const SearchTransactionsPage: React.FC<SearchTransactionsPageProps> = ({
     const _search: SubmitHandler<SearchParameters> = async (
         parameters: SearchParameters
     ) => {
-        const response = await safeFetch(API.client.transactions.search, {
+        const url = API.client.transactions.search({
+            limit: DEFAULT_PAGE_SIZE,
+            offset: searchResults ? searchResults.length : 0,
+        })
+        const response = await safeFetch(url, {
             method: 'POST',
             headers: {
                 'content-type': 'application/json',

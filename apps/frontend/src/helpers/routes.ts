@@ -1,4 +1,8 @@
-import { TransactionContext, TransactionType } from 'domain-model'
+import {
+    PaginationOptions,
+    TransactionContext,
+    TransactionType,
+} from 'domain-model'
 import path from 'path'
 
 const _getServersideUrl = (endpoint: string): string => {
@@ -13,6 +17,19 @@ const _getClientsideUrl = (endpoint: string): string => {
         path.join(process.env.NEXT_PUBLIC_BACKEND_API_BASE!, endpoint),
         process.env.NEXT_PUBLIC_BACKEND_HOST!
     ).toString()
+}
+
+const _withPagination = (
+    endpoint: string,
+    paginationOptions?: Partial<PaginationOptions>
+): string => {
+    if (!paginationOptions) return endpoint
+
+    const { limit, offset, forceFetchAll } = paginationOptions
+
+    if (forceFetchAll) return `${endpoint}?forceFetchAll=true`
+
+    return `${endpoint}?limit=${limit}&offset=${offset}`
 }
 
 export const PAGES = {
@@ -42,7 +59,11 @@ export const API = {
                     `/transactions?context=${context}&limit=${limit}`
                 ),
             delete: (id: number) => _getClientsideUrl(`/transactions/${id}`),
-            search: _getClientsideUrl(`/transactions/search`),
+            search: (paginationOptions?: Partial<PaginationOptions>) =>
+                _withPagination(
+                    _getClientsideUrl(`/transactions/search`),
+                    paginationOptions
+                ),
         },
     },
     server: {
