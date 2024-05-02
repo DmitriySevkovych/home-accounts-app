@@ -21,7 +21,7 @@ export const PAGES = {
         blueprints: '/#',
     },
     analysis: {
-        cashflow: '/#',
+        cashflow: '/analysis/cashflow',
     },
     transactions: {
         index: '/transactions',

@@ -78,7 +78,7 @@ export default function Home({ systemInfo }: HomePageProps) {
                                 <ul className="grid w-[175px] gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
                                     <NavigationListItem
                                         href={PAGES.analysis.cashflow}
-                                        title="TODO Cashflow"
+                                        title="Cashflow"
                                     >
                                         See current cashflow diagram.
                                     </NavigationListItem>
