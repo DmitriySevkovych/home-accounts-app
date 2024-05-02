@@ -2,6 +2,8 @@ import type {
     BankAccount,
     BlueprintKey,
     Investment,
+    Paginated,
+    PaginationOptions,
     PaymentMethod,
     ProjectInvoice,
     SearchParameters,
@@ -12,8 +14,6 @@ import type {
     TransactionContext,
     TransactionReceipt,
 } from 'domain-model'
-
-import { Paginated, PaginationOptions } from '../helpers/pagination'
 
 export interface Repository {
     close: () => Promise<void>

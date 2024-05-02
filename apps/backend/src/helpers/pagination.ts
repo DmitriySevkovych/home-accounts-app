@@ -1,19 +1,15 @@
+import {
+    DEFAULT_LIMIT,
+    DEFAULT_OFFSET,
+    DEFAULT_PAGE_SIZE,
+    PaginationOptions,
+} from 'domain-model'
 import { Request } from 'express'
 
 import {
     BadEnvironmentVariableError,
     BadQueryParameterInRequestError,
 } from './errors'
-
-export type Paginated = {
-    endReached: boolean
-}
-
-export type PaginationOptions = {
-    limit: number
-    offset: number
-    forceFetchAll?: boolean
-}
 
 const _parseQueryParameter = (
     name: string,
@@ -49,9 +45,6 @@ const _parseEnvironmentVariable = (
     return parsedValue
 }
 
-export const DEFAULT_LIMIT = 200
-export const DEFAULT_OFFSET = 0
-export const DEFAULT_PAGE_SIZE = 50
 export const PAGE_SIZE = _parseEnvironmentVariable(
     'PAGINATION_PAGE_SIZE',
     DEFAULT_PAGE_SIZE

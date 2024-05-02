@@ -1,11 +1,8 @@
+import { DEFAULT_LIMIT, DEFAULT_OFFSET, DEFAULT_PAGE_SIZE } from 'domain-model'
 import { Request } from 'express'
-import {
-    DEFAULT_LIMIT,
-    DEFAULT_PAGE_SIZE,
-    DEFAULT_OFFSET,
-    getPaginationOptionsFromRequest,
-} from './pagination'
+
 import { BadQueryParameterInRequestError } from './errors'
+import { getPaginationOptionsFromRequest } from './pagination'
 
 /*
     @group unit

@@ -1,4 +1,5 @@
 import {
+    PaginationOptions,
     Transaction,
     TransactionCategory,
     TransactionContext,
@@ -14,7 +15,6 @@ import {
     NoRecordFoundInDatabaseError,
     UnsupportedTransactionOperationError,
 } from '../../../helpers/errors'
-import { PaginationOptions } from '../../../helpers/pagination'
 import {
     associateTransactionWithInvestment,
     getInvestmentForTransactionId,

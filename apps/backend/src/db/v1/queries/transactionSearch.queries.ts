@@ -1,11 +1,7 @@
-import { SearchParameters } from 'domain-model'
+import { Paginated, PaginationOptions, SearchParameters } from 'domain-model'
 import { Pool, QueryConfig } from 'pg'
 
-import {
-    PAGE_SIZE,
-    Paginated,
-    PaginationOptions,
-} from '../../../helpers/pagination'
+import { PAGE_SIZE } from '../../../helpers/pagination'
 
 export type QueryConditionState = {
     counter: number

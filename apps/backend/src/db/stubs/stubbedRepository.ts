@@ -2,6 +2,8 @@ import {
     BankAccount,
     HomeAppFile,
     Investment,
+    Paginated,
+    PaginationOptions,
     PaymentMethod,
     ProjectInvoice,
     SearchParameters,
@@ -18,7 +20,6 @@ import {
 } from 'domain-model'
 
 import { NoRecordFoundInDatabaseError } from '../../helpers/errors'
-import { Paginated, PaginationOptions } from '../../helpers/pagination'
 import { Repository } from '../repository'
 
 export class StubbedRepository implements Repository {

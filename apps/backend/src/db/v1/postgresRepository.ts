@@ -2,6 +2,8 @@ import type {
     BankAccount,
     BlueprintKey,
     Investment,
+    Paginated,
+    PaginationOptions,
     PaymentMethod,
     ProjectInvoice,
     SearchParameters,
@@ -16,7 +18,6 @@ import { Logger, getLogger } from 'logger'
 import type { Pool, PoolClient } from 'pg'
 
 import connectionPool from '.'
-import { Paginated, PaginationOptions } from '../../helpers/pagination'
 import { Repository } from '../repository'
 import * as investmentsQueries from './queries/investments.queries'
 import * as tagsQueries from './queries/tags.queries'

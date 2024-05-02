@@ -13,4 +13,5 @@ export * from './models/utilities.model'
 export * from './models/work.model'
 
 export * from './helpers/handy-types'
+export * from './helpers/pagination'
 export * from './helpers/test-fixtures'
