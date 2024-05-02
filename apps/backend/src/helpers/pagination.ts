@@ -12,6 +12,7 @@ export type Paginated = {
 export type PaginationOptions = {
     limit: number
     offset: number
+    forceFetchAll?: boolean
 }
 
 const _parseQueryParameter = (
@@ -72,10 +73,12 @@ export const getPaginationOptionsFromRequest = (
     }
 
     const page = _parseQueryParameter('page', req.query.page)
+    const forceFetchAll = !!req.query.forceFetchAll
 
     const paginationOptions: PaginationOptions = {
         limit: limit,
         offset: page && page > 1 ? (page - 1) * PAGE_SIZE : DEFAULT_OFFSET,
+        forceFetchAll,
     }
 
     return paginationOptions

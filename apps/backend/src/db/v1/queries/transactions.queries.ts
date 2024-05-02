@@ -71,6 +71,8 @@ export const getTransactions = async (
     context: TransactionContext,
     paginationOptions: PaginationOptions
 ): Promise<Transaction[]> => {
+    const { limit, offset, forceFetchAll } = paginationOptions
+    const paginationValues = forceFetchAll ? [] : [limit, offset]
     //TODO extract logic to DB view?
     const query = {
         name: `select-transactions`,
@@ -81,9 +83,9 @@ export const getTransactions = async (
             FROM transactions.transactions
             WHERE context = $1
             ORDER BY id DESC
-            LIMIT $2
-            OFFSET $3;`,
-        values: [context, paginationOptions.limit, paginationOptions.offset],
+            ${forceFetchAll ? '' : 'LIMIT $2 OFFSET $3'}
+            ;`,
+        values: [context, ...paginationValues],
     }
     const queryResult = await connectionPool.query(query)
 
