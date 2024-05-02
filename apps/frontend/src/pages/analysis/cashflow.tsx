@@ -1,7 +1,9 @@
 import { SearchParameters } from 'domain-model'
+import React from 'react'
 import useSWR from 'swr'
 
 import { SectionHeading } from '../../components/Typography'
+import CashflowBalance from '../../components/cashflow/CashflowBalance'
 import { PageWithBackButton } from '../../components/pages/PageWithBackButton'
 import { safeFetch } from '../../helpers/requests'
 import { API, PAGES } from '../../helpers/routes'
@@ -61,9 +63,11 @@ const CashflowAnalysisPage: React.FC = () => {
             </section>
 
             {/* Total cashflow result */}
-            <section>
-                <SectionHeading>Cashflow</SectionHeading>
-            </section>
+            <CashflowBalance
+                activeIncome={12500}
+                passiveIncome={4700}
+                totalExpenses={14526}
+            />
         </PageWithBackButton>
     )
 }
