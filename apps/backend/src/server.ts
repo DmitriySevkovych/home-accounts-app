@@ -18,9 +18,6 @@ export const createServer = async (): Promise<Express> => {
         .use(cors())
         .use(backendHttpLogger)
         .use(checkAuthHeader)
-        .get('/healthz', (req, res) => {
-            return res.json({ ok: true })
-        })
 
     mountRoutes(app)
 

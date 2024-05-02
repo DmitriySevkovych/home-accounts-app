@@ -8,7 +8,9 @@ import { createSecureServer } from './server'
 
 const logger = getLogger('backend')
 
-const { PORT, API_BASE_URL, SCHEDULER_DISABLED, MAIL_DISABLED } = process.env
+const { PORT, API_BASE_URL } = process.env
+const SCHEDULER_DISABLED = process.env.SCHEDULER_DISABLED === 'true'
+const MAIL_DISABLED = process.env.MAIL_DISABLED === 'true'
 
 if (!PORT || !API_BASE_URL) {
     logger.error(
