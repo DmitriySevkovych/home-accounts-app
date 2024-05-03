@@ -35,15 +35,15 @@ const SearchTransactionsPage: React.FC<SearchTransactionsPageProps> = ({
 }) => {
     // State
     const [searchResults, setSearchResults] = useState<
-        Transaction[] | null | undefined
+        Transaction[] | undefined
     >(undefined)
     const [moreResultsAvailable, setMoreResultsAvailable] = useState<
         boolean | undefined
     >(undefined)
     const [nextResultPage, setNextResultPage] = useState<number>(1)
 
-    const { tags } = constants
     // Input data
+    const { tags } = constants
     const categories = useMemo(() => {
         const { transactionCategories } = constants
         const distinctCategories = [
@@ -60,33 +60,48 @@ const SearchTransactionsPage: React.FC<SearchTransactionsPageProps> = ({
         },
     })
 
-    const _search: SubmitHandler<SearchParameters> = async (
-        parameters: SearchParameters
-    ) => {
-        const url = API.client.transactions.search({
-            page: nextResultPage,
-        })
-        const response = await safeFetch(url, {
-            method: 'POST',
-            headers: {
-                'content-type': 'application/json',
-            },
-            body: JSON.stringify({ parameters }),
-        })
+    const _search = async (
+        parameters: SearchParameters,
+        page: number = 1
+    ): Promise<void> => {
+        const response = await safeFetch(
+            API.client.transactions.search({ page }),
+            {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json',
+                },
+                body: JSON.stringify({ parameters }),
+            }
+        )
 
         const responseData: {
             transactions: Transaction[]
             endReached: boolean
         } = await response.json()
         const { transactions, endReached } = responseData
+
         setMoreResultsAvailable(!endReached)
-        setNextResultPage((previousPage) => previousPage + 1)
-        if (transactions.length > 0) {
-            setSearchResults(transactions.map((t) => deserializeTransaction(t)))
+        setNextResultPage(page + 1)
+        const newResults = transactions.map((t) => deserializeTransaction(t))
+        if (page === 1) {
+            setSearchResults(newResults)
         } else {
-            setSearchResults(null)
+            setSearchResults((previousResults) =>
+                previousResults
+                    ? [...previousResults, ...newResults]
+                    : newResults
+            )
         }
     }
+
+    const _firstSearch: SubmitHandler<SearchParameters> = async (
+        parameters: SearchParameters
+    ) => _search(parameters)
+
+    const _loadMoreResults: SubmitHandler<SearchParameters> = async (
+        parameters: SearchParameters
+    ) => _search(parameters, nextResultPage)
 
     // Render
     return (
@@ -97,7 +112,7 @@ const SearchTransactionsPage: React.FC<SearchTransactionsPageProps> = ({
             <section className="mb-12">
                 <Form {...form}>
                     <form
-                        onSubmit={form.handleSubmit(_search)}
+                        onSubmit={form.handleSubmit(_firstSearch)}
                         className="w-full grid-cols-2 gap-4 space-y-6 lg:grid"
                     >
                         <Radio<SearchParameters>
@@ -166,7 +181,7 @@ const SearchTransactionsPage: React.FC<SearchTransactionsPageProps> = ({
             <section>
                 <SectionHeading>Results</SectionHeading>
 
-                {searchResults === null && (
+                {searchResults?.length === 0 && (
                     <p>Nothing found. Try adjusting the search parameters...</p>
                 )}
 
@@ -177,7 +192,13 @@ const SearchTransactionsPage: React.FC<SearchTransactionsPageProps> = ({
                     />
                 ))}
 
-                {moreResultsAvailable && <Button>Load more</Button>}
+                {moreResultsAvailable && (
+                    <div className="flex justify-center p-3">
+                        <Button onClick={form.handleSubmit(_loadMoreResults)}>
+                            Load more
+                        </Button>
+                    </div>
+                )}
             </section>
         </PageWithBackButton>
     )
