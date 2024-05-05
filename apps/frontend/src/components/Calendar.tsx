@@ -79,19 +79,19 @@ export function Calendar<T>(props: CalendarProps<T>) {
     )
 }
 
-export const CalendarStandalone = () => {
+type CalendarStandaloneProps = {
+    value: Date
+    setValue: (value: Date) => void
+}
+
+export const CalendarStandalone: React.FC<CalendarStandaloneProps> = ({
+    value,
+    setValue,
+}) => {
     const [isOpen, setIsOpen] = useState<boolean>(false)
 
-    const [selectedDate, setSelectedDate] = useState<Date | undefined>(
-        undefined
-    )
-
     const handleSelect = (selectedDate: Date | undefined) => {
-        setSelectedDate(
-            selectedDate
-                ? handleUnwantedTimezoneShift(selectedDate)
-                : selectedDate
-        )
+        setValue(handleUnwantedTimezoneShift(selectedDate as Date))
         setIsOpen(false)
     }
 
@@ -101,11 +101,11 @@ export const CalendarStandalone = () => {
                 <Button
                     className={cn(
                         'w-full rounded-md bg-background-overlay pl-3 text-left font-medium text-primary hover:bg-background-overlay',
-                        !selectedDate && 'text-muted-foreground'
+                        !value && 'text-muted-foreground'
                     )}
                 >
-                    {selectedDate ? (
-                        formatDateToWords(selectedDate)
+                    {value ? (
+                        formatDateToWords(value)
                     ) : (
                         <span>Pick a date</span>
                     )}
@@ -115,7 +115,7 @@ export const CalendarStandalone = () => {
             <PopoverContent className="w-auto p-0" align="start">
                 <ShadcnCalendar
                     mode="single"
-                    selected={selectedDate}
+                    selected={value}
                     onSelect={handleSelect}
                     required
                     ISOWeek

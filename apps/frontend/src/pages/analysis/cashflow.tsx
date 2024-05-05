@@ -3,53 +3,52 @@ import {
     Transaction,
     deserializeTransaction,
 } from 'domain-model'
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import useSWR from 'swr'
 
-import { CalendarStandalone } from '../../components/Calendar'
 import { SectionHeading } from '../../components/Typography'
 import CashflowBalance from '../../components/cashflow/CashflowBalance'
+import CashflowTimeRangeManager, {
+    CashflowTimeRange,
+    getDefaultTimeRange,
+} from '../../components/cashflow/CashflowTimeRangeManager'
 import { PageWithBackButton } from '../../components/pages/PageWithBackButton'
 import { safeFetch } from '../../helpers/requests'
 import { API, PAGES } from '../../helpers/routes'
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from '../../lib/shadcn/Accordion'
-import { Label } from '../../lib/shadcn/Label'
-import { RadioGroup, RadioGroupItem } from '../../lib/shadcn/Radio'
 
-const fetcher = (url: string, parameters: SearchParameters) => {
+const fetcher = (url: string, timeRange: CashflowTimeRange) => {
     return safeFetch(url, {
         method: 'POST',
         headers: {
             'content-type': 'application/json',
         },
-        body: JSON.stringify({ parameters }),
+        body: JSON.stringify({
+            parameters: {
+                searchCombination: 'and',
+                dateFrom: timeRange.from,
+                dateUntil: timeRange.until,
+            },
+        }),
     }).then((res) => res.json())
 }
 
 const CashflowAnalysisPage: React.FC = () => {
     // Local state
-    const [timeRange, setTimeRange] = useState<string>('last-three-months')
-    const parameters: SearchParameters = {
-        searchCombination: 'and',
-        dateFrom: new Date('2024-01-01'),
-    }
+    const [timeRange, setTimeRange] = useState<CashflowTimeRange>(
+        getDefaultTimeRange()
+    )
 
     // Queried data
     const { data, error, isLoading } = useSWR(
-        [API.client.transactions.search({ forceFetchAll: true }), parameters],
-        ([url, parameters]) => fetcher(url, parameters)
+        [API.client.transactions.search({ forceFetchAll: true }), timeRange],
+        ([url, timeRange]) => fetcher(url, timeRange)
     )
 
     // Values computed from queried data
     const transactions = isLoading
         ? []
         : data.transactions.map((t: Transaction) => deserializeTransaction(t))
-    console.log({ transactions, error, isLoading })
+    console.log({ timeRange, transactions, error, isLoading })
 
     // Render
     return (
@@ -59,74 +58,10 @@ const CashflowAnalysisPage: React.FC = () => {
             className="flex h-full flex-col justify-between"
         >
             {/* Time range parameters */}
-            <Accordion type="single" collapsible>
-                <AccordionItem value="item-1">
-                    <AccordionTrigger>
-                        <SectionHeading>Time range</SectionHeading>
-                    </AccordionTrigger>
-                    <AccordionContent>
-                        <RadioGroup
-                            value={timeRange}
-                            onValueChange={setTimeRange}
-                        >
-                            <div className="flex items-center space-x-3">
-                                <RadioGroupItem
-                                    value="last-three-months"
-                                    id="last-three-months"
-                                />
-                                <Label
-                                    className="font-normal"
-                                    htmlFor="last-three-months"
-                                >
-                                    Last three months
-                                </Label>
-                            </div>
-                            <div className="flex items-center space-x-3">
-                                <RadioGroupItem
-                                    value="last-year"
-                                    id="last-year"
-                                />
-                                <Label
-                                    className="font-normal"
-                                    htmlFor="last-year"
-                                >
-                                    Last year
-                                </Label>
-                            </div>
-                            <div className="flex items-center space-x-3">
-                                <RadioGroupItem
-                                    value="current-year"
-                                    id="current-year"
-                                />
-                                <Label
-                                    className="font-normal"
-                                    htmlFor="current-year"
-                                >
-                                    Current year
-                                </Label>
-                            </div>
-                            <div className="flex items-start space-x-3">
-                                <RadioGroupItem
-                                    value="custom-dates"
-                                    id="custom-dates"
-                                />
-                                <Label
-                                    className="flex w-full space-x-4 font-normal"
-                                    htmlFor="custom-dates"
-                                >
-                                    <div className="flex flex-grow flex-col space-y-2">
-                                        <span>from</span> <CalendarStandalone />
-                                    </div>
-                                    <div className="flex flex-grow flex-col space-y-2">
-                                        <span>until</span>
-                                        <CalendarStandalone />
-                                    </div>
-                                </Label>
-                            </div>
-                        </RadioGroup>
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
+            <CashflowTimeRangeManager
+                timeRange={timeRange}
+                setTimeRange={setTimeRange}
+            />
 
             {/* Income summary */}
             <section>
