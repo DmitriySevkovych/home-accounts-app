@@ -1,5 +1,6 @@
 import {
     DateCheck,
+    DateRangeCalculator,
     addDays,
     dateFromString,
     formatDate,
@@ -236,5 +237,65 @@ describe('Tests for dealing with dates', () => {
                 expect(workday).toStrictEqual(expectedDate)
             }
         )
+    }) // end 'Date manipulation tests'
+
+    describe('DateRangeCalculator tests', () => {
+        it('should return a range from beginning of this year until today', () => {
+            // Arrange
+            const today = new Date()
+            // Act
+            const [from, until] = DateRangeCalculator.fromToday()
+                .goBackToBeginningOfThisYear()
+                .get()
+            // Assert
+            expect(from.toISOString()).toBe(
+                `${today.getFullYear()}-01-01T00:00:00.000Z`
+            )
+            expect(until.toISOString()).toBe(
+                `${formatDate(today)}T00:00:00.000Z`
+            )
+        })
+
+        it('should return the full last year', () => {
+            // Arrange
+            const today = new Date()
+            const lastFullYear = today.getFullYear() - 1
+            // Act
+            const [from, until] = DateRangeCalculator.fromEndOfLastYear()
+                .goBack(11, 'months')
+                .toBeginningOfMonth()
+                .get()
+            // Assert
+            expect(from.toISOString()).toBe(
+                `${lastFullYear}-01-01T00:00:00.000Z`
+            )
+            expect(until.toISOString()).toBe(
+                `${lastFullYear}-12-31T00:00:00.000Z`
+            )
+        })
+
+        it('should return a range of three months from 2023-03-01 until 2023-05-31', () => {
+            // Arrange
+            // Act
+            const [from, until] = DateRangeCalculator.fromDate('2023-05-31')
+                .goBack(2, 'months')
+                .toBeginningOfMonth()
+                .get()
+            // Assert
+            expect(from.toISOString()).toBe('2023-03-01T00:00:00.000Z')
+            expect(until.toISOString()).toBe('2023-05-31T00:00:00.000Z')
+        })
+
+        it('should return a range from 2023-01-31 until 2023-04-01', () => {
+            // Arrange
+            // Act
+            const [from, until] = DateRangeCalculator.fromDate('2023-04-01')
+                .goBack(3, 'months')
+                .toEndOfMonth()
+                .get()
+            // Assert
+            expect(from.toISOString()).toBe('2023-01-31T00:00:00.000Z')
+            expect(until.toISOString()).toBe('2023-04-01T00:00:00.000Z')
+        })
     })
 })

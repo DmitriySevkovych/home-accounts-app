@@ -1,3 +1,4 @@
+import { DateRangeCalculator } from 'domain-model'
 import React from 'react'
 
 import {
@@ -53,11 +54,33 @@ const _updateTimeRange = (
 }
 
 const _getTimeRange = (id: CashflowTimeRangeID): CashflowTimeRange => {
-    return {
-        id,
-        from: new Date(),
-        until: new Date(),
+    let from, until
+    switch (id) {
+        case 'lastThreeMonths':
+            ;[from, until] = DateRangeCalculator.fromEndOfLastMonth()
+                .goBack(2, 'months')
+                .toBeginningOfMonth()
+                .get()
+            break
+        case 'lastYear':
+            ;[from, until] = DateRangeCalculator.fromEndOfLastYear()
+                .goBack(11, 'months')
+                .toBeginningOfMonth()
+                .get()
+            break
+        case 'currentYear':
+            ;[from, until] = DateRangeCalculator.fromToday()
+                .goBackToBeginningOfThisYear()
+                .get()
+            break
+        case 'custom':
+            from = new Date()
+            until = new Date()
+            break
+        default:
+            throw new Error(`Unknown time range '${id}'`)
     }
+    return { id, from, until }
 }
 
 export const getDefaultTimeRange = (): CashflowTimeRange => {

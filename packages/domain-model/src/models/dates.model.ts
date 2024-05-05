@@ -1,9 +1,11 @@
+import { DateTime } from 'luxon'
+
 type Weekday = {
     name: string
     number: number
 }
 
-export const DAYS = [
+export const DAYS: Weekday[] = [
     {
         name: 'MONDAY',
         number: 1,
@@ -32,7 +34,7 @@ export const DAYS = [
         name: 'SUNDAY',
         number: 0,
     },
-] satisfies Weekday[]
+]
 
 const _padZero = (value: number): string => {
     return value < 10 ? `0${value}` : value.toString()
@@ -212,5 +214,98 @@ export class DateCheck {
 
     isNotSameDayAs(otherDate: Date): boolean {
         return !this.isSameDayAs(otherDate)
+    }
+}
+
+export class DateRangeCalculator {
+    private date: DateTime
+    private otherDate: DateTime
+
+    private constructor(date: DateTime) {
+        this.date = date
+        this.otherDate = DateTime.fromObject({})
+    }
+
+    static fromDate(dateStr: string) {
+        return new DateRangeCalculator(DateTime.fromJSDate(new Date(dateStr)))
+    }
+
+    static fromToday() {
+        return new DateRangeCalculator(DateTime.utc().startOf('day'))
+    }
+
+    static fromStartOfThisMonth() {
+        return new DateRangeCalculator(DateTime.utc().startOf('month'))
+    }
+
+    static fromEndOfThisMonth() {
+        return new DateRangeCalculator(DateTime.utc().endOf('month'))
+    }
+
+    static fromStartOfLastMonth() {
+        return new DateRangeCalculator(
+            DateTime.utc().startOf('month').minus({ months: 1 })
+        )
+    }
+
+    static fromEndOfLastMonth() {
+        return new DateRangeCalculator(
+            DateTime.utc().startOf('month').minus({ days: 1 })
+        )
+    }
+
+    static fromStartOfLastYear() {
+        return new DateRangeCalculator(
+            DateTime.utc().startOf('year').minus({ years: 1 })
+        )
+    }
+
+    static fromEndOfLastYear() {
+        return new DateRangeCalculator(
+            DateTime.utc().startOf('year').minus({ days: 1 })
+        )
+    }
+
+    goAhead(
+        n: number,
+        entity: 'years' | 'months' | 'days'
+    ): DateRangeCalculator {
+        this.otherDate = DateTime.fromISO(this.date.toISO()!, {
+            zone: 'utc',
+        }).plus({ [entity]: n })
+        return this
+    }
+
+    goBack(
+        n: number,
+        entity: 'years' | 'months' | 'days'
+    ): DateRangeCalculator {
+        this.otherDate = DateTime.fromISO(this.date.toISO()!, {
+            zone: 'utc',
+        }).minus({ [entity]: n })
+        return this
+    }
+
+    toBeginningOfMonth(): DateRangeCalculator {
+        this.otherDate = this.otherDate.startOf('month')
+        return this
+    }
+
+    toEndOfMonth(): DateRangeCalculator {
+        this.otherDate = this.otherDate.endOf('month').startOf('day')
+        return this
+    }
+
+    goBackToBeginningOfThisYear(): DateRangeCalculator {
+        this.otherDate = DateTime.utc().startOf('year')
+        return this
+    }
+
+    get(): Date[] {
+        if (this.date <= this.otherDate) {
+            return [this.date.toJSDate(), this.otherDate.toJSDate()]
+        } else {
+            return [this.otherDate.toJSDate(), this.date.toJSDate()]
+        }
     }
 }

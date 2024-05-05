@@ -20,6 +20,7 @@
     },
     "devDependencies": {
         "@types/jest": "^26.0.22",
+        "@types/luxon": "^3.4.2",
         "@types/node": "^18.11.9",
         "eslint-config-custom": "*",
         "jest-presets": "*",
@@ -27,6 +28,7 @@
         "typescript": "^4.8.3"
     },
     "dependencies": {
+        "luxon": "^3.4.4",
         "zod": "^3.22.4"
     }
 }
