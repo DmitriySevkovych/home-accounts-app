@@ -78,3 +78,50 @@ export function Calendar<T>(props: CalendarProps<T>) {
         />
     )
 }
+
+export const CalendarStandalone = () => {
+    const [isOpen, setIsOpen] = useState<boolean>(false)
+
+    const [selectedDate, setSelectedDate] = useState<Date | undefined>(
+        undefined
+    )
+
+    const handleSelect = (selectedDate: Date | undefined) => {
+        setSelectedDate(
+            selectedDate
+                ? handleUnwantedTimezoneShift(selectedDate)
+                : selectedDate
+        )
+        setIsOpen(false)
+    }
+
+    return (
+        <Popover open={isOpen} onOpenChange={setIsOpen}>
+            <PopoverTrigger asChild>
+                <Button
+                    className={cn(
+                        'w-full rounded-md bg-background-overlay pl-3 text-left font-medium text-primary hover:bg-background-overlay',
+                        !selectedDate && 'text-muted-foreground'
+                    )}
+                >
+                    {selectedDate ? (
+                        formatDateToWords(selectedDate)
+                    ) : (
+                        <span>Pick a date</span>
+                    )}
+                    <CalendarIcon className="ml-auto h-4 w-4 text-primary opacity-50" />
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+                <ShadcnCalendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={handleSelect}
+                    required
+                    ISOWeek
+                    initialFocus
+                />
+            </PopoverContent>
+        </Popover>
+    )
+}
