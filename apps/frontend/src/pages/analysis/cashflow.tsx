@@ -1,4 +1,8 @@
-import { SearchParameters } from 'domain-model'
+import {
+    SearchParameters,
+    Transaction,
+    deserializeTransaction,
+} from 'domain-model'
 import React from 'react'
 import useSWR from 'swr'
 
@@ -31,9 +35,11 @@ const CashflowAnalysisPage: React.FC = () => {
         ([url, parameters]) => fetcher(url, parameters)
     )
 
-    console.log({ data, error, isLoading })
-
     // Values computed from queried data
+    const transactions = isLoading
+        ? []
+        : data.transactions.map((t: Transaction) => deserializeTransaction(t))
+    console.log({ transactions, error, isLoading })
 
     // Render
     return (
