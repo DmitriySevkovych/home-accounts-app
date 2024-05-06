@@ -39,7 +39,7 @@ const cashflowTimeRanges = {
 
 export type CashflowTimeRange = DateRange & { id: CashflowTimeRangeID }
 
-const _updateTimeRange = (
+const _getAdjustedTimeRange = (
     currentTimeRange: CashflowTimeRange,
     value: Date,
     key: keyof DateRange
@@ -83,11 +83,6 @@ export const getDefaultTimeRange = (): CashflowTimeRange => {
     return _getTimeRange('lastThreeMonths')
 }
 
-type CashflowTimeRangeManager = {
-    timeRange: CashflowTimeRange
-    setTimeRange: React.Dispatch<React.SetStateAction<CashflowTimeRange>>
-}
-
 type CashflowTimeRangeItemProps = {
     id: string
     label: string | undefined
@@ -109,7 +104,12 @@ const CashflowTimeRangeItem: React.FC<CashflowTimeRangeItemProps> = ({
     )
 }
 
-const CashflowTimeRangeManager: React.FC<CashflowTimeRangeManager> = ({
+type CashflowTimeRangeManagerProps = {
+    timeRange: CashflowTimeRange
+    setTimeRange: React.Dispatch<React.SetStateAction<CashflowTimeRange>>
+}
+
+const CashflowTimeRangeManager: React.FC<CashflowTimeRangeManagerProps> = ({
     timeRange,
     setTimeRange,
 }) => {
@@ -146,7 +146,7 @@ const CashflowTimeRangeManager: React.FC<CashflowTimeRangeManager> = ({
                                                 value={from}
                                                 setValue={(val) =>
                                                     setTimeRange(
-                                                        _updateTimeRange(
+                                                        _getAdjustedTimeRange(
                                                             timeRange,
                                                             val,
                                                             'from'
@@ -161,7 +161,7 @@ const CashflowTimeRangeManager: React.FC<CashflowTimeRangeManager> = ({
                                                 value={until}
                                                 setValue={(val) =>
                                                     setTimeRange(
-                                                        _updateTimeRange(
+                                                        _getAdjustedTimeRange(
                                                             timeRange,
                                                             val,
                                                             'until'
