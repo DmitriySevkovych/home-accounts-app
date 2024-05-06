@@ -217,6 +217,11 @@ export class DateCheck {
     }
 }
 
+export type DateRange = {
+    from: Date
+    until: Date
+}
+
 export class DateRangeCalculator {
     private date: DateTime
     private otherDate: DateTime

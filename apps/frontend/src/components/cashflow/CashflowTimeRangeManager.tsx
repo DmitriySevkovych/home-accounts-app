@@ -1,4 +1,4 @@
-import { DateRangeCalculator } from 'domain-model'
+import { DateRange, DateRangeCalculator } from 'domain-model'
 import React from 'react'
 
 import {
@@ -37,16 +37,12 @@ const cashflowTimeRanges = {
     },
 } as const
 
-export type CashflowTimeRange = {
-    id: CashflowTimeRangeID
-    from: Date
-    until: Date
-}
+export type CashflowTimeRange = DateRange & { id: CashflowTimeRangeID }
 
 const _updateTimeRange = (
     currentTimeRange: CashflowTimeRange,
     value: Date,
-    key: keyof Pick<CashflowTimeRange, 'from' | 'until'>
+    key: keyof DateRange
 ): CashflowTimeRange => {
     const update = { ...currentTimeRange }
     update[key] = value
