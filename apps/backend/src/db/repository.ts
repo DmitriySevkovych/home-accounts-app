@@ -1,6 +1,7 @@
 import type {
     BankAccount,
     BlueprintKey,
+    DateRange,
     Investment,
     Paginated,
     PaginationOptions,
@@ -9,6 +10,7 @@ import type {
     SearchParameters,
     TaxCategory,
     Transaction,
+    TransactionAggregate,
     TransactionBlueprint,
     TransactionCategory,
     TransactionContext,
@@ -51,6 +53,10 @@ export interface Repository {
     getTransactionReceipt: (_receiptId: number) => Promise<TransactionReceipt>
 
     getTransactionOrigins: () => Promise<string[]>
+
+    getTransactionsAggregates: (
+        _timeRange: DateRange
+    ) => Promise<TransactionAggregate[]>
 
     searchTransactions: (
         _parameters: SearchParameters,

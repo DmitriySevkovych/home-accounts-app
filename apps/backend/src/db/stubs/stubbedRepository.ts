@@ -1,5 +1,6 @@
 import {
     BankAccount,
+    DateRange,
     HomeAppFile,
     Investment,
     Paginated,
@@ -9,6 +10,7 @@ import {
     SearchParameters,
     TaxCategory,
     Transaction,
+    TransactionAggregate,
     TransactionBlueprint,
     TransactionCategory,
     TransactionContext,
@@ -249,6 +251,12 @@ export class StubbedRepository implements Repository {
 
     getTransactionOrigins = (): Promise<string[]> => {
         return Promise.resolve(['Gas station', 'Supermarket', 'Post office'])
+    }
+
+    getTransactionsAggregates = (
+        _timeRange: DateRange
+    ): Promise<TransactionAggregate[]> => {
+        throw new Error('stub not implemented')
     }
 
     searchTransactions = async (

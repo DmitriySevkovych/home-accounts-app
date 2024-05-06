@@ -1,6 +1,7 @@
 import type {
     BankAccount,
     BlueprintKey,
+    DateRange,
     Investment,
     Paginated,
     PaginationOptions,
@@ -9,6 +10,7 @@ import type {
     SearchParameters,
     TaxCategory,
     Transaction,
+    TransactionAggregate,
     TransactionBlueprint,
     TransactionCategory,
     TransactionContext,
@@ -21,6 +23,7 @@ import connectionPool from '.'
 import { Repository } from '../repository'
 import * as investmentsQueries from './queries/investments.queries'
 import * as tagsQueries from './queries/tags.queries'
+import * as transactionAggregationQueries from './queries/transactionAggregation.queries'
 import * as transactionSearchQueries from './queries/transactionSearch.queries'
 import * as transactionsQueries from './queries/transactions.queries'
 import * as utilsQueries from './queries/utils.queries'
@@ -63,6 +66,10 @@ export class PostgresRepository implements Repository {
                 )
             }
         )
+
+        this.connectionPool.on('error', (err: Error, _client: PoolClient) => {
+            this.logger.error(err)
+        })
     }
 
     close = async (): Promise<void> => {
@@ -200,6 +207,15 @@ export class PostgresRepository implements Repository {
     getTransactionOrigins = async (): Promise<string[]> => {
         return await transactionsQueries.getTransactionOrigins(
             this.connectionPool
+        )
+    }
+
+    getTransactionsAggregates = async (
+        timeRange: DateRange
+    ): Promise<TransactionAggregate[]> => {
+        return await transactionAggregationQueries.getGroupedByDate(
+            this.connectionPool,
+            timeRange
         )
     }
 
