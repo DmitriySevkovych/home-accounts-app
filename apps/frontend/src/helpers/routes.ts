@@ -63,6 +63,9 @@ export const API = {
                     paginationOptions
                 ),
         },
+        analysis: {
+            aggregation: _getClientsideUrl(`/analysis/aggregation`),
+        },
     },
     server: {
         system: {

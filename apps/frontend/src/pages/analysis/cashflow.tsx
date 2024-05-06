@@ -1,9 +1,5 @@
-import {
-    SearchParameters,
-    Transaction,
-    deserializeTransaction,
-} from 'domain-model'
-import React, { useMemo, useState } from 'react'
+import { TransactionAggregate, TransactionAggregationBin } from 'domain-model'
+import React, { useState } from 'react'
 import useSWR from 'swr'
 
 import { SectionHeading } from '../../components/Typography'
@@ -16,20 +12,33 @@ import { PageWithBackButton } from '../../components/pages/PageWithBackButton'
 import { safeFetch } from '../../helpers/requests'
 import { API, PAGES } from '../../helpers/routes'
 
-const fetcher = (url: string, timeRange: CashflowTimeRange) => {
-    return safeFetch(url, {
+const _fetchTransactionAggregates = async (
+    url: string,
+    timeRange: CashflowTimeRange
+): Promise<TransactionAggregationBin> => {
+    const res = await safeFetch(url, {
         method: 'POST',
         headers: {
             'content-type': 'application/json',
         },
-        body: JSON.stringify({
-            parameters: {
-                searchCombination: 'and',
-                dateFrom: timeRange.from,
-                dateUntil: timeRange.until,
-            },
-        }),
-    }).then((res) => res.json())
+        body: JSON.stringify({ timeRange }),
+    })
+    const { aggregationBins } = await res.json()
+    return {
+        timeRange: {
+            from: new Date(aggregationBins[0].timeRange.from),
+            until: new Date(aggregationBins[0].timeRange.until),
+        },
+        aggregates: aggregationBins[0].aggregates.map(
+            (i: any) =>
+                ({
+                    type: i.type,
+                    category: i.category,
+                    context: i.context,
+                    amount: parseInt(i.amount),
+                }) satisfies TransactionAggregate
+        ),
+    }
 }
 
 const CashflowAnalysisPage: React.FC = () => {
@@ -40,15 +49,9 @@ const CashflowAnalysisPage: React.FC = () => {
 
     // Queried data
     const { data, error, isLoading } = useSWR(
-        [API.client.transactions.search({ forceFetchAll: true }), timeRange],
-        ([url, timeRange]) => fetcher(url, timeRange)
+        [API.client.analysis.aggregation, timeRange],
+        ([url, timeRange]) => _fetchTransactionAggregates(url, timeRange)
     )
-
-    // Values computed from queried data
-    const transactions = isLoading
-        ? []
-        : data.transactions.map((t: Transaction) => deserializeTransaction(t))
-    console.log({ timeRange, transactions, error, isLoading })
 
     // Render
     return (
@@ -84,11 +87,13 @@ const CashflowAnalysisPage: React.FC = () => {
             </section>
 
             {/* Total cashflow result */}
-            <CashflowBalance
-                activeIncome={12500}
-                passiveIncome={4700}
-                totalExpenses={14526}
-            />
+            <section>
+                {isLoading ? (
+                    <div>Loading...</div>
+                ) : (
+                    <CashflowBalance {...data!} />
+                )}
+            </section>
         </PageWithBackButton>
     )
 }

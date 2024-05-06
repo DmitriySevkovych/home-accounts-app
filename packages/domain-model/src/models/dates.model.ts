@@ -111,11 +111,9 @@ export const getNumberOfDaysInMonth = (year: number, month: number): number => {
 }
 
 export const getMonthDifference = (start: Date, end: Date): number => {
-    return (
-        end.getMonth() -
-        start.getMonth() +
-        12 * (end.getFullYear() - start.getFullYear())
-    )
+    const _start = DateTime.fromJSDate(start)
+    const _end = DateTime.fromJSDate(end)
+    return Math.round(_end.diff(_start, 'months').toObject().months!)
 }
 
 export const addDays = (date: Date, days: number): Date => {
