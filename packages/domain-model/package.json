@@ -13,7 +13,7 @@
         "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist && rm -rf coverage",
         "dev": "tsc -w",
         "lint": "eslint \"src/**/*.ts*\"",
-        "test": "jest"
+        "test": "jest --detectOpenHandles"
     },
     "jest": {
         "preset": "jest-presets/jest/node"
