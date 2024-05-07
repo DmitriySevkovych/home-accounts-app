@@ -27,7 +27,11 @@ const CashflowBalance: React.FC<CashflowBalanceProps> = ({
     aggregates,
 }) => {
     // Computed values
-    const monthsConsidered = getMonthDifference(timeRange.from, timeRange.until)
+    const monthsConsidered = getMonthDifference(
+        timeRange.from,
+        timeRange.until,
+        'round'
+    )
     const activeIncome =
         aggregates.map(_toActiveIncome).reduce(_sumUp) / monthsConsidered
     const passiveIncome =

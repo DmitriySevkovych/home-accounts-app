@@ -123,7 +123,7 @@ export class TransactionBlueprint {
 
     private _checkMonth = (date: Date, step: number): boolean => {
         const { startDate } = this
-        return getMonthDifference(startDate, date) % step === 0
+        return getMonthDifference(startDate, date, 'floor') % step === 0
     }
 }
 

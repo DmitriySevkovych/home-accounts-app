@@ -110,10 +110,24 @@ export const getNumberOfDaysInMonth = (year: number, month: number): number => {
     return new Date(year, month + 1, 0).getDate()
 }
 
-export const getMonthDifference = (start: Date, end: Date): number => {
+export const getMonthDifference = (
+    start: Date,
+    end: Date,
+    mode: 'exact' | 'round' | 'floor' = 'floor'
+): number => {
     const _start = DateTime.fromJSDate(start)
     const _end = DateTime.fromJSDate(end)
-    return Math.round(_end.diff(_start, 'months').toObject().months!)
+    const months = _end.diff(_start, 'months').toObject().months!
+    switch (mode) {
+        case 'exact':
+            return months
+        case 'round':
+            return Math.round(months)
+        case 'floor':
+            return Math.floor(months)
+        default:
+            throw new Error(`Unknown mode '${mode}'`)
+    }
 }
 
 export const addDays = (date: Date, days: number): Date => {

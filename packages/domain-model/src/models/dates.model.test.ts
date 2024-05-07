@@ -169,23 +169,51 @@ describe('Tests for dealing with dates', () => {
 
         it.each`
             startDateStr    | endDateStr      | expectedMonths
+            ${'2021-01-01'} | ${'2021-01-31'} | ${0}
             ${'2021-02-03'} | ${'2021-02-03'} | ${0}
-            ${'2021-02-03'} | ${'2021-03-02'} | ${1}
+            ${'2021-02-03'} | ${'2021-03-02'} | ${0}
             ${'2021-02-03'} | ${'2021-03-03'} | ${1}
             ${'2021-02-03'} | ${'2021-03-04'} | ${1}
             ${'2021-02-03'} | ${'2021-03-31'} | ${1}
-            ${'2021-02-03'} | ${'2021-04-01'} | ${2}
-            ${'2021-02-10'} | ${'2021-05-03'} | ${3}
+            ${'2021-02-03'} | ${'2021-04-01'} | ${1}
+            ${'2021-02-10'} | ${'2021-05-03'} | ${2}
+            ${'2021-03-07'} | ${'2022-03-06'} | ${11}
             ${'2021-03-07'} | ${'2022-03-07'} | ${12}
             ${'2021-03-07'} | ${'2022-06-15'} | ${15}
         `(
-            'getMonthDifference should return $expectedMonths month between $startDateStr and $endDateStr',
+            'getMonthDifference with (default) mode=floor should return $expectedMonths month between $startDateStr and $endDateStr',
             ({ startDateStr, endDateStr, expectedMonths }) => {
                 // Arrange
                 const start = new Date(startDateStr)
                 const end = new Date(endDateStr)
                 // Act
-                const n = getMonthDifference(start, end)
+                const n = getMonthDifference(start, end, 'floor')
+                // Assert
+                expect(n).toBe(expectedMonths)
+            }
+        )
+
+        it.each`
+            startDateStr    | endDateStr      | expectedMonths
+            ${'2021-01-01'} | ${'2021-01-31'} | ${1}
+            ${'2021-02-03'} | ${'2021-02-03'} | ${0}
+            ${'2021-02-03'} | ${'2021-03-02'} | ${1}
+            ${'2021-02-03'} | ${'2021-03-03'} | ${1}
+            ${'2021-02-03'} | ${'2021-03-04'} | ${1}
+            ${'2021-02-03'} | ${'2021-03-31'} | ${2}
+            ${'2021-02-03'} | ${'2021-04-01'} | ${2}
+            ${'2021-02-10'} | ${'2021-05-03'} | ${3}
+            ${'2021-03-07'} | ${'2022-03-06'} | ${12}
+            ${'2021-03-07'} | ${'2022-03-07'} | ${12}
+            ${'2021-03-07'} | ${'2022-06-15'} | ${15}
+        `(
+            'getMonthDifference with mode=round should return $expectedMonths month between $startDateStr and $endDateStr',
+            ({ startDateStr, endDateStr, expectedMonths }) => {
+                // Arrange
+                const start = new Date(startDateStr)
+                const end = new Date(endDateStr)
+                // Act
+                const n = getMonthDifference(start, end, 'round')
                 // Assert
                 expect(n).toBe(expectedMonths)
             }
