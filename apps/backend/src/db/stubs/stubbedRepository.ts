@@ -1,6 +1,5 @@
 import {
     BankAccount,
-    DateRange,
     HomeAppFile,
     Investment,
     Paginated,
@@ -9,6 +8,7 @@ import {
     ProjectInvoice,
     SearchParameters,
     TaxCategory,
+    TimeRange,
     Transaction,
     TransactionAggregate,
     TransactionBlueprint,
@@ -254,7 +254,7 @@ export class StubbedRepository implements Repository {
     }
 
     getTransactionsAggregates = (
-        _timeRange: DateRange
+        _timeRange: TimeRange
     ): Promise<TransactionAggregate[]> => {
         throw new Error('stub not implemented')
     }

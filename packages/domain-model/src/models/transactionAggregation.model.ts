@@ -1,5 +1,5 @@
 import { PickAndFlatten } from '../helpers/handy-types'
-import { DateRange } from './dates.model'
+import { TimeRange } from './dates.model'
 import {
     TransactionCategory,
     TransactionContext,
@@ -14,6 +14,6 @@ export type TransactionAggregate = {
 }
 
 export type TransactionAggregationBin = {
-    timeRange: DateRange
+    timeRange: TimeRange
     aggregates: TransactionAggregate[]
 }

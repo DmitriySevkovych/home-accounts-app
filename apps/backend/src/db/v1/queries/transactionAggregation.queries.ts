@@ -1,9 +1,9 @@
-import { DateRange, TransactionAggregate } from 'domain-model'
+import { TimeRange, TransactionAggregate } from 'domain-model'
 import { Pool } from 'pg'
 
 export const getGroupedByDate = async (
     connectionPool: Pool,
-    timeRange: DateRange
+    timeRange: TimeRange
 ): Promise<TransactionAggregate[]> => {
     const query = {
         name: 'select-from-transactions-group-by-date',

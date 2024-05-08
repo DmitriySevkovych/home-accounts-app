@@ -1,7 +1,6 @@
 import type {
     BankAccount,
     BlueprintKey,
-    DateRange,
     Investment,
     Paginated,
     PaginationOptions,
@@ -9,6 +8,7 @@ import type {
     ProjectInvoice,
     SearchParameters,
     TaxCategory,
+    TimeRange,
     Transaction,
     TransactionAggregate,
     TransactionBlueprint,
@@ -55,7 +55,7 @@ export interface Repository {
     getTransactionOrigins: () => Promise<string[]>
 
     getTransactionsAggregates: (
-        _timeRange: DateRange
+        _timeRange: TimeRange
     ) => Promise<TransactionAggregate[]>
 
     searchTransactions: (

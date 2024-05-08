@@ -229,12 +229,12 @@ export class DateCheck {
     }
 }
 
-export type DateRange = {
+export type TimeRange = {
     from: Date
     until: Date
 }
 
-export class DateRangeCalculator {
+export class TimeRangeCalculator {
     private date: DateTime
     private otherDate: DateTime
 
@@ -244,41 +244,41 @@ export class DateRangeCalculator {
     }
 
     static fromDate(dateStr: string) {
-        return new DateRangeCalculator(DateTime.fromJSDate(new Date(dateStr)))
+        return new TimeRangeCalculator(DateTime.fromJSDate(new Date(dateStr)))
     }
 
     static fromToday() {
-        return new DateRangeCalculator(DateTime.utc().startOf('day'))
+        return new TimeRangeCalculator(DateTime.utc().startOf('day'))
     }
 
     static fromStartOfThisMonth() {
-        return new DateRangeCalculator(DateTime.utc().startOf('month'))
+        return new TimeRangeCalculator(DateTime.utc().startOf('month'))
     }
 
     static fromEndOfThisMonth() {
-        return new DateRangeCalculator(DateTime.utc().endOf('month'))
+        return new TimeRangeCalculator(DateTime.utc().endOf('month'))
     }
 
     static fromStartOfLastMonth() {
-        return new DateRangeCalculator(
+        return new TimeRangeCalculator(
             DateTime.utc().startOf('month').minus({ months: 1 })
         )
     }
 
     static fromEndOfLastMonth() {
-        return new DateRangeCalculator(
+        return new TimeRangeCalculator(
             DateTime.utc().startOf('month').minus({ days: 1 })
         )
     }
 
     static fromStartOfLastYear() {
-        return new DateRangeCalculator(
+        return new TimeRangeCalculator(
             DateTime.utc().startOf('year').minus({ years: 1 })
         )
     }
 
     static fromEndOfLastYear() {
-        return new DateRangeCalculator(
+        return new TimeRangeCalculator(
             DateTime.utc().startOf('year').minus({ days: 1 })
         )
     }
@@ -286,7 +286,7 @@ export class DateRangeCalculator {
     goAhead(
         n: number,
         entity: 'years' | 'months' | 'days'
-    ): DateRangeCalculator {
+    ): TimeRangeCalculator {
         this.otherDate = DateTime.fromISO(this.date.toISO()!, {
             zone: 'utc',
         }).plus({ [entity]: n })
@@ -296,24 +296,24 @@ export class DateRangeCalculator {
     goBack(
         n: number,
         entity: 'years' | 'months' | 'days'
-    ): DateRangeCalculator {
+    ): TimeRangeCalculator {
         this.otherDate = DateTime.fromISO(this.date.toISO()!, {
             zone: 'utc',
         }).minus({ [entity]: n })
         return this
     }
 
-    toBeginningOfMonth(): DateRangeCalculator {
+    toBeginningOfMonth(): TimeRangeCalculator {
         this.otherDate = this.otherDate.startOf('month')
         return this
     }
 
-    toEndOfMonth(): DateRangeCalculator {
+    toEndOfMonth(): TimeRangeCalculator {
         this.otherDate = this.otherDate.endOf('month').startOf('day')
         return this
     }
 
-    goBackToBeginningOfThisYear(): DateRangeCalculator {
+    goBackToBeginningOfThisYear(): TimeRangeCalculator {
         this.otherDate = DateTime.utc().startOf('year')
         return this
     }

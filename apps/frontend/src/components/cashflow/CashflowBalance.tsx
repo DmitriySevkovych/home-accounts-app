@@ -1,7 +1,6 @@
 import {
-    DateRange,
+    TimeRange,
     TransactionAggregate,
-    formatDate,
     getMonthDifference,
 } from 'domain-model'
 import { Equal, Minus, Plus } from 'lucide-react'
@@ -10,7 +9,7 @@ import React from 'react'
 import { SectionHeading } from '../Typography'
 
 type CashflowBalanceProps = {
-    timeRange: DateRange
+    timeRange: TimeRange
     aggregates: TransactionAggregate[]
 }
 

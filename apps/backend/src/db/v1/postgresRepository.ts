@@ -1,7 +1,6 @@
 import type {
     BankAccount,
     BlueprintKey,
-    DateRange,
     Investment,
     Paginated,
     PaginationOptions,
@@ -9,6 +8,7 @@ import type {
     ProjectInvoice,
     SearchParameters,
     TaxCategory,
+    TimeRange,
     Transaction,
     TransactionAggregate,
     TransactionBlueprint,
@@ -211,7 +211,7 @@ export class PostgresRepository implements Repository {
     }
 
     getTransactionsAggregates = async (
-        timeRange: DateRange
+        timeRange: TimeRange
     ): Promise<TransactionAggregate[]> => {
         return await transactionAggregationQueries.getGroupedByDate(
             this.connectionPool,

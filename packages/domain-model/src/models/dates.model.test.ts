@@ -1,6 +1,6 @@
 import {
     DateCheck,
-    DateRangeCalculator,
+    TimeRangeCalculator,
     addDays,
     dateFromString,
     formatDate,
@@ -272,7 +272,7 @@ describe('Tests for dealing with dates', () => {
             // Arrange
             const today = new Date()
             // Act
-            const [from, until] = DateRangeCalculator.fromToday()
+            const [from, until] = TimeRangeCalculator.fromToday()
                 .goBackToBeginningOfThisYear()
                 .get()
             // Assert
@@ -289,7 +289,7 @@ describe('Tests for dealing with dates', () => {
             const today = new Date()
             const lastFullYear = today.getFullYear() - 1
             // Act
-            const [from, until] = DateRangeCalculator.fromEndOfLastYear()
+            const [from, until] = TimeRangeCalculator.fromEndOfLastYear()
                 .goBack(11, 'months')
                 .toBeginningOfMonth()
                 .get()
@@ -305,7 +305,7 @@ describe('Tests for dealing with dates', () => {
         it('should return a range of three months from 2023-03-01 until 2023-05-31', () => {
             // Arrange
             // Act
-            const [from, until] = DateRangeCalculator.fromDate('2023-05-31')
+            const [from, until] = TimeRangeCalculator.fromDate('2023-05-31')
                 .goBack(2, 'months')
                 .toBeginningOfMonth()
                 .get()
@@ -317,7 +317,7 @@ describe('Tests for dealing with dates', () => {
         it('should return a range from 2023-01-31 until 2023-04-01', () => {
             // Arrange
             // Act
-            const [from, until] = DateRangeCalculator.fromDate('2023-04-01')
+            const [from, until] = TimeRangeCalculator.fromDate('2023-04-01')
                 .goBack(3, 'months')
                 .toEndOfMonth()
                 .get()

@@ -1,4 +1,4 @@
-import { DateRange, DateRangeCalculator } from 'domain-model'
+import { TimeRange, TimeRangeCalculator } from 'domain-model'
 import React from 'react'
 
 import {
@@ -37,12 +37,12 @@ const cashflowTimeRanges = {
     },
 } as const
 
-export type CashflowTimeRange = DateRange & { id: CashflowTimeRangeID }
+export type CashflowTimeRange = TimeRange & { id: CashflowTimeRangeID }
 
 const _getAdjustedTimeRange = (
     currentTimeRange: CashflowTimeRange,
     value: Date,
-    key: keyof DateRange
+    key: keyof TimeRange
 ): CashflowTimeRange => {
     const update = { ...currentTimeRange }
     update[key] = value
@@ -53,19 +53,19 @@ const _getTimeRange = (id: CashflowTimeRangeID): CashflowTimeRange => {
     let from, until
     switch (id) {
         case 'lastThreeMonths':
-            ;[from, until] = DateRangeCalculator.fromEndOfLastMonth()
+            ;[from, until] = TimeRangeCalculator.fromEndOfLastMonth()
                 .goBack(2, 'months')
                 .toBeginningOfMonth()
                 .get()
             break
         case 'lastYear':
-            ;[from, until] = DateRangeCalculator.fromEndOfLastYear()
+            ;[from, until] = TimeRangeCalculator.fromEndOfLastYear()
                 .goBack(11, 'months')
                 .toBeginningOfMonth()
                 .get()
             break
         case 'currentYear':
-            ;[from, until] = DateRangeCalculator.fromToday()
+            ;[from, until] = TimeRangeCalculator.fromToday()
                 .goBackToBeginningOfThisYear()
                 .get()
             break
