@@ -9,7 +9,7 @@ import React from 'react'
 import { SectionHeading } from '../Typography'
 
 type CashflowBalanceProps = {
-    timeRange: TimeRange
+    monthsConsidered: number
     aggregates: TransactionAggregate[]
 }
 
@@ -22,15 +22,10 @@ const _toTotalExpenses = (a: TransactionAggregate) =>
 const _sumUp = (a: number, b: number) => a + b
 
 const CashflowBalance: React.FC<CashflowBalanceProps> = ({
-    timeRange,
+    monthsConsidered,
     aggregates,
 }) => {
     // Computed values
-    const monthsConsidered = getMonthDifference(
-        timeRange.from,
-        timeRange.until,
-        'round'
-    )
     const activeIncome =
         aggregates.map(_toActiveIncome).reduce(_sumUp) / monthsConsidered
     const passiveIncome =

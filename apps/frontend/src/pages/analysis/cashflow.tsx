@@ -1,4 +1,8 @@
-import { TransactionAggregate, TransactionAggregationBin } from 'domain-model'
+import {
+    TransactionAggregate,
+    TransactionAggregationBin,
+    getMonthDifference,
+} from 'domain-model'
 import React, { useState } from 'react'
 import useSWR from 'swr'
 
@@ -54,6 +58,13 @@ const CashflowAnalysisPage: React.FC = () => {
         ([url, timeRange]) => _fetchTransactionAggregates(url, timeRange)
     )
 
+    // Computed values
+    const monthsConsidered = getMonthDifference(
+        timeRange.from,
+        timeRange.until,
+        'round'
+    )
+
     // Render
     return (
         <PageWithBackButton
@@ -72,7 +83,10 @@ const CashflowAnalysisPage: React.FC = () => {
                 {isLoading ? (
                     <div>Loading...</div>
                 ) : (
-                    <CashflowIncome {...data!} />
+                    <CashflowIncome
+                        monthsConsidered={monthsConsidered}
+                        aggregates={data!.aggregates}
+                    />
                 )}
             </section>
 
@@ -96,7 +110,10 @@ const CashflowAnalysisPage: React.FC = () => {
                 {isLoading ? (
                     <div>Loading...</div>
                 ) : (
-                    <CashflowBalance {...data!} />
+                    <CashflowBalance
+                        monthsConsidered={monthsConsidered}
+                        aggregates={data!.aggregates}
+                    />
                 )}
             </section>
         </PageWithBackButton>

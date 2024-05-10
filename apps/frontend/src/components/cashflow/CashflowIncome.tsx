@@ -32,21 +32,15 @@ export const IncomeItem: React.FC<IncomeItemProps> = ({
 }
 
 type CashflowIncomeProps = {
-    timeRange: TimeRange
+    monthsConsidered: number
     aggregates: TransactionAggregate[]
 }
 
 const CashflowIncome: React.FC<CashflowIncomeProps> = ({
-    timeRange,
+    monthsConsidered,
     aggregates,
 }) => {
     // Computed values
-    const monthsConsidered = getMonthDifference(
-        timeRange.from,
-        timeRange.until,
-        'round'
-    )
-
     const incomes = aggregates
         .filter((a) => a.type === 'income')
         .sort((a, b) => b.amount - a.amount)
