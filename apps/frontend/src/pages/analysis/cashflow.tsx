@@ -4,6 +4,7 @@ import useSWR from 'swr'
 
 import { SectionHeading } from '../../components/Typography'
 import CashflowBalance from '../../components/cashflow/CashflowBalance'
+import CashflowIncome from '../../components/cashflow/CashflowIncome'
 import CashflowTimeRangeManager, {
     CashflowTimeRange,
     getDefaultTimeRange,
@@ -68,7 +69,11 @@ const CashflowAnalysisPage: React.FC = () => {
 
             {/* Income summary */}
             <section>
-                <SectionHeading>Income</SectionHeading>
+                {isLoading ? (
+                    <div>Loading...</div>
+                ) : (
+                    <CashflowIncome {...data!} />
+                )}
             </section>
 
             {/* Expense summary */}

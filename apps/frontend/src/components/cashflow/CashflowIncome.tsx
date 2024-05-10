@@ -1,0 +1,99 @@
+import {
+    TimeRange,
+    TransactionAggregate,
+    getMonthDifference,
+} from 'domain-model'
+import React from 'react'
+
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from '../../lib/shadcn/Accordion'
+import { Label } from '../../lib/shadcn/Label'
+import { SectionHeading } from '../Typography'
+
+type IncomeItemProps = {
+    item: TransactionAggregate
+    monthsConsidered: number
+}
+
+export const IncomeItem: React.FC<IncomeItemProps> = ({
+    item,
+    monthsConsidered,
+}) => {
+    return (
+        <div className="grid grid-cols-2">
+            <div className="capitalize">{`${item.context} ${item.category.toLowerCase()}`}</div>
+            <div className="text-right">{`${Math.round(item.amount / monthsConsidered)}€`}</div>
+        </div>
+    )
+}
+
+type CashflowIncomeProps = {
+    timeRange: TimeRange
+    aggregates: TransactionAggregate[]
+}
+
+const CashflowIncome: React.FC<CashflowIncomeProps> = ({
+    timeRange,
+    aggregates,
+}) => {
+    // Computed values
+    const monthsConsidered = getMonthDifference(
+        timeRange.from,
+        timeRange.until,
+        'round'
+    )
+
+    const incomes = aggregates
+        .filter((a) => a.type === 'income')
+        .sort((a, b) => b.amount - a.amount)
+
+    const activeIncome = incomes.filter((i) =>
+        ['SALARY', 'SALE'].includes(i.category)
+    )
+    const passiveIncome = incomes.filter((i) => !activeIncome.includes(i))
+
+    // Render
+    return (
+        <>
+            <Accordion type="single" collapsible>
+                <AccordionItem value="cashflow-income">
+                    <AccordionTrigger className="pb-0 pt-2">
+                        <SectionHeading>Time Income</SectionHeading>
+                    </AccordionTrigger>
+                    <AccordionContent className="space-y-3">
+                        <div>
+                            <Label className="my-2 block">Active Income</Label>
+                            {activeIncome.map((item) => (
+                                <IncomeItem
+                                    key={
+                                        item.type + item.category + item.context
+                                    }
+                                    item={item}
+                                    monthsConsidered={monthsConsidered}
+                                />
+                            ))}
+                        </div>
+                        <div>
+                            <Label className="mb-2 block">Passive Income</Label>
+                            {passiveIncome.map((item) => (
+                                <IncomeItem
+                                    key={
+                                        item.type + item.category + item.context
+                                    }
+                                    item={item}
+                                    monthsConsidered={monthsConsidered}
+                                />
+                            ))}
+                        </div>
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
+        </>
+    )
+}
+
+export default CashflowIncome
