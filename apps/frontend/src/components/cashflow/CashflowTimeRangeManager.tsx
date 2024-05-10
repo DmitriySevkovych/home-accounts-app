@@ -86,19 +86,17 @@ export const getDefaultTimeRange = (): CashflowTimeRange => {
 type CashflowTimeRangeItemProps = {
     id: string
     label: string | undefined
-    children?: React.ReactNode
 }
 
 const CashflowTimeRangeItem: React.FC<CashflowTimeRangeItemProps> = ({
     id,
     label,
-    children,
 }) => {
     return (
         <div className="flex items-center space-x-3">
             <RadioGroupItem value={id} id={id} />
             <Label className="flex w-full space-x-4 font-normal" htmlFor={id}>
-                {label ? label : children}
+                {label}
             </Label>
         </div>
     )
@@ -118,7 +116,7 @@ const CashflowTimeRangeManager: React.FC<CashflowTimeRangeManagerProps> = ({
     return (
         <Accordion type="single" collapsible>
             <AccordionItem value="time-range">
-                <AccordionTrigger>
+                <AccordionTrigger className="py-2">
                     <SectionHeading>Time range</SectionHeading>
                 </AccordionTrigger>
                 <AccordionContent>
@@ -128,52 +126,45 @@ const CashflowTimeRangeManager: React.FC<CashflowTimeRangeManagerProps> = ({
                             setTimeRange(_getTimeRange(id))
                         }
                     >
-                        {Object.values(cashflowTimeRanges).map(
-                            (r: CashflowTimeRangeItemProps) => {
-                                if (r.id !== 'custom') {
-                                    return (
-                                        <CashflowTimeRangeItem
-                                            key={r.id}
-                                            {...r}
-                                        />
-                                    )
-                                }
-                                return (
-                                    <CashflowTimeRangeItem key={r.id} {...r}>
-                                        <div className="flex flex-grow flex-col space-y-2">
-                                            <span>from</span>
-                                            <CalendarStandalone
-                                                value={from}
-                                                setValue={(val) =>
-                                                    setTimeRange(
-                                                        _getAdjustedTimeRange(
-                                                            timeRange,
-                                                            val,
-                                                            'from'
-                                                        )
-                                                    )
-                                                }
-                                            />
-                                        </div>
-                                        <div className="flex flex-grow flex-col space-y-2">
-                                            <span>until</span>
-                                            <CalendarStandalone
-                                                value={until}
-                                                setValue={(val) =>
-                                                    setTimeRange(
-                                                        _getAdjustedTimeRange(
-                                                            timeRange,
-                                                            val,
-                                                            'until'
-                                                        )
-                                                    )
-                                                }
-                                            />
-                                        </div>
-                                    </CashflowTimeRangeItem>
-                                )
-                            }
-                        )}
+                        {Object.values(cashflowTimeRanges)
+                            .filter((r) => r.id !== 'custom')
+                            .map((r) => (
+                                <CashflowTimeRangeItem key={r.id} {...r} />
+                            ))}
+
+                        {/* class ml-8 compensates for left out radio button */}
+                        <div className="ml-8 mt-2 grid grid-cols-2 items-center space-x-3">
+                            <div className="flex flex-col space-y-2">
+                                <span>from</span>
+                                <CalendarStandalone
+                                    value={from}
+                                    setValue={(val) =>
+                                        setTimeRange(
+                                            _getAdjustedTimeRange(
+                                                timeRange,
+                                                val,
+                                                'from'
+                                            )
+                                        )
+                                    }
+                                />
+                            </div>
+                            <div className="flex flex-col space-y-2">
+                                <span>until</span>
+                                <CalendarStandalone
+                                    value={until}
+                                    setValue={(val) =>
+                                        setTimeRange(
+                                            _getAdjustedTimeRange(
+                                                timeRange,
+                                                val,
+                                                'until'
+                                            )
+                                        )
+                                    }
+                                />
+                            </div>
+                        </div>
                     </RadioGroup>
                 </AccordionContent>
             </AccordionItem>

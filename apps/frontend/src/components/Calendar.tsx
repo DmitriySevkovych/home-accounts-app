@@ -1,4 +1,8 @@
-import { formatDateToWords, handleUnwantedTimezoneShift } from 'domain-model'
+import {
+    formatDate,
+    formatDateToWords,
+    handleUnwantedTimezoneShift,
+} from 'domain-model'
 import { CalendarIcon } from 'lucide-react'
 import React, { useState } from 'react'
 import { ControllerRenderProps, UseFormReturn } from 'react-hook-form'
@@ -104,11 +108,7 @@ export const CalendarStandalone: React.FC<CalendarStandaloneProps> = ({
                         !value && 'text-muted-foreground'
                     )}
                 >
-                    {value ? (
-                        formatDateToWords(value)
-                    ) : (
-                        <span>Pick a date</span>
-                    )}
+                    {value ? formatDate(value) : <span>Pick a date</span>}
                     <CalendarIcon className="ml-auto h-4 w-4 text-primary opacity-50" />
                 </Button>
             </PopoverTrigger>
