@@ -116,7 +116,7 @@ const CashflowTimeRangeManager: React.FC<CashflowTimeRangeManagerProps> = ({
     return (
         <Accordion type="single" collapsible>
             <AccordionItem value="time-range">
-                <AccordionTrigger className="py-2">
+                <AccordionTrigger className="pb-0 pt-2">
                     <SectionHeading>Time range</SectionHeading>
                 </AccordionTrigger>
                 <AccordionContent>
