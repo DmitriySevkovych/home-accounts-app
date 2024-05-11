@@ -8,7 +8,7 @@ export const getGroupedByDate = async (
     const query = {
         name: 'select-from-transactions-group-by-date',
         text: `
-        SELECT category, context, sum(amount*exchange_rate) AS amount
+        SELECT category, context, origin, sum(amount*exchange_rate) AS amount
         FROM transactions.transactions t
         LEFT JOIN (
             SELECT transaction_id, array_agg(tag) AS tag_array
@@ -21,7 +21,7 @@ export const getGroupedByDate = async (
             OR 
             NOT($3::varchar[] && tag_array)
         )
-        GROUP BY category, context;`,
+        GROUP BY category, context, origin;`,
         values: [timeRange.from, timeRange.until, ['ZeroSumTransaction']],
     }
 
@@ -36,6 +36,7 @@ export const getGroupedByDate = async (
             ({
                 category: row.category,
                 context: row.context,
+                origin: row.origin,
                 amount: row.amount,
                 type:
                     row.amount < 0 || row.category === 'CORRECTION'

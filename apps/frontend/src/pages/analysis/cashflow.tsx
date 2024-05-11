@@ -40,6 +40,7 @@ const _fetchTransactionAggregates = async (
                     type: i.type,
                     category: i.category,
                     context: i.context,
+                    origin: i.origin,
                     amount: parseInt(i.amount),
                 }) satisfies TransactionAggregate
         ),

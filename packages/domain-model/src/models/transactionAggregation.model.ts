@@ -1,17 +1,10 @@
-import { PickAndFlatten } from '../helpers/handy-types'
 import { TimeRange } from './dates.model'
-import {
-    TransactionCategory,
-    TransactionContext,
-    TransactionType,
-} from './transactions.model'
+import { Transaction } from './transactions.model'
 
-export type TransactionAggregate = {
-    type: TransactionType
-    context: TransactionContext
-    category: PickAndFlatten<TransactionCategory, 'category'>
-    amount: number
-}
+export type TransactionAggregate = Pick<
+    Transaction,
+    'amount' | 'category' | 'context' | 'origin' | 'type'
+>
 
 export type TransactionAggregationBin = {
     timeRange: TimeRange

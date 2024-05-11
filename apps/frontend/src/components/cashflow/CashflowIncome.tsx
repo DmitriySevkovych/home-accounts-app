@@ -24,8 +24,8 @@ export const IncomeItem: React.FC<IncomeItemProps> = ({
     monthsConsidered,
 }) => {
     return (
-        <div className="grid grid-cols-2">
-            <div className="capitalize">{`${item.context} ${item.category.toLowerCase()}`}</div>
+        <div className="grid grid-cols-[75fr_25fr]">
+            <div className="capitalize">{`${item.category.toLowerCase()} ${item.origin}`}</div>
             <div className="text-right">{`${Math.round(item.amount / monthsConsidered)}€`}</div>
         </div>
     )
@@ -63,9 +63,7 @@ const CashflowIncome: React.FC<CashflowIncomeProps> = ({
                             <Label className="my-2 block">Active Income</Label>
                             {activeIncome.map((item) => (
                                 <IncomeItem
-                                    key={
-                                        item.type + item.category + item.context
-                                    }
+                                    key={`${item.type}-${item.context}-${item.category}-${item.origin}`}
                                     item={item}
                                     monthsConsidered={monthsConsidered}
                                 />
@@ -75,9 +73,7 @@ const CashflowIncome: React.FC<CashflowIncomeProps> = ({
                             <Label className="mb-2 block">Passive Income</Label>
                             {passiveIncome.map((item) => (
                                 <IncomeItem
-                                    key={
-                                        item.type + item.category + item.context
-                                    }
+                                    key={`${item.type}-${item.context}-${item.category}-${item.origin}`}
                                     item={item}
                                     monthsConsidered={monthsConsidered}
                                 />
