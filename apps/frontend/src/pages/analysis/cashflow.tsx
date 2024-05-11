@@ -37,10 +37,7 @@ const _fetchTransactionAggregates = async (
         aggregates: aggregationBins[0].aggregates.map(
             (i: any) =>
                 ({
-                    type: i.type,
-                    category: i.category,
-                    context: i.context,
-                    origin: i.origin,
+                    ...i,
                     amount: parseInt(i.amount),
                 }) satisfies TransactionAggregate
         ),

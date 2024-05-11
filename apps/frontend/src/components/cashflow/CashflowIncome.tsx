@@ -23,10 +23,11 @@ export const IncomeItem: React.FC<IncomeItemProps> = ({
     item,
     monthsConsidered,
 }) => {
+    const { category, investment, origin, amount } = item
     return (
         <div className="grid grid-cols-[75fr_25fr]">
-            <div className="capitalize">{`${item.category.toLowerCase()} ${item.origin}`}</div>
-            <div className="text-right">{`${Math.round(item.amount / monthsConsidered)}€`}</div>
+            <div className="capitalize">{`${category.toLowerCase()} ${investment ? investment : origin}`}</div>
+            <div className="text-right">{`${Math.round(amount / monthsConsidered)}€`}</div>
         </div>
     )
 }

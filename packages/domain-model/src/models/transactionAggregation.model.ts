@@ -3,7 +3,7 @@ import { Transaction } from './transactions.model'
 
 export type TransactionAggregate = Pick<
     Transaction,
-    'amount' | 'category' | 'context' | 'origin' | 'type'
+    'amount' | 'category' | 'context' | 'origin' | 'type' | 'investment'
 >
 
 export type TransactionAggregationBin = {
