@@ -6,7 +6,7 @@ import {
 import React, { useState } from 'react'
 import useSWR from 'swr'
 
-import { SectionHeading } from '../../components/Typography'
+import { Loader, SectionHeading } from '../../components/Typography'
 import CashflowBalance from '../../components/cashflow/CashflowBalance'
 import CashflowIncome from '../../components/cashflow/CashflowIncome'
 import CashflowTimeRangeManager, {
@@ -79,7 +79,7 @@ const CashflowAnalysisPage: React.FC = () => {
             {/* Income summary */}
             <section>
                 {isLoading ? (
-                    <div>Loading...</div>
+                    <Loader />
                 ) : (
                     <CashflowIncome
                         monthsConsidered={monthsConsidered}
@@ -106,7 +106,7 @@ const CashflowAnalysisPage: React.FC = () => {
             {/* Total cashflow result */}
             <section>
                 {isLoading ? (
-                    <div>Loading...</div>
+                    <Loader />
                 ) : (
                     <CashflowBalance
                         monthsConsidered={monthsConsidered}

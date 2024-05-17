@@ -10,7 +10,7 @@ import { API } from '../helpers/routes'
 import { ScrollArea } from '../lib/shadcn/ScrollArea'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../lib/shadcn/Tabs'
 import { TransactionPreviewCard } from './TransactionPreviewCard'
-import { SectionHeading } from './Typography'
+import { Loader, SectionHeading } from './Typography'
 
 const useLatestTransactions = (context: TransactionContext) => {
     const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -47,7 +47,7 @@ export const TransactionsPreview = () => {
             </TabsList>
             <TabsContent value={context}>
                 <SectionHeading>Latest {context} transactions</SectionHeading>
-                <Suspense fallback={<p>Loading...</p>}>
+                <Suspense fallback={<Loader />}>
                     <ScrollArea className="h-[190px]">
                         {transactions.map((t) => (
                             <TransactionPreviewCard

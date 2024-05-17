@@ -29,6 +29,7 @@ import OverlayImage from '../Overlay'
 import Radio from '../Radio'
 import Select from '../Select'
 import TagsManager from '../TagsManager'
+import { Loader } from '../Typography'
 import { PageWithBackButton } from './PageWithBackButton'
 
 export type TransactionFormConstants = {
@@ -338,7 +339,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                         {errorLoadingReceiptName && (
                             <div>{errorLoadingReceiptName}</div>
                         )}
-                        {isLoadingReceiptName && <div>Loading...</div>}
+                        {isLoadingReceiptName && <Loader />}
                         {receiptName && (
                             <div>
                                 ⚠️Found a stored receipt with ID {receiptId}⚠️
