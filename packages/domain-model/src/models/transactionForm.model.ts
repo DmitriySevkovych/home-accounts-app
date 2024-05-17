@@ -28,6 +28,7 @@ export const TransactionFormSchema = z
         country: z.optional(z.string().toUpperCase().length(2)),
         vat: z.optional(z.coerce.number().nonnegative().max(1)),
         receipt: z.optional(z.custom<FileWithPath>()),
+        receiptId: z.optional(z.coerce.number()),
     })
     .transform((form) => {
         // Transform amount
