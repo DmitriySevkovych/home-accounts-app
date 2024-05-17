@@ -1,4 +1,5 @@
 import {
+    TransactionReceipt,
     TransactionValidationError,
     deserializeTransaction,
 } from 'domain-model'
@@ -7,8 +8,10 @@ import stream from 'stream'
 
 import { RepositoryLocator } from '../db/repositoryLocator'
 import {
+    ErrorMessageBody,
     GetTransactionSearchRequest,
     GetTransactionsRequest,
+    TypedResponse,
 } from '../definitions/requests'
 import {
     BadQueryParameterInRequestError,
@@ -90,10 +93,13 @@ const getRouter = (): Router => {
     })
 
     router.get(
-        '/receipt/:receiptId',
+        '/receipts/:id',
         middleware.checkIdIsInteger,
-        async (req, res) => {
-            const receiptId = parseInt(req.params.receiptId)
+        async (
+            req,
+            res: TypedResponse<TransactionReceipt | ErrorMessageBody>
+        ) => {
+            const receiptId = parseInt(req.params.id)
             try {
                 const receipt = await repository.getTransactionReceipt(
                     receiptId
@@ -118,6 +124,35 @@ const getRouter = (): Router => {
                 const readStream = new stream.PassThrough()
                 readStream.end(receipt.buffer)
                 readStream.pipe(res)
+            } catch (err) {
+                req.log.error(err)
+                if (err instanceof NoRecordFoundInDatabaseError) {
+                    res.status(404).json({
+                        message: 'No record found in the database.',
+                        cause: err.message,
+                    })
+                } else {
+                    res.status(500).json({ message: 'Something went wrong' })
+                }
+            }
+        }
+    )
+
+    router.get(
+        '/receipts/:id/name',
+        middleware.checkIdIsInteger,
+        async (
+            req,
+            res: TypedResponse<
+                Pick<TransactionReceipt, 'name'> | ErrorMessageBody
+            >
+        ) => {
+            const receiptId = parseInt(req.params.id)
+            try {
+                const receipt = await repository.getTransactionReceipt(
+                    receiptId
+                )
+                res.status(200).json({ name: receipt.name })
             } catch (err) {
                 req.log.error(err)
                 if (err instanceof NoRecordFoundInDatabaseError) {

@@ -4,15 +4,18 @@ import {
     DateCheck,
     Investment,
     PaymentMethod,
+    PickAndFlatten,
     ProjectInvoice,
     TaxCategory,
     Transaction,
     TransactionCategory,
     TransactionContext,
+    TransactionReceipt,
     TransactionType,
 } from 'domain-model'
 import React from 'react'
 import { SubmitHandler, UseFormReturn } from 'react-hook-form'
+import useSWR from 'swr'
 
 import { safeFetch } from '../../helpers/requests'
 import { API, PAGES } from '../../helpers/routes'
@@ -82,6 +85,18 @@ const _eligibleCategories = (
     }
 }
 
+const _fetchReceiptName = async (
+    receiptId: number
+): Promise<PickAndFlatten<TransactionReceipt, 'name'>> => {
+    if (!receiptId) return ''
+
+    const res = await safeFetch(
+        API.client.transactions.receipts.getNameOf(receiptId)
+    )
+    const data: TransactionReceipt = await res.json()
+    return data.name
+}
+
 const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
     heading,
     form,
@@ -101,6 +116,13 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
     } = constants
     const transactionType = form.watch('type')
     const transactionContext = form.watch('context')
+
+    const receiptId = form.watch('receiptId')
+    const {
+        data: receiptName,
+        error: errorLoadingReceiptName,
+        isLoading: isLoadingReceiptName,
+    } = useSWR(receiptId, _fetchReceiptName)
 
     return (
         <PageWithBackButton
@@ -313,6 +335,17 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                             form={form}
                             label="Transaction receipt"
                         />
+                        {errorLoadingReceiptName && (
+                            <div>{errorLoadingReceiptName}</div>
+                        )}
+                        {isLoadingReceiptName && <div>Loading...</div>}
+                        {receiptName && (
+                            <div>
+                                ⚠️Found a stored receipt with ID {receiptId}⚠️
+                                <br />
+                                {receiptName}
+                            </div>
+                        )}
                     </div>
 
                     <Button

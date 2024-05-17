@@ -62,6 +62,10 @@ export const API = {
                     _getClientsideUrl(`/transactions/search`),
                     paginationOptions
                 ),
+            receipts: {
+                getNameOf: (id: number) =>
+                    _getClientsideUrl(`/transactions/receipts/${id}/name`),
+            },
         },
         analysis: {
             aggregation: _getClientsideUrl(`/analysis/aggregation`),

@@ -34,3 +34,8 @@ export interface GetTransactionsRequest
         RequestWithPagination {}
 
 export interface GetTransactionSearchRequest extends RequestWithPagination {}
+
+export type ErrorMessageBody = {
+    message: string
+    cause?: string
+}
