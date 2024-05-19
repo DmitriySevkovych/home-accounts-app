@@ -260,6 +260,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                         options={taxCategories
                             .map((obj) => obj.category)
                             .sort()}
+                        clearable
                     />
 
                     <div className="lg:col-span-2">
