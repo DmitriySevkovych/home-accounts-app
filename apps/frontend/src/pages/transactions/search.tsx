@@ -113,18 +113,8 @@ const SearchTransactionsPage: React.FC<SearchTransactionsPageProps> = ({
                 <Form {...form}>
                     <form
                         onSubmit={form.handleSubmit(_firstSearch)}
-                        className="w-full grid-cols-2 gap-4 space-y-6 lg:grid"
+                        className="w-full space-y-4 md:grid md:grid-cols-2 md:gap-6 md:space-y-0"
                     >
-                        <Radio<SearchParameters>
-                            id="searchCombination"
-                            form={form}
-                            options={[
-                                { label: 'And', value: 'and' },
-                                { label: 'Or', value: 'or' },
-                            ]}
-                            label="Search combination"
-                        />
-
                         <Calendar<SearchParameters>
                             id="dateFrom"
                             form={form}
@@ -163,6 +153,16 @@ const SearchTransactionsPage: React.FC<SearchTransactionsPageProps> = ({
                             form={form}
                             label="Description"
                             placeholder="Description fuzzy search"
+                        />
+
+                        <Radio<SearchParameters>
+                            id="searchCombination"
+                            form={form}
+                            options={[
+                                { label: 'And', value: 'and' },
+                                { label: 'Or', value: 'or' },
+                            ]}
+                            label="Search combination"
                         />
 
                         <Button
