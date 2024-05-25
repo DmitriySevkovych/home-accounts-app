@@ -23,7 +23,10 @@ const IncomeItem: React.FC<IncomeItemProps> = ({ item, monthsConsidered }) => {
     const { category, investment, origin, amount } = item
     return (
         <div className="grid grid-cols-[75fr_25fr]">
-            <div className="capitalize">{`${investment ? investment : origin} ${category.toLowerCase()}`}</div>
+            <div>
+                {`${investment ? investment : origin} `}
+                <span className="capitalize">{category.toLowerCase()}</span>
+            </div>
             <div className="text-right">{`${Math.round(amount / monthsConsidered)}€`}</div>
         </div>
     )
@@ -88,7 +91,7 @@ const CashflowIncome: React.FC<CashflowIncomeProps> = ({
             <Accordion type="single" collapsible>
                 <AccordionItem value="cashflow-income">
                     <AccordionTrigger className="pb-0 pt-2">
-                        <SectionHeading>Time Income</SectionHeading>
+                        <SectionHeading>Income</SectionHeading>
                     </AccordionTrigger>
                     <AccordionContent className="space-y-3">
                         <div>
