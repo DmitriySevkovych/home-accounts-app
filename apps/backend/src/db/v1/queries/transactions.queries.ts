@@ -61,7 +61,11 @@ export const getTransactionOrigins = async (
 ): Promise<string[]> => {
     const query = {
         name: 'select-distinct-origins-from-transactions.transactions',
-        text: `SELECT DISTINCT origin FROM transactions.transactions`,
+        text: `
+        SELECT origin, COUNT(1) AS origin_count 
+        FROM transactions.transactions
+        GROUP BY origin
+        ORDER BY origin_count DESC;`,
     }
     const queryResult = await connectionPool.query(query)
     return queryResult.rows.map((row) => row.origin)
