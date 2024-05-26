@@ -69,13 +69,27 @@ const CashflowAnalysisPage: React.FC = () => {
         <PageWithBackButton
             heading="Cashflow Analysis"
             goBackLink={PAGES.home}
-            className="flex h-full flex-col justify-between"
+            className="relative flex h-full flex-col justify-between"
+            stickyButton={
+                <div className="sticky bottom-0 right-0 place-self-end pb-6">
+                    <CashflowTimeRangeManager
+                        timeRange={timeRange}
+                        setTimeRange={setTimeRange}
+                    />
+                </div>
+            }
         >
-            {/* Time range parameters */}
-            <CashflowTimeRangeManager
-                timeRange={timeRange}
-                setTimeRange={setTimeRange}
-            />
+            {/* Total cashflow result */}
+            <section>
+                {isLoading ? (
+                    <Loader />
+                ) : (
+                    <CashflowBalance
+                        monthsConsidered={monthsConsidered}
+                        aggregates={data!.aggregates}
+                    />
+                )}
+            </section>
 
             {/* Income summary */}
             <section>
@@ -109,18 +123,6 @@ const CashflowAnalysisPage: React.FC = () => {
             {/* Liabilities summary */}
             <section>
                 <SectionHeading>Liabilities</SectionHeading>
-            </section>
-
-            {/* Total cashflow result */}
-            <section>
-                {isLoading ? (
-                    <Loader />
-                ) : (
-                    <CashflowBalance
-                        monthsConsidered={monthsConsidered}
-                        aggregates={data!.aggregates}
-                    />
-                )}
             </section>
         </PageWithBackButton>
     )

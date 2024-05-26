@@ -1,16 +1,17 @@
 import { TimeRange, TimeRangeCalculator } from 'domain-model'
+import { CalendarClock } from 'lucide-react'
 import React from 'react'
 
 import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from '../../lib/shadcn/Accordion'
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '../../lib/shadcn/Dialog'
 import { Label } from '../../lib/shadcn/Label'
 import { RadioGroup, RadioGroupItem } from '../../lib/shadcn/Radio'
 import { CalendarStandalone } from '../Calendar'
-import { SectionHeading } from '../Typography'
 
 export type CashflowTimeRangeID =
     | 'lastThreeMonths'
@@ -114,12 +115,16 @@ const CashflowTimeRangeManager: React.FC<CashflowTimeRangeManagerProps> = ({
     const { from, until } = timeRange
 
     return (
-        <Accordion type="single" collapsible>
-            <AccordionItem value="time-range">
-                <AccordionTrigger className="pb-0 pt-2">
-                    <SectionHeading>Time range</SectionHeading>
-                </AccordionTrigger>
-                <AccordionContent>
+        <Dialog>
+            <DialogTrigger>
+                <div className="flex h-[40px] w-[40px] items-center justify-center rounded-md bg-darkest p-0 font-medium text-white hover:bg-secondary-lighter">
+                    <CalendarClock size={20} />
+                </div>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Time range</DialogTitle>
+
                     <RadioGroup
                         value={timeRange.id}
                         onValueChange={(id: CashflowTimeRangeID) =>
@@ -166,9 +171,9 @@ const CashflowTimeRangeManager: React.FC<CashflowTimeRangeManagerProps> = ({
                             </div>
                         </div>
                     </RadioGroup>
-                </AccordionContent>
-            </AccordionItem>
-        </Accordion>
+                </DialogHeader>
+            </DialogContent>
+        </Dialog>
     )
 }
 
