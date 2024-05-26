@@ -28,7 +28,7 @@ const ExpenseItem: React.FC<ExpenseItemProps> = ({
     return (
         <div className="grid grid-cols-[75fr_25fr]">
             <div>{label}</div>
-            <div className="text-right">{`${Math.round(amount / monthsConsidered)}€`}</div>
+            <div className="text-right">{`${Math.abs(Math.round(amount / monthsConsidered))}€`}</div>
         </div>
     )
 }
