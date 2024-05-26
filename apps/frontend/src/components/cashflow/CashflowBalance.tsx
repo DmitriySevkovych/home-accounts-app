@@ -13,10 +13,16 @@ type CashflowBalanceProps = {
     aggregates: TransactionAggregate[]
 }
 
+const activeIncomeCategories = ['SALARY', 'SALE']
+
 const _toActiveIncome = (a: TransactionAggregate) =>
-    a.type === 'income' && a.context !== 'investments' ? a.amount : 0
+    a.type === 'income' && activeIncomeCategories.includes(a.category)
+        ? a.amount
+        : 0
 const _toPassiveIncome = (a: TransactionAggregate) =>
-    a.type === 'income' && a.context === 'investments' ? a.amount : 0
+    a.type === 'income' && !activeIncomeCategories.includes(a.category)
+        ? a.amount
+        : 0
 const _toTotalExpenses = (a: TransactionAggregate) =>
     a.type === 'expense' ? a.amount : 0
 const _sumUp = (a: number, b: number) => a + b
