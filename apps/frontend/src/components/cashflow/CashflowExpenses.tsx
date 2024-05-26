@@ -87,6 +87,28 @@ const CashflowExpenses: React.FC<CashflowExpensesProps> = ({
     )
     expenses = expenses.filter((exp) => !privateExpenses.includes(exp))
 
+    const workExpenses = expenses.filter((exp) => exp.context === 'work')
+    expenses = expenses.filter((exp) => !workExpenses.includes(exp))
+
+    const investmentExpenses = expenses.filter(
+        (exp) => exp.context === 'investments'
+    )
+    const investmentBankLoans = investmentExpenses.filter(
+        (exp) => exp.category === 'INSTALMENT'
+    )
+    const investmentUtilities = investmentExpenses.filter((exp) =>
+        [
+            'FIM Immobilien',
+            'Martin Kafka Hausverwaltung Gerlingen',
+            'Kreis Hausverwaltung oHG',
+            'Donhauser Immobilienverwaltungs GmbH',
+        ].includes(exp.origin)
+    )
+    const otherInvestmentExpenses = investmentExpenses.filter(
+        (exp) => ![...investmentBankLoans, ...investmentUtilities].includes(exp)
+    )
+    expenses = expenses.filter((exp) => !investmentExpenses.includes(exp))
+
     // Render
     return (
         <>
@@ -142,7 +164,7 @@ const CashflowExpenses: React.FC<CashflowExpensesProps> = ({
                         <div>
                             <Label className="mb-2 block">
                                 <ExpenseItem
-                                    label="Private Expenses"
+                                    label="Private"
                                     amount={_sumUp(privateExpenses)}
                                     monthsConsidered={monthsConsidered}
                                 />
@@ -181,12 +203,47 @@ const CashflowExpenses: React.FC<CashflowExpensesProps> = ({
                         <div>
                             <Label className="mb-2 block">
                                 <ExpenseItem
-                                    label="Uncategorized Expenses"
-                                    amount={_sumUp(expenses)}
+                                    label="Work"
+                                    amount={_sumUp(workExpenses)}
                                     monthsConsidered={monthsConsidered}
                                 />
                             </Label>
                         </div>
+                        <div>
+                            <Label className="mb-2 block">
+                                <ExpenseItem
+                                    label="Investment"
+                                    amount={_sumUp(investmentExpenses)}
+                                    monthsConsidered={monthsConsidered}
+                                />
+                            </Label>
+                            <ExpenseItem
+                                label="Bank loan"
+                                amount={_sumUp(investmentBankLoans)}
+                                monthsConsidered={monthsConsidered}
+                            />
+                            <ExpenseItem
+                                label="Utilities"
+                                amount={_sumUp(investmentUtilities)}
+                                monthsConsidered={monthsConsidered}
+                            />
+                            <ExpenseItem
+                                label="Other"
+                                amount={_sumUp(otherInvestmentExpenses)}
+                                monthsConsidered={monthsConsidered}
+                            />
+                        </div>
+                        {_sumUp(expenses) > 0 && (
+                            <div>
+                                <Label className="mb-2 block">
+                                    <ExpenseItem
+                                        label="Uncategorized⚠️"
+                                        amount={_sumUp(expenses)}
+                                        monthsConsidered={monthsConsidered}
+                                    />
+                                </Label>
+                            </div>
+                        )}
                     </AccordionContent>
                 </AccordionItem>
             </Accordion>
