@@ -1,9 +1,11 @@
+import { DateTime } from 'luxon'
+
 type Weekday = {
     name: string
     number: number
 }
 
-export const DAYS = [
+export const DAYS: Weekday[] = [
     {
         name: 'MONDAY',
         number: 1,
@@ -32,7 +34,7 @@ export const DAYS = [
         name: 'SUNDAY',
         number: 0,
     },
-] satisfies Weekday[]
+]
 
 const _padZero = (value: number): string => {
     return value < 10 ? `0${value}` : value.toString()
@@ -108,12 +110,24 @@ export const getNumberOfDaysInMonth = (year: number, month: number): number => {
     return new Date(year, month + 1, 0).getDate()
 }
 
-export const getMonthDifference = (start: Date, end: Date): number => {
-    return (
-        end.getMonth() -
-        start.getMonth() +
-        12 * (end.getFullYear() - start.getFullYear())
-    )
+export const getMonthDifference = (
+    start: Date,
+    end: Date,
+    mode: 'exact' | 'round' | 'floor' = 'floor'
+): number => {
+    const _start = DateTime.fromJSDate(start)
+    const _end = DateTime.fromJSDate(end)
+    const months = _end.diff(_start, 'months').toObject().months!
+    switch (mode) {
+        case 'exact':
+            return months
+        case 'round':
+            return Math.round(months)
+        case 'floor':
+            return Math.floor(months)
+        default:
+            throw new Error(`Unknown mode '${mode}'`)
+    }
 }
 
 export const addDays = (date: Date, days: number): Date => {
@@ -212,5 +226,103 @@ export class DateCheck {
 
     isNotSameDayAs(otherDate: Date): boolean {
         return !this.isSameDayAs(otherDate)
+    }
+}
+
+export type TimeRange = {
+    from: Date
+    until: Date
+}
+
+export class TimeRangeCalculator {
+    private date: DateTime
+    private otherDate: DateTime
+
+    private constructor(date: DateTime) {
+        this.date = date
+        this.otherDate = DateTime.fromObject({})
+    }
+
+    static fromDate(dateStr: string) {
+        return new TimeRangeCalculator(DateTime.fromJSDate(new Date(dateStr)))
+    }
+
+    static fromToday() {
+        return new TimeRangeCalculator(DateTime.utc().startOf('day'))
+    }
+
+    static fromStartOfThisMonth() {
+        return new TimeRangeCalculator(DateTime.utc().startOf('month'))
+    }
+
+    static fromEndOfThisMonth() {
+        return new TimeRangeCalculator(DateTime.utc().endOf('month'))
+    }
+
+    static fromStartOfLastMonth() {
+        return new TimeRangeCalculator(
+            DateTime.utc().startOf('month').minus({ months: 1 })
+        )
+    }
+
+    static fromEndOfLastMonth() {
+        return new TimeRangeCalculator(
+            DateTime.utc().startOf('month').minus({ days: 1 })
+        )
+    }
+
+    static fromStartOfLastYear() {
+        return new TimeRangeCalculator(
+            DateTime.utc().startOf('year').minus({ years: 1 })
+        )
+    }
+
+    static fromEndOfLastYear() {
+        return new TimeRangeCalculator(
+            DateTime.utc().startOf('year').minus({ days: 1 })
+        )
+    }
+
+    goAhead(
+        n: number,
+        entity: 'years' | 'months' | 'days'
+    ): TimeRangeCalculator {
+        this.otherDate = DateTime.fromISO(this.date.toISO()!, {
+            zone: 'utc',
+        }).plus({ [entity]: n })
+        return this
+    }
+
+    goBack(
+        n: number,
+        entity: 'years' | 'months' | 'days'
+    ): TimeRangeCalculator {
+        this.otherDate = DateTime.fromISO(this.date.toISO()!, {
+            zone: 'utc',
+        }).minus({ [entity]: n })
+        return this
+    }
+
+    toBeginningOfMonth(): TimeRangeCalculator {
+        this.otherDate = this.otherDate.startOf('month')
+        return this
+    }
+
+    toEndOfMonth(): TimeRangeCalculator {
+        this.otherDate = this.otherDate.endOf('month').startOf('day')
+        return this
+    }
+
+    goBackToBeginningOfThisYear(): TimeRangeCalculator {
+        this.otherDate = DateTime.utc().startOf('year')
+        return this
+    }
+
+    get(): Date[] {
+        if (this.date <= this.otherDate) {
+            return [this.date.toJSDate(), this.otherDate.toJSDate()]
+        } else {
+            return [this.otherDate.toJSDate(), this.date.toJSDate()]
+        }
     }
 }

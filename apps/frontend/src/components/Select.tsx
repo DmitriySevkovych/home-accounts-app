@@ -23,10 +23,15 @@ type SelectProps<T> = {
     label: string
     id: keyof T
     options: string[]
+    clearable?: boolean
 }
 
 export default function Select<T>(props: SelectProps<T>) {
-    const { form, label, id, options } = props
+    const { form, label, id, options, clearable } = props
+
+    const _resetSelection = () => {
+        form.setValue(id as string, undefined, { shouldTouch: true })
+    }
 
     return (
         <FormField
@@ -40,9 +45,18 @@ export default function Select<T>(props: SelectProps<T>) {
                         value={field.value?.toString()}
                     >
                         <FormControl>
-                            <SelectTrigger>
-                                <SelectValue />
-                            </SelectTrigger>
+                            <div className="flex gap-4">
+                                <SelectTrigger>
+                                    <SelectValue />
+                                </SelectTrigger>
+                                {clearable && (
+                                    <IconButton
+                                        action="clear"
+                                        variant="destructive"
+                                        clickHandler={_resetSelection}
+                                    />
+                                )}
+                            </div>
                         </FormControl>
                         <ScrollableSelectContent options={options} />
                     </ShadcnSelect>

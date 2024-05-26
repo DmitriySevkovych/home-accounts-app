@@ -1,3 +1,4 @@
+import { DEFAULT_PAGE_SIZE, PaginationOptions } from 'domain-model'
 import { Request } from 'express'
 
 import {
@@ -5,20 +6,8 @@ import {
     BadQueryParameterInRequestError,
 } from './errors'
 
-export type Paginated = {
-    endReached: boolean
-}
-
-export type PaginationOptions = {
-    limit: number
-    offset: number
-}
-
-const _parseQueryParameter = (
-    name: string,
-    parameter: any
-): number | undefined => {
-    if (!parameter) return undefined
+const _parseQueryInteger = (name: string, parameter: any): number => {
+    if (!parameter) return 0
 
     const value = parseInt(parameter)
     if (isNaN(value)) {
@@ -48,9 +37,6 @@ const _parseEnvironmentVariable = (
     return parsedValue
 }
 
-export const DEFAULT_LIMIT = 200
-export const DEFAULT_OFFSET = 0
-export const DEFAULT_PAGE_SIZE = 50
 export const PAGE_SIZE = _parseEnvironmentVariable(
     'PAGINATION_PAGE_SIZE',
     DEFAULT_PAGE_SIZE
@@ -60,23 +46,29 @@ export const getPaginationOptionsFromRequest = (
     req: Request
 ): PaginationOptions => {
     if (!req.query) {
-        return {
-            limit: _parseEnvironmentVariable('PAGINATION_LIMIT', DEFAULT_LIMIT),
-            offset: DEFAULT_OFFSET,
-        }
+        return { page: 1 }
     }
-
-    let limit = _parseQueryParameter('limit', req.query.limit)
-    if (limit === undefined) {
-        limit = _parseEnvironmentVariable('PAGINATION_LIMIT', DEFAULT_LIMIT)
-    }
-
-    const page = _parseQueryParameter('page', req.query.page)
 
     const paginationOptions: PaginationOptions = {
-        limit: limit,
-        offset: page && page > 1 ? (page - 1) * PAGE_SIZE : DEFAULT_OFFSET,
+        page: _parseQueryInteger('page', req.query.page),
+        forceFetchAll: !!req.query.forceFetchAll,
     }
 
     return paginationOptions
+}
+
+export const getOffset = (options?: PaginationOptions): number => {
+    if (!options) return 0
+
+    const { page } = options
+    return page > 1 ? (page - 1) * PAGE_SIZE : 0
+}
+
+export const getLimitAndOffset = (
+    options?: PaginationOptions
+): { limit: number; offset: number } => {
+    return {
+        limit: PAGE_SIZE,
+        offset: getOffset(options),
+    }
 }

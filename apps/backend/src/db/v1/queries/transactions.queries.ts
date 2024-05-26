@@ -1,4 +1,5 @@
 import {
+    PaginationOptions,
     Transaction,
     TransactionCategory,
     TransactionContext,
@@ -14,7 +15,7 @@ import {
     NoRecordFoundInDatabaseError,
     UnsupportedTransactionOperationError,
 } from '../../../helpers/errors'
-import { PaginationOptions } from '../../../helpers/pagination'
+import { getLimitAndOffset } from '../../../helpers/pagination'
 import {
     associateTransactionWithInvestment,
     getInvestmentForTransactionId,
@@ -60,7 +61,11 @@ export const getTransactionOrigins = async (
 ): Promise<string[]> => {
     const query = {
         name: 'select-distinct-origins-from-transactions.transactions',
-        text: `SELECT DISTINCT origin FROM transactions.transactions`,
+        text: `
+        SELECT origin, COUNT(1) AS origin_count 
+        FROM transactions.transactions
+        GROUP BY origin
+        ORDER BY origin_count DESC;`,
     }
     const queryResult = await connectionPool.query(query)
     return queryResult.rows.map((row) => row.origin)
@@ -71,6 +76,13 @@ export const getTransactions = async (
     context: TransactionContext,
     paginationOptions: PaginationOptions
 ): Promise<Transaction[]> => {
+    const { forceFetchAll } = paginationOptions
+
+    let paginationValues: number[] = []
+    if (!forceFetchAll) {
+        const { limit, offset } = getLimitAndOffset(paginationOptions)
+        paginationValues = [limit, offset]
+    }
     //TODO extract logic to DB view?
     const query = {
         name: `select-transactions`,
@@ -81,9 +93,9 @@ export const getTransactions = async (
             FROM transactions.transactions
             WHERE context = $1
             ORDER BY id DESC
-            LIMIT $2
-            OFFSET $3;`,
-        values: [context, paginationOptions.limit, paginationOptions.offset],
+            ${forceFetchAll ? '' : 'LIMIT $2 OFFSET $3'}
+            ;`,
+        values: [context, ...paginationValues],
     }
     const queryResult = await connectionPool.query(query)
 

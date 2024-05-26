@@ -2,18 +2,20 @@ import type {
     BankAccount,
     BlueprintKey,
     Investment,
+    Paginated,
+    PaginationOptions,
     PaymentMethod,
     ProjectInvoice,
     SearchParameters,
     TaxCategory,
+    TimeRange,
     Transaction,
+    TransactionAggregate,
     TransactionBlueprint,
     TransactionCategory,
     TransactionContext,
     TransactionReceipt,
 } from 'domain-model'
-
-import { Paginated, PaginationOptions } from '../helpers/pagination'
 
 export interface Repository {
     close: () => Promise<void>
@@ -51,6 +53,10 @@ export interface Repository {
     getTransactionReceipt: (_receiptId: number) => Promise<TransactionReceipt>
 
     getTransactionOrigins: () => Promise<string[]>
+
+    getTransactionsAggregates: (
+        _timeRange: TimeRange
+    ) => Promise<TransactionAggregate[]>
 
     searchTransactions: (
         _parameters: SearchParameters,

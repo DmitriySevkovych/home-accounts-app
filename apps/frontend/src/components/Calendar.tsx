@@ -1,4 +1,8 @@
-import { formatDateToWords, handleUnwantedTimezoneShift } from 'domain-model'
+import {
+    formatDate,
+    formatDateToWords,
+    handleUnwantedTimezoneShift,
+} from 'domain-model'
 import { CalendarIcon } from 'lucide-react'
 import React, { useState } from 'react'
 import { ControllerRenderProps, UseFormReturn } from 'react-hook-form'
@@ -76,5 +80,48 @@ export function Calendar<T>(props: CalendarProps<T>) {
                 </FormItem>
             )}
         />
+    )
+}
+
+type CalendarStandaloneProps = {
+    value: Date
+    setValue: (value: Date) => void
+}
+
+export const CalendarStandalone: React.FC<CalendarStandaloneProps> = ({
+    value,
+    setValue,
+}) => {
+    const [isOpen, setIsOpen] = useState<boolean>(false)
+
+    const handleSelect = (selectedDate: Date | undefined) => {
+        setValue(handleUnwantedTimezoneShift(selectedDate as Date))
+        setIsOpen(false)
+    }
+
+    return (
+        <Popover open={isOpen} onOpenChange={setIsOpen}>
+            <PopoverTrigger asChild>
+                <Button
+                    className={cn(
+                        'w-full rounded-md bg-background-overlay pl-3 text-left font-medium text-primary hover:bg-background-overlay',
+                        !value && 'text-muted-foreground'
+                    )}
+                >
+                    {value ? formatDate(value) : <span>Pick a date</span>}
+                    <CalendarIcon className="ml-auto h-4 w-4 text-primary opacity-50" />
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+                <ShadcnCalendar
+                    mode="single"
+                    selected={value}
+                    onSelect={handleSelect}
+                    required
+                    ISOWeek
+                    initialFocus
+                />
+            </PopoverContent>
+        </Popover>
     )
 }

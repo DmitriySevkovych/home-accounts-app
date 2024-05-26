@@ -1,22 +1,18 @@
 import { Request } from 'express'
+
+import { BadQueryParameterInRequestError } from './errors'
 import {
-    DEFAULT_LIMIT,
-    DEFAULT_PAGE_SIZE,
-    DEFAULT_OFFSET,
+    PAGE_SIZE,
+    getLimitAndOffset,
     getPaginationOptionsFromRequest,
 } from './pagination'
-import { BadQueryParameterInRequestError } from './errors'
 
 /*
     @group unit
  */
 describe('Helpers: pagination tests', () => {
-    it('default page size should be 50', () => {
-        expect(DEFAULT_PAGE_SIZE).toBe(50)
-    })
-
-    it('default offset should be 0', () => {
-        expect(DEFAULT_OFFSET).toBe(0)
+    it('default page size should be 25', () => {
+        expect(PAGE_SIZE).toBe(25)
     })
 
     it('should return a default PaginationOptions object if no query paramers are present', () => {
@@ -26,38 +22,17 @@ describe('Helpers: pagination tests', () => {
         const paginationOptions = getPaginationOptionsFromRequest(reqMock)
         // Assert
         expect(paginationOptions).toBeDefined()
-        expect(paginationOptions.limit).toBe(DEFAULT_LIMIT)
-        expect(paginationOptions.offset).toBe(DEFAULT_OFFSET)
+        expect(paginationOptions.page).toBe(1)
+        expect(paginationOptions.forceFetchAll).toBeUndefined()
     })
 
     it.each`
-        limitParam   | expectedLimit
-        ${100}       | ${100}
-        ${undefined} | ${DEFAULT_LIMIT}
-    `(
-        'should return correct PaginationOptions.limit if query has the parameter limit=$limitParam',
-        ({ limitParam, expectedLimit }) => {
-            // Arrange
-            const reqMock = {
-                query: {
-                    limit: limitParam,
-                },
-            } as any as Request
-            // Act
-            const paginationOptions = getPaginationOptionsFromRequest(reqMock)
-            // Assert
-            expect(paginationOptions.limit).toBe(expectedLimit)
-            expect(paginationOptions.offset).toBe(DEFAULT_OFFSET)
-        }
-    )
-
-    it.each`
         pageParam    | expectedOffset
-        ${3}         | ${DEFAULT_PAGE_SIZE * (3 - 1)}
+        ${3}         | ${PAGE_SIZE * (3 - 1)}
         ${1}         | ${0}
         ${undefined} | ${0}
     `(
-        'should return correct PaginationOptions.offset if query has the parameters page=$pageParam',
+        'should return correct limit and offset if query has the parameters page=$pageParam',
         ({ pageParam, expectedOffset }) => {
             // Arrange
             const reqMock = {
@@ -67,30 +42,23 @@ describe('Helpers: pagination tests', () => {
             } as any as Request
             // Act
             const paginationOptions = getPaginationOptionsFromRequest(reqMock)
+            const { limit, offset } = getLimitAndOffset(paginationOptions)
             // Assert
-            expect(paginationOptions.limit).toBe(DEFAULT_LIMIT)
-            expect(paginationOptions.offset).toBe(expectedOffset)
+            expect(limit).toBe(PAGE_SIZE)
+            expect(offset).toBe(expectedOffset)
         }
     )
 
-    it.each`
-        limit        | page
-        ${undefined} | ${'ILLEGAL'}
-        ${'ILLEGAL'} | ${undefined}
-    `(
-        'should throw error if query has illegal pagination parameters',
-        ({ limit, page }) => {
-            // Arrange
-            const reqMock = {
-                query: {
-                    limit: limit,
-                    page: page,
-                },
-            } as any as Request
-            // Act
-            const action = () => getPaginationOptionsFromRequest(reqMock)
-            // Assert
-            expect(action).toThrow(BadQueryParameterInRequestError)
-        }
-    )
+    it('should throw error if query has illegal pagination parameters', () => {
+        // Arrange
+        const reqMock = {
+            query: {
+                page: 'ILLEGAL',
+            },
+        } as any as Request
+        // Act
+        const action = () => getPaginationOptionsFromRequest(reqMock)
+        // Assert
+        expect(action).toThrow(BadQueryParameterInRequestError)
+    })
 })

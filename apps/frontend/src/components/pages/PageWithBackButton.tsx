@@ -8,6 +8,7 @@ interface PageProps extends React.HTMLAttributes<HTMLDivElement> {
     children: React.ReactNode
     heading: string
     goBackLink: string
+    stickyButton?: React.ReactNode
 }
 
 export const PageWithBackButton: React.FC<PageProps> = ({
@@ -15,6 +16,7 @@ export const PageWithBackButton: React.FC<PageProps> = ({
     className,
     heading,
     goBackLink,
+    stickyButton,
 }) => {
     return (
         <main
@@ -31,6 +33,8 @@ export const PageWithBackButton: React.FC<PageProps> = ({
             </div>
 
             {children}
+
+            {stickyButton}
         </main>
     )
 }

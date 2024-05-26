@@ -74,11 +74,9 @@ describe('Transactions router tests', () => {
         async ({ context }) => {
             await supertest(server)
                 .get(routerBaseUrl)
-                .query({ limit: 5, context: context })
+                .query({ context: context })
                 .expect(200)
                 .then((res) => {
-                    expect(res.body.length).toBe(5)
-
                     res.body.forEach((element: object) => {
                         expect(() =>
                             deserializeTransaction(element)
@@ -97,7 +95,7 @@ describe('Transactions router tests', () => {
         async ({ context }) => {
             await supertest(server)
                 .get(routerBaseUrl)
-                .query({ limit: 5, context: context })
+                .query({ context: context })
                 .expect(400)
                 .then((res) => {
                     expect(res.body.message).toBe(

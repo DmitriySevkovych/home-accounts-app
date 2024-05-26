@@ -1,4 +1,8 @@
-import { TransactionContext, TransactionType } from 'domain-model'
+import {
+    PaginationOptions,
+    TransactionContext,
+    TransactionType,
+} from 'domain-model'
 import path from 'path'
 
 const _getServersideUrl = (endpoint: string): string => {
@@ -15,13 +19,26 @@ const _getClientsideUrl = (endpoint: string): string => {
     ).toString()
 }
 
+const _withPagination = (
+    endpoint: string,
+    paginationOptions?: Partial<PaginationOptions>
+): string => {
+    if (!paginationOptions) return endpoint
+
+    const { page, forceFetchAll } = paginationOptions
+
+    if (forceFetchAll) return `${endpoint}?forceFetchAll=true`
+
+    return `${endpoint}?page=${page}`
+}
+
 export const PAGES = {
     home: '/',
     admin: {
         blueprints: '/#',
     },
     analysis: {
-        cashflow: '/#',
+        cashflow: '/analysis/cashflow',
     },
     transactions: {
         index: '/transactions',
@@ -37,12 +54,21 @@ export const API = {
         transactions: {
             create: _getClientsideUrl(`/transactions`),
             update: _getClientsideUrl(`/transactions`),
-            get: (context: TransactionContext, limit: number) =>
-                _getClientsideUrl(
-                    `/transactions?context=${context}&limit=${limit}`
-                ),
+            get: (context: TransactionContext) =>
+                _getClientsideUrl(`/transactions?context=${context}`),
             delete: (id: number) => _getClientsideUrl(`/transactions/${id}`),
-            search: _getClientsideUrl(`/transactions/search`),
+            search: (paginationOptions?: Partial<PaginationOptions>) =>
+                _withPagination(
+                    _getClientsideUrl(`/transactions/search`),
+                    paginationOptions
+                ),
+            receipts: {
+                getNameOf: (id: number) =>
+                    _getClientsideUrl(`/transactions/receipts/${id}/name`),
+            },
+        },
+        analysis: {
+            aggregation: _getClientsideUrl(`/analysis/aggregation`),
         },
     },
     server: {

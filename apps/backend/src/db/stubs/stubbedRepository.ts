@@ -2,11 +2,15 @@ import {
     BankAccount,
     HomeAppFile,
     Investment,
+    Paginated,
+    PaginationOptions,
     PaymentMethod,
     ProjectInvoice,
     SearchParameters,
     TaxCategory,
+    TimeRange,
     Transaction,
+    TransactionAggregate,
     TransactionBlueprint,
     TransactionCategory,
     TransactionContext,
@@ -18,7 +22,7 @@ import {
 } from 'domain-model'
 
 import { NoRecordFoundInDatabaseError } from '../../helpers/errors'
-import { Paginated, PaginationOptions } from '../../helpers/pagination'
+import { getLimitAndOffset } from '../../helpers/pagination'
 import { Repository } from '../repository'
 
 export class StubbedRepository implements Repository {
@@ -200,8 +204,7 @@ export class StubbedRepository implements Repository {
             transactions.push(transaction)
         }
 
-        const offset = paginationOptions?.offset ? paginationOptions?.offset : 0
-        const limit = paginationOptions?.limit
+        const { limit, offset } = getLimitAndOffset(paginationOptions)
 
         const start = offset
         const end = offset + limit
@@ -248,6 +251,12 @@ export class StubbedRepository implements Repository {
 
     getTransactionOrigins = (): Promise<string[]> => {
         return Promise.resolve(['Gas station', 'Supermarket', 'Post office'])
+    }
+
+    getTransactionsAggregates = (
+        _timeRange: TimeRange
+    ): Promise<TransactionAggregate[]> => {
+        throw new Error('stub not implemented')
     }
 
     searchTransactions = async (

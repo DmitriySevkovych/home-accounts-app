@@ -1,11 +1,7 @@
-import { SearchParameters } from 'domain-model'
+import { Paginated, PaginationOptions, SearchParameters } from 'domain-model'
 import { Pool, QueryConfig } from 'pg'
 
-import {
-    PAGE_SIZE,
-    Paginated,
-    PaginationOptions,
-} from '../../../helpers/pagination'
+import { PAGE_SIZE, getLimitAndOffset } from '../../../helpers/pagination'
 
 export type QueryConditionState = {
     counter: number
@@ -123,6 +119,21 @@ const _whereInInterval = (
 
 const _getTagsCondition = (_tags: string[] | undefined) => undefined //TODO
 
+const _getPaginationCondition = (
+    paginationOptions: PaginationOptions,
+    state: QueryConditionState
+): { paginationCondition: string; paginationValues: number[] } => {
+    const { forceFetchAll } = paginationOptions
+
+    if (forceFetchAll) return { paginationCondition: '', paginationValues: [] }
+
+    const { limit, offset } = getLimitAndOffset(paginationOptions)
+    return {
+        paginationCondition: `LIMIT ${_to$(state)} OFFSET ${_to$(state)}`,
+        paginationValues: [limit, offset],
+    }
+}
+
 const _getQuery = (
     parameters: SearchParameters,
     paginationOptions: PaginationOptions
@@ -136,7 +147,6 @@ const _getQuery = (
         dateUntil,
         tags,
     } = parameters
-    const { limit, offset } = paginationOptions
 
     let state: QueryConditionState = {
         counter: 0,
@@ -152,10 +162,15 @@ const _getQuery = (
     state = _whereInInterval('date', dateFrom, dateUntil, state)
     _getTagsCondition(tags)
 
+    const { paginationCondition, paginationValues } = _getPaginationCondition(
+        paginationOptions,
+        state
+    )
+
     if (state.conditions.length === 0) {
         return {
-            text: 'SELECT id FROM transactions.transactions ORDER BY id DESC LIMIT $1 OFFSET $2',
-            values: [limit, offset],
+            text: `SELECT id FROM transactions.transactions ORDER BY id DESC ${paginationCondition};`,
+            values: paginationValues,
         }
     }
 
@@ -166,8 +181,8 @@ const _getQuery = (
         FROM transactions.transactions
         WHERE ${conditions}
         ORDER BY id DESC 
-        LIMIT ${_to$(state)} OFFSET ${_to$(state)};`,
-        values: [...state.values, limit, offset],
+        ${paginationCondition};`,
+        values: [...state.values, ...paginationValues],
     }
 }
 

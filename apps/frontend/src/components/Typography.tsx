@@ -35,3 +35,7 @@ export const SectionHeading: React.FC<HeadingProps> = ({
         </h2>
     )
 }
+
+export const Loader: React.FC = () => {
+    return <div>Loading...</div>
+}
