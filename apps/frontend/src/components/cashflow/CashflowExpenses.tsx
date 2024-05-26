@@ -38,92 +38,43 @@ type CashflowExpensesProps = {
     aggregates: TransactionAggregate[]
 }
 
+const _sumUp = (aggregates: TransactionAggregate[]) =>
+    aggregates.reduce((total, aggregate) => total + aggregate.amount, 0)
+
 const CashflowExpenses: React.FC<CashflowExpensesProps> = ({
     monthsConsidered,
     aggregates,
 }) => {
     // Computed values
-    const expenses = aggregates.filter((agg) => agg.type === 'expense')
+    let expenses = aggregates.filter((agg) => agg.type === 'expense')
 
-    const sumTaxHome = expenses
-        .filter((exp) => exp.category === 'TAX' && exp.context === 'home')
-        .reduce((totalAmount, expense) => totalAmount + expense.amount, 0)
-    const sumTaxWork = expenses
-        .filter((exp) => exp.category === 'TAX' && exp.context === 'work')
-        .reduce((totalAmount, expense) => totalAmount + expense.amount, 0)
-    const sumTaxInvestments = expenses
-        .filter(
-            (exp) => exp.category === 'TAX' && exp.context === 'investments'
-        )
-        .reduce((totalAmount, expense) => totalAmount + expense.amount, 0)
-    const totalTaxes = expenses
-        .filter((exp) => exp.category === 'TAX')
-        .reduce((totalAmount, expense) => totalAmount + expense.amount, 0)
+    const taxes = expenses.filter((exp) => exp.category === 'TAX')
+    const taxHome = taxes.filter((exp) => exp.context === 'home')
+    const taxWork = taxes.filter((exp) => exp.context === 'work')
+    const taxInvestments = taxes.filter((exp) => exp.context === 'investments')
+    expenses = expenses.filter((exp) => !taxes.includes(exp))
 
-    const biegelExpenses = expenses.filter(
-        (exp) => exp.investment === 'Biegel' && exp.category !== 'TAX'
-    )
+    const biegelExpenses = expenses.filter((exp) => exp.investment === 'Biegel')
     const biegelInstalments = biegelExpenses.filter(
         (exp) => exp.category == 'INSTALMENT'
     )
-    const sumBiegelInstalments = biegelInstalments.reduce(
-        (totalAmount, expense) => totalAmount + expense.amount,
-        0
-    )
-
     const otherBiegelExpenses = biegelExpenses.filter(
         (exp) => !biegelInstalments.includes(exp)
     )
-    const sumOtherBiegelExpenses = otherBiegelExpenses.reduce(
-        (totalAmount, expense) => totalAmount + expense.amount,
-        0
-    )
+    expenses = expenses.filter((exp) => !biegelExpenses.includes(exp))
 
-    const totalBiegelExpenses = biegelExpenses.reduce(
-        (totalAmount, expense) => totalAmount + expense.amount,
-        0
-    )
-
-    const privateExpenses = expenses.filter(
-        (exp) => exp.context === 'home' && exp.category !== 'TAX'
-    )
-    // FOOD
+    const privateExpenses = expenses.filter((exp) => exp.context === 'home')
     const food = privateExpenses.filter((exp) => exp.category === 'FOOD')
-    const sumFood = food.reduce(
-        (totalAmount, expense) => totalAmount + expense.amount,
-        0
-    )
-    // HOUSEHOLD
     const household = privateExpenses.filter(
         (exp) => exp.category === 'HOUSEHOLD'
     )
-    const sumHousehold = household.reduce(
-        (totalAmount, expense) => totalAmount + expense.amount,
-        0
-    )
-    // MEDICINE
     const medicine = privateExpenses.filter(
         (exp) => exp.category === 'MEDICINE'
     )
-    const sumMedicine = medicine.reduce(
-        (totalAmount, expense) => totalAmount + expense.amount,
-        0
-    )
-    // VACATION
     const vacation = privateExpenses.filter(
         (exp) => exp.category === 'VACATION'
     )
-    const sumVacation = vacation.reduce(
-        (totalAmount, expense) => totalAmount + expense.amount,
-        0
-    )
-    // LEISURE
     const leisure = privateExpenses.filter((exp) => exp.category === 'LEISURE')
-    const sumLeisure = leisure.reduce(
-        (totalAmount, expense) => totalAmount + expense.amount,
-        0
-    )
-    // Other
     const otherPrivateExpenses = privateExpenses.filter(
         (exp) =>
             ![
@@ -134,16 +85,7 @@ const CashflowExpenses: React.FC<CashflowExpensesProps> = ({
                 ...leisure,
             ].includes(exp)
     )
-    const sumOtherPrivateExpenses = otherPrivateExpenses.reduce(
-        (totalAmount, expense) => totalAmount + expense.amount,
-        0
-    )
-
-    const totalPrivateExpenses = privateExpenses.reduce(
-        (totalAmount, expense) => totalAmount + expense.amount,
-        0
-    )
-    console.log({ privateExpenses })
+    expenses = expenses.filter((exp) => !privateExpenses.includes(exp))
 
     // Render
     return (
@@ -158,23 +100,23 @@ const CashflowExpenses: React.FC<CashflowExpensesProps> = ({
                             <Label className="my-2 block">
                                 <ExpenseItem
                                     label="Taxes🧐"
-                                    amount={totalTaxes}
+                                    amount={_sumUp(taxes)}
                                     monthsConsidered={monthsConsidered}
                                 />
                             </Label>
                             <ExpenseItem
                                 label="Home"
-                                amount={sumTaxHome}
+                                amount={_sumUp(taxHome)}
                                 monthsConsidered={monthsConsidered}
                             />
                             <ExpenseItem
                                 label="Work"
-                                amount={sumTaxWork}
+                                amount={_sumUp(taxWork)}
                                 monthsConsidered={monthsConsidered}
                             />
                             <ExpenseItem
                                 label="Investments"
-                                amount={sumTaxInvestments}
+                                amount={_sumUp(taxInvestments)}
                                 monthsConsidered={monthsConsidered}
                             />
                         </div>
@@ -182,18 +124,18 @@ const CashflowExpenses: React.FC<CashflowExpensesProps> = ({
                             <Label className="mb-2 block">
                                 <ExpenseItem
                                     label="Home Mortgate🌽🏠"
-                                    amount={totalBiegelExpenses}
+                                    amount={_sumUp(biegelExpenses)}
                                     monthsConsidered={monthsConsidered}
                                 />
                             </Label>
                             <ExpenseItem
                                 label="Bank instalments"
-                                amount={sumBiegelInstalments}
+                                amount={_sumUp(biegelInstalments)}
                                 monthsConsidered={monthsConsidered}
                             />
                             <ExpenseItem
                                 label="Other"
-                                amount={sumOtherBiegelExpenses}
+                                amount={_sumUp(otherBiegelExpenses)}
                                 monthsConsidered={monthsConsidered}
                             />
                         </div>
@@ -201,40 +143,49 @@ const CashflowExpenses: React.FC<CashflowExpensesProps> = ({
                             <Label className="mb-2 block">
                                 <ExpenseItem
                                     label="Private Expenses"
-                                    amount={totalPrivateExpenses}
+                                    amount={_sumUp(privateExpenses)}
                                     monthsConsidered={monthsConsidered}
                                 />
                             </Label>
                             <ExpenseItem
                                 label="Food"
-                                amount={sumFood}
+                                amount={_sumUp(food)}
                                 monthsConsidered={monthsConsidered}
                             />
                             <ExpenseItem
                                 label="Household"
-                                amount={sumHousehold}
+                                amount={_sumUp(household)}
                                 monthsConsidered={monthsConsidered}
                             />
                             <ExpenseItem
                                 label="Medicine"
-                                amount={sumMedicine}
+                                amount={_sumUp(medicine)}
                                 monthsConsidered={monthsConsidered}
                             />
                             <ExpenseItem
                                 label="Vacation"
-                                amount={sumVacation}
+                                amount={_sumUp(vacation)}
                                 monthsConsidered={monthsConsidered}
                             />
                             <ExpenseItem
                                 label="Leisure"
-                                amount={sumLeisure}
+                                amount={_sumUp(leisure)}
                                 monthsConsidered={monthsConsidered}
                             />
                             <ExpenseItem
                                 label="Other"
-                                amount={sumOtherPrivateExpenses}
+                                amount={_sumUp(otherPrivateExpenses)}
                                 monthsConsidered={monthsConsidered}
                             />
+                        </div>
+                        <div>
+                            <Label className="mb-2 block">
+                                <ExpenseItem
+                                    label="Uncategorized Expenses"
+                                    amount={_sumUp(expenses)}
+                                    monthsConsidered={monthsConsidered}
+                                />
+                            </Label>
                         </div>
                     </AccordionContent>
                 </AccordionItem>
