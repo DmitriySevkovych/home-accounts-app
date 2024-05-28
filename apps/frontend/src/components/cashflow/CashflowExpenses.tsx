@@ -1,8 +1,4 @@
-import {
-    TimeRange,
-    TransactionAggregate,
-    getMonthDifference,
-} from 'domain-model'
+import { TransactionAggregate } from 'domain-model'
 import React from 'react'
 
 import {
