@@ -7,7 +7,7 @@ FROM base AS turbosetup
 RUN apk add --no-cache libc6-compat
 RUN apk update
 WORKDIR /app
-RUN npm i -g turbo
+RUN npm i -g turbo@^1.10.15
 COPY . .
 RUN turbo prune --scope=backend --docker
 
