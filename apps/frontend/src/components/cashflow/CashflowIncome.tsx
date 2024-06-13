@@ -17,13 +17,18 @@ type IncomeItemProps = {
 
 const IncomeItem: React.FC<IncomeItemProps> = ({ item, monthsConsidered }) => {
     const { category, investment, origin, amount } = item
+
+    const displayAmount = Math.round(amount / monthsConsidered)
+
+    if (displayAmount === 0) return null
+
     return (
         <div className="grid grid-cols-[75fr_25fr]">
             <div>
                 {`${investment ? investment : origin} `}
                 <span className="capitalize">{category.toLowerCase()}</span>
             </div>
-            <div className="text-right">{`${Math.round(amount / monthsConsidered)}€`}</div>
+            <div className="text-right">{`${displayAmount}€`}</div>
         </div>
     )
 }

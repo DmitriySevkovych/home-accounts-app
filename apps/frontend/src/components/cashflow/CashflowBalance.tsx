@@ -1,12 +1,22 @@
-import {
-    TimeRange,
-    TransactionAggregate,
-    getMonthDifference,
-} from 'domain-model'
-import { Equal, Minus, Plus } from 'lucide-react'
+import { TransactionAggregate } from 'domain-model'
+import { ArrowBigDown, Equal, Minus, Plus } from 'lucide-react'
 import React from 'react'
 
+import { cn } from '../../helpers/utils'
 import { SectionHeading } from '../Typography'
+
+const CashflowItem: React.FC<{ label: string; amount: number }> = ({
+    label,
+    amount,
+}) => {
+    const textColor = amount < 0 ? 'text-destructive' : ''
+    return (
+        <div className={'flex flex-col items-center'}>
+            <div className={cn('text-xl', textColor)}>{Math.round(amount)}</div>
+            <div className="text-xs text-primary">{label}</div>
+        </div>
+    )
+}
 
 type CashflowBalanceProps = {
     monthsConsidered: number
@@ -46,47 +56,52 @@ const CashflowBalance: React.FC<CashflowBalanceProps> = ({
             <SectionHeading>Cashflow</SectionHeading>
 
             <p className="text-primary">
-                Average values over {monthsConsidered} months
+                Monthly averages for the last {monthsConsidered} months
             </p>
 
-            <div className="flex flex-col items-center gap-2">
-                <CashflowItem label="Active income" amount={activeIncome} />
+            <div className="flex flex-col items-center gap-4 pb-6 pt-4">
+                <div className="grid grid-cols-[30fr_5fr_30fr_5fr_30fr] items-center justify-center">
+                    <CashflowItem label="Active income" amount={activeIncome} />
 
-                <Plus size={24} className="text-primary" />
+                    <Plus size={18} className="mx-auto mb-3 text-primary" />
 
-                <CashflowItem label="Passive income" amount={passiveIncome} />
+                    <CashflowItem
+                        label="Passive income"
+                        amount={passiveIncome}
+                    />
 
-                <Equal size={24} className="text-primary" />
+                    <Equal size={18} className="mx-auto  mb-3 text-primary" />
 
-                <CashflowItem
-                    label="Total income"
-                    amount={activeIncome + passiveIncome}
-                />
+                    <CashflowItem
+                        label="Total income"
+                        amount={activeIncome + passiveIncome}
+                    />
+                </div>
 
-                <Minus size={24} className="text-primary" />
+                <ArrowBigDown size={24} className="text-primary" />
 
-                <CashflowItem label="Total expenses" amount={totalExpenses} />
+                <div className="grid grid-cols-[30fr_5fr_30fr_5fr_30fr] items-center justify-center">
+                    <CashflowItem
+                        label="Total income"
+                        amount={activeIncome + passiveIncome}
+                    />
 
-                <Equal size={24} className="text-primary" />
+                    <Minus size={18} className="mx-auto mb-3 text-primary" />
 
-                <CashflowItem
-                    label="Monthly cashflow"
-                    amount={activeIncome + passiveIncome - totalExpenses}
-                />
+                    <CashflowItem
+                        label="Total expenses"
+                        amount={totalExpenses}
+                    />
+
+                    <Equal size={18} className="mx-auto  mb-3 text-primary" />
+
+                    <CashflowItem
+                        label="Monthly cashflow"
+                        amount={activeIncome + passiveIncome - totalExpenses}
+                    />
+                </div>
             </div>
         </>
-    )
-}
-
-const CashflowItem: React.FC<{ label: string; amount: number }> = ({
-    label,
-    amount,
-}) => {
-    return (
-        <div className="flex flex-col items-center">
-            <div className="text-2xl">{Math.round(amount)}</div>
-            <div className="text-xs text-primary">{label}</div>
-        </div>
     )
 }
 

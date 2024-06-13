@@ -1,6 +1,7 @@
 import { TransactionAggregate } from 'domain-model'
 import React from 'react'
 
+import { cn } from '../../helpers/utils'
 import {
     Accordion,
     AccordionContent,
@@ -21,10 +22,17 @@ const ExpenseItem: React.FC<ExpenseItemProps> = ({
     amount,
     monthsConsidered,
 }) => {
+    const textColor = amount < 0 ? 'text-destructive' : ''
+    const displayAmount = Math.abs(Math.round(amount / monthsConsidered))
+
+    if (displayAmount === 0) return null
+
     return (
         <div className="grid grid-cols-[75fr_25fr]">
-            <div>{label}</div>
-            <div className="text-right">{`${Math.abs(Math.round(amount / monthsConsidered))}€`}</div>
+            <div className="capitalize">{label}</div>
+            <div
+                className={cn('text-right', textColor)}
+            >{`${displayAmount}€`}</div>
         </div>
     )
 }
@@ -34,22 +42,38 @@ type CashflowExpensesProps = {
     aggregates: TransactionAggregate[]
 }
 
-const _sumUp = (aggregates: TransactionAggregate[]) =>
+const _groupByCategory = (aggregates: TransactionAggregate[]) => {
+    const expensesMap = aggregates.reduce((groupedExpenses, expense) => {
+        const { category } = expense
+        let updateAmount = expense.amount
+        if (groupedExpenses.has(category)) {
+            updateAmount = groupedExpenses.get(category) + updateAmount
+        }
+        groupedExpenses.set(category, updateAmount)
+
+        return groupedExpenses
+    }, new Map())
+    return Array.from(expensesMap.entries()).sort((a, b) => a[1] - b[1])
+}
+
+const _sumUp = (aggregates: TransactionAggregate[]): number =>
     aggregates.reduce((total, aggregate) => total + aggregate.amount, 0)
 
 const CashflowExpenses: React.FC<CashflowExpensesProps> = ({
     monthsConsidered,
     aggregates,
 }) => {
-    // Computed values
+    /* Computed values */
     let expenses = aggregates.filter((agg) => agg.type === 'expense')
 
+    // Taxes
     const taxes = expenses.filter((exp) => exp.category === 'TAX')
     const taxHome = taxes.filter((exp) => exp.context === 'home')
     const taxWork = taxes.filter((exp) => exp.context === 'work')
     const taxInvestments = taxes.filter((exp) => exp.context === 'investments')
     expenses = expenses.filter((exp) => !taxes.includes(exp))
 
+    // Home mortgage
     const biegelExpenses = expenses.filter((exp) => exp.investment === 'Biegel')
     const biegelInstalments = biegelExpenses.filter(
         (exp) => exp.category == 'INSTALMENT'
@@ -59,33 +83,17 @@ const CashflowExpenses: React.FC<CashflowExpensesProps> = ({
     )
     expenses = expenses.filter((exp) => !biegelExpenses.includes(exp))
 
+    // Private
     const privateExpenses = expenses.filter((exp) => exp.context === 'home')
-    const food = privateExpenses.filter((exp) => exp.category === 'FOOD')
-    const household = privateExpenses.filter(
-        (exp) => exp.category === 'HOUSEHOLD'
-    )
-    const medicine = privateExpenses.filter(
-        (exp) => exp.category === 'MEDICINE'
-    )
-    const vacation = privateExpenses.filter(
-        (exp) => exp.category === 'VACATION'
-    )
-    const leisure = privateExpenses.filter((exp) => exp.category === 'LEISURE')
-    const otherPrivateExpenses = privateExpenses.filter(
-        (exp) =>
-            ![
-                ...food,
-                ...household,
-                ...medicine,
-                ...vacation,
-                ...leisure,
-            ].includes(exp)
-    )
+    const privateExpensesSums = _groupByCategory(privateExpenses)
     expenses = expenses.filter((exp) => !privateExpenses.includes(exp))
 
+    // Work
     const workExpenses = expenses.filter((exp) => exp.context === 'work')
+    const workExpensesSums = _groupByCategory(workExpenses)
     expenses = expenses.filter((exp) => !workExpenses.includes(exp))
 
+    // Investments
     const investmentExpenses = expenses.filter(
         (exp) => exp.context === 'investments'
     )
@@ -102,6 +110,9 @@ const CashflowExpenses: React.FC<CashflowExpensesProps> = ({
     )
     const otherInvestmentExpenses = investmentExpenses.filter(
         (exp) => ![...investmentBankLoans, ...investmentUtilities].includes(exp)
+    )
+    const otherInvestmentExpensesSums = _groupByCategory(
+        otherInvestmentExpenses
     )
     expenses = expenses.filter((exp) => !investmentExpenses.includes(exp))
 
@@ -141,13 +152,13 @@ const CashflowExpenses: React.FC<CashflowExpensesProps> = ({
                         <div>
                             <Label className="mb-2 block">
                                 <ExpenseItem
-                                    label="Home Mortgate🌽🏠"
+                                    label="Home Mortgage🌽🏠"
                                     amount={_sumUp(biegelExpenses)}
                                     monthsConsidered={monthsConsidered}
                                 />
                             </Label>
                             <ExpenseItem
-                                label="Bank instalments"
+                                label="Bank loan"
                                 amount={_sumUp(biegelInstalments)}
                                 monthsConsidered={monthsConsidered}
                             />
@@ -165,36 +176,17 @@ const CashflowExpenses: React.FC<CashflowExpensesProps> = ({
                                     monthsConsidered={monthsConsidered}
                                 />
                             </Label>
-                            <ExpenseItem
-                                label="Food"
-                                amount={_sumUp(food)}
-                                monthsConsidered={monthsConsidered}
-                            />
-                            <ExpenseItem
-                                label="Household"
-                                amount={_sumUp(household)}
-                                monthsConsidered={monthsConsidered}
-                            />
-                            <ExpenseItem
-                                label="Medicine"
-                                amount={_sumUp(medicine)}
-                                monthsConsidered={monthsConsidered}
-                            />
-                            <ExpenseItem
-                                label="Vacation"
-                                amount={_sumUp(vacation)}
-                                monthsConsidered={monthsConsidered}
-                            />
-                            <ExpenseItem
-                                label="Leisure"
-                                amount={_sumUp(leisure)}
-                                monthsConsidered={monthsConsidered}
-                            />
-                            <ExpenseItem
-                                label="Other"
-                                amount={_sumUp(otherPrivateExpenses)}
-                                monthsConsidered={monthsConsidered}
-                            />
+                            {privateExpensesSums.map((entry) => {
+                                const [label, amount] = entry
+                                return (
+                                    <ExpenseItem
+                                        key={`privateExpense-${label}`}
+                                        label={label.toLowerCase()}
+                                        amount={amount}
+                                        monthsConsidered={monthsConsidered}
+                                    />
+                                )
+                            })}
                         </div>
                         <div>
                             <Label className="mb-2 block">
@@ -204,6 +196,17 @@ const CashflowExpenses: React.FC<CashflowExpensesProps> = ({
                                     monthsConsidered={monthsConsidered}
                                 />
                             </Label>
+                            {workExpensesSums.map((entry) => {
+                                const [label, amount] = entry
+                                return (
+                                    <ExpenseItem
+                                        key={`workExpense-${label}`}
+                                        label={label.toLowerCase()}
+                                        amount={amount}
+                                        monthsConsidered={monthsConsidered}
+                                    />
+                                )
+                            })}
                         </div>
                         <div>
                             <Label className="mb-2 block">
@@ -223,11 +226,17 @@ const CashflowExpenses: React.FC<CashflowExpensesProps> = ({
                                 amount={_sumUp(investmentUtilities)}
                                 monthsConsidered={monthsConsidered}
                             />
-                            <ExpenseItem
-                                label="Other"
-                                amount={_sumUp(otherInvestmentExpenses)}
-                                monthsConsidered={monthsConsidered}
-                            />
+                            {otherInvestmentExpensesSums.map((entry) => {
+                                const [label, amount] = entry
+                                return (
+                                    <ExpenseItem
+                                        key={`investmentExpense-${label}`}
+                                        label={label.toLowerCase()}
+                                        amount={amount}
+                                        monthsConsidered={monthsConsidered}
+                                    />
+                                )
+                            })}
                         </div>
                         {_sumUp(expenses) > 0 && (
                             <div>
