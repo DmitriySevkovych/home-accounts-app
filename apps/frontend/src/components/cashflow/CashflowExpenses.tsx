@@ -74,14 +74,19 @@ const CashflowExpenses: React.FC<CashflowExpensesProps> = ({
     expenses = expenses.filter((exp) => !taxes.includes(exp))
 
     // Home mortgage
-    const biegelExpenses = expenses.filter((exp) => exp.investment === 'Biegel')
-    const biegelInstalments = biegelExpenses.filter(
+    const homeMortgageExpenses = expenses.filter(
+        (exp) => exp.investment === 'Biegel'
+    )
+    const homeMortgageInstalments = homeMortgageExpenses.filter(
         (exp) => exp.category == 'INSTALMENT'
     )
-    const otherBiegelExpenses = biegelExpenses.filter(
-        (exp) => !biegelInstalments.includes(exp)
+    const otherHomeMortgageExpenses = homeMortgageExpenses.filter(
+        (exp) => !homeMortgageInstalments.includes(exp)
     )
-    expenses = expenses.filter((exp) => !biegelExpenses.includes(exp))
+    const otherHomeMortgageExpensesSums = _groupByCategory(
+        otherHomeMortgageExpenses
+    )
+    expenses = expenses.filter((exp) => !homeMortgageExpenses.includes(exp))
 
     // Private
     const privateExpenses = expenses.filter((exp) => exp.context === 'home')
@@ -153,20 +158,26 @@ const CashflowExpenses: React.FC<CashflowExpensesProps> = ({
                             <Label className="mb-2 block">
                                 <ExpenseItem
                                     label="Home Mortgage🌽🏠"
-                                    amount={_sumUp(biegelExpenses)}
+                                    amount={_sumUp(homeMortgageExpenses)}
                                     monthsConsidered={monthsConsidered}
                                 />
                             </Label>
                             <ExpenseItem
                                 label="Bank loan"
-                                amount={_sumUp(biegelInstalments)}
+                                amount={_sumUp(homeMortgageInstalments)}
                                 monthsConsidered={monthsConsidered}
                             />
-                            <ExpenseItem
-                                label="Other"
-                                amount={_sumUp(otherBiegelExpenses)}
-                                monthsConsidered={monthsConsidered}
-                            />
+                            {otherHomeMortgageExpensesSums.map((entry) => {
+                                const [label, amount] = entry
+                                return (
+                                    <ExpenseItem
+                                        key={`homeMortgageExpense-${label}`}
+                                        label={label.toLowerCase()}
+                                        amount={amount}
+                                        monthsConsidered={monthsConsidered}
+                                    />
+                                )
+                            })}
                         </div>
                         <div>
                             <Label className="mb-2 block">
