@@ -1,8 +1,8 @@
 import { TransactionForm } from 'domain-model'
 import React from 'react'
 
-import useNewTransactionSubmitHandler from '../../components/hooks/useNewTransactionSubmitHandler'
 import useTransactionForm from '../../components/hooks/useTransactionForm'
+import useTransactionFormSubmitHandler from '../../components/hooks/useTransactionFormSubmitHandler'
 import TransactionFormPage, {
     TransactionFormConstants,
     fetchTransactionConstants,
@@ -27,7 +27,7 @@ const NewTransactionPage = ({ constants }: NewTransactionPageProps) => {
 
     const { form } = useTransactionForm(formDefaultValues)
 
-    const { onSubmit } = useNewTransactionSubmitHandler()
+    const { onSubmit } = useTransactionFormSubmitHandler('create')
 
     return (
         <TransactionFormPage

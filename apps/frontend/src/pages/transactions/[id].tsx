@@ -4,14 +4,13 @@ import React from 'react'
 import { DeleteDialog } from '../../components/Dialog'
 import useDeleteTransactionHandler from '../../components/hooks/useDeleteTransactionHandler'
 import useTransactionForm from '../../components/hooks/useTransactionForm'
-import useUpdateTransactionSubmitHandler from '../../components/hooks/useUpdateTransactionSubmitHandler'
+import useTransactionFormSubmitHandler from '../../components/hooks/useTransactionFormSubmitHandler'
 import TransactionFormPage, {
     TransactionFormConstants,
     fetchTransactionConstants,
 } from '../../components/pages/TransactionFormPage'
 import { safeFetch } from '../../helpers/requests'
 import { API } from '../../helpers/routes'
-import { Button } from '../../lib/shadcn/Button'
 import { Separator } from '../../lib/shadcn/Separator'
 
 type EditPageProps = {
@@ -25,7 +24,7 @@ const EditTransactionPage = ({ transaction, constants }: EditPageProps) => {
 
     const { form } = useTransactionForm(transaction)
 
-    const { onSubmit } = useUpdateTransactionSubmitHandler()
+    const { onSubmit } = useTransactionFormSubmitHandler('update')
 
     const { deleteTransaction } = useDeleteTransactionHandler()
 
