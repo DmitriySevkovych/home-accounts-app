@@ -49,6 +49,7 @@ type TransactionFormPageProps = {
     onSubmit: SubmitHandler<any>
     constants: TransactionFormConstants
     submitLabel: string
+    allowZerosumTransactions?: boolean
 }
 
 export const fetchTransactionConstants = async () => {
@@ -81,6 +82,11 @@ const _eligibleCategories = (
             .filter((c) => c.canBeIncome && c.context === context)
             .map((obj) => obj.category)
             .sort()
+    } else if (type === 'zerosum') {
+        return categories
+            .filter((c) => c.isZerosum)
+            .map((obj) => obj.category)
+            .sort()
     } else {
         throw new Error(`Unknown transaction type ${type}`)
     }
@@ -104,6 +110,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
     constants,
     onSubmit,
     submitLabel,
+    allowZerosumTransactions,
 }) => {
     const {
         transactionOrigins,
@@ -124,6 +131,14 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
         error: errorLoadingReceiptName,
         isLoading: isLoadingReceiptName,
     } = useSWR(receiptId, _fetchReceiptName)
+
+    const transactionTypeOptions = [
+        { label: 'Expense', value: 'expense' },
+        { label: 'Income', value: 'income' },
+    ]
+    if (allowZerosumTransactions) {
+        transactionTypeOptions.push({ label: 'Zero-Sum', value: 'zerosum' })
+    }
 
     return (
         <PageWithBackButton
@@ -155,10 +170,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                         <Radio
                             id="type"
                             form={form}
-                            options={[
-                                { label: 'Expense', value: 'expense' },
-                                { label: 'Income', value: 'income' },
-                            ]}
+                            options={transactionTypeOptions}
                             label="Transaction type"
                         />
                     </div>
@@ -178,7 +190,6 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                         id="origin"
                         form={form}
                         label="Origin"
-                        placeholder={`Where did the ${transactionType} occur?`}
                         autocompleteOptions={transactionOrigins}
                     />
 
@@ -186,7 +197,6 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                         id="description"
                         form={form}
                         label="Description"
-                        placeholder={`What characterizes the ${transactionType}?`}
                     />
 
                     <Calendar<Transaction>
@@ -195,12 +205,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                         label="Transaction date"
                     />
 
-                    <NumberInput
-                        id="amount"
-                        form={form}
-                        label="Amount"
-                        placeholder={`Please enter ${transactionType} amount`}
-                    />
+                    <NumberInput id="amount" form={form} label="Amount" />
 
                     <TextInput id="currency" form={form} label="Currency" />
 
@@ -217,7 +222,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                         options={paymentMethods.map((obj) => obj.method).sort()}
                     />
 
-                    {transactionType === 'expense' && (
+                    {transactionType !== 'income' && (
                         <Select<Transaction>
                             id="sourceBankAccount"
                             form={form}
@@ -235,7 +240,7 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                         />
                     )}
 
-                    {transactionType === 'income' && (
+                    {transactionType !== 'expense' && (
                         <Select<Transaction>
                             id="targetBankAccount"
                             form={form}

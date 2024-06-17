@@ -6,7 +6,7 @@ import { FileWithPath } from '../helpers/handy-types'
 export const TransactionFormSchema = z
     .object({
         id: z.optional(z.coerce.number().int()),
-        type: z.enum(['expense', 'income']),
+        type: z.enum(['expense', 'income', 'zerosum']),
         context: z.enum(['home', 'work', 'investments']),
         category: z.string(),
         origin: z.string(),
@@ -55,6 +55,23 @@ export const TransactionFormSchema = z
                 message:
                     "Transaction type 'income' must have a source bank account set.",
             })
+        } else if (form.type === 'zerosum') {
+            if (!form.sourceBankAccount) {
+                ctx.addIssue({
+                    path: ['sourceBankAccount'],
+                    code: z.ZodIssueCode.custom,
+                    message:
+                        "Transaction type 'zerosum' must have a source bank account set.",
+                })
+            }
+            if (!form.targetBankAccount) {
+                ctx.addIssue({
+                    path: ['targetBankAccount'],
+                    code: z.ZodIssueCode.custom,
+                    message:
+                        "Transaction type 'zerosum' must have a target bank account set.",
+                })
+            }
         }
 
         // Currency and exchange rate check
