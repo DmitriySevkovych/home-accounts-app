@@ -70,7 +70,7 @@ export const updateTransactionTags = async (
 const _untag = async (tagDAO: TagDAO, client: PoolClient): Promise<void> => {
     const { tag, transaction_id } = tagDAO
     const query = {
-        name: `delet-from-transactions.transaction_tags`,
+        name: `delete-from-transactions.transaction_tags`,
         text: `DELETE FROM transactions.transaction_tags WHERE tag=$1 AND transaction_id=$2;`,
         values: [tag, transaction_id],
     }
