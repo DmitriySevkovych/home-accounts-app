@@ -36,6 +36,7 @@ const NewTransactionPage = ({ constants }: NewTransactionPageProps) => {
             constants={constants}
             onSubmit={onSubmit}
             submitLabel="Create"
+            allowZerosumTransactions
         />
     )
 }
