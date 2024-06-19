@@ -84,7 +84,7 @@ const _eligibleCategories = (
             .sort()
     } else if (type === 'zerosum') {
         return categories
-            .filter((c) => c.isZerosum)
+            .filter((c) => c.canBeZerosum)
             .map((obj) => obj.category)
             .sort()
     } else {

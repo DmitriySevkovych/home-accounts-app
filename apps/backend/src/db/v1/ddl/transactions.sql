@@ -11,7 +11,7 @@ CREATE TABLE transactions.transaction_categories (
   context VARCHAR NOT NULL,
   can_be_expense BOOLEAN,
   can_be_income BOOLEAN,
-  is_zerosum BOOLEAN,
+  can_be_zerosum BOOLEAN,
   CONSTRAINT transaction_categories_pk PRIMARY KEY (category, context),
   CONSTRAINT transaction_categories_fk FOREIGN KEY (context) REFERENCES transactions.transaction_contexts (context) ON UPDATE CASCADE
 );

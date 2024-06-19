@@ -25,7 +25,7 @@ export type TransactionCategory = {
     context: TransactionContext
     canBeExpense: boolean
     canBeIncome: boolean
-    isZerosum: boolean
+    canBeZerosum: boolean
 }
 
 export type TransactionReceipt = HomeAppFile

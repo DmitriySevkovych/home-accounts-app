@@ -42,7 +42,7 @@ export const getTransactionCategories = async (
     connectionPool: Pool
 ): Promise<TransactionCategory[]> => {
     const query = {
-        text: `SELECT category, context, can_be_expense, can_be_income, is_zerosum from transactions.transaction_categories;`,
+        text: `SELECT category, context, can_be_expense, can_be_income, can_be_zerosum from transactions.transaction_categories;`,
     }
     const queryResult = await connectionPool.query(query)
     const transactionCategories: TransactionCategory[] = queryResult.rows.map(
@@ -51,7 +51,7 @@ export const getTransactionCategories = async (
             context: row.context,
             canBeExpense: Boolean(row.can_be_expense),
             canBeIncome: Boolean(row.can_be_income),
-            isZerosum: Boolean(row.is_zerosum),
+            canBeZerosum: Boolean(row.can_be_zerosum),
         })
     )
     return transactionCategories

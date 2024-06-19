@@ -12,7 +12,7 @@ INSERT INTO
     context,
     can_be_expense,
     can_be_income,
-    is_zerosum
+    can_be_zerosum
   )
 VALUES
   ('FOOD', 'home', TRUE, FALSE, FALSE),
