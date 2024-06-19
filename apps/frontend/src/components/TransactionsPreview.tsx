@@ -11,6 +11,7 @@ import { API } from '../helpers/routes'
 import { ScrollArea } from '../lib/shadcn/ScrollArea'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../lib/shadcn/Tabs'
 import { TransactionPreviewCard } from './TransactionPreviewCard'
+import { TodaysTotal } from './TransactionsTodaysTotal'
 import { ErrorMessage, Loader, SectionHeading } from './Typography'
 
 const _fetchTransactions: Fetcher<Transaction[], string> = async (
@@ -46,13 +47,14 @@ export const TransactionsPreview = () => {
             </TabsList>
             <TabsContent value={context}>
                 <SectionHeading>Latest {context} transactions</SectionHeading>
+
                 {error ? <ErrorMessage error={error} /> : null}
+
                 <ScrollArea className="h-[190px]">
                     {isLoading ? (
                         <Loader />
                     ) : (
-                        transactions &&
-                        transactions.map((t) => (
+                        transactions?.map((t) => (
                             <TransactionPreviewCard
                                 key={t.id}
                                 transaction={t}
@@ -60,6 +62,8 @@ export const TransactionsPreview = () => {
                         ))
                     )}
                 </ScrollArea>
+
+                {transactions && <TodaysTotal transactions={transactions} />}
             </TabsContent>
         </Tabs>
     )
