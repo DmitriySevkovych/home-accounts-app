@@ -1,4 +1,5 @@
 import React from 'react'
+import { Puff } from 'react-loader-spinner'
 
 import { cn } from '../helpers/utils'
 
@@ -36,6 +37,38 @@ export const SectionHeading: React.FC<HeadingProps> = ({
     )
 }
 
-export const Loader: React.FC = () => {
-    return <div>Loading...</div>
+export const Loader: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
+    className,
+}) => {
+    return (
+        <div
+            className={cn(
+                'flex h-full w-full items-center justify-center p-3',
+                className
+            )}
+        >
+            <Puff
+                visible={true}
+                height="36"
+                width="36"
+                color="#6F7094"
+                ariaLabel="puff-loading"
+            />
+        </div>
+    )
+}
+
+interface ErrorMessageProps extends React.HTMLAttributes<HTMLDivElement> {
+    error: any
+}
+
+export const ErrorMessage: React.FC<ErrorMessageProps> = ({
+    className,
+    error,
+}) => {
+    return (
+        <div className={cn('h-full w-full text-destructive', className)}>
+            Error: {error}
+        </div>
+    )
 }

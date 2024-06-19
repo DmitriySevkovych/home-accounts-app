@@ -363,7 +363,7 @@ export const createTransaction = (): TransactionBuilder => {
     return new TransactionBuilder()
 }
 
-export const deserializeTransaction = (data: any) => {
+export const deserializeTransaction = (data: any): Transaction => {
     const {
         id,
         category,

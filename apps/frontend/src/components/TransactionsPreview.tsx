@@ -3,36 +3,36 @@ import {
     TransactionContext,
     deserializeTransaction,
 } from 'domain-model'
-import React, { Suspense, useEffect, useState } from 'react'
+import React, { useState } from 'react'
+import useSWR, { Fetcher } from 'swr'
 
 import { safeFetch } from '../helpers/requests'
 import { API } from '../helpers/routes'
 import { ScrollArea } from '../lib/shadcn/ScrollArea'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../lib/shadcn/Tabs'
 import { TransactionPreviewCard } from './TransactionPreviewCard'
-import { Loader, SectionHeading } from './Typography'
+import { TodaysTotal } from './TransactionsTodaysTotal'
+import { ErrorMessage, Loader, SectionHeading } from './Typography'
 
-const useLatestTransactions = (context: TransactionContext) => {
-    const [transactions, setTransactions] = useState<Transaction[]>([])
-    useEffect(() => {
-        const fetchTransactions = async () => {
-            const req = await safeFetch(API.client.transactions.get(context))
-            const reqData = await req.json()
-            const fetchedTransactions = reqData.map((obj: any) =>
-                deserializeTransaction(obj)
-            )
-            setTransactions(fetchedTransactions)
-        }
-        fetchTransactions()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [context])
-    return transactions
+const _fetchTransactions: Fetcher<Transaction[], string> = async (
+    url: string
+) => {
+    const request = await safeFetch(url)
+    const data = await request.json()
+    return data.map((obj: any) => deserializeTransaction(obj))
 }
 
 export const TransactionsPreview = () => {
     const [context, setContext] = useState<TransactionContext>('home')
 
-    const transactions = useLatestTransactions(context)
+    const {
+        data: transactions,
+        error,
+        isLoading,
+    } = useSWR([context], ([context]) =>
+        _fetchTransactions(API.client.transactions.get(context))
+    )
+
     return (
         <Tabs
             defaultValue={context}
@@ -47,16 +47,23 @@ export const TransactionsPreview = () => {
             </TabsList>
             <TabsContent value={context}>
                 <SectionHeading>Latest {context} transactions</SectionHeading>
-                <Suspense fallback={<Loader />}>
-                    <ScrollArea className="h-[190px]">
-                        {transactions.map((t) => (
+
+                {error ? <ErrorMessage error={error} /> : null}
+
+                <ScrollArea className="h-[190px]">
+                    {isLoading ? (
+                        <Loader />
+                    ) : (
+                        transactions?.map((t) => (
                             <TransactionPreviewCard
                                 key={t.id}
                                 transaction={t}
                             />
-                        ))}
-                    </ScrollArea>
-                </Suspense>
+                        ))
+                    )}
+                </ScrollArea>
+
+                {transactions && <TodaysTotal transactions={transactions} />}
             </TabsContent>
         </Tabs>
     )
