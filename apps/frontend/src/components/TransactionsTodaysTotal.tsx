@@ -16,8 +16,8 @@ export const TodaysTotal: React.FC<TodaysTotalProps> = ({ transactions }) => {
     if (todaysTotal === 0) return null
 
     return (
-        <div className="w-full pt-2 text-right">
-            Today&apos;s total: {todaysTotal} EUR
+        <div className="w-full pt-2 text-right font-medium text-primary">
+            Today&apos;s total: {todaysTotal.toFixed(2)} EUR
         </div>
     )
 }
