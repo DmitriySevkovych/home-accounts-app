@@ -236,11 +236,10 @@ export type TimeRange = {
 
 export class TimeRangeCalculator {
     private date: DateTime
-    private otherDate: DateTime
+    private otherDate: DateTime | undefined
 
     private constructor(date: DateTime) {
         this.date = date
-        this.otherDate = DateTime.fromObject({})
     }
 
     static fromDate(dateStr: string) {
@@ -304,12 +303,20 @@ export class TimeRangeCalculator {
     }
 
     toBeginningOfMonth(): TimeRangeCalculator {
-        this.otherDate = this.otherDate.startOf('month')
+        if (this.otherDate) {
+            this.otherDate = this.otherDate.startOf('month')
+        } else {
+            this.otherDate = this.date.startOf('month')
+        }
         return this
     }
 
     toEndOfMonth(): TimeRangeCalculator {
-        this.otherDate = this.otherDate.endOf('month').startOf('day')
+        if (this.otherDate) {
+            this.otherDate = this.otherDate.endOf('month').endOf('day')
+        } else {
+            this.otherDate = this.date.endOf('month').endOf('day')
+        }
         return this
     }
 
@@ -318,11 +325,21 @@ export class TimeRangeCalculator {
         return this
     }
 
-    get(): Date[] {
+    get(): TimeRange {
+        if (!this.otherDate) {
+            return { from: this.date.toJSDate(), until: this.date.toJSDate() }
+        }
+
         if (this.date <= this.otherDate) {
-            return [this.date.toJSDate(), this.otherDate.toJSDate()]
+            return {
+                from: this.date.toJSDate(),
+                until: this.otherDate.toJSDate(),
+            }
         } else {
-            return [this.otherDate.toJSDate(), this.date.toJSDate()]
+            return {
+                from: this.otherDate.toJSDate(),
+                until: this.date.toJSDate(),
+            }
         }
     }
 }

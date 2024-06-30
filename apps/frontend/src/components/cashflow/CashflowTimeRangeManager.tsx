@@ -51,33 +51,35 @@ const _getAdjustedTimeRange = (
 }
 
 const _getTimeRange = (id: CashflowTimeRangeID): CashflowTimeRange => {
-    let from, until
+    let timeRange
     switch (id) {
         case 'lastThreeMonths':
-            ;[from, until] = TimeRangeCalculator.fromEndOfLastMonth()
+            timeRange = TimeRangeCalculator.fromEndOfLastMonth()
                 .goBack(2, 'months')
                 .toBeginningOfMonth()
                 .get()
             break
         case 'lastYear':
-            ;[from, until] = TimeRangeCalculator.fromEndOfLastYear()
+            timeRange = TimeRangeCalculator.fromEndOfLastYear()
                 .goBack(11, 'months')
                 .toBeginningOfMonth()
                 .get()
             break
         case 'currentYear':
-            ;[from, until] = TimeRangeCalculator.fromToday()
+            timeRange = TimeRangeCalculator.fromToday()
                 .goBackToBeginningOfThisYear()
                 .get()
             break
         case 'custom':
-            from = new Date()
-            until = new Date()
+            timeRange = {
+                from: new Date(),
+                until: new Date(),
+            } satisfies TimeRange
             break
         default:
             throw new Error(`Unknown time range '${id}'`)
     }
-    return { id, from, until }
+    return { id, ...timeRange }
 }
 
 export const getDefaultTimeRange = (): CashflowTimeRange => {
