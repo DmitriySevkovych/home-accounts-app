@@ -1,4 +1,8 @@
-import { TransactionAggregate, getMonthDifference } from 'domain-model'
+import {
+    TransactionAggregate,
+    TransactionAggregateByOrigin,
+    getMonthDifference,
+} from 'domain-model'
 import React, { useState } from 'react'
 import useSWR from 'swr'
 
@@ -17,7 +21,7 @@ import { API, PAGES } from '../../helpers/routes'
 const _fetchTransactionAggregates = async (
     url: string,
     timeRange: CashflowTimeRange
-): Promise<TransactionAggregate[]> => {
+): Promise<TransactionAggregateByOrigin[]> => {
     const res = await safeFetch(url, {
         method: 'POST',
         headers: {
@@ -31,7 +35,7 @@ const _fetchTransactionAggregates = async (
             ({
                 ...i,
                 amount: parseInt(i.amount),
-            }) satisfies TransactionAggregate
+            }) satisfies TransactionAggregateByOrigin
     )
 }
 

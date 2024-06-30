@@ -2,14 +2,14 @@ import {
     TimeRange,
     TimeRangeCalculator,
     TransactionAggregate,
-    TransactionAggregateByMonth,
+    TransactionAggregateByOrigin,
 } from 'domain-model'
 import { Pool } from 'pg'
 
-export const aggregateTransactions = async (
+export const aggregateTransactionsByOrigin = async (
     connectionPool: Pool,
     timeRange: TimeRange
-): Promise<TransactionAggregate[]> => {
+): Promise<TransactionAggregateByOrigin[]> => {
     const query = {
         name: 'aggregate-transactions',
         text: `
@@ -57,14 +57,14 @@ export const aggregateTransactions = async (
                         : 'income',
                 investment: row.investment,
                 timeRange,
-            } satisfies TransactionAggregate)
+            } satisfies TransactionAggregateByOrigin)
     )
 }
 
 export const aggregateTransactionsByMonth = async (
     connectionPool: Pool,
     timeRange: TimeRange
-): Promise<TransactionAggregateByMonth[]> => {
+): Promise<TransactionAggregate[]> => {
     const query = {
         name: 'aggregate-transactions-by-month',
         text: `

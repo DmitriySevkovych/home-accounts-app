@@ -11,7 +11,7 @@ import type {
     TimeRange,
     Transaction,
     TransactionAggregate,
-    TransactionAggregateByMonth,
+    TransactionAggregateByOrigin,
     TransactionBlueprint,
     TransactionCategory,
     TransactionContext,
@@ -211,10 +211,10 @@ export class PostgresRepository implements Repository {
         )
     }
 
-    getTransactionsAggregates = async (
+    getTransactionsAggregatesByOrigin = async (
         timeRange: TimeRange
-    ): Promise<TransactionAggregate[]> => {
-        return await transactionAggregationQueries.aggregateTransactions(
+    ): Promise<TransactionAggregateByOrigin[]> => {
+        return await transactionAggregationQueries.aggregateTransactionsByOrigin(
             this.connectionPool,
             timeRange
         )
@@ -222,7 +222,7 @@ export class PostgresRepository implements Repository {
 
     getTransactionsAggregatesByMonth = async (
         timeRange: TimeRange
-    ): Promise<TransactionAggregateByMonth[]> => {
+    ): Promise<TransactionAggregate[]> => {
         return await transactionAggregationQueries.aggregateTransactionsByMonth(
             this.connectionPool,
             timeRange

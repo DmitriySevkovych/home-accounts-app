@@ -11,7 +11,7 @@ import {
     TimeRange,
     Transaction,
     TransactionAggregate,
-    TransactionAggregateByMonth,
+    TransactionAggregateByOrigin,
     TransactionBlueprint,
     TransactionCategory,
     TransactionContext,
@@ -264,15 +264,15 @@ export class StubbedRepository implements Repository {
         return Promise.resolve(['Gas station', 'Supermarket', 'Post office'])
     }
 
-    getTransactionsAggregates = (
+    getTransactionsAggregatesByOrigin = (
         _timeRange: TimeRange
-    ): Promise<TransactionAggregate[]> => {
+    ): Promise<TransactionAggregateByOrigin[]> => {
         throw new Error('stub not implemented')
     }
 
     getTransactionsAggregatesByMonth = (
         _timeRange: TimeRange
-    ): Promise<TransactionAggregateByMonth[]> => {
+    ): Promise<TransactionAggregate[]> => {
         throw new Error('stub not implemented')
     }
 

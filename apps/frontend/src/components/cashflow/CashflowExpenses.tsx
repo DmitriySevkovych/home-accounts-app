@@ -1,4 +1,7 @@
-import { TransactionAggregate } from 'domain-model'
+import {
+    TransactionAggregate,
+    TransactionAggregateByOrigin,
+} from 'domain-model'
 import React from 'react'
 
 import { cn } from '../../helpers/utils'
@@ -39,7 +42,7 @@ const ExpenseItem: React.FC<ExpenseItemProps> = ({
 
 type CashflowExpensesProps = {
     monthsConsidered: number
-    aggregates: TransactionAggregate[]
+    aggregates: TransactionAggregateByOrigin[]
 }
 
 const _groupByCategory = (aggregates: TransactionAggregate[]) => {

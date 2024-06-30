@@ -11,7 +11,7 @@ import type {
     TimeRange,
     Transaction,
     TransactionAggregate,
-    TransactionAggregateByMonth,
+    TransactionAggregateByOrigin,
     TransactionBlueprint,
     TransactionCategory,
     TransactionContext,
@@ -55,13 +55,13 @@ export interface Repository {
 
     getTransactionOrigins: () => Promise<string[]>
 
-    getTransactionsAggregates: (
+    getTransactionsAggregatesByOrigin: (
         _timeRange: TimeRange
-    ) => Promise<TransactionAggregate[]>
+    ) => Promise<TransactionAggregateByOrigin[]>
 
     getTransactionsAggregatesByMonth: (
         _timeRange: TimeRange
-    ) => Promise<TransactionAggregateByMonth[]>
+    ) => Promise<TransactionAggregate[]>
 
     searchTransactions: (
         _parameters: SearchParameters,
