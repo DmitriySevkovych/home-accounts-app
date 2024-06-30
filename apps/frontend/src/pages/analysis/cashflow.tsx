@@ -1,8 +1,4 @@
-import {
-    TransactionAggregate,
-    TransactionAggregationBin,
-    getMonthDifference,
-} from 'domain-model'
+import { TransactionAggregate, getMonthDifference } from 'domain-model'
 import React, { useState } from 'react'
 import useSWR from 'swr'
 
@@ -21,7 +17,7 @@ import { API, PAGES } from '../../helpers/routes'
 const _fetchTransactionAggregates = async (
     url: string,
     timeRange: CashflowTimeRange
-): Promise<TransactionAggregationBin> => {
+): Promise<TransactionAggregate[]> => {
     const res = await safeFetch(url, {
         method: 'POST',
         headers: {
@@ -29,20 +25,14 @@ const _fetchTransactionAggregates = async (
         },
         body: JSON.stringify({ timeRange }),
     })
-    const { aggregationBins } = await res.json()
-    return {
-        timeRange: {
-            from: new Date(aggregationBins[0].timeRange.from),
-            until: new Date(aggregationBins[0].timeRange.until),
-        },
-        aggregates: aggregationBins[0].aggregates.map(
-            (i: any) =>
-                ({
-                    ...i,
-                    amount: parseInt(i.amount),
-                }) satisfies TransactionAggregate
-        ),
-    }
+    const { aggregates } = await res.json()
+    return aggregates.map(
+        (i: any) =>
+            ({
+                ...i,
+                amount: parseInt(i.amount),
+            }) satisfies TransactionAggregate
+    )
 }
 
 const CashflowAnalysisPage: React.FC = () => {
@@ -86,7 +76,7 @@ const CashflowAnalysisPage: React.FC = () => {
                 ) : (
                     <CashflowBalance
                         monthsConsidered={monthsConsidered}
-                        aggregates={data!.aggregates}
+                        aggregates={data!}
                     />
                 )}
             </section>
@@ -98,7 +88,7 @@ const CashflowAnalysisPage: React.FC = () => {
                 ) : (
                     <CashflowIncome
                         monthsConsidered={monthsConsidered}
-                        aggregates={data!.aggregates}
+                        aggregates={data!}
                     />
                 )}
             </section>
@@ -110,7 +100,7 @@ const CashflowAnalysisPage: React.FC = () => {
                 ) : (
                     <CashflowExpenses
                         monthsConsidered={monthsConsidered}
-                        aggregates={data!.aggregates}
+                        aggregates={data!}
                     />
                 )}
             </section>
