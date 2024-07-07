@@ -82,6 +82,12 @@ export default function Home({ systemInfo }: HomePageProps) {
                                     >
                                         See current cashflow diagram.
                                     </NavigationListItem>
+                                    <NavigationListItem
+                                        href={PAGES.transactions.new}
+                                        title="Chart"
+                                    >
+                                        See current chart.
+                                    </NavigationListItem>
                                 </ul>
                             </NavigationMenuContent>
                         </NavigationMenuItem>
