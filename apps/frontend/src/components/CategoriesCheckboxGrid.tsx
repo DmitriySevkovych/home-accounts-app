@@ -35,7 +35,7 @@ const CategoriesCheckboxGrid: React.FC<CategoriesCheckboxGridProps> = ({
 
     return (
         <ScrollArea className="flex flex-col justify-center">
-            <SectionHeading>Select categories </SectionHeading>
+            <SectionHeading>Select transaction categories</SectionHeading>
             <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
                 {[...categories].map((category) => {
                     return (

@@ -37,7 +37,7 @@ const _fetchMonthlyTransactionAggregates = async (
     )
 }
 
-const TransactionsPage = () => {
+const AnalysisChartsPage = () => {
     // Local state
     const [timeRange, setTimeRange] = useState<CashflowTimeRange>(
         getDefaultTimeRange()
@@ -55,7 +55,7 @@ const TransactionsPage = () => {
 
     return (
         <PageWithBackButton
-            heading="Monthly chart"
+            heading="Analysis: monthly charts"
             goBackLink={PAGES.home}
             className="flex h-full flex-col justify-between"
             stickyButton={
@@ -76,4 +76,4 @@ const TransactionsPage = () => {
     )
 }
 
-export default TransactionsPage
+export default AnalysisChartsPage

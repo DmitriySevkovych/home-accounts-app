@@ -39,7 +39,7 @@ export const PAGES = {
     },
     analysis: {
         cashflow: '/analysis/cashflow',
-        chart: '/analysis/chart',
+        charts: '/analysis/charts',
     },
     transactions: {
         index: '/transactions',
