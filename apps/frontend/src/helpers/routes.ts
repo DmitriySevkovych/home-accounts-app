@@ -67,6 +67,11 @@ export const API = {
                 getNameOf: (id: number) =>
                     _getClientsideUrl(`/transactions/receipts/${id}/name`),
             },
+            constants: {
+                getCategories: _getClientsideUrl(
+                    '/utils/transactionCategories'
+                ),
+            },
         },
         analysis: {
             aggregation: _getClientsideUrl(`/analysis/aggregation`),

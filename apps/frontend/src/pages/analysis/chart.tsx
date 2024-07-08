@@ -1,39 +1,77 @@
-import Link from 'next/link'
+import { TransactionAggregate } from 'domain-model'
+import React, { useState } from 'react'
+import useSWR from 'swr'
 
-import OverlayImage from '../../components/Overlay'
-import { TransactionsPreview } from '../../components/TransactionsPreview'
+import { Loader } from '../../components/Typography'
+import CashflowTimeRangeManager, {
+    CashflowTimeRange,
+    getDefaultTimeRange,
+} from '../../components/cashflow/CashflowTimeRangeManager'
+import AggregationAreaChart from '../../components/charts/AggregationAreaChart'
 import { PageWithBackButton } from '../../components/pages/PageWithBackButton'
-import { PAGES } from '../../helpers/routes'
-import { Button } from '../../lib/shadcn/Button'
+import { safeFetch } from '../../helpers/requests'
+import { API, PAGES } from '../../helpers/routes'
+
+const _fetchMonthlyTransactionAggregates = async (
+    url: string,
+    timeRange: CashflowTimeRange
+): Promise<TransactionAggregate[]> => {
+    const res = await safeFetch(url, {
+        method: 'POST',
+        headers: {
+            'content-type': 'application/json',
+        },
+        body: JSON.stringify({ timeRange, groupByMonth: true }),
+    })
+    const { aggregates } = await res.json()
+    return aggregates.map(
+        (i: any) =>
+            ({
+                ...i,
+                timeRange: {
+                    from: new Date(i.timeRange.from),
+                    until: new Date(i.timeRange.until),
+                },
+                amount: parseInt(i.amount),
+            }) satisfies TransactionAggregate
+    )
+}
 
 const TransactionsPage = () => {
+    // Local state
+    const [timeRange, setTimeRange] = useState<CashflowTimeRange>(
+        getDefaultTimeRange()
+    )
+
+    // Queried data
+    const {
+        data: aggregates,
+        error,
+        isLoading,
+    } = useSWR(
+        [API.client.analysis.aggregation, timeRange],
+        ([url, timeRange]) => _fetchMonthlyTransactionAggregates(url, timeRange)
+    )
+
     return (
         <PageWithBackButton
-            heading="Transactions"
+            heading="Monthly chart"
             goBackLink={PAGES.home}
             className="flex h-full flex-col justify-between"
-        >
-            <div className="relative flex flex-col justify-between">
-                <div className="flex flex-grow flex-col items-center justify-between gap-10">
-                    <div className="flex w-full flex-col gap-1">
-                        <TransactionsPreview />
-                    </div>
-
-                    <div className="grid w-full grid-cols-1 gap-3 lg:grid-cols-2">
-                        <Link href={PAGES.transactions.new}>
-                            <Button className="w-full" variant="primary">
-                                New
-                            </Button>
-                        </Link>
-                        <Link href={PAGES.transactions.search}>
-                            <Button className="w-full" variant="secondary">
-                                Search
-                            </Button>
-                        </Link>
-                    </div>
+            stickyButton={
+                <div className="sticky bottom-0 right-0 place-self-end pb-6">
+                    <CashflowTimeRangeManager
+                        timeRange={timeRange}
+                        setTimeRange={setTimeRange}
+                    />
                 </div>
-                <OverlayImage />
-            </div>
+            }
+        >
+            {isLoading ? (
+                <Loader />
+            ) : (
+                <AggregationAreaChart aggregates={aggregates!} />
+            )}
         </PageWithBackButton>
     )
 }
