@@ -1,26 +1,22 @@
-import {
-    TransactionAggregate,
-    TransactionAggregateByOrigin,
-    getMonthDifference,
-} from 'domain-model'
+import { TransactionAggregateByOrigin, getMonthDifference } from 'domain-model'
 import React, { useState } from 'react'
 import useSWR from 'swr'
 
+import TimeRangeManager, {
+    TimeRangeSelection,
+    getDefaultTimeRange,
+} from '../../components/TimeRangeManager'
 import { Loader, SectionHeading } from '../../components/Typography'
 import CashflowBalance from '../../components/cashflow/CashflowBalance'
 import CashflowExpenses from '../../components/cashflow/CashflowExpenses'
 import CashflowIncome from '../../components/cashflow/CashflowIncome'
-import CashflowTimeRangeManager, {
-    CashflowTimeRange,
-    getDefaultTimeRange,
-} from '../../components/cashflow/CashflowTimeRangeManager'
 import { PageWithBackButton } from '../../components/pages/PageWithBackButton'
 import { safeFetch } from '../../helpers/requests'
 import { API, PAGES } from '../../helpers/routes'
 
 const _fetchTransactionAggregates = async (
     url: string,
-    timeRange: CashflowTimeRange
+    timeRange: TimeRangeSelection
 ): Promise<TransactionAggregateByOrigin[]> => {
     const res = await safeFetch(url, {
         method: 'POST',
@@ -41,7 +37,7 @@ const _fetchTransactionAggregates = async (
 
 const CashflowAnalysisPage: React.FC = () => {
     // Local state
-    const [timeRange, setTimeRange] = useState<CashflowTimeRange>(
+    const [timeRange, setTimeRange] = useState<TimeRangeSelection>(
         getDefaultTimeRange()
     )
 
@@ -66,7 +62,7 @@ const CashflowAnalysisPage: React.FC = () => {
             className="relative flex h-full flex-col justify-between"
             stickyButton={
                 <div className="sticky bottom-0 right-0 place-self-end pb-6">
-                    <CashflowTimeRangeManager
+                    <TimeRangeManager
                         timeRange={timeRange}
                         setTimeRange={setTimeRange}
                     />

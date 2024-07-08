@@ -111,14 +111,18 @@ const AggregationAreaChart: React.FC<AggregationAreaChartProps> = ({
                     <XAxis dataKey="month" />
                     <YAxis />
                     <Tooltip />
-                    {drawCategories.map((category) => (
+                    {drawCategories.map((category, index) => (
                         <Area
                             key={`area-chart-${category}`}
                             type="monotone"
                             dataKey={category}
-                            stroke="#8884d8"
+                            stroke={index % 2 === 0 ? '#8884d8' : '#82ca9d'}
                             fillOpacity={1}
-                            fill="url(#colorUv)"
+                            fill={
+                                index % 2 === 0
+                                    ? 'url(#colorUv)'
+                                    : 'url(#colorPv)'
+                            }
                         />
                     ))}
                     <Area type="monotone" dataKey="_placeholderToDrawXAxis" />

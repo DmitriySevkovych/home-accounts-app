@@ -2,11 +2,11 @@ import { TransactionAggregate } from 'domain-model'
 import React, { useState } from 'react'
 import useSWR from 'swr'
 
-import { Loader } from '../../components/Typography'
-import CashflowTimeRangeManager, {
-    CashflowTimeRange,
+import TimeRangeManager, {
+    TimeRangeSelection,
     getDefaultTimeRange,
-} from '../../components/cashflow/CashflowTimeRangeManager'
+} from '../../components/TimeRangeManager'
+import { Loader } from '../../components/Typography'
 import AggregationAreaChart from '../../components/charts/AggregationAreaChart'
 import { PageWithBackButton } from '../../components/pages/PageWithBackButton'
 import { safeFetch } from '../../helpers/requests'
@@ -14,7 +14,7 @@ import { API, PAGES } from '../../helpers/routes'
 
 const _fetchMonthlyTransactionAggregates = async (
     url: string,
-    timeRange: CashflowTimeRange
+    timeRange: TimeRangeSelection
 ): Promise<TransactionAggregate[]> => {
     const res = await safeFetch(url, {
         method: 'POST',
@@ -39,7 +39,7 @@ const _fetchMonthlyTransactionAggregates = async (
 
 const AnalysisChartsPage = () => {
     // Local state
-    const [timeRange, setTimeRange] = useState<CashflowTimeRange>(
+    const [timeRange, setTimeRange] = useState<TimeRangeSelection>(
         getDefaultTimeRange()
     )
 
@@ -60,7 +60,7 @@ const AnalysisChartsPage = () => {
             className="flex h-full flex-col justify-between"
             stickyButton={
                 <div className="sticky bottom-0 right-0 place-self-end pb-6">
-                    <CashflowTimeRangeManager
+                    <TimeRangeManager
                         timeRange={timeRange}
                         setTimeRange={setTimeRange}
                     />
