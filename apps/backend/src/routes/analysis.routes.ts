@@ -1,11 +1,11 @@
-import { TransactionAggregationBin, dateFromString } from 'domain-model'
+import { TransactionAggregate, dateFromString } from 'domain-model'
 import express, { type Router } from 'express'
 
 import { RepositoryLocator } from '../db/repositoryLocator'
 import { TypedRequestBody, TypedResponse } from '../definitions/requests'
 
 type AggregationResponseData = {
-    aggregationBins: TransactionAggregationBin[]
+    aggregates: TransactionAggregate[]
 }
 
 const getRouter = (): Router => {
@@ -17,6 +17,7 @@ const getRouter = (): Router => {
         async (
             req: TypedRequestBody<{
                 timeRange: { from: string; until: string }
+                groupByMonth?: boolean
             }>,
             res: TypedResponse<AggregationResponseData>
         ) => {
@@ -25,17 +26,18 @@ const getRouter = (): Router => {
                 until: dateFromString(req.body.timeRange.until),
             }
 
-            const data = {
-                aggregationBins: [
-                    {
-                        timeRange: timeRange,
-                        aggregates: await repository.getTransactionsAggregates(
-                            timeRange
-                        ),
-                    },
-                ],
+            // TODO refactor
+            let data
+            if (req.body.groupByMonth) {
+                data = await repository.getTransactionsAggregatesByMonth(
+                    timeRange
+                )
+            } else {
+                data = await repository.getTransactionsAggregatesByOrigin(
+                    timeRange
+                )
             }
-            res.status(200).json(data)
+            res.status(200).json({ aggregates: data })
         }
     )
 

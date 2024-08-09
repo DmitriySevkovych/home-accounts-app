@@ -3,10 +3,8 @@ import { Transaction } from './transactions.model'
 
 export type TransactionAggregate = Pick<
     Transaction,
-    'amount' | 'category' | 'context' | 'origin' | 'type' | 'investment'
->
+    'amount' | 'category' | 'context' | 'type'
+> & { timeRange: TimeRange }
 
-export type TransactionAggregationBin = {
-    timeRange: TimeRange
-    aggregates: TransactionAggregate[]
-}
+export type TransactionAggregateByOrigin = TransactionAggregate &
+    Pick<Transaction, 'origin' | 'investment'>

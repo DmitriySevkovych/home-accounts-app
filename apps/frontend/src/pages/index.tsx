@@ -80,7 +80,14 @@ export default function Home({ systemInfo }: HomePageProps) {
                                         href={PAGES.analysis.cashflow}
                                         title="Cashflow"
                                     >
-                                        See current cashflow diagram.
+                                        Breakdown and summary of transaction
+                                        data.
+                                    </NavigationListItem>
+                                    <NavigationListItem
+                                        href={PAGES.analysis.charts}
+                                        title="Charts"
+                                    >
+                                        Trend discovery through charts.
                                     </NavigationListItem>
                                 </ul>
                             </NavigationMenuContent>

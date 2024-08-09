@@ -16,8 +16,8 @@ GET https://localhost:8070/api/v1/utils/tags
 ###
 GET https://localhost:8070/api/v1/utils/constants/transactions
 
-### Transactions routes
-### Batch get
+# Transactions routes
+### Get transactions (paginated)
 GET https://localhost:8070/api/v1/transactions
 ###
 GET https://localhost:8070/api/v1/transactions?context=home&limit=5
@@ -66,5 +66,32 @@ DELETE https://localhost:8070/api/v1/transactions/1
 ### Get transaction receipt
 GET https://localhost:8070/api/v1/transactions/receipt/1
 
-### Investments routes
+# Investments routes
+### Get all investments
 GET https://localhost:8070/api/v1/investments
+
+# Transaction analysis routes
+### Aggregate transactions
+POST https://localhost:8070/api/v1/analysis/aggregation
+Authorization: changeit
+Content-Type: application/json
+
+{
+    "timeRange": {
+        "from": "2024-01-01",
+        "until": "2024-06-30"
+    }
+}
+
+### Aggregate transactions, grouped by month
+POST https://localhost:8070/api/v1/analysis/aggregation
+Authorization: changeit
+Content-Type: application/json
+
+{
+    "timeRange": {
+        "from": "2024-01-01",
+        "until": "2024-06-30"
+    },
+    "groupByMonth": true
+}
