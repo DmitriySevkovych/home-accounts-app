@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import {
     Area,
     AreaChart,
+    CartesianGrid,
     ResponsiveContainer,
     Tooltip,
     XAxis,
@@ -111,6 +112,7 @@ const AggregationAreaChart: React.FC<AggregationAreaChartProps> = ({
                     <XAxis dataKey="month" />
                     <YAxis />
                     <Tooltip />
+                    <CartesianGrid strokeDasharray="50 50" />
                     {drawCategories.map((category, index) => (
                         <Area
                             key={`area-chart-${category}`}
