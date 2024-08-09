@@ -29,7 +29,13 @@ module.exports = {
     reactStrictMode: true,
     output: 'standalone',
     images: {
-        domains: ['media1.giphy.com', 'media4.giphy.com'],
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: '*.giphy.com',
+                port: '',
+            },
+        ],
     },
     poweredByHeader: false,
 }
