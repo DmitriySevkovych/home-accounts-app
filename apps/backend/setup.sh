@@ -33,4 +33,4 @@ else
 fi
 
 # Create DB container (also creates a database and executes the generated init.sql script)
-docker-compose -f ${db_root}/docker-compose.db.yml up -d
+docker compose -f ${db_root}/docker-compose.db.yml up -d
