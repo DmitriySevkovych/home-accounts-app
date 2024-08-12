@@ -5,7 +5,7 @@ import { getInfo } from '../helpers/system'
 const getRouter = (): Router => {
     const router = express.Router()
 
-    router.get('/info', async (req, res) => {
+    router.get('/info', async (_, res) => {
         res.status(200).json(getInfo())
     })
 
