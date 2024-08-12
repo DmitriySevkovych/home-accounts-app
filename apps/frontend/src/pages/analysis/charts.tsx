@@ -53,6 +53,8 @@ const AnalysisChartsPage = () => {
         ([url, timeRange]) => _fetchMonthlyTransactionAggregates(url, timeRange)
     )
 
+    if (error) console.error(error)
+
     return (
         <PageWithBackButton
             heading="Analysis: monthly charts"

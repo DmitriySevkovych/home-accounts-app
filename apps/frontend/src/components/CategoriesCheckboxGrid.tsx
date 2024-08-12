@@ -29,6 +29,8 @@ const CategoriesCheckboxGrid: React.FC<CategoriesCheckboxGridProps> = ({
         _fetchAllTransactionCategories
     )
 
+    if (error) console.error(error)
+
     if (isLoading) return <Loader />
 
     const categories = new Set(data?.map((c) => c.category))

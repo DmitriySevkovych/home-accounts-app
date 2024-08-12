@@ -47,6 +47,8 @@ const CashflowAnalysisPage: React.FC = () => {
         ([url, timeRange]) => _fetchTransactionAggregates(url, timeRange)
     )
 
+    if (error) console.error(error)
+
     // Computed values
     const monthsConsidered = getMonthDifference(
         timeRange.from,

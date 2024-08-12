@@ -1,6 +1,6 @@
 import { useCommandState } from 'cmdk'
 import { TransactionForm } from 'domain-model'
-import React, { useRef, useState } from 'react'
+import React, { useState } from 'react'
 import { ControllerRenderProps, UseFormReturn } from 'react-hook-form'
 
 import { Badge } from '../lib/shadcn/Badge'

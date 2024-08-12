@@ -1,7 +1,4 @@
-import {
-    TransactionAggregate,
-    TransactionAggregateByOrigin,
-} from 'domain-model'
+import { TransactionAggregateByOrigin } from 'domain-model'
 import React from 'react'
 
 import {
