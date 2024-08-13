@@ -8,7 +8,6 @@ import {
     getNextDay,
     getNextWorkday,
     getNumberOfDaysInMonth,
-    timestampFromString,
 } from './dates.model'
 
 /*
@@ -41,15 +40,6 @@ describe('Tests for dealing with dates', () => {
                 expect(formattedDateString).toBe('2023-07-25')
             }
         )
-
-        it('timestampFromString should convert to a numeric timestamp', () => {
-            // Arrange
-            const dateString = '2011-01-02'
-            // Act
-            const timestamp = timestampFromString(dateString)
-            // Assert
-            expect(typeof timestamp).toBe('number')
-        })
 
         it.each`
             dateString

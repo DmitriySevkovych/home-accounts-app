@@ -74,10 +74,6 @@ export const formatDateToWords = (
     return dateString
 }
 
-export const timestampFromString = (dateString: string): number => {
-    return Date.parse(dateString)
-}
-
 export const dateFromString = (dateString: string): Date => {
     // Try to deserialize SQL date string
     let date = DateTime.fromSQL(dateString, { zone: 'utc' })
@@ -88,7 +84,9 @@ export const dateFromString = (dateString: string): Date => {
     }
 
     if (!date.isValid) {
-        console.error({ dateString, date })
+        // console.error({ dateString, date })
+        // TODO temporary hack. Needs better fallback
+        date = DateTime.fromJSDate(new Date(dateString))
     }
 
     return date.toJSDate()
