@@ -133,9 +133,7 @@ describe('Transactions tests', () => {
                 // mandatory information
                 category: 'FEE',
                 origin: 'Handyman',
-                date: {
-                    datetime: '2023-06-14T14:48:00.000Z',
-                },
+                date: '2023-06-14T14:48:00.000Z',
                 amount: -48.34,
                 paymentMethod: 'EC',
                 sourceBankAccount: 'INVESTMENT_ACCOUNT',

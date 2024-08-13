@@ -26,6 +26,22 @@ describe('Tests for dealing with dates', () => {
             expect(formattedDateString).toBe(today.toISOString().split('T')[0])
         })
 
+        it.each`
+            dateString
+            ${'2023-07-25'}
+            ${'2023-07-25T22:00:00.000Z'}
+        `(
+            'formatDate should work together with dateFromString for date $dateString',
+            ({ dateString }) => {
+                // Arrange
+                // Act
+                const date = dateFromString(dateString)
+                const formattedDateString = formatDate(date)
+                // Assert
+                expect(formattedDateString).toBe('2023-07-25')
+            }
+        )
+
         it('timestampFromString should convert to a numeric timestamp', () => {
             // Arrange
             const dateString = '2011-01-02'

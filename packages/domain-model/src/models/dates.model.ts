@@ -42,8 +42,8 @@ const _padZero = (value: number): string => {
 
 export const formatDate = (date: Date): string => {
     const YYYY = date.getFullYear().toString()
-    const MM = _padZero(date.getMonth() + 1)
-    const DD = _padZero(date.getDate())
+    const MM = _padZero(date.getUTCMonth() + 1)
+    const DD = _padZero(date.getUTCDate())
     return `${YYYY}-${MM}-${DD}`
 }
 
@@ -79,31 +79,24 @@ export const timestampFromString = (dateString: string): number => {
 }
 
 export const dateFromString = (dateString: string): Date => {
-    return handleUnwantedTimezoneShift(new Date(Date.parse(dateString)))
+    // Try to deserialize SQL date string
+    let date = DateTime.fromSQL(dateString, { zone: 'utc' })
+
+    // If it failed, try to deserialize ISO date string
+    if (!date.isValid) {
+        date = DateTime.fromISO(dateString, { zone: 'utc' })
+    }
+
+    if (!date.isValid) {
+        console.error({ dateString, date })
+    }
+
+    return date.toJSDate()
 }
 
 export const handleUnwantedTimezoneShift = (date: Date): Date => {
-    const utcDate = _utcDate(date)
-
-    if (date.getDate() > utcDate.getDate()) {
-        return new Date(
-            Date.UTC(
-                utcDate.getFullYear(),
-                utcDate.getMonth(),
-                utcDate.getDate() + 1
-            )
-        )
-    } else if (date.getDate() < utcDate.getDate()) {
-        return new Date(
-            Date.UTC(
-                utcDate.getFullYear(),
-                utcDate.getMonth(),
-                utcDate.getDate() - 1
-            )
-        )
-    } else {
-        return utcDate
-    }
+    const userTimezoneOffset = date.getTimezoneOffset() * 60000
+    return new Date(date.getTime() + userTimezoneOffset)
 }
 
 export const getNumberOfDaysInMonth = (year: number, month: number): number => {
@@ -131,9 +124,10 @@ export const getMonthDifference = (
 }
 
 export const addDays = (date: Date, days: number): Date => {
-    const adjustedDate = new Date(date.valueOf())
-    adjustedDate.setDate(date.getDate() + days)
-    return handleUnwantedTimezoneShift(adjustedDate)
+    const isoDate = DateTime.fromJSDate(date, { zone: 'utc' })
+        .plus({ days })
+        .toISO({ includeOffset: true })
+    return new Date(isoDate!)
 }
 
 export const getNextDay = (date: Date): Date => addDays(date, 1)
@@ -147,13 +141,6 @@ export const getNextWorkday = (date: Date): Date => {
         return addDays(date, 1)
     }
     return date
-}
-
-const _utcDate = (date: Date): Date => {
-    const year = date.getUTCFullYear()
-    const month = date.getUTCMonth()
-    const day = date.getUTCDate()
-    return new Date(Date.UTC(year, month, day))
 }
 
 export type DateCheckPrecision = 'exact' | 'day-wise'

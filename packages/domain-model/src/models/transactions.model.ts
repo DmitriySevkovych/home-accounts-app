@@ -1,4 +1,5 @@
 import { PickAndFlatten } from '../helpers/handy-types'
+import { dateFromString } from './dates.model'
 import { TransactionValidationError } from './errors.model'
 import { Investment } from './investments.model'
 import {
@@ -395,7 +396,7 @@ export const deserializeTransaction = (data: any): Transaction => {
         .withContext(context)
         .withAmount(amount)
         .withCurrency(currency, exchangeRate)
-        .withDate(new Date(date))
+        .withDate(dateFromString(date))
         .withPaymentDetails(paymentMethod, sourceBankAccount, targetBankAccount)
         .withTaxCategory(taxCategory)
         .withComment(comment)
