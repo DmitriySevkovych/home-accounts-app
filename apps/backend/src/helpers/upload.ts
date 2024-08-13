@@ -1,4 +1,5 @@
 import { TransactionReceipt } from 'domain-model'
+// @ts-ignore
 import { Express } from 'express'
 import multer from 'multer'
 

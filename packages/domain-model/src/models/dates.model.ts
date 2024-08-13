@@ -42,8 +42,8 @@ const _padZero = (value: number): string => {
 
 export const formatDate = (date: Date): string => {
     const YYYY = date.getFullYear().toString()
-    const MM = _padZero(date.getMonth() + 1)
-    const DD = _padZero(date.getDate())
+    const MM = _padZero(date.getUTCMonth() + 1)
+    const DD = _padZero(date.getUTCDate())
     return `${YYYY}-${MM}-${DD}`
 }
 
@@ -74,36 +74,27 @@ export const formatDateToWords = (
     return dateString
 }
 
-export const timestampFromString = (dateString: string): number => {
-    return Date.parse(dateString)
-}
-
 export const dateFromString = (dateString: string): Date => {
-    return handleUnwantedTimezoneShift(new Date(Date.parse(dateString)))
+    // Try to deserialize SQL date string
+    let date = DateTime.fromSQL(dateString, { zone: 'utc' })
+
+    // If it failed, try to deserialize ISO date string
+    if (!date.isValid) {
+        date = DateTime.fromISO(dateString, { zone: 'utc' })
+    }
+
+    if (!date.isValid) {
+        // console.error({ dateString, date })
+        // TODO temporary hack. Needs better fallback
+        date = DateTime.fromJSDate(new Date(dateString))
+    }
+
+    return date.toJSDate()
 }
 
 export const handleUnwantedTimezoneShift = (date: Date): Date => {
-    const utcDate = _utcDate(date)
-
-    if (date.getDate() > utcDate.getDate()) {
-        return new Date(
-            Date.UTC(
-                utcDate.getFullYear(),
-                utcDate.getMonth(),
-                utcDate.getDate() + 1
-            )
-        )
-    } else if (date.getDate() < utcDate.getDate()) {
-        return new Date(
-            Date.UTC(
-                utcDate.getFullYear(),
-                utcDate.getMonth(),
-                utcDate.getDate() - 1
-            )
-        )
-    } else {
-        return utcDate
-    }
+    const userTimezoneOffset = date.getTimezoneOffset() * 60000
+    return new Date(date.getTime() + userTimezoneOffset)
 }
 
 export const getNumberOfDaysInMonth = (year: number, month: number): number => {
@@ -131,9 +122,10 @@ export const getMonthDifference = (
 }
 
 export const addDays = (date: Date, days: number): Date => {
-    const adjustedDate = new Date(date.valueOf())
-    adjustedDate.setDate(date.getDate() + days)
-    return handleUnwantedTimezoneShift(adjustedDate)
+    const isoDate = DateTime.fromJSDate(date, { zone: 'utc' })
+        .plus({ days })
+        .toISO({ includeOffset: true })
+    return new Date(isoDate!)
 }
 
 export const getNextDay = (date: Date): Date => addDays(date, 1)
@@ -147,13 +139,6 @@ export const getNextWorkday = (date: Date): Date => {
         return addDays(date, 1)
     }
     return date
-}
-
-const _utcDate = (date: Date): Date => {
-    const year = date.getUTCFullYear()
-    const month = date.getUTCMonth()
-    const day = date.getUTCDate()
-    return new Date(Date.UTC(year, month, day))
 }
 
 export type DateCheckPrecision = 'exact' | 'day-wise'
@@ -236,11 +221,10 @@ export type TimeRange = {
 
 export class TimeRangeCalculator {
     private date: DateTime
-    private otherDate: DateTime
+    private otherDate: DateTime | undefined
 
     private constructor(date: DateTime) {
         this.date = date
-        this.otherDate = DateTime.fromObject({})
     }
 
     static fromDate(dateStr: string) {
@@ -304,12 +288,20 @@ export class TimeRangeCalculator {
     }
 
     toBeginningOfMonth(): TimeRangeCalculator {
-        this.otherDate = this.otherDate.startOf('month')
+        if (this.otherDate) {
+            this.otherDate = this.otherDate.startOf('month')
+        } else {
+            this.otherDate = this.date.startOf('month')
+        }
         return this
     }
 
     toEndOfMonth(): TimeRangeCalculator {
-        this.otherDate = this.otherDate.endOf('month').startOf('day')
+        if (this.otherDate) {
+            this.otherDate = this.otherDate.endOf('month').endOf('day')
+        } else {
+            this.otherDate = this.date.endOf('month').endOf('day')
+        }
         return this
     }
 
@@ -318,11 +310,21 @@ export class TimeRangeCalculator {
         return this
     }
 
-    get(): Date[] {
+    get(): TimeRange {
+        if (!this.otherDate) {
+            return { from: this.date.toJSDate(), until: this.date.toJSDate() }
+        }
+
         if (this.date <= this.otherDate) {
-            return [this.date.toJSDate(), this.otherDate.toJSDate()]
+            return {
+                from: this.date.toJSDate(),
+                until: this.otherDate.toJSDate(),
+            }
         } else {
-            return [this.otherDate.toJSDate(), this.date.toJSDate()]
+            return {
+                from: this.otherDate.toJSDate(),
+                until: this.date.toJSDate(),
+            }
         }
     }
 }

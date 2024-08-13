@@ -232,7 +232,7 @@ describe('Database queries targeting only the transactions schema', () => {
             expect(transaction.investment).toBe(investment)
         })
 
-        it('getTransactionById should return an invesment income', async () => {
+        it('getTransactionById should return an investment income', async () => {
             // Arrange
             const context = 'investments'
             const investment = 'Apartment'

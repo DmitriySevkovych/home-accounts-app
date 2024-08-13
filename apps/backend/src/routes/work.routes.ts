@@ -6,7 +6,7 @@ const getRouter = (): Router => {
     const router = express.Router()
     const repository = RepositoryLocator.getRepository()
 
-    router.get('/invoices', async (req, res) => {
+    router.get('/invoices', async (_, res) => {
         const data = {
             invoices: await repository.getProjectInvoices(),
         }

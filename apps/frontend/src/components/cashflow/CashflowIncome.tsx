@@ -1,4 +1,4 @@
-import { TransactionAggregate } from 'domain-model'
+import { TransactionAggregateByOrigin } from 'domain-model'
 import React from 'react'
 
 import {
@@ -11,7 +11,7 @@ import { Label } from '../../lib/shadcn/Label'
 import { SectionHeading } from '../Typography'
 
 type IncomeItemProps = {
-    item: TransactionAggregate
+    item: TransactionAggregateByOrigin
     monthsConsidered: number
 }
 
@@ -35,7 +35,7 @@ const IncomeItem: React.FC<IncomeItemProps> = ({ item, monthsConsidered }) => {
 
 type CashflowIncomeProps = {
     monthsConsidered: number
-    aggregates: TransactionAggregate[]
+    aggregates: TransactionAggregateByOrigin[]
 }
 
 const CashflowIncome: React.FC<CashflowIncomeProps> = ({
@@ -55,8 +55,8 @@ const CashflowIncome: React.FC<CashflowIncomeProps> = ({
         .filter((i) => !activeIncome.includes(i))
         .reduce(
             (
-                result: { [_: string]: TransactionAggregate },
-                item: TransactionAggregate,
+                result: { [_: string]: TransactionAggregateByOrigin },
+                item: TransactionAggregateByOrigin,
                 index: number
             ) => {
                 // If the reduced item has no investment key, use its index instead (no reducing is necessary then)

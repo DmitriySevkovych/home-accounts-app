@@ -8,7 +8,6 @@ import {
     getNextDay,
     getNextWorkday,
     getNumberOfDaysInMonth,
-    timestampFromString,
 } from './dates.model'
 
 /*
@@ -26,14 +25,21 @@ describe('Tests for dealing with dates', () => {
             expect(formattedDateString).toBe(today.toISOString().split('T')[0])
         })
 
-        it('timestampFromString should convert to a numeric timestamp', () => {
-            // Arrange
-            const dateString = '2011-01-02'
-            // Act
-            const timestamp = timestampFromString(dateString)
-            // Assert
-            expect(typeof timestamp).toBe('number')
-        })
+        it.each`
+            dateString
+            ${'2023-07-25'}
+            ${'2023-07-25T22:00:00.000Z'}
+        `(
+            'formatDate should work together with dateFromString for date $dateString',
+            ({ dateString }) => {
+                // Arrange
+                // Act
+                const date = dateFromString(dateString)
+                const formattedDateString = formatDate(date)
+                // Assert
+                expect(formattedDateString).toBe('2023-07-25')
+            }
+        )
 
         it.each`
             dateString
@@ -272,7 +278,7 @@ describe('Tests for dealing with dates', () => {
             // Arrange
             const today = new Date()
             // Act
-            const [from, until] = TimeRangeCalculator.fromToday()
+            const { from, until } = TimeRangeCalculator.fromToday()
                 .goBackToBeginningOfThisYear()
                 .get()
             // Assert
@@ -289,7 +295,7 @@ describe('Tests for dealing with dates', () => {
             const today = new Date()
             const lastFullYear = today.getFullYear() - 1
             // Act
-            const [from, until] = TimeRangeCalculator.fromEndOfLastYear()
+            const { from, until } = TimeRangeCalculator.fromEndOfLastYear()
                 .goBack(11, 'months')
                 .toBeginningOfMonth()
                 .get()
@@ -305,7 +311,7 @@ describe('Tests for dealing with dates', () => {
         it('should return a range of three months from 2023-03-01 until 2023-05-31', () => {
             // Arrange
             // Act
-            const [from, until] = TimeRangeCalculator.fromDate('2023-05-31')
+            const { from, until } = TimeRangeCalculator.fromDate('2023-05-31')
                 .goBack(2, 'months')
                 .toBeginningOfMonth()
                 .get()
@@ -317,12 +323,12 @@ describe('Tests for dealing with dates', () => {
         it('should return a range from 2023-01-31 until 2023-04-01', () => {
             // Arrange
             // Act
-            const [from, until] = TimeRangeCalculator.fromDate('2023-04-01')
+            const { from, until } = TimeRangeCalculator.fromDate('2023-04-01')
                 .goBack(3, 'months')
                 .toEndOfMonth()
                 .get()
             // Assert
-            expect(from.toISOString()).toBe('2023-01-31T00:00:00.000Z')
+            expect(from.toISOString()).toBe('2023-01-31T23:59:59.999Z')
             expect(until.toISOString()).toBe('2023-04-01T00:00:00.000Z')
         })
     })

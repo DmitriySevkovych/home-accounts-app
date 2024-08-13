@@ -1,27 +1,23 @@
-import {
-    TransactionAggregate,
-    TransactionAggregationBin,
-    getMonthDifference,
-} from 'domain-model'
+import { TransactionAggregateByOrigin, getMonthDifference } from 'domain-model'
 import React, { useState } from 'react'
 import useSWR from 'swr'
 
+import TimeRangeManager, {
+    TimeRangeSelection,
+    getDefaultTimeRange,
+} from '../../components/TimeRangeManager'
 import { Loader, SectionHeading } from '../../components/Typography'
 import CashflowBalance from '../../components/cashflow/CashflowBalance'
 import CashflowExpenses from '../../components/cashflow/CashflowExpenses'
 import CashflowIncome from '../../components/cashflow/CashflowIncome'
-import CashflowTimeRangeManager, {
-    CashflowTimeRange,
-    getDefaultTimeRange,
-} from '../../components/cashflow/CashflowTimeRangeManager'
 import { PageWithBackButton } from '../../components/pages/PageWithBackButton'
 import { safeFetch } from '../../helpers/requests'
 import { API, PAGES } from '../../helpers/routes'
 
 const _fetchTransactionAggregates = async (
     url: string,
-    timeRange: CashflowTimeRange
-): Promise<TransactionAggregationBin> => {
+    timeRange: TimeRangeSelection
+): Promise<TransactionAggregateByOrigin[]> => {
     const res = await safeFetch(url, {
         method: 'POST',
         headers: {
@@ -29,25 +25,19 @@ const _fetchTransactionAggregates = async (
         },
         body: JSON.stringify({ timeRange }),
     })
-    const { aggregationBins } = await res.json()
-    return {
-        timeRange: {
-            from: new Date(aggregationBins[0].timeRange.from),
-            until: new Date(aggregationBins[0].timeRange.until),
-        },
-        aggregates: aggregationBins[0].aggregates.map(
-            (i: any) =>
-                ({
-                    ...i,
-                    amount: parseInt(i.amount),
-                }) satisfies TransactionAggregate
-        ),
-    }
+    const { aggregates } = await res.json()
+    return aggregates.map(
+        (i: any) =>
+            ({
+                ...i,
+                amount: parseInt(i.amount),
+            }) satisfies TransactionAggregateByOrigin
+    )
 }
 
 const CashflowAnalysisPage: React.FC = () => {
     // Local state
-    const [timeRange, setTimeRange] = useState<CashflowTimeRange>(
+    const [timeRange, setTimeRange] = useState<TimeRangeSelection>(
         getDefaultTimeRange()
     )
 
@@ -56,6 +46,8 @@ const CashflowAnalysisPage: React.FC = () => {
         [API.client.analysis.aggregation, timeRange],
         ([url, timeRange]) => _fetchTransactionAggregates(url, timeRange)
     )
+
+    if (error) console.error(error)
 
     // Computed values
     const monthsConsidered = getMonthDifference(
@@ -72,7 +64,7 @@ const CashflowAnalysisPage: React.FC = () => {
             className="relative flex h-full flex-col justify-between"
             stickyButton={
                 <div className="sticky bottom-0 right-0 place-self-end pb-6">
-                    <CashflowTimeRangeManager
+                    <TimeRangeManager
                         timeRange={timeRange}
                         setTimeRange={setTimeRange}
                     />
@@ -86,7 +78,7 @@ const CashflowAnalysisPage: React.FC = () => {
                 ) : (
                     <CashflowBalance
                         monthsConsidered={monthsConsidered}
-                        aggregates={data!.aggregates}
+                        aggregates={data!}
                     />
                 )}
             </section>
@@ -98,7 +90,7 @@ const CashflowAnalysisPage: React.FC = () => {
                 ) : (
                     <CashflowIncome
                         monthsConsidered={monthsConsidered}
-                        aggregates={data!.aggregates}
+                        aggregates={data!}
                     />
                 )}
             </section>
@@ -110,7 +102,7 @@ const CashflowAnalysisPage: React.FC = () => {
                 ) : (
                     <CashflowExpenses
                         monthsConsidered={monthsConsidered}
-                        aggregates={data!.aggregates}
+                        aggregates={data!}
                     />
                 )}
             </section>

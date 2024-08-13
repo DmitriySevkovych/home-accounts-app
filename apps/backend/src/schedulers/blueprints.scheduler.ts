@@ -28,17 +28,28 @@ export const PROCESS_BLUEPRINTS_TASK: cron.ScheduledTask = cron.schedule(
         const results: ProcessedBlueprintResult[] = []
         for (let i = 0; i < activeBlueprints.length; i++) {
             const blueprint = activeBlueprints[i]
+            logger.trace(`Start processing blueprint ${blueprint.key}.`)
             try {
                 // Perform transaction inserts for every passed dueDate since the last uptade of the blueprint
                 for (const dueDate of blueprint.getDatesWhenTransactionIsDue()) {
+                    logger.trace(
+                        `Processing blueprint ${blueprint.key}, due date ${dueDate}.`
+                    )
                     // TODO wrap in database transaction?
                     await repository.createTransaction({
                         ...blueprint.transaction,
                         date: dueDate,
                     } satisfies Transaction)
+                    logger.trace(
+                        `Inserted blueprint transaction for blueprint ${blueprint.key}, due date ${dueDate}.`
+                    )
+
                     await repository.markBlueprintAsProcessed(
                         blueprint.key,
                         dueDate
+                    )
+                    logger.trace(
+                        `Blueprint ${blueprint.key} has been marked as processed on ${dueDate}.`
                     )
                     // 'TODO wrap in database transaction?' end
                     results.push({

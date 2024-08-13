@@ -39,6 +39,7 @@ export const PAGES = {
     },
     analysis: {
         cashflow: '/analysis/cashflow',
+        charts: '/analysis/charts',
     },
     transactions: {
         index: '/transactions',
@@ -65,6 +66,11 @@ export const API = {
             receipts: {
                 getNameOf: (id: number) =>
                     _getClientsideUrl(`/transactions/receipts/${id}/name`),
+            },
+            constants: {
+                getCategories: _getClientsideUrl(
+                    '/utils/transactionCategories'
+                ),
             },
         },
         analysis: {

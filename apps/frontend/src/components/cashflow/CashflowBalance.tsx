@@ -43,11 +43,11 @@ const CashflowBalance: React.FC<CashflowBalanceProps> = ({
 }) => {
     // Computed values
     const activeIncome =
-        aggregates.map(_toActiveIncome).reduce(_sumUp) / monthsConsidered
+        aggregates.map(_toActiveIncome).reduce(_sumUp, 0) / monthsConsidered
     const passiveIncome =
-        aggregates.map(_toPassiveIncome).reduce(_sumUp) / monthsConsidered
+        aggregates.map(_toPassiveIncome).reduce(_sumUp, 0) / monthsConsidered
     const totalExpenses =
-        (-1 * aggregates.map(_toTotalExpenses).reduce(_sumUp)) /
+        (-1 * aggregates.map(_toTotalExpenses).reduce(_sumUp, 0)) /
         monthsConsidered
 
     // Render

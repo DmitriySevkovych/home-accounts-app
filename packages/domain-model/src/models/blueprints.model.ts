@@ -50,6 +50,7 @@ export class TransactionBlueprint {
         const dates = []
         let checkDate = getNextDay(this.lastUpdate)
         const { today, check } = DateCheck
+
         while (today().isNotBefore(checkDate, 'day-wise')) {
             if (
                 this.expirationDate &&

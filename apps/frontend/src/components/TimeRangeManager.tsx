@@ -8,91 +8,90 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from '../../lib/shadcn/Dialog'
-import { Label } from '../../lib/shadcn/Label'
-import { RadioGroup, RadioGroupItem } from '../../lib/shadcn/Radio'
-import { CalendarStandalone } from '../Calendar'
+} from '../lib/shadcn/Dialog'
+import { Label } from '../lib/shadcn/Label'
+import { RadioGroup, RadioGroupItem } from '../lib/shadcn/Radio'
+import { CalendarStandalone } from './Calendar'
 
-export type CashflowTimeRangeID =
+export type TimeRangeID =
     | 'lastThreeMonths'
     | 'lastYear'
     | 'currentYear'
     | 'custom'
 
-const cashflowTimeRanges = {
+const timeRangeSelectionOptions = {
     lastThreeMonths: {
-        id: 'lastThreeMonths' satisfies CashflowTimeRangeID,
+        id: 'lastThreeMonths' satisfies TimeRangeID,
         label: 'Last three months',
     },
     lastYear: {
-        id: 'lastYear' satisfies CashflowTimeRangeID,
+        id: 'lastYear' satisfies TimeRangeID,
         label: 'Last year',
     },
     currentYear: {
-        id: 'currentYear' satisfies CashflowTimeRangeID,
+        id: 'currentYear' satisfies TimeRangeID,
         label: 'Current year',
     },
     custom: {
-        id: 'custom' satisfies CashflowTimeRangeID,
+        id: 'custom' satisfies TimeRangeID,
         label: undefined,
     },
 } as const
 
-export type CashflowTimeRange = TimeRange & { id: CashflowTimeRangeID }
+export type TimeRangeSelection = TimeRange & { id: TimeRangeID }
 
 const _getAdjustedTimeRange = (
-    currentTimeRange: CashflowTimeRange,
+    currentTimeRange: TimeRangeSelection,
     value: Date,
     key: keyof TimeRange
-): CashflowTimeRange => {
+): TimeRangeSelection => {
     const update = { ...currentTimeRange }
     update[key] = value
     return update
 }
 
-const _getTimeRange = (id: CashflowTimeRangeID): CashflowTimeRange => {
-    let from, until
+const _getTimeRange = (id: TimeRangeID): TimeRangeSelection => {
+    let timeRange
     switch (id) {
         case 'lastThreeMonths':
-            ;[from, until] = TimeRangeCalculator.fromEndOfLastMonth()
+            timeRange = TimeRangeCalculator.fromEndOfLastMonth()
                 .goBack(2, 'months')
                 .toBeginningOfMonth()
                 .get()
             break
         case 'lastYear':
-            ;[from, until] = TimeRangeCalculator.fromEndOfLastYear()
+            timeRange = TimeRangeCalculator.fromEndOfLastYear()
                 .goBack(11, 'months')
                 .toBeginningOfMonth()
                 .get()
             break
         case 'currentYear':
-            ;[from, until] = TimeRangeCalculator.fromToday()
+            timeRange = TimeRangeCalculator.fromToday()
                 .goBackToBeginningOfThisYear()
                 .get()
             break
         case 'custom':
-            from = new Date()
-            until = new Date()
+            timeRange = {
+                from: new Date(),
+                until: new Date(),
+            } satisfies TimeRange
             break
         default:
             throw new Error(`Unknown time range '${id}'`)
     }
-    return { id, from, until }
+    return { id, ...timeRange }
 }
 
-export const getDefaultTimeRange = (): CashflowTimeRange => {
+export const getDefaultTimeRange = (): TimeRangeSelection => {
     return _getTimeRange('lastThreeMonths')
 }
 
-type CashflowTimeRangeItemProps = {
+type TimeRangeItemProps = {
     id: string
     label: string | undefined
 }
 
-const CashflowTimeRangeItem: React.FC<CashflowTimeRangeItemProps> = ({
-    id,
-    label,
-}) => {
+const TimeRangeItem: React.FC<TimeRangeItemProps> = ({ id, label }) => {
     return (
         <div className="flex items-center space-x-3">
             <RadioGroupItem value={id} id={id} />
@@ -103,12 +102,12 @@ const CashflowTimeRangeItem: React.FC<CashflowTimeRangeItemProps> = ({
     )
 }
 
-type CashflowTimeRangeManagerProps = {
-    timeRange: CashflowTimeRange
-    setTimeRange: React.Dispatch<React.SetStateAction<CashflowTimeRange>>
+type TimeRangeManagerProps = {
+    timeRange: TimeRangeSelection
+    setTimeRange: React.Dispatch<React.SetStateAction<TimeRangeSelection>>
 }
 
-const CashflowTimeRangeManager: React.FC<CashflowTimeRangeManagerProps> = ({
+const TimeRangeManager: React.FC<TimeRangeManagerProps> = ({
     timeRange,
     setTimeRange,
 }) => {
@@ -127,14 +126,14 @@ const CashflowTimeRangeManager: React.FC<CashflowTimeRangeManagerProps> = ({
 
                     <RadioGroup
                         value={timeRange.id}
-                        onValueChange={(id: CashflowTimeRangeID) =>
+                        onValueChange={(id: TimeRangeID) =>
                             setTimeRange(_getTimeRange(id))
                         }
                     >
-                        {Object.values(cashflowTimeRanges)
+                        {Object.values(timeRangeSelectionOptions)
                             .filter((r) => r.id !== 'custom')
                             .map((r) => (
-                                <CashflowTimeRangeItem key={r.id} {...r} />
+                                <TimeRangeItem key={r.id} {...r} />
                             ))}
 
                         {/* class ml-8 compensates for left out radio button */}
@@ -177,4 +176,4 @@ const CashflowTimeRangeManager: React.FC<CashflowTimeRangeManagerProps> = ({
     )
 }
 
-export default CashflowTimeRangeManager
+export default TimeRangeManager
