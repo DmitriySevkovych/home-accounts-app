@@ -92,11 +92,6 @@ export const dateFromString = (dateString: string): Date => {
     return date.toJSDate()
 }
 
-export const handleUnwantedTimezoneShift = (date: Date): Date => {
-    const userTimezoneOffset = date.getTimezoneOffset() * 60000
-    return new Date(date.getTime() + userTimezoneOffset)
-}
-
 export const getNumberOfDaysInMonth = (year: number, month: number): number => {
     return new Date(year, month + 1, 0).getDate()
 }
