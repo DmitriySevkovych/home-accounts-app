@@ -1,8 +1,4 @@
-import {
-    formatDate,
-    formatDateToWords,
-    handleUnwantedTimezoneShift,
-} from 'domain-model'
+import { dateFromString, formatDate, formatDateToWords } from 'domain-model'
 import { CalendarIcon } from 'lucide-react'
 import React, { useState } from 'react'
 import { ControllerRenderProps, UseFormReturn } from 'react-hook-form'
@@ -34,7 +30,7 @@ export function Calendar<T>(props: CalendarProps<T>) {
         field: ControllerRenderProps<any, string>,
         selectedDate: Date
     ) => {
-        field.onChange(handleUnwantedTimezoneShift(selectedDate))
+        field.onChange(dateFromString(selectedDate.toISOString()))
         setIsOpen(false)
     }
 
@@ -95,7 +91,11 @@ export const CalendarStandalone: React.FC<CalendarStandaloneProps> = ({
     const [isOpen, setIsOpen] = useState<boolean>(false)
 
     const handleSelect = (selectedDate: Date | undefined) => {
-        setValue(handleUnwantedTimezoneShift(selectedDate as Date))
+        setValue(
+            dateFromString(
+                selectedDate?.toISOString() || new Date().toISOString()
+            )
+        )
         setIsOpen(false)
     }
 
