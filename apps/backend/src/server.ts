@@ -6,7 +6,7 @@ import https from 'https'
 import morgan from 'morgan'
 import path from 'path'
 
-import { backendHttpLogger, checkAuthHeader } from './helpers/middleware'
+import { checkAuthHeader } from './helpers/middleware'
 import mountRoutes from './routes'
 
 export const createServer = async (): Promise<Express> => {
@@ -16,7 +16,6 @@ export const createServer = async (): Promise<Express> => {
         .use(urlencoded({ extended: true }))
         .use(json())
         .use(cors())
-        .use(backendHttpLogger)
         .use(checkAuthHeader)
 
     mountRoutes(app)
