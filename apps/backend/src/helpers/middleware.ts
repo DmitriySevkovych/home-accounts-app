@@ -67,7 +67,7 @@ export const checkIdIsInteger = (
 
     if (isNaN(id)) {
         const message = `The request contains a malformed id in path (id=${id}).`
-        req.log.error({ message })
+        logger.error({ message })
         res.status(400).json({ message })
         return
     }
@@ -93,7 +93,7 @@ export const transactionContext = (
 
     if (!transactionContexts.find((c) => c === context)) {
         const message = `The request contains an unknown context as query parameter (context=${context}).`
-        req.log.error({ message })
+        logger.error({ message })
         res.status(400).json({ message })
         return
     }

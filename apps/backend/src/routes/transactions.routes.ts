@@ -4,6 +4,7 @@ import {
     deserializeTransaction,
 } from 'domain-model'
 import express, { type Response, type Router } from 'express'
+import { getLogger } from 'logger'
 import stream from 'stream'
 
 import { RepositoryLocator } from '../db/repositoryLocator'
@@ -24,6 +25,7 @@ import upload, { deserializeTransactionReceipt } from '../helpers/upload'
 const getRouter = (): Router => {
     const router = express.Router()
     const repository = RepositoryLocator.getRepository()
+    const logger = getLogger('backend')
 
     router.get(
         '/',
@@ -43,7 +45,7 @@ const getRouter = (): Router => {
                 )
                 return res.status(200).json(transactions)
             } catch (err) {
-                req.log.error(err)
+                logger.error(err)
                 if (err instanceof BadQueryParameterInRequestError) {
                     res.status(400).json({
                         message: err.message,
@@ -69,7 +71,7 @@ const getRouter = (): Router => {
                 message: `Created new entry with id: ${id}`,
             })
         } catch (err) {
-            req.log.error(err)
+            logger.error(err)
             if (err instanceof TransactionValidationError) {
                 res.status(400).json({
                     message:
@@ -82,12 +84,12 @@ const getRouter = (): Router => {
         }
     })
 
-    router.get('/origins', async (req, res) => {
+    router.get('/origins', async (_, res) => {
         try {
             const transactionOrigins = await repository.getTransactionOrigins()
             return res.status(200).json({ transactionOrigins })
         } catch (err) {
-            req.log.error(err)
+            logger.error(err)
             res.status(500).json({ message: 'Something went wrong' })
         }
     })
@@ -125,7 +127,7 @@ const getRouter = (): Router => {
                 readStream.end(receipt.buffer)
                 readStream.pipe(res)
             } catch (err) {
-                req.log.error(err)
+                logger.error(err)
                 if (err instanceof NoRecordFoundInDatabaseError) {
                     res.status(404).json({
                         message: 'No record found in the database.',
@@ -154,7 +156,7 @@ const getRouter = (): Router => {
                 )
                 res.status(200).json({ name: receipt.name })
             } catch (err) {
-                req.log.error(err)
+                logger.error(err)
                 if (err instanceof NoRecordFoundInDatabaseError) {
                     res.status(404).json({
                         message: 'No record found in the database.',
@@ -173,7 +175,7 @@ const getRouter = (): Router => {
             const transaction = await repository.getTransactionById(id)
             return res.status(200).json(transaction)
         } catch (err) {
-            req.log.error(err)
+            logger.error(err)
             if (err instanceof NoRecordFoundInDatabaseError) {
                 res.status(404).json({
                     message: 'No record found in the database.',
@@ -191,7 +193,7 @@ const getRouter = (): Router => {
             await repository.deleteTransaction(id)
             return res.sendStatus(204)
         } catch (err) {
-            req.log.error(err)
+            logger.error(err)
             if (err instanceof UnsupportedTransactionOperationError) {
                 res.status(400).json({
                     message: err.message,
@@ -227,7 +229,7 @@ const getRouter = (): Router => {
             await repository.updateTransaction(transaction, receipt)
             return res.status(200).json({ message: 'Transaction updated' })
         } catch (err) {
-            req.log.error(err)
+            logger.error(err)
             if (err instanceof TransactionValidationError) {
                 res.status(400).json({
                     message:
@@ -252,7 +254,7 @@ const getRouter = (): Router => {
                 )
                 return res.status(200).json(searchResult)
             } catch (err) {
-                req.log.error(err)
+                logger.error(err)
                 res.status(500).json({ message: 'Something went wrong' })
             }
         }
