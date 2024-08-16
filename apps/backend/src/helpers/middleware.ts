@@ -1,6 +1,7 @@
 import { type TransactionContext, transactionContexts } from 'domain-model'
 import { NextFunction, Request, Response } from 'express'
 import { getLogger } from 'logger'
+import morgan from 'morgan'
 
 import {
     RequestWithPagination,
@@ -9,6 +10,16 @@ import {
 import { getPaginationOptionsFromRequest } from './pagination'
 
 const logger = getLogger('backend')
+
+export const morganMiddleware = morgan(
+    ':method :url :status :res[content-length] - :response-time ms',
+    {
+        stream: {
+            // Configure Morgan to use our custom logger with the http severity
+            write: (message) => logger.http(message.trim()),
+        },
+    }
+)
 
 const AUTH_APIKEY = process.env.AUTH_APIKEY
 const AUTH_DISABLE = process.env.AUTH_DISABLE
