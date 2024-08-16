@@ -6,8 +6,16 @@
 import * as winston from 'winston'
 import 'winston-daily-rotate-file'
 
-const { combine, timestamp, printf, colorize, align, json, uncolorize } =
-    winston.format
+const {
+    combine,
+    timestamp,
+    printf,
+    colorize,
+    align,
+    json,
+    uncolorize,
+    errors,
+} = winston.format
 
 export type LoggerName = 'backend' | 'setup' | 'db' | 'frontend'
 
@@ -33,6 +41,7 @@ const _getFormatForConsole = (): winston.Logform.Format => {
             format: 'YYYY-MM-DD hh:mm:ss.SSS A',
         }),
         printf((info) => `[${info.timestamp}] ${info.level}: ${info.message}`),
+        errors({ stack: true }),
     ]
 
     // Align console output only in development to avoid printing alignment symbols to file in production
