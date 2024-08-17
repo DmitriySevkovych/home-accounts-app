@@ -3,6 +3,7 @@
     - https://betterstack.com/community/guides/logging/how-to-install-setup-and-use-winston-and-morgan-to-log-node-js-applications/#configuring-transports-in-winston
     - https://stackoverflow.com/questions/53298354/winston-custom-log-levels-typescript-definitions
 */
+import path from 'path'
 import * as winston from 'winston'
 import 'winston-daily-rotate-file'
 
@@ -63,10 +64,11 @@ const _getTransports = (): winston.transport[] => {
         }),
     ]
 
-    if (process.env.NODE_ENV !== 'development') {
+    if (process.env.LOG_TO_FILE === 'true') {
+        const logDirectory = process.env.LOG_DIRECTORY || __dirname
         transports.push(
             new winston.transports.DailyRotateFile({
-                filename: 'app-%DATE%.log',
+                filename: path.join(logDirectory, 'app-%DATE%.log'),
                 datePattern: 'YYYY-MM-DD',
                 zippedArchive: true,
                 maxSize: '10m',
