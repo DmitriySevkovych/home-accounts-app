@@ -1,3 +1,4 @@
+import { getLogger } from 'logger'
 import { Coins, LineChart, UserCog } from 'lucide-react'
 import React from 'react'
 
@@ -127,6 +128,7 @@ export default function Home({ systemInfo }: HomePageProps) {
 }
 
 export const getServerSideProps = async () => {
+    const logger = getLogger('frontend')
     let backendInfo
     try {
         const req = await safeFetch(API.server.system.info())
@@ -135,7 +137,7 @@ export const getServerSideProps = async () => {
         backendInfo = {
             error: `Fetch ${API.server.system.info()} failed`,
         }
-        console.error(err)
+        logger.error(err)
     }
     return {
         props: {

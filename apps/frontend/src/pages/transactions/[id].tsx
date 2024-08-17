@@ -1,4 +1,5 @@
 import { TransactionForm } from 'domain-model'
+import { getLogger } from 'logger'
 import React from 'react'
 
 import { DeleteDialog } from '../../components/Dialog'
@@ -52,6 +53,7 @@ const EditTransactionPage = ({ transaction, constants }: EditPageProps) => {
 }
 
 export async function getServerSideProps(context: any) {
+    const logger = getLogger('frontend')
     const { id } = context.query
     try {
         const response = await safeFetch(API.server.transactions.getById(id))
@@ -64,7 +66,7 @@ export async function getServerSideProps(context: any) {
             },
         }
     } catch (err) {
-        console.log(err)
+        logger.error(err)
     }
 }
 

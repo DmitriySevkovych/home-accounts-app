@@ -1,4 +1,5 @@
 import { TransactionForm } from 'domain-model'
+import { getLogger } from 'logger'
 import React from 'react'
 
 import useTransactionForm from '../../components/hooks/useTransactionForm'
@@ -42,6 +43,7 @@ const NewTransactionPage = ({ constants }: NewTransactionPageProps) => {
 }
 
 export const getServerSideProps = async () => {
+    const logger = getLogger('frontend')
     try {
         return {
             props: {
@@ -49,7 +51,7 @@ export const getServerSideProps = async () => {
             },
         }
     } catch (err) {
-        console.log(err)
+        logger.error(err)
     }
 }
 
