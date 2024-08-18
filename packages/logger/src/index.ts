@@ -59,6 +59,7 @@ const _getTransports = (): winston.transport[] => {
     const transports: winston.transport[] = [
         new winston.transports.Console({
             format: _getFormatForConsole(),
+            silent: process.env.NODE_ENV === 'test',
         }),
     ]
 
