@@ -6,7 +6,7 @@ import { RepositoryLocator } from '../db/repositoryLocator'
 import { ProcessedBlueprintResult } from '../definitions/processes'
 import { sendProcessedBlueprintResults } from '../mails/send'
 
-const logger = getLogger('backend')
+const logger = getLogger()
 
 let processBlueprintsSchedule = process.env.NODECRON_PROCESS_BLUEPRINTS
 if (!processBlueprintsSchedule) {

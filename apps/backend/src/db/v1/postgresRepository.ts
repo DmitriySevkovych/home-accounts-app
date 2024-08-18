@@ -31,7 +31,7 @@ import * as utilsQueries from './queries/utils.queries'
 import * as workQueries from './queries/work.queries'
 
 export class PostgresRepository implements Repository {
-    logger = getLogger('db')
+    logger = getLogger()
     connectionPool: Pool
 
     constructor() {

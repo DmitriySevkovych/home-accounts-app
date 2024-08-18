@@ -25,7 +25,7 @@ import upload, { deserializeTransactionReceipt } from '../helpers/upload'
 const getRouter = (): Router => {
     const router = express.Router()
     const repository = RepositoryLocator.getRepository()
-    const logger = getLogger('backend')
+    const logger = getLogger()
 
     router.get(
         '/',

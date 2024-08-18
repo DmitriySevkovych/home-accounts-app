@@ -206,7 +206,7 @@ const SearchTransactionsPage: React.FC<SearchTransactionsPageProps> = ({
 }
 
 export const getServerSideProps = async () => {
-    const logger = getLogger('frontend')
+    const logger = getLogger()
     try {
         return {
             props: {

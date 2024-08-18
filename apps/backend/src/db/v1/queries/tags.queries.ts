@@ -1,7 +1,7 @@
 import { getLogger } from 'logger'
 import type { Pool, PoolClient } from 'pg'
 
-const logger = getLogger('db')
+const logger = getLogger()
 
 export type TagDAO = {
     tag: string

@@ -128,7 +128,7 @@ export default function Home({ systemInfo }: HomePageProps) {
 }
 
 export const getServerSideProps = async () => {
-    const logger = getLogger('frontend')
+    const logger = getLogger()
     let backendInfo
     try {
         const req = await safeFetch(API.server.system.info())

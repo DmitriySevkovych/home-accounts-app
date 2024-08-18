@@ -18,8 +18,6 @@ const {
     errors,
 } = winston.format
 
-export type LoggerName = 'backend' | 'setup' | 'db' | 'frontend'
-
 const logLevels = {
     fatal: 0,
     error: 1,
@@ -87,9 +85,8 @@ const logger = winston.createLogger({
     transports: _getTransports(),
 })
 
-export function getLogger(
-    _loggerName: LoggerName
-): winston.Logger & Record<keyof typeof logLevels, winston.LeveledLogMethod> {
+export function getLogger(): winston.Logger &
+    Record<keyof typeof logLevels, winston.LeveledLogMethod> {
     return logger as winston.Logger &
         Record<keyof typeof logLevels, winston.LeveledLogMethod>
 }

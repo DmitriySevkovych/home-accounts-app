@@ -9,7 +9,7 @@ import {
 } from '../definitions/requests'
 import { getPaginationOptionsFromRequest } from './pagination'
 
-const logger = getLogger('backend')
+const logger = getLogger()
 
 export const morganMiddleware = morgan(
     ':method :url :status :res[content-length] - :response-time ms',

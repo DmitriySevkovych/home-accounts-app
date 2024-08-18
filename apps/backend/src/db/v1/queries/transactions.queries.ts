@@ -33,7 +33,7 @@ import {
     insertTransactionVAT,
 } from './work.queries'
 
-const logger = getLogger('db')
+const logger = getLogger()
 
 /*
     'database-specific' CRUD methods

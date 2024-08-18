@@ -53,7 +53,7 @@ const EditTransactionPage = ({ transaction, constants }: EditPageProps) => {
 }
 
 export async function getServerSideProps(context: any) {
-    const logger = getLogger('frontend')
+    const logger = getLogger()
     const { id } = context.query
     try {
         const response = await safeFetch(API.server.transactions.getById(id))

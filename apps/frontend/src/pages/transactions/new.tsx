@@ -43,7 +43,7 @@ const NewTransactionPage = ({ constants }: NewTransactionPageProps) => {
 }
 
 export const getServerSideProps = async () => {
-    const logger = getLogger('frontend')
+    const logger = getLogger()
     try {
         return {
             props: {
