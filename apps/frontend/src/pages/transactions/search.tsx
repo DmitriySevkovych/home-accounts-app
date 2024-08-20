@@ -6,6 +6,7 @@ import {
     Transaction,
     deserializeTransaction,
 } from 'domain-model'
+import { getLogger } from 'logger'
 import { useMemo, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 
@@ -205,6 +206,7 @@ const SearchTransactionsPage: React.FC<SearchTransactionsPageProps> = ({
 }
 
 export const getServerSideProps = async () => {
+    const logger = getLogger()
     try {
         return {
             props: {
@@ -212,7 +214,7 @@ export const getServerSideProps = async () => {
             },
         }
     } catch (err) {
-        console.log(err)
+        logger.error(err)
     }
 }
 

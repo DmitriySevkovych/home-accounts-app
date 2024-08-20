@@ -19,15 +19,12 @@
         "preset": "jest-presets/jest/node"
     },
     "dependencies": {
-        "pino": "^8.11.0",
-        "pino-http": "^8.3.3",
-        "uuid": "^9.0.0"
+        "winston": "^3.14.2",
+        "winston-daily-rotate-file": "^5.0.0"
     },
     "devDependencies": {
         "@types/jest": "^26.0.22",
         "@types/node": "^18.11.9",
-        "@types/pino-http": "^5.8.1",
-        "@types/uuid": "^9.0.1",
         "eslint-config-custom": "*",
         "jest-presets": "*",
         "tsconfig": "*",

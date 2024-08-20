@@ -9,7 +9,7 @@ import {
     compileBlueprintsHtml,
 } from './mailTemplates'
 
-const logger = getLogger('backend')
+const logger = getLogger()
 
 export const MAIL_TRANSPORTER = nodemailer.createTransport({
     host: process.env.MAIL_HOST,

@@ -6,7 +6,7 @@ import { MAIL_TRANSPORTER } from './mails/send'
 import { PROCESS_BLUEPRINTS_TASK } from './schedulers/blueprints.scheduler'
 import { createSecureServer } from './server'
 
-const logger = getLogger('backend')
+const logger = getLogger()
 
 const { PORT, API_BASE_URL } = process.env
 const SCHEDULER_DISABLED = process.env.SCHEDULER_DISABLED === 'true'

@@ -5,7 +5,7 @@
         "APP_ENV",
         "PORT",
         "API_BASE_URL",
-        "LOG_LEVEL",
+        "LOG_*",
         "GIT_*",
         "AUTH_*",
         "TLS_*",

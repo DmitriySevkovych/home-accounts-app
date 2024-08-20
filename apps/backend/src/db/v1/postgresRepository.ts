@@ -17,7 +17,7 @@ import type {
     TransactionContext,
     TransactionReceipt,
 } from 'domain-model'
-import { Logger, getLogger } from 'logger'
+import { getLogger } from 'logger'
 import type { Pool, PoolClient } from 'pg'
 
 import connectionPool from '.'
@@ -31,11 +31,10 @@ import * as utilsQueries from './queries/utils.queries'
 import * as workQueries from './queries/work.queries'
 
 export class PostgresRepository implements Repository {
-    logger: Logger
+    logger = getLogger()
     connectionPool: Pool
 
     constructor() {
-        this.logger = getLogger('db')
         this.connectionPool = connectionPool
         this.initialize()
         this.logger.debug(
@@ -81,10 +80,7 @@ export class PostgresRepository implements Repository {
                 'Successfully ended all database connection clients.'
             )
         } catch (err) {
-            this.logger.error(
-                err,
-                'Error while ending the database connection clients.'
-            )
+            this.logger.error(err)
         }
     }
 
@@ -99,10 +95,7 @@ export class PostgresRepository implements Repository {
             )
             return true
         } catch (err) {
-            this.logger.error(
-                err,
-                `Database ping. Querying the ${process.env.APP_ENV} database failed with and error.`
-            )
+            this.logger.error(err)
             return false
         }
     }

@@ -3,20 +3,18 @@ import cors from 'cors'
 import express, { type Express } from 'express'
 import { readFileSync } from 'fs'
 import https from 'https'
-import morgan from 'morgan'
 import path from 'path'
 
-import { backendHttpLogger, checkAuthHeader } from './helpers/middleware'
+import { checkAuthHeader, morganMiddleware } from './helpers/middleware'
 import mountRoutes from './routes'
 
 export const createServer = async (): Promise<Express> => {
     const app = express()
     app.disable('x-powered-by')
-        .use(morgan('dev'))
+        .use(morganMiddleware)
         .use(urlencoded({ extended: true }))
         .use(json())
         .use(cors())
-        .use(backendHttpLogger)
         .use(checkAuthHeader)
 
     mountRoutes(app)

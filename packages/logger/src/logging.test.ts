@@ -1,11 +1,8 @@
-import { getHttpLogger, getLogger } from './index'
+import { getLogger } from './index'
 
 describe('Logger', () => {
     it('Silly test', () => {
-        const httpLogger = getHttpLogger('setup')
-        expect(httpLogger).toBeDefined()
-
-        const logger = getLogger('setup')
+        const logger = getLogger()
         expect(logger).toBeDefined()
     })
 })
