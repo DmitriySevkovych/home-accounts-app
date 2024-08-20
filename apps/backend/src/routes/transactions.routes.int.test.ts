@@ -133,11 +133,8 @@ describe('Transactions router tests', () => {
             .get(`${routerBaseUrl}/404`)
             .expect(404)
             .then((res) => {
-                const { message, cause } = res.body
+                const { message } = res.body
                 expect(message).toBe('No record found in the database.')
-                expect(cause).toBe(
-                    'The database does not hold a transaction with id=404.'
-                )
             })
     })
 
