@@ -30,6 +30,15 @@ export const PROCESS_BLUEPRINTS_TASK: cron.ScheduledTask = cron.schedule(
             const blueprint = activeBlueprints[i]
             logger.trace(`Start processing blueprint ${blueprint.key}.`)
             try {
+                const timeoutAfterMs = process.env.PROCESS_BLUEPRINTS_TIMEOUT
+                    ? parseInt(process.env.PROCESS_BLUEPRINTS_TIMEOUT)
+                    : 5000
+                const timeoutId = setTimeout(() => {
+                    throw new Error(
+                        `Timeout! Processing blueprint ${blueprint.key} took longer than ${timeoutAfterMs}ms`
+                    )
+                }, timeoutAfterMs)
+
                 // Perform transaction inserts for every passed dueDate since the last uptade of the blueprint
                 for (const dueDate of blueprint.getDatesWhenTransactionIsDue()) {
                     logger.trace(
@@ -61,6 +70,8 @@ export const PROCESS_BLUEPRINTS_TASK: cron.ScheduledTask = cron.schedule(
                         `Successfully processed blueprint ${blueprint.key} on ${dueDate}`
                     )
                 }
+
+                clearTimeout(timeoutId)
             } catch (error) {
                 logger.error(error)
                 results.push({

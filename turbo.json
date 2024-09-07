@@ -13,7 +13,7 @@
         "PAGINATION_*",
         "SCHEDULER_*",
         "NODECRON_PROCESS_BLUEPRINTS",
-        "PROCESS_BLUEPRINTS_AGENT",
+        "PROCESS_BLUEPRINTS_*",
         "MAIL_*",
         "NEXT_PUBLIC_*",
         "NODE*",
