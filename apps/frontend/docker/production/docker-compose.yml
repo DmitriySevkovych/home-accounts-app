@@ -1,11 +1,9 @@
-version: "3"
-
 services:
-  home-app-frontend-production:
-    build:
-      context: ../../../../
-      dockerfile: apps/frontend/docker/production/Dockerfile
-      args:
-        - GIT_BRANCH
-        - GIT_COMMIT
-    image: dsevkovych/home-app-frontend-production
+    home-app-frontend-production:
+        build:
+            context: ../../../../
+            dockerfile: apps/frontend/docker/production/Dockerfile
+            args:
+                - GIT_BRANCH
+                - GIT_COMMIT
+        image: dsevkovych/home-app-frontend-production

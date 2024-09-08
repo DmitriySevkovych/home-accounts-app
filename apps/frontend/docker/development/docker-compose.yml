@@ -1,11 +1,9 @@
-version: "3"
-
 services:
-  home-app-frontend-dev:
-    build:
-      context: ../../../../
-      dockerfile: apps/frontend/docker/development/Dockerfile
-      args:
-        - GIT_BRANCH
-        - GIT_COMMIT
-    image: home-app-frontend-development
+    home-app-frontend-dev:
+        build:
+            context: ../../../../
+            dockerfile: apps/frontend/docker/development/Dockerfile
+            args:
+                - GIT_BRANCH
+                - GIT_COMMIT
+        image: home-app-frontend-development

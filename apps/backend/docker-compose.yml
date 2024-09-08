@@ -1,12 +1,9 @@
-version: "3"
-
 services:
-  home-app-backend:
-    build:
-      context: ../../
-      dockerfile: ./apps/backend/Dockerfile
-      args:
-        - GIT_BRANCH
-        - GIT_COMMIT
-    image: dsevkovych/home-app-backend
-   
+    home-app-backend:
+        build:
+            context: ../../
+            dockerfile: ./apps/backend/Dockerfile
+            args:
+                - GIT_BRANCH
+                - GIT_COMMIT
+        image: dsevkovych/home-app-backend
