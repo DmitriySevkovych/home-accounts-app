@@ -17,7 +17,10 @@ export const throwingFetch = async (
 ): Promise<Response> => {
     const res = await fetch(...options)
     if (!res.ok) {
-        throw new ResponseError('Bad fetch response', res)
+        throw new ResponseError(
+            `Bad fetch response. Response status ${res.status} ${res.statusText}.`,
+            res
+        )
     }
     return res
 }
