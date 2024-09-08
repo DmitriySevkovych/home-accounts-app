@@ -343,10 +343,10 @@ class TransactionBuilder {
                 )
             }
         } else if (context === 'work' && transactionType === 'income') {
-            const { invoiceKey } = this.transaction
-            if (!invoiceKey) {
+            const { invoiceKey, category } = this.transaction
+            if (!invoiceKey && ['SALARY'].includes(category)) {
                 throw new TransactionValidationError(
-                    `The transaction context '${context}' requires the attribute 'invoiceKey' to be set.`
+                    `The transaction context '${context}' requires the attribute 'invoiceKey' to be set if category is ${category}.`
                 )
             }
         } else if (context === 'investments') {

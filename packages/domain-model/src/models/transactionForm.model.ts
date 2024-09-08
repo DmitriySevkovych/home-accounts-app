@@ -97,6 +97,7 @@ export const TransactionFormSchema = z
         if (
             form.context === 'work' &&
             form.type === 'income' &&
+            form.category === 'SALARY' &&
             !form.invoiceKey
         ) {
             ctx.addIssue({
