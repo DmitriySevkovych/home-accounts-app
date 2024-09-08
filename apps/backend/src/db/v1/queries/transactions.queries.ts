@@ -622,7 +622,9 @@ const _mapToTransaction = async (
                 id,
                 connectionPool
             )
-            transactionBuilder.withInvoice(invoiceKey)
+            if (invoiceKey) {
+                transactionBuilder.withInvoice(invoiceKey)
+            }
         }
     }
     return transactionBuilder.build()

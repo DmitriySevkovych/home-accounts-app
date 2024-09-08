@@ -24,14 +24,20 @@ export const getProjectInvoices = async (
 export const getInvoiceKeyForTransactionId = async (
     transactionId: number,
     connectionPool: Pool
-): Promise<string> => {
+): Promise<string | null> => {
     const query = {
         name: 'select-from-work.project_invoice_transactions-where-id',
         text: `SELECT invoice FROM work.project_invoice_transactions WHERE transaction_id = $1`,
         values: [transactionId],
     }
     const queryResult = await connectionPool.query(query)
-    return queryResult.rows[0].invoice
+    if (queryResult.rowCount === 1) {
+        return queryResult.rows[0].invoice
+    } else if (queryResult.rowCount === 0) {
+        return null
+    } else {
+        throw new Error('Edge case not implemented yet')
+    }
 }
 
 export const getVATForTransactionId = async (
