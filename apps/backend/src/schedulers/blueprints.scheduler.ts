@@ -19,7 +19,7 @@ if (!processBlueprintsSchedule) {
 export const PROCESS_BLUEPRINTS_TASK: cron.ScheduledTask = cron.schedule(
     processBlueprintsSchedule,
     async () => {
-        logger.info('Start processing blueprints')
+        logger.info('Start processing blueprints.')
 
         // Process blueprints (basically insert into db if blueprint transaction is due, or skip otherwise)
         const repository = RepositoryLocator.getRepository()
@@ -28,7 +28,7 @@ export const PROCESS_BLUEPRINTS_TASK: cron.ScheduledTask = cron.schedule(
         const results: ProcessedBlueprintResult[] = []
         for (let i = 0; i < activeBlueprints.length; i++) {
             const blueprint = activeBlueprints[i]
-            logger.trace(`Start processing blueprint ${blueprint.key}.`)
+            logger.debug(`Start processing blueprint ${blueprint.key}.`)
             try {
                 const timeoutAfterMs = process.env.PROCESS_BLUEPRINTS_TIMEOUT
                     ? parseInt(process.env.PROCESS_BLUEPRINTS_TIMEOUT)
@@ -41,7 +41,7 @@ export const PROCESS_BLUEPRINTS_TASK: cron.ScheduledTask = cron.schedule(
 
                 // Perform transaction inserts for every passed dueDate since the last uptade of the blueprint
                 for (const dueDate of blueprint.getDatesWhenTransactionIsDue()) {
-                    logger.trace(
+                    logger.debug(
                         `Processing blueprint ${blueprint.key}, due date ${dueDate}.`
                     )
                     // TODO wrap in database transaction?
@@ -49,7 +49,7 @@ export const PROCESS_BLUEPRINTS_TASK: cron.ScheduledTask = cron.schedule(
                         ...blueprint.transaction,
                         date: dueDate,
                     } satisfies Transaction)
-                    logger.trace(
+                    logger.debug(
                         `Inserted blueprint transaction for blueprint ${blueprint.key}, due date ${dueDate}.`
                     )
 
@@ -57,7 +57,7 @@ export const PROCESS_BLUEPRINTS_TASK: cron.ScheduledTask = cron.schedule(
                         blueprint.key,
                         dueDate
                     )
-                    logger.trace(
+                    logger.debug(
                         `Blueprint ${blueprint.key} has been marked as processed on ${dueDate}.`
                     )
                     // 'TODO wrap in database transaction?' end
@@ -67,7 +67,7 @@ export const PROCESS_BLUEPRINTS_TASK: cron.ScheduledTask = cron.schedule(
                         datetime: dueDate,
                     })
                     logger.info(
-                        `Successfully processed blueprint ${blueprint.key} on ${dueDate}`
+                        `Successfully processed blueprint ${blueprint.key} on ${dueDate}.`
                     )
                 }
 
@@ -88,7 +88,7 @@ export const PROCESS_BLUEPRINTS_TASK: cron.ScheduledTask = cron.schedule(
             await sendProcessedBlueprintResults(results)
         }
 
-        logger.info('Finished processing blueprints')
+        logger.info('Finished processing blueprints.')
     },
     {
         scheduled: false,

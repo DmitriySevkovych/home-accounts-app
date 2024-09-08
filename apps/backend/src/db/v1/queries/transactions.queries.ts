@@ -131,7 +131,7 @@ export const getTransactionByIds = async (
 
     const { rowCount, rows } = queryResult
     if (rowCount === 0) {
-        logger.warn(
+        logger.error(
             `The database does not hold any transactions with id in ${ids}.`
         )
         throw new NoRecordFoundInDatabaseError(
@@ -197,7 +197,7 @@ export const insertTransaction = async (
         return transaction_id
     } catch (e) {
         await client.query('ROLLBACK')
-        logger.warn(
+        logger.error(
             `Something went wrong while inserting a new domain-model transaction. Database transaction has been rolled back.`
         )
         throw e
@@ -214,7 +214,7 @@ export const updateTransaction = async (
     const { id } = transaction
     if (id === undefined) {
         const message = `Cannot update transaction: transaction.id is missing!`
-        logger.warn(message)
+        logger.error(message)
         throw new DataConsistencyError(message)
     }
 
@@ -256,7 +256,7 @@ export const updateTransaction = async (
         )
     } catch (e) {
         await client.query('ROLLBACK')
-        logger.warn(
+        logger.error(
             `Something went wrong while updating the domain-model transaction with transaction_id=${id}. Database transaction has been rolled back.`
         )
         throw e
@@ -272,7 +272,7 @@ export const deleteTransaction = async (
     const { id } = transaction
     if (id === undefined) {
         const message = `Cannot delete transaction: transaction.id is missing!`
-        logger.warn(message)
+        logger.error(message)
         throw new DataConsistencyError(message)
     }
 
@@ -303,7 +303,7 @@ export const deleteTransaction = async (
         )
     } catch (e) {
         await client.query('ROLLBACK')
-        logger.warn(
+        logger.error(
             `Something went wrong while updating the domain-model transaction with transaction_id=${id}. Database transaction has been rolled back.`
         )
         throw e

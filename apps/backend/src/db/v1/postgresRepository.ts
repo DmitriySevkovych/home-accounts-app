@@ -128,8 +128,7 @@ export class PostgresRepository implements Repository {
         transaction: Transaction,
         transactionReceipt?: TransactionReceipt
     ): Promise<number> => {
-        // TODO to log or not to log?
-        this.logger.info(transaction)
+        this.logger.trace(`Creating transaction ${transaction}`)
         const id = await transactionsQueries.insertTransaction(
             this.connectionPool,
             transaction,
@@ -142,8 +141,7 @@ export class PostgresRepository implements Repository {
         transaction: Transaction,
         transactionReceipt?: TransactionReceipt
     ): Promise<void> => {
-        // TODO to log or not to log?
-        this.logger.info(transaction)
+        this.logger.trace(`Updating transaction ${transaction}`)
         await transactionsQueries.updateTransaction(
             this.connectionPool,
             transaction,

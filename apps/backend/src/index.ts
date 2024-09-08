@@ -60,9 +60,10 @@ const handleSignal = (server: https.Server, signal: string) => {
         // Tear down singletons
         if (!SCHEDULER_DISABLED) PROCESS_BLUEPRINTS_TASK.stop()
         if (!MAIL_DISABLED) MAIL_TRANSPORTER.close()
-        await RepositoryLocator.closeRepository()
 
+        await RepositoryLocator.closeRepository()
         logger.info('Database connection closed.')
+
         process.exit(0)
     })
     logger.debug(`Registered a listener for signal ${signal}.`)
