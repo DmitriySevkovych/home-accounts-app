@@ -543,11 +543,16 @@ const _upsertContextSpecificInformation = async (
                 client
             )
         } else if (transaction.type === 'income') {
-            await associateTransactionWithProjectInvoice(
-                transaction_id,
-                transaction.invoiceKey!,
-                client
-            )
+            // NOTE: it is allowed for the invoiceKey to not be set
+            // It is set for e.g. the SALARY category
+            // It can, but needs not to be set for the CORRECTION category
+            if (transaction.invoiceKey) {
+                await associateTransactionWithProjectInvoice(
+                    transaction_id,
+                    transaction.invoiceKey,
+                    client
+                )
+            }
         } else {
             throw new Error(`Unknown transaction type ${transaction.type}`)
         }
