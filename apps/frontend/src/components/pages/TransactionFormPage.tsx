@@ -83,10 +83,14 @@ const _eligibleCategories = (
             .map((obj) => obj.category)
             .sort()
     } else if (type === 'zerosum') {
-        return categories
-            .filter((c) => c.canBeZerosum)
-            .map((obj) => obj.category)
-            .sort()
+        return [
+            ...new Set(
+                categories
+                    .filter((c) => c.canBeZerosum)
+                    .map((obj) => obj.category)
+                    .sort()
+            ),
+        ]
     } else {
         throw new Error(`Unknown transaction type ${type}`)
     }

@@ -49,4 +49,5 @@ VALUES
   ('RENT', 'investments', FALSE, TRUE, FALSE),
   ('GIFT', 'home', TRUE, TRUE, FALSE),
   ('CURRENCY_EXCHANGE', 'home', FALSE, FALSE, TRUE),
-  ('CASH_WITHDRAWAL', 'home', FALSE, FALSE, TRUE);
+  ('CASH_WITHDRAWAL', 'home', FALSE, FALSE, TRUE),
+  ('CASH_WITHDRAWAL', 'work', FALSE, FALSE, TRUE);
