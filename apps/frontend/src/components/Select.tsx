@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import { ControllerRenderProps, UseFormReturn } from 'react-hook-form'
 
 import {
@@ -29,9 +29,9 @@ type SelectProps<T> = {
 export default function Select<T>(props: SelectProps<T>) {
     const { form, label, id, options, clearable } = props
 
-    const _resetSelection = () => {
+    const _resetSelection = useCallback(() => {
         form.setValue(id as string, undefined, { shouldTouch: true })
-    }
+    }, [form, id])
 
     return (
         <FormField
