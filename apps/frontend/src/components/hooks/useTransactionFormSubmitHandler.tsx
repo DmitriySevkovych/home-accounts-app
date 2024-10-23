@@ -12,6 +12,14 @@ type SubmitAction = 'create' | 'update'
 const _getFormData = (transactionForm: TransactionForm): FormData => {
     const formData = new FormData()
 
+    // Validation/Automation step. TODO: find a better place for it.
+    if (
+        Math.abs(transactionForm.amount) >= 100 &&
+        !transactionForm.tags.includes('BigAmount')
+    ) {
+        transactionForm.tags.push('BigAmount')
+    }
+
     const payload = {
         ...transactionForm,
         agent: 'home-app-frontend', // TODO agent should be the logged-in user, once there is a login
