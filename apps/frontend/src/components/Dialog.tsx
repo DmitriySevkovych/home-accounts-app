@@ -10,21 +10,16 @@ import {
 
 type DeleteDialogProps = {
     onConfirm: any
+    children: React.ReactNode
 }
 
-export const DeleteDialog: React.FC<DeleteDialogProps> = ({ onConfirm }) => {
+export const DeleteDialog: React.FC<DeleteDialogProps> = ({
+    onConfirm,
+    children,
+}) => {
     return (
         <ShadcnDialog>
-            <DialogTrigger className="flex w-full">
-                <Button
-                    className="flex w-full md:ml-auto md:mr-0 md:w-auto lg:col-span-2"
-                    variant="secondary"
-                    type="button"
-                    size={'lg'}
-                >
-                    Delete
-                </Button>
-            </DialogTrigger>
+            <DialogTrigger asChild>{children}</DialogTrigger>
 
             <DialogContent>
                 <DialogHeader>

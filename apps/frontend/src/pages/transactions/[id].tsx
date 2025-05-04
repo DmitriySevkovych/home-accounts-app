@@ -12,6 +12,7 @@ import TransactionFormPage, {
 } from '../../components/pages/TransactionFormPage'
 import { safeFetch } from '../../helpers/requests'
 import { API } from '../../helpers/routes'
+import { Button } from '../../lib/shadcn/Button'
 import { Separator } from '../../lib/shadcn/Separator'
 
 type EditPageProps = {
@@ -39,14 +40,34 @@ const EditTransactionPage = ({ transaction, constants }: EditPageProps) => {
                 submitLabel="Update"
             />
             <Separator />
-            <div className="relative mx-auto  max-w-4xl bg-background px-3 py-8 text-darkest">
+            <div className="relative mx-auto max-w-4xl bg-background px-3 py-8 text-darkest">
                 <h2 className="mb-6 flex-grow text-xl font-bold leading-none text-primary lg:text-2xl">
                     Danger Zone ☢️
                 </h2>
 
-                <DeleteDialog
-                    onConfirm={() => deleteTransaction(transaction.id!)}
-                />
+                <div className="flex flex-col gap-4 md:flex-row md:justify-end">
+                    <Button
+                        className="flex w-full md:w-auto lg:col-span-2"
+                        variant="secondary"
+                        type="button"
+                        size={'lg'}
+                    >
+                        Correct
+                    </Button>
+
+                    <DeleteDialog
+                        onConfirm={() => deleteTransaction(transaction.id!)}
+                    >
+                        <Button
+                            className="flex w-full md:w-auto lg:col-span-2"
+                            variant="secondary"
+                            type="button"
+                            size={'lg'}
+                        >
+                            Delete
+                        </Button>
+                    </DeleteDialog>
+                </div>
             </div>
         </>
     )
