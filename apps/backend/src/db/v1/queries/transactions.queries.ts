@@ -90,7 +90,8 @@ export const getTransactions = async (
         text: `
             SELECT
                 id, context, category, origin, description, amount, date, currency, exchange_rate, 
-                source_bank_account, target_bank_account, payment_method, tax_category, comment, agent, receipt_id
+                source_bank_account, target_bank_account, payment_method, tax_category, comment, agent, receipt_id,
+                correction_id, corrected_id
             FROM transactions.transactions
             WHERE context = $1
             ORDER BY id DESC
@@ -581,6 +582,8 @@ const _mapToTransaction = async (
         tax_category: taxCategory,
         comment,
         receipt_id: receiptId,
+        correction_id: correctionId,
+        corrected_id: correctedId,
     } = row
 
     const transactionType = amount > 0 ? 'income' : 'expense'
@@ -597,6 +600,8 @@ const _mapToTransaction = async (
         .withComment(comment)
         .withTaxCategory(taxCategory)
         .withReceipt(receiptId)
+        .withCorrection(correctionId)
+        .withCorrected(correctedId)
         .withAgent(agent)
 
     // TODO maybe remove these function calls from here and work with joins, if feasible
