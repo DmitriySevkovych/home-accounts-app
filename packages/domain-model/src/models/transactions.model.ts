@@ -55,6 +55,10 @@ export class Transaction {
     taxCategory?: PickAndFlatten<TaxCategory, 'category'>
     comment?: string
 
+    // Corrections
+    correctionId?: number
+    correctedId?: number
+
     // Additional data relevant in the work context
     invoiceKey?: PickAndFlatten<ProjectInvoice, 'key'>
     country?: string
@@ -95,6 +99,14 @@ export class Transaction {
 
     taxRelevant = (): boolean => {
         return this.taxCategory !== undefined
+    }
+
+    isCorrection = (): boolean => {
+        return !!this.correctedId
+    }
+
+    isCorrected = (): boolean => {
+        return !!this.correctionId
     }
 }
 
@@ -228,6 +240,16 @@ class TransactionBuilder {
 
     withReceipt(receiptId: number) {
         this.transaction.receiptId = swapNullToUndefined(receiptId)
+        return this
+    }
+
+    withCorrection(correctionId: number) {
+        this.transaction.correctionId = swapNullToUndefined(correctionId)
+        return this
+    }
+
+    withCorrected(correctedId: number) {
+        this.transaction.correctedId = swapNullToUndefined(correctedId)
         return this
     }
 
@@ -388,6 +410,8 @@ export const deserializeTransaction = (data: any): Transaction => {
         invoiceKey,
         investment,
         receiptId,
+        correctionId,
+        correctedId,
     } = data
 
     const transaction: Transaction = createTransaction()
@@ -406,6 +430,8 @@ export const deserializeTransaction = (data: any): Transaction => {
         .withInvoice(invoiceKey)
         .withInvestment(investment)
         .withReceipt(receiptId)
+        .withCorrection(correctionId)
+        .withCorrected(correctedId)
         .addTags(tags)
         .validate()
         .build()
