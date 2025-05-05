@@ -156,59 +156,37 @@ export const getTransactionById = async (
 }
 
 export const insertTransaction = async (
-    connectionPool: Pool,
+    client: PoolClient,
     transaction: Transaction,
     transactionReceipt?: TransactionReceipt
 ): Promise<number> => {
-    const client: PoolClient = await connectionPool.connect()
-    try {
-        await client.query('BEGIN')
+    const receiptId = await _insertTransactionReceiptDAO(
+        transactionReceipt,
+        client
+    )
 
-        const receiptId = await _insertTransactionReceiptDAO(
-            transactionReceipt,
-            client
-        )
+    const transaction_id = await _insertTransactionDAO(
+        {
+            ...transaction,
+            receiptId,
+        },
+        client
+    )
 
-        const transaction_id = await _insertTransactionDAO(
-            {
-                ...transaction,
-                receiptId,
-            },
-            client
-        )
-
-        for (let i = 0; i < transaction.tags.length; i++) {
-            const tagDAO: TagDAO = {
-                tag: transaction.tags[i],
-                transaction_id,
-            }
-            await insertTagDAO(tagDAO, client)
-        }
-
-        await _upsertContextSpecificInformation(
+    for (let i = 0; i < transaction.tags.length; i++) {
+        const tagDAO: TagDAO = {
+            tag: transaction.tags[i],
             transaction_id,
-            transaction,
-            client
-        )
-
-        await client.query('COMMIT')
-        logger.trace(
-            `Committed the database transaction for inserting a new domain-model transaction with id=${transaction_id}.`
-        )
-        return transaction_id
-    } catch (e) {
-        await client.query('ROLLBACK')
-        logger.error(
-            `Something went wrong while inserting a new domain-model transaction. Database transaction has been rolled back.`
-        )
-        throw e
-    } finally {
-        client.release()
+        }
+        await insertTagDAO(tagDAO, client)
     }
+
+    await _upsertContextSpecificInformation(transaction_id, transaction, client)
+    return transaction_id
 }
 
 export const updateTransaction = async (
-    connectionPool: Pool,
+    client: PoolClient,
     transaction: Transaction,
     transactionReceipt?: TransactionReceipt
 ): Promise<void> => {
@@ -219,51 +197,34 @@ export const updateTransaction = async (
         throw new DataConsistencyError(message)
     }
 
-    const client: PoolClient = await connectionPool.connect()
-    try {
-        await client.query('BEGIN')
-        // Update transaction receipt table
-        const receiptId = await _updateTransactionReceiptDAO(
-            {
-                ...transactionReceipt,
-                id: transaction.receiptId,
-            },
-            client
-        )
+    // Update transaction receipt table
+    const receiptId = await _updateTransactionReceiptDAO(
+        {
+            ...transactionReceipt,
+            id: transaction.receiptId,
+        },
+        client
+    )
 
-        // Update transaction table
-        await _updateTransactionDAO(
-            {
-                ...transaction,
-                receiptId,
-            },
-            client
-        )
+    // Update transaction table
+    await _updateTransactionDAO(
+        {
+            ...transaction,
+            receiptId,
+        },
+        client
+    )
 
-        // Update tags
-        await updateTransactionTags(
-            {
-                ...transaction,
-                transaction_id: id,
-            },
-            client
-        )
+    // Update tags
+    await updateTransactionTags(
+        {
+            ...transaction,
+            transaction_id: id,
+        },
+        client
+    )
 
-        await _upsertContextSpecificInformation(id, transaction, client)
-
-        await client.query('COMMIT')
-        logger.trace(
-            `Domain-model transaction with transaction_id=${id} has been updated.`
-        )
-    } catch (e) {
-        await client.query('ROLLBACK')
-        logger.error(
-            `Something went wrong while updating the domain-model transaction with transaction_id=${id}. Database transaction has been rolled back.`
-        )
-        throw e
-    } finally {
-        client.release()
-    }
+    await _upsertContextSpecificInformation(id, transaction, client)
 }
 
 export const deleteTransaction = async (

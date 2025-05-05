@@ -8,6 +8,7 @@ import {
 } from 'domain-model'
 import type { Pool } from 'pg'
 
+import { tx } from '../../helpers'
 import { PostgresRepository } from '../postgresRepository'
 import {
     getTransactionById,
@@ -66,9 +67,11 @@ describe('Database queries targeting only the transactions schema', () => {
                     dateFromString('2020-01-15')
                 )
                 // Act
-                const transactionId = await insertTransaction(
-                    connectionPool,
-                    transaction
+                const transactionId = await tx(
+                    await connectionPool.connect(),
+                    (client) => {
+                        return insertTransaction(client, transaction)
+                    }
                 )
                 // Assert
                 expect(transactionId).toBeDefined()
@@ -80,10 +83,12 @@ describe('Database queries targeting only the transactions schema', () => {
             const category = 'FOOD'
             const amount = -5.99
             const transactionDate = dateFromString('2020-02-16')
-            const id = await insertTransaction(
-                connectionPool,
-                dummyTransaction(category, amount, transactionDate)
-            )
+            const id = await tx(await connectionPool.connect(), (client) => {
+                return insertTransaction(
+                    client,
+                    dummyTransaction(category, amount, transactionDate)
+                )
+            })
             // Act
             const transaction = await getTransactionById(connectionPool, id)
             // Assert
@@ -105,10 +110,12 @@ describe('Database queries targeting only the transactions schema', () => {
             // Arrange
             const category = 'FOOD'
             const amount = -15.99
-            const id = await insertTransaction(
-                connectionPool,
-                minimalDummyTransaction(category, amount)
-            )
+            const id = await tx(await connectionPool.connect(), (client) => {
+                return insertTransaction(
+                    client,
+                    minimalDummyTransaction(category, amount)
+                )
+            })
             // Act
             const transaction = await getTransactionById(connectionPool, id)
             // Assert
@@ -134,10 +141,12 @@ describe('Database queries targeting only the transactions schema', () => {
             const category = 'SALARY'
             const amount = 19.99
             const transactionDate = dateFromString('2020-05-05')
-            const id = await insertTransaction(
-                connectionPool,
-                dummyTransaction(category, amount, transactionDate)
-            )
+            const id = await tx(await connectionPool.connect(), (client) => {
+                return insertTransaction(
+                    client,
+                    dummyTransaction(category, amount, transactionDate)
+                )
+            })
             // Act
             const transaction = await getTransactionById(connectionPool, id)
             // Assert
@@ -157,10 +166,12 @@ describe('Database queries targeting only the transactions schema', () => {
             // Arrange
             const category = 'SALARY'
             const amount = 123.99
-            const id = await insertTransaction(
-                connectionPool,
-                minimalDummyTransaction(category, amount)
-            )
+            const id = await tx(await connectionPool.connect(), (client) => {
+                return insertTransaction(
+                    client,
+                    minimalDummyTransaction(category, amount)
+                )
+            })
             // Act
             const transaction = await getTransactionById(connectionPool, id)
             // Assert
@@ -199,9 +210,11 @@ describe('Database queries targeting only the transactions schema', () => {
                 transaction.context = 'investments'
                 transaction.investment = investment
                 // Act
-                const transactionId = await insertTransaction(
-                    connectionPool,
-                    transaction
+                const transactionId = await tx(
+                    await connectionPool.connect(),
+                    (client) => {
+                        return insertTransaction(client, transaction)
+                    }
                 )
                 // Assert
                 expect(transactionId).toBeDefined()
@@ -219,10 +232,9 @@ describe('Database queries targeting only the transactions schema', () => {
             )
             transactionToInsert.context = context
             transactionToInsert.investment = investment
-            const id = await insertTransaction(
-                connectionPool,
-                transactionToInsert
-            )
+            const id = await tx(await connectionPool.connect(), (client) => {
+                return insertTransaction(client, transactionToInsert)
+            })
             // Act
             const transaction = await getTransactionById(connectionPool, id)
             // Assert
@@ -243,10 +255,9 @@ describe('Database queries targeting only the transactions schema', () => {
             )
             transactionToInsert.context = context
             transactionToInsert.investment = investment
-            const id = await insertTransaction(
-                connectionPool,
-                transactionToInsert
-            )
+            const id = await tx(await connectionPool.connect(), (client) => {
+                return insertTransaction(client, transactionToInsert)
+            })
             // Act
             const transaction = await getTransactionById(connectionPool, id)
             // Assert
@@ -269,9 +280,11 @@ describe('Database queries targeting only the transactions schema', () => {
             transaction.vat = 0.19
             transaction.country = 'DE'
             // Act
-            const transactionId = await insertTransaction(
-                connectionPool,
-                transaction
+            const transactionId = await tx(
+                await connectionPool.connect(),
+                (client) => {
+                    return insertTransaction(client, transaction)
+                }
             )
             // Assert
             expect(transactionId).toBeDefined()
@@ -290,10 +303,9 @@ describe('Database queries targeting only the transactions schema', () => {
             transactionToInsert.context = context
             transactionToInsert.vat = vat
             transactionToInsert.country = country
-            const id = await insertTransaction(
-                connectionPool,
-                transactionToInsert
-            )
+            const id = await tx(await connectionPool.connect(), (client) => {
+                return insertTransaction(client, transactionToInsert)
+            })
             // Act
             const transaction = await getTransactionById(connectionPool, id)
             // Assert
@@ -314,9 +326,11 @@ describe('Database queries targeting only the transactions schema', () => {
             transaction.context = 'work'
             transaction.invoiceKey = 'INV-0123456' // REM: testdata that is present in the database
             // Act
-            const transactionId = await insertTransaction(
-                connectionPool,
-                transaction
+            const transactionId = await tx(
+                await connectionPool.connect(),
+                (client) => {
+                    return insertTransaction(client, transaction)
+                }
             )
             // Assert
             expect(transactionId).toBeDefined()
@@ -333,10 +347,9 @@ describe('Database queries targeting only the transactions schema', () => {
             )
             transactionToInsert.context = context
             transactionToInsert.invoiceKey = invoiceKey
-            const id = await insertTransaction(
-                connectionPool,
-                transactionToInsert
-            )
+            const id = await tx(await connectionPool.connect(), (client) => {
+                return insertTransaction(client, transactionToInsert)
+            })
             // Act
             const transaction = await getTransactionById(connectionPool, id)
             // Assert

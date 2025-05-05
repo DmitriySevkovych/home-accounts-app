@@ -21,6 +21,7 @@ import { getLogger } from 'logger'
 import type { Pool, PoolClient } from 'pg'
 
 import connectionPool from '.'
+import { tx } from '../helpers'
 import { Repository } from '../repository'
 import * as investmentsQueries from './queries/investments.queries'
 import * as tagsQueries from './queries/tags.queries'
@@ -129,11 +130,15 @@ export class PostgresRepository implements Repository {
         transactionReceipt?: TransactionReceipt
     ): Promise<number> => {
         this.logger.trace(`Creating transaction ${JSON.stringify(transaction)}`)
-        const id = await transactionsQueries.insertTransaction(
-            this.connectionPool,
-            transaction,
-            transactionReceipt
-        )
+        const client = await this.connectionPool.connect()
+
+        const id = await tx(client, async (client) => {
+            return await transactionsQueries.insertTransaction(
+                client,
+                transaction,
+                transactionReceipt
+            )
+        })
         return id
     }
 
@@ -142,11 +147,15 @@ export class PostgresRepository implements Repository {
         transactionReceipt?: TransactionReceipt
     ): Promise<void> => {
         this.logger.trace(`Updating transaction ${JSON.stringify(transaction)}`)
-        await transactionsQueries.updateTransaction(
-            this.connectionPool,
-            transaction,
-            transactionReceipt
-        )
+        const client = await this.connectionPool.connect()
+
+        await tx<void>(client, async (client) => {
+            await transactionsQueries.updateTransaction(
+                client,
+                transaction,
+                transactionReceipt
+            )
+        })
     }
 
     deleteTransaction = async (id: number): Promise<void> => {

@@ -1,6 +1,7 @@
 import { minimalDummyWorkTransaction } from 'domain-model'
 import type { Pool } from 'pg'
 
+import { tx } from '../../helpers'
 import { PostgresRepository } from '../postgresRepository'
 import { getTransactionById, insertTransaction } from './transactions.queries'
 import {
@@ -30,9 +31,11 @@ describe('Database queries targeting the work schema', () => {
             1846.39,
             'INV-0123456'
         )
-        const transactionId = await insertTransaction(
-            connectionPool,
-            transaction
+        const transactionId = await tx(
+            await connectionPool.connect(),
+            (client) => {
+                return insertTransaction(client, transaction)
+            }
         )
         // Act
         const queriedTransaction = await getTransactionById(
@@ -50,9 +53,11 @@ describe('Database queries targeting the work schema', () => {
             2432.11,
             'INV-0123456'
         )
-        const transactionId = await insertTransaction(
-            connectionPool,
-            transaction
+        const transactionId = await tx(
+            await connectionPool.connect(),
+            (client) => {
+                return insertTransaction(client, transaction)
+            }
         )
         const client = await connectionPool.connect()
         // Act
@@ -82,9 +87,11 @@ describe('Database queries targeting the work schema', () => {
     it('Updating VAT information for a transaction_id should be possible', async () => {
         // Arrange
         const transaction = minimalDummyWorkTransaction('FEE', -47.69)
-        const transactionId = await insertTransaction(
-            connectionPool,
-            transaction
+        const transactionId = await tx(
+            await connectionPool.connect(),
+            (client) => {
+                return insertTransaction(client, transaction)
+            }
         )
         const client = await connectionPool.connect()
         // Act
@@ -123,9 +130,11 @@ describe('Database queries targeting the work schema', () => {
         const transaction = minimalDummyWorkTransaction('FEE', -47.69)
         transaction.vat = 0.19
         transaction.country = 'DE'
-        const transactionId = await insertTransaction(
-            connectionPool,
-            transaction
+        const transactionId = await tx(
+            await connectionPool.connect(),
+            (client) => {
+                return insertTransaction(client, transaction)
+            }
         )
         // Act
         const queriedTransaction = await getTransactionById(

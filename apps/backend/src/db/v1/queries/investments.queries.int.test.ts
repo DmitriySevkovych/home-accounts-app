@@ -4,6 +4,7 @@ import {
 } from 'domain-model'
 import type { Pool } from 'pg'
 
+import { tx } from '../../helpers'
 import { PostgresRepository } from '../postgresRepository'
 import {
     associateTransactionWithInvestment,
@@ -32,10 +33,10 @@ describe('Database queries targeting the investments schema', () => {
             -23.77,
             'Homebrew'
         )
-        const transactionId = await insertTransaction(
-            connectionPool,
-            transaction
-        )
+        const client = await connectionPool.connect()
+        const transactionId = await tx(client, (client) => {
+            return insertTransaction(client, transaction)
+        })
         // Act
         const queriedTransaction = await getTransactionById(
             connectionPool,
@@ -48,9 +49,11 @@ describe('Database queries targeting the investments schema', () => {
     it('Associating a transaction_id with an investment twice should override the former investment with the latter', async () => {
         // Arrange
         const transaction = minimalDummyTransaction('TAX', -222.13)
-        const transactionId = await insertTransaction(
-            connectionPool,
-            transaction
+        const transactionId = await tx(
+            await connectionPool.connect(),
+            (client) => {
+                return insertTransaction(client, transaction)
+            }
         )
         const client = await connectionPool.connect()
         // Act
