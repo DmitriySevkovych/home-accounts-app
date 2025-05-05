@@ -245,6 +245,48 @@ const getRouter = (): Router => {
     })
 
     router.post(
+        '/correction/:id',
+        middleware.checkIdIsInteger,
+        async (req, res) => {
+            try {
+                // Deserialize payload
+                const correctedId = parseInt(req.params.id)
+                const correction = deserializeTransaction(
+                    JSON.parse(req.body.transaction)
+                )
+
+                // Little sanity check
+                if (correction.correctionId) {
+                    return res.status(400).json({
+                        message: `The sent transaction already has a correction with id ${correction.correctionId}.`,
+                    })
+                }
+
+                // Create correction -> TODO wrapped in DB transaction
+                const correctionTransactionId =
+                    await repository.createCorrection(correctedId, correction)
+
+                return res
+                    .status(200)
+                    .json({
+                        message: `Correction transaction with id=${correctionTransactionId} created. Original transaction with id=${correctedId} updated.`,
+                    })
+            } catch (err) {
+                logger.error(err)
+                if (err instanceof TransactionValidationError) {
+                    res.status(400).json({
+                        message:
+                            'Data sent in the request body is not a valid transaction.',
+                        cause: err.message,
+                    })
+                } else {
+                    res.status(500).json({ message: 'Something went wrong' })
+                }
+            }
+        }
+    )
+
+    router.post(
         '/search',
         middleware.pagination,
         async (req: GetTransactionSearchRequest, res) => {

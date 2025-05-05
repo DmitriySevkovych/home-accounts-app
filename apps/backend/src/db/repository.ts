@@ -68,6 +68,12 @@ export interface Repository {
         _paginationOptions: PaginationOptions
     ) => Promise<{ transactions: Transaction[] } & Paginated>
 
+    // Transaction corrections
+    createCorrection: (
+        _correctedId: number,
+        _correction: Transaction
+    ) => Promise<number>
+
     // Investments data
     getInvestments: () => Promise<Investment[]>
 

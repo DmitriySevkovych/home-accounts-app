@@ -283,6 +283,14 @@ export class StubbedRepository implements Repository {
         throw new Error('stub not implemented')
     }
 
+    // Transaction corrections
+    createCorrection = async (
+        _correctedId: number,
+        _correction: Transaction
+    ) => {
+        throw new Error('stub not implemented')
+    }
+
     // Investments
     getInvestments = async (): Promise<Investment[]> => {
         return Promise.resolve([

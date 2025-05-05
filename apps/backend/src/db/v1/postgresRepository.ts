@@ -245,6 +245,33 @@ export class PostgresRepository implements Repository {
         }
     }
 
+    // Transaction corrections
+    createCorrection = async (
+        correctedId: number,
+        correction: Transaction
+    ): Promise<number> => {
+        this.logger.trace(
+            `Creating correction ${JSON.stringify(
+                correction
+            )} for transaction ${connectionPool}`
+        )
+        const client = await this.connectionPool.connect()
+
+        return await tx(client, async (client) => {
+            const correctionId = await transactionsQueries.insertTransaction(
+                client,
+                correction
+            )
+            const corrected = await transactionsQueries.getTransactionById(
+                this.connectionPool,
+                correctedId
+            )
+            corrected.correctionId = correctionId
+            await transactionsQueries.updateTransaction(client, corrected)
+            return correctionId
+        })
+    }
+
     // Investments
     getInvestments = async (): Promise<Investment[]> => {
         return await investmentsQueries.getInvestments(this.connectionPool)
