@@ -56,6 +56,7 @@ export const API = {
         transactions: {
             create: _getClientsideUrl(`/transactions`),
             update: _getClientsideUrl(`/transactions`),
+            correct: _getClientsideUrl(`/transactions/correction`),
             get: (context: TransactionContext) =>
                 _getClientsideUrl(`/transactions?context=${context}`),
             delete: (id: number) => _getClientsideUrl(`/transactions/${id}`),

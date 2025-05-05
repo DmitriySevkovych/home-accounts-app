@@ -7,7 +7,7 @@ import { ResponseError, safeFetch } from '../../helpers/requests'
 import { API, PAGES } from '../../helpers/routes'
 import { useToast } from '../../lib/shadcn/use-toast'
 
-type SubmitAction = 'create' | 'update'
+type SubmitAction = 'create' | 'update' | 'createCorrection'
 
 const _getFormData = (transactionForm: TransactionForm): FormData => {
     const formData = new FormData()
@@ -56,40 +56,32 @@ const _notify = (
     })
 }
 
-const _sendCreateTransaction = async (formData: FormData) => {
-    await safeFetch(API.client.transactions.create, {
-        method: 'POST',
-        body: formData,
-    })
-    return {
-        message: 'A new transaction has been created!',
-    }
-}
-
-const _sendUpdateTransaction = async (formData: FormData) => {
-    await safeFetch(API.client.transactions.update, {
-        method: 'PUT',
-        body: formData,
-    })
-    return {
-        message: 'Transaction has been updated!',
-    }
-}
-
 const _sendTransaction = async (
     action: SubmitAction,
     toast: CallableFunction,
     formData: FormData
 ) => {
+    let response
     if (action === 'create') {
-        const { message } = await _sendCreateTransaction(formData)
-        _notify(toast, message, formData)
+        response = await await safeFetch(API.client.transactions.create, {
+            method: 'POST',
+            body: formData,
+        })
     } else if (action === 'update') {
-        const { message } = await _sendUpdateTransaction(formData)
-        _notify(toast, message, formData)
+        response = await await safeFetch(API.client.transactions.update, {
+            method: 'PUT',
+            body: formData,
+        })
+    } else if (action === 'createCorrection') {
+        response = await await safeFetch(API.client.transactions.correct, {
+            method: 'POST',
+            body: formData,
+        })
     } else {
         throw new Error(`Illegal action ${action}`)
     }
+    const { message } = await response.json()
+    _notify(toast, message, formData)
 }
 
 const _handleZerosumTransaction = async (

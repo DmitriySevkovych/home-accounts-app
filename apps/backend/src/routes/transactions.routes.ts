@@ -68,7 +68,7 @@ const getRouter = (): Router => {
             const id = await repository.createTransaction(transaction, receipt)
             // Send response
             res.status(201).json({
-                message: `Created new entry with id: ${id}`,
+                message: `Created new transaction with id: ${id}`,
             })
         } catch (err) {
             logger.error(err)
@@ -227,7 +227,9 @@ const getRouter = (): Router => {
 
             // Update
             await repository.updateTransaction(transaction, receipt)
-            return res.status(200).json({ message: 'Transaction updated' })
+            return res
+                .status(200)
+                .json({ message: `Transaction ${transaction.id} updated` })
         } catch (err) {
             logger.error(err)
             if (err instanceof TransactionValidationError) {
