@@ -46,6 +46,7 @@ export const PAGES = {
         index: '/transactions',
         new: '/transactions/new',
         search: '/transactions/search',
+        correction: '/transactions/correction',
         success: (type: TransactionType) => `/transactions/congrats/${type}`,
         edit: (id: number) => `/transactions/${id}`,
     },
@@ -56,7 +57,8 @@ export const API = {
         transactions: {
             create: _getClientsideUrl(`/transactions`),
             update: _getClientsideUrl(`/transactions`),
-            correct: _getClientsideUrl(`/transactions/correction`),
+            correct: (id: string | number) =>
+                _getClientsideUrl(`/transactions/correction/${id}`),
             get: (context: TransactionContext) =>
                 _getClientsideUrl(`/transactions?context=${context}`),
             delete: (id: number) => _getClientsideUrl(`/transactions/${id}`),

@@ -73,7 +73,9 @@ const _sendTransaction = async (
             body: formData,
         })
     } else if (action === 'createCorrection') {
-        response = await await safeFetch(API.client.transactions.correct, {
+        const id = formData.get('id')?.toString()
+        if (!id) throw Error(`Provided id is invalid`)
+        response = await await safeFetch(API.client.transactions.correct(id), {
             method: 'POST',
             body: formData,
         })

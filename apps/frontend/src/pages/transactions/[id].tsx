@@ -1,5 +1,6 @@
 import { TransactionForm } from 'domain-model'
 import { getLogger } from 'logger'
+import { useRouter } from 'next/navigation'
 import React from 'react'
 
 import { DeleteDialog } from '../../components/Dialog'
@@ -11,9 +12,10 @@ import TransactionFormPage, {
     fetchTransactionConstants,
 } from '../../components/pages/TransactionFormPage'
 import { safeFetch } from '../../helpers/requests'
-import { API } from '../../helpers/routes'
+import { API, PAGES } from '../../helpers/routes'
 import { Button } from '../../lib/shadcn/Button'
 import { Separator } from '../../lib/shadcn/Separator'
+import { useTransactionCorrectionStore } from '../../stores/correction.store'
 
 type EditPageProps = {
     transaction: TransactionForm
@@ -24,11 +26,17 @@ const EditTransactionPage = ({ transaction, constants }: EditPageProps) => {
     //TODO: this is a hack. Not sure how to deserialize the transaction from string AND pass it to the hook so that TypeScript doesn't cry
     transaction.date = new Date(transaction.date)
 
+    const router = useRouter()
+
     const { form } = useTransactionForm(transaction)
 
     const { onSubmit } = useTransactionFormSubmitHandler('update')
 
     const { deleteTransaction } = useDeleteTransactionHandler()
+
+    const setTransactionToCorrect = useTransactionCorrectionStore(
+        (state) => state.setTransactionToCorrect
+    )
 
     return (
         <>
@@ -51,6 +59,10 @@ const EditTransactionPage = ({ transaction, constants }: EditPageProps) => {
                         variant="secondary"
                         type="button"
                         size={'lg'}
+                        onClick={() => {
+                            setTransactionToCorrect(transaction)
+                            router.push(PAGES.transactions.correction)
+                        }}
                     >
                         Correct
                     </Button>
