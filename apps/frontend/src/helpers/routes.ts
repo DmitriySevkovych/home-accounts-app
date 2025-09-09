@@ -3,20 +3,21 @@ import {
     TransactionContext,
     TransactionType,
 } from 'domain-model'
-import path from 'path'
 
 const _getServersideUrl = (endpoint: string): string => {
-    return new URL(
-        path.join(process.env.NEXT_PUBLIC_BACKEND_API_BASE!, endpoint),
-        process.env.BACKEND_HOST!
-    ).toString()
+    return (
+        process.env.BACKEND_HOST! +
+        process.env.NEXT_PUBLIC_BACKEND_API_BASE! +
+        endpoint
+    )
 }
 
 const _getClientsideUrl = (endpoint: string): string => {
-    return new URL(
-        path.join(process.env.NEXT_PUBLIC_BACKEND_API_BASE!, endpoint),
-        process.env.NEXT_PUBLIC_BACKEND_HOST!
-    ).toString()
+    return (
+        process.env.NEXT_PUBLIC_BACKEND_HOST! +
+        process.env.NEXT_PUBLIC_BACKEND_API_BASE! +
+        endpoint
+    )
 }
 
 const _withPagination = (
