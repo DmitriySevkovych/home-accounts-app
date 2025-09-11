@@ -53,7 +53,7 @@ type TransactionFormPageProps = {
 }
 
 export const fetchTransactionConstants = async () => {
-    const urls = API.server.transactions.constants()
+    const urls = API.client.transactions.constants.getAll()
 
     const response = await Promise.all(
         urls.map((url) => safeFetch(url).then((res) => res.json()))

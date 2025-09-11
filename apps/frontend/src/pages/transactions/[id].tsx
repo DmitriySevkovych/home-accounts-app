@@ -1,8 +1,10 @@
 import { TransactionForm } from 'domain-model'
 import { getLogger } from 'logger'
 import React from 'react'
+import useSWR from 'swr'
 
 import { DeleteDialog } from '../../components/Dialog'
+import { Loader } from '../../components/Typography'
 import useDeleteTransactionHandler from '../../components/hooks/useDeleteTransactionHandler'
 import useTransactionForm from '../../components/hooks/useTransactionForm'
 import useTransactionFormSubmitHandler from '../../components/hooks/useTransactionFormSubmitHandler'
@@ -16,10 +18,9 @@ import { Separator } from '../../lib/shadcn/Separator'
 
 type EditPageProps = {
     transaction: TransactionForm
-    constants: TransactionFormConstants
 }
 
-const EditTransactionPage = ({ transaction, constants }: EditPageProps) => {
+const EditTransactionPage = ({ transaction }: EditPageProps) => {
     //TODO: this is a hack. Not sure how to deserialize the transaction from string AND pass it to the hook so that TypeScript doesn't cry
     transaction.date = new Date(transaction.date)
 
@@ -29,12 +30,23 @@ const EditTransactionPage = ({ transaction, constants }: EditPageProps) => {
 
     const { deleteTransaction } = useDeleteTransactionHandler()
 
+    const {
+        data: constants,
+        // error,
+        isLoading,
+    } = useSWR<TransactionFormConstants>(
+        'fetchTransactionConstants',
+        fetchTransactionConstants
+    )
+
+    if (isLoading) return <Loader />
+
     return (
         <>
             <TransactionFormPage
                 heading="Edit Transaction"
                 form={form}
-                constants={constants}
+                constants={constants!}
                 onSubmit={onSubmit}
                 submitLabel="Update"
             />
@@ -62,7 +74,6 @@ export async function getServerSideProps(context: any) {
         return {
             props: {
                 transaction,
-                constants: await fetchTransactionConstants(),
             },
         }
     } catch (err) {

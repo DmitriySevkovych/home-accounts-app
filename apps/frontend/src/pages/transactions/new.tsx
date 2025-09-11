@@ -1,7 +1,8 @@
 import { TransactionForm } from 'domain-model'
-import { getLogger } from 'logger'
-import React from 'react'
+import React, { Suspense } from 'react'
+import useSWR from 'swr'
 
+import { Loader } from '../../components/Typography'
 import useTransactionForm from '../../components/hooks/useTransactionForm'
 import useTransactionFormSubmitHandler from '../../components/hooks/useTransactionFormSubmitHandler'
 import TransactionFormPage, {
@@ -9,12 +10,16 @@ import TransactionFormPage, {
     fetchTransactionConstants,
 } from '../../components/pages/TransactionFormPage'
 
-// Type of arguments for export function (from getServerSideProps)
-type NewTransactionPageProps = {
-    constants: TransactionFormConstants
-}
+const NewTransactionPage = () => {
+    const {
+        data: constants,
+        // error,
+        isLoading,
+    } = useSWR<TransactionFormConstants>(
+        'fetchTransactionConstants',
+        fetchTransactionConstants
+    )
 
-const NewTransactionPage = ({ constants }: NewTransactionPageProps) => {
     const formDefaultValues: Partial<TransactionForm> = {
         type: 'expense',
         context: 'home',
@@ -30,29 +35,21 @@ const NewTransactionPage = ({ constants }: NewTransactionPageProps) => {
 
     const { onSubmit } = useTransactionFormSubmitHandler('create')
 
-    return (
-        <TransactionFormPage
-            heading="Create Transaction"
-            form={form}
-            constants={constants}
-            onSubmit={onSubmit}
-            submitLabel="Create"
-            allowZerosumTransactions
-        />
-    )
-}
+    if (isLoading) return <Loader />
 
-export const getServerSideProps = async () => {
-    const logger = getLogger()
-    try {
-        return {
-            props: {
-                constants: await fetchTransactionConstants(),
-            },
-        }
-    } catch (err) {
-        logger.error(err)
-    }
+    console.log({ constants })
+    return (
+        <Suspense fallback={<Loader />}>
+            <TransactionFormPage
+                heading="Create Transaction"
+                form={form}
+                constants={constants!}
+                onSubmit={onSubmit}
+                submitLabel="Create"
+                allowZerosumTransactions
+            />
+        </Suspense>
+    )
 }
 
 export default NewTransactionPage

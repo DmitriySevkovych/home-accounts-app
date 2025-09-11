@@ -72,6 +72,12 @@ export const API = {
                 getCategories: _getClientsideUrl(
                     '/utils/transactionCategories'
                 ),
+                getAll: () => [
+                    _getClientsideUrl('/utils/constants/transactions'),
+                    _getClientsideUrl('/investments'),
+                    _getClientsideUrl('/work/invoices'),
+                    _getClientsideUrl('/transactions/origins'),
+                ],
             },
         },
         analysis: {
@@ -83,12 +89,6 @@ export const API = {
             info: () => _getServersideUrl('/system/info'),
         },
         transactions: {
-            constants: () => [
-                _getServersideUrl('/utils/constants/transactions'),
-                _getServersideUrl('/investments'),
-                _getServersideUrl('/work/invoices'),
-                _getServersideUrl('/transactions/origins'),
-            ],
             getById: (id: number) => _getServersideUrl(`/transactions/${id}`),
         },
     },

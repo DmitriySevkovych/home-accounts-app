@@ -6,16 +6,16 @@ import {
     Transaction,
     deserializeTransaction,
 } from 'domain-model'
-import { getLogger } from 'logger'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
+import useSWR from 'swr'
 
 import { Calendar } from '../../components/Calendar'
 import { TextInput } from '../../components/Inputs'
 import Radio from '../../components/Radio'
 import { SelectMany } from '../../components/Select'
 import { TransactionPreviewCard } from '../../components/TransactionPreviewCard'
-import { SectionHeading } from '../../components/Typography'
+import { Loader, SectionHeading } from '../../components/Typography'
 import { PageWithBackButton } from '../../components/pages/PageWithBackButton'
 import {
     TransactionFormConstants,
@@ -27,13 +27,7 @@ import { API } from '../../helpers/routes'
 import { Button } from '../../lib/shadcn/Button'
 import { Form } from '../../lib/shadcn/Form'
 
-type SearchTransactionsPageProps = {
-    constants: TransactionFormConstants
-}
-
-const SearchTransactionsPage: React.FC<SearchTransactionsPageProps> = ({
-    constants,
-}) => {
+const SearchTransactionsPage: React.FC = () => {
     // State
     const [searchResults, setSearchResults] = useState<
         Transaction[] | undefined
@@ -44,14 +38,14 @@ const SearchTransactionsPage: React.FC<SearchTransactionsPageProps> = ({
     const [nextResultPage, setNextResultPage] = useState<number>(1)
 
     // Input data
-    const { tags } = constants
-    const categories = useMemo(() => {
-        const { transactionCategories } = constants
-        const distinctCategories = [
-            ...new Set(transactionCategories.map((c) => c.category)),
-        ]
-        return distinctCategories.sort()
-    }, [constants])
+    const {
+        data: constants,
+        // error,
+        isLoading,
+    } = useSWR<TransactionFormConstants>(
+        'fetchTransactionConstants',
+        fetchTransactionConstants
+    )
 
     // Form setup
     const form = useForm<SearchParameters>({
@@ -60,6 +54,15 @@ const SearchTransactionsPage: React.FC<SearchTransactionsPageProps> = ({
             searchCombination: 'and',
         },
     })
+
+    if (isLoading) return <Loader />
+
+    const { tags } = constants!
+    const { transactionCategories } = constants!
+    const categories = [
+        ...new Set(transactionCategories.map((c) => c.category)),
+    ]
+    categories.sort()
 
     const _search = async (
         parameters: SearchParameters,
@@ -203,19 +206,6 @@ const SearchTransactionsPage: React.FC<SearchTransactionsPageProps> = ({
             </section>
         </PageWithBackButton>
     )
-}
-
-export const getServerSideProps = async () => {
-    const logger = getLogger()
-    try {
-        return {
-            props: {
-                constants: await fetchTransactionConstants(),
-            },
-        }
-    } catch (err) {
-        logger.error(err)
-    }
 }
 
 export default SearchTransactionsPage
