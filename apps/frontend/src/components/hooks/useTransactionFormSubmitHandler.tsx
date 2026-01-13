@@ -4,7 +4,7 @@ import React from 'react'
 import { type SubmitHandler } from 'react-hook-form'
 
 import { ResponseError, safeFetch } from '../../helpers/requests'
-import { API, PAGES } from '../../helpers/routes'
+import { PAGES } from '../../helpers/routes'
 import { useToast } from '../../lib/shadcn/use-toast'
 
 type SubmitAction = 'create' | 'update'
@@ -57,7 +57,7 @@ const _notify = (
 }
 
 const _sendCreateTransaction = async (formData: FormData) => {
-    await safeFetch(API.client.transactions.create, {
+    await safeFetch('/api/v1/transactions', {
         method: 'POST',
         body: formData,
     })
@@ -67,7 +67,7 @@ const _sendCreateTransaction = async (formData: FormData) => {
 }
 
 const _sendUpdateTransaction = async (formData: FormData) => {
-    await safeFetch(API.client.transactions.update, {
+    await safeFetch('/api/v1/transactions', {
         method: 'PUT',
         body: formData,
     })

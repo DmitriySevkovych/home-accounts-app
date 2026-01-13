@@ -7,7 +7,6 @@ import React, { useState } from 'react'
 import useSWR, { Fetcher } from 'swr'
 
 import { safeFetch } from '../helpers/requests'
-import { API } from '../helpers/routes'
 import { ScrollArea } from '../lib/shadcn/ScrollArea'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../lib/shadcn/Tabs'
 import { TransactionPreviewCard } from './TransactionPreviewCard'
@@ -30,7 +29,7 @@ export const TransactionsPreview = () => {
         error,
         isLoading,
     } = useSWR([context], ([context]) =>
-        _fetchTransactions(API.client.transactions.get(context))
+        _fetchTransactions(`/api/v1/transactions?context=${context}`)
     )
 
     return (
