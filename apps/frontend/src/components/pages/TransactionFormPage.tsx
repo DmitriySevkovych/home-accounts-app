@@ -53,18 +53,7 @@ type TransactionFormPageProps = {
 }
 
 export const fetchTransactionConstants = async () => {
-    const urls = API.client.transactions.constants.getAll()
-
-    const response = await Promise.all(
-        urls.map((url) => safeFetch(url).then((res) => res.json()))
-    )
-
-    return {
-        ...response[0],
-        ...response[1],
-        ...response[2],
-        ...response[3],
-    }
+    return (await safeFetch('/api/v1/transactions/constants')).json()
 }
 
 const _eligibleCategories = (

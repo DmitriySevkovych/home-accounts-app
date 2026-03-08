@@ -13,11 +13,10 @@ type CategoriesCheckboxGridProps = {
     setCheckedCategories: React.Dispatch<React.SetStateAction<string[]>>
 }
 
-const _fetchAllTransactionCategories = async (
-    url: string
-): Promise<TransactionCategory[]> => {
-    const res = await safeFetch(url)
-    return await res.json()
+const _fetchAllTransactionCategories = async (): Promise<
+    TransactionCategory[]
+> => {
+    return (await safeFetch('/api/v1/transaction/categories')).json()
 }
 const CategoriesCheckboxGrid: React.FC<CategoriesCheckboxGridProps> = ({
     checkedCategories,

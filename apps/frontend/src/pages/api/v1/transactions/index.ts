@@ -16,6 +16,7 @@ export default async function handler(
     if (req.method === 'POST') {
         const upstream = await fetch(API.client.transactions.create, {
             method: 'POST',
+            // @ts-ignore
             headers: {
                 ...req.headers,
                 host: undefined, // prevent host mismatch
@@ -28,6 +29,7 @@ export default async function handler(
     } else if (req.method === 'PUT') {
         const upstream = await fetch(API.client.transactions.update, {
             method: 'PUT',
+            // @ts-ignore
             headers: {
                 ...req.headers,
                 host: undefined, // prevent host mismatch
