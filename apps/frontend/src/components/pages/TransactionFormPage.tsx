@@ -18,7 +18,7 @@ import { SubmitHandler, UseFormReturn } from 'react-hook-form'
 import useSWR from 'swr'
 
 import { safeFetch } from '../../helpers/requests'
-import { API, PAGES } from '../../helpers/routes'
+import { PAGES } from '../../helpers/routes'
 import { Button } from '../../lib/shadcn/Button'
 import { Form } from '../../lib/shadcn/Form'
 import AutocompleteInput from '../AutocompleteInput'
@@ -91,7 +91,7 @@ const _fetchReceiptName = async (
     if (!receiptId) return ''
 
     const res = await safeFetch(
-        API.client.transactions.receipts.getNameOf(receiptId)
+        `/api/v1/transactions/receipts/${receiptId}/name`
     )
     const data: TransactionReceipt = await res.json()
     return data.name
