@@ -23,7 +23,6 @@ import {
 } from '../../components/pages/TransactionFormPage'
 import { safeFetch } from '../../helpers/requests'
 import { PAGES } from '../../helpers/routes'
-import { API } from '../../helpers/routes'
 import { Button } from '../../lib/shadcn/Button'
 import { Form } from '../../lib/shadcn/Form'
 
@@ -69,7 +68,7 @@ const SearchTransactionsPage: React.FC = () => {
         page: number = 1
     ): Promise<void> => {
         const response = await safeFetch(
-            API.client.transactions.search({ page }),
+            `/api/v1/transactions/search?page=${page}`,
             {
                 method: 'POST',
                 headers: {
