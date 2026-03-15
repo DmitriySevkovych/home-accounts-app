@@ -54,6 +54,7 @@ CREATE TABLE IF NOT EXISTS transactions.transactions (
   comment text,
   agent varchar NOT NULL,
   receipt_id integer NULL,
+  owned_by varchar NULL,
   CONSTRAINT fk_source_bank_account FOREIGN KEY (source_bank_account) REFERENCES utils.bank_accounts (account) ON UPDATE CASCADE,
   CONSTRAINT fk_target_bank_account FOREIGN KEY (target_bank_account) REFERENCES utils.bank_accounts (account) ON UPDATE CASCADE,
   CONSTRAINT fk_transaction_receipt FOREIGN KEY (receipt_id) REFERENCES transactions.transaction_receipts (id) ON DELETE SET NULL,

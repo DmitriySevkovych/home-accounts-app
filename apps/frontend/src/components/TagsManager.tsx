@@ -85,7 +85,7 @@ const TagsManager: React.FC<TagsManagerProps> = (props) => {
                 <FormItem>
                     <FormLabel>{label}</FormLabel>
 
-                    <div className="flex justify-between gap-3">
+                    <div className="flex justify-between gap-2">
                         <Command>
                             <CommandInput
                                 onValueChange={setCurrentTag}

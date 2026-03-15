@@ -8,6 +8,14 @@ import useSWR, { Fetcher } from 'swr'
 
 import { safeFetch } from '../helpers/requests'
 import { ScrollArea } from '../lib/shadcn/ScrollArea'
+import {
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+    Select as ShadcnSelect,
+} from '../lib/shadcn/Select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../lib/shadcn/Tabs'
 import { TransactionPreviewCard } from './TransactionPreviewCard'
 import { TodaysTotal } from './TransactionsTodaysTotal'
@@ -24,12 +32,20 @@ const _fetchTransactions: Fetcher<Transaction[], string> = async (
 export const TransactionsPreview = () => {
     const [context, setContext] = useState<TransactionContext>('home')
 
+    const [showOwner, setShowOwner] = useState<string>('Everyone')
+
     const {
-        data: transactions,
+        data: rawTransactions,
         error,
         isLoading,
     } = useSWR([context], ([context]) =>
         _fetchTransactions(`/api/v1/transactions?context=${context}`)
+    )
+
+    const transactions = rawTransactions?.filter((t) =>
+        context === 'work' && showOwner !== 'Everyone'
+            ? t.ownedBy === showOwner
+            : true
     )
 
     return (
@@ -44,8 +60,37 @@ export const TransactionsPreview = () => {
                 <TabsTrigger value="work">Work</TabsTrigger>
                 <TabsTrigger value="investments">Investments</TabsTrigger>
             </TabsList>
-            <TabsContent value={context}>
+            <TabsContent value={context} className="flex flex-col gap-2">
                 <SectionHeading>Latest {context} transactions</SectionHeading>
+
+                {context === 'work' && (
+                    <div>
+                        <ShadcnSelect
+                            value={showOwner}
+                            onValueChange={setShowOwner}
+                        >
+                            <div className="flex items-baseline gap-2">
+                                <p>Show transactions of </p>
+                                <SelectTrigger className="w-full max-w-48">
+                                    <SelectValue />
+                                </SelectTrigger>
+                            </div>
+                            <SelectContent>
+                                <SelectGroup>
+                                    <SelectItem value="Ivanna">
+                                        Ivanna
+                                    </SelectItem>
+                                    <SelectItem value="Dmitriy">
+                                        Dmitriy
+                                    </SelectItem>
+                                    <SelectItem value="Everyone">
+                                        Everyone
+                                    </SelectItem>
+                                </SelectGroup>
+                            </SelectContent>
+                        </ShadcnSelect>
+                    </div>
+                )}
 
                 {error ? <ErrorMessage error={error} /> : null}
 

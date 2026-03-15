@@ -198,7 +198,9 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                         label="Transaction date"
                     />
 
-                    <NumberInput id="amount" form={form} label="Amount" />
+                    <div className="col-span-2">
+                        <NumberInput id="amount" form={form} label="Amount" />
+                    </div>
 
                     <TextInput id="currency" form={form} label="Currency" />
 
@@ -261,6 +263,14 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                         clearable
                     />
 
+                    <Select<Transaction>
+                        id="ownedBy"
+                        form={form}
+                        label="Owned By"
+                        options={['Ivanna', 'Dmitriy']}
+                        clearable
+                    />
+
                     <div className="lg:col-span-2">
                         <TextAreaInput
                             id="comment"
@@ -286,22 +296,18 @@ const TransactionFormPage: React.FC<TransactionFormPageProps> = ({
                     {transactionContext === 'work' &&
                         transactionType === 'expense' && (
                             <>
-                                <div>
-                                    <NumberInput
-                                        id="vat"
-                                        form={form}
-                                        label="VAT (Value-Added Tax)"
-                                        placeholder="Enter a number between 0 and 1, e.g. 0.19"
-                                    />
-                                </div>
-                                <div>
-                                    <TextInput
-                                        id="country"
-                                        form={form}
-                                        label="Taxation country"
-                                        placeholder="Enter a country code, e.g. 'DE'"
-                                    />
-                                </div>
+                                <NumberInput
+                                    id="vat"
+                                    form={form}
+                                    label="VAT (Value-Added Tax)"
+                                    placeholder="Enter a number between 0 and 1, e.g. 0.19"
+                                />
+                                <TextInput
+                                    id="country"
+                                    form={form}
+                                    label="Taxation country"
+                                    placeholder="Enter a country code, e.g. 'DE'"
+                                />
                             </>
                         )}
 

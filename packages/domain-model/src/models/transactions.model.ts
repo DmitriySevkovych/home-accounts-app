@@ -68,6 +68,7 @@ export class Transaction {
 
     // Technical helper data
     agent: string = 'default_agent'
+    ownedBy?: string
 
     eurEquivalent = (): number => {
         return this.amount * this.exchangeRate
@@ -236,6 +237,11 @@ class TransactionBuilder {
         return this
     }
 
+    ownedBy = (owner: string): TransactionBuilder => {
+        this.transaction.ownedBy = owner
+        return this
+    }
+
     validate = (): TransactionBuilder => {
         this._commonValidations()
 
@@ -388,6 +394,7 @@ export const deserializeTransaction = (data: any): Transaction => {
         invoiceKey,
         investment,
         receiptId,
+        ownedBy,
     } = data
 
     const transaction: Transaction = createTransaction()
@@ -406,6 +413,7 @@ export const deserializeTransaction = (data: any): Transaction => {
         .withInvoice(invoiceKey)
         .withInvestment(investment)
         .withReceipt(receiptId)
+        .ownedBy(ownedBy)
         .addTags(tags)
         .validate()
         .build()

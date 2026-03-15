@@ -29,6 +29,7 @@ export const TransactionFormSchema = z
         vat: z.optional(z.coerce.number().nonnegative().max(1)),
         receipt: z.optional(z.custom<FileWithPath>()),
         receiptId: z.optional(z.coerce.number()),
+        ownedBy: z.optional(z.enum(['Dmitriy', 'Ivanna'])),
     })
     .transform((form) => {
         // Transform amount

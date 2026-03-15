@@ -90,7 +90,7 @@ export const getTransactions = async (
         text: `
             SELECT
                 id, context, category, origin, description, amount, date, currency, exchange_rate, 
-                source_bank_account, target_bank_account, payment_method, tax_category, comment, agent, receipt_id
+                source_bank_account, target_bank_account, payment_method, tax_category, comment, agent, receipt_id, owned_by
             FROM transactions.transactions
             WHERE context = $1
             ORDER BY id DESC
@@ -121,7 +121,7 @@ export const getTransactionByIds = async (
         text: `
         SELECT
             id, context, category, origin, description, amount, date, currency, exchange_rate, 
-            source_bank_account, target_bank_account, payment_method, tax_category, comment, agent, receipt_id
+            source_bank_account, target_bank_account, payment_method, tax_category, comment, agent, receipt_id, owned_by
         FROM transactions.transactions
         WHERE id = ANY($1::int[])
         ORDER BY id DESC;`,
@@ -346,8 +346,8 @@ const _insertTransactionDAO = async (
     const query = {
         name: 'insert-into-transactions.transactions',
         text: `
-        INSERT INTO transactions.transactions(context, category, origin, description, date, amount, source_bank_account, target_bank_account, currency, exchange_rate, payment_method, tax_category, comment, agent, receipt_id)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+        INSERT INTO transactions.transactions(context, category, origin, description, date, amount, source_bank_account, target_bank_account, currency, exchange_rate, payment_method, tax_category, comment, agent, receipt_id, owned_by)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
         RETURNING id;`,
         values: [
             transaction.context,
@@ -365,6 +365,7 @@ const _insertTransactionDAO = async (
             transaction.comment,
             transaction.agent,
             transaction.receiptId,
+            transaction.ownedBy,
         ],
     }
     const queryResult = await client.query(query)
@@ -384,8 +385,8 @@ const _updateTransactionDAO = async (
         UPDATE transactions.transactions 
         SET 
             context=$1, category=$2, origin=$3, description=$4, date=$5, amount=$6, source_bank_account=$7, target_bank_account=$8, 
-            currency=$9, exchange_rate=$10, payment_method=$11, tax_category=$12, comment=$13, agent=$14, receipt_id=$15
-        WHERE id=$16;`,
+            currency=$9, exchange_rate=$10, payment_method=$11, tax_category=$12, comment=$13, agent=$14, receipt_id=$15, owned_by=$16
+        WHERE id=$17;`,
         values: [
             transaction.context,
             transaction.category,
@@ -402,6 +403,7 @@ const _updateTransactionDAO = async (
             transaction.comment,
             transaction.agent,
             transaction.receiptId,
+            transaction.ownedBy,
             transaction.id,
         ],
     }
@@ -581,6 +583,7 @@ const _mapToTransaction = async (
         tax_category: taxCategory,
         comment,
         receipt_id: receiptId,
+        owned_by,
     } = row
 
     const transactionType = amount > 0 ? 'income' : 'expense'
@@ -598,6 +601,7 @@ const _mapToTransaction = async (
         .withTaxCategory(taxCategory)
         .withReceipt(receiptId)
         .withAgent(agent)
+        .ownedBy(owned_by)
 
     // TODO maybe remove these function calls from here and work with joins, if feasible
     // TODO remove connectionPool argument if the above TODO is done

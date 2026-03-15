@@ -45,14 +45,14 @@ export default function Select<T>(props: SelectProps<T>) {
                         value={field.value?.toString()}
                     >
                         <FormControl>
-                            <div className="flex gap-4">
+                            <div className="flex gap-1">
                                 <SelectTrigger>
                                     <SelectValue />
                                 </SelectTrigger>
                                 {clearable && (
                                     <IconButton
                                         action="clear"
-                                        variant="destructive"
+                                        variant="ghost"
                                         clickHandler={_resetSelection}
                                     />
                                 )}
