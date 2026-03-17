@@ -341,6 +341,22 @@ export class StubbedRepository implements Repository {
         ])
     }
 
+    getOutputVATSummary = (
+        _owner: 'Dmitriy' | 'Ivanna',
+        _from: string,
+        _to: string
+    ) => {
+        throw new Error('stub not implemented')
+    }
+
+    getInputVATSummaries = (
+        _owner: 'Dmitriy' | 'Ivanna',
+        _from: string,
+        _to: string
+    ) => {
+        throw new Error('stub not implemented')
+    }
+
     // Blueprints
     getActiveBlueprints = async (): Promise<TransactionBlueprint[]> => []
 

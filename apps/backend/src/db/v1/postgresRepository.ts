@@ -1,7 +1,9 @@
 import type {
     BankAccount,
     BlueprintKey,
+    InputVATSummary,
     Investment,
+    OutputVATSummary,
     Paginated,
     PaginationOptions,
     PaymentMethod,
@@ -244,6 +246,30 @@ export class PostgresRepository implements Repository {
     // Work
     getProjectInvoices = async (): Promise<ProjectInvoice[]> => {
         return await workQueries.getProjectInvoices(this.connectionPool)
+    }
+    getOutputVATSummary = async (
+        owner: 'Dmitriy' | 'Ivanna',
+        from: string,
+        to: string
+    ): Promise<OutputVATSummary> => {
+        return await workQueries.getOutputVATSummary(
+            owner,
+            from,
+            to,
+            this.connectionPool
+        )
+    }
+    getInputVATSummaries = async (
+        owner: 'Dmitriy' | 'Ivanna',
+        from: string,
+        to: string
+    ): Promise<InputVATSummary[]> => {
+        return await workQueries.getInputVATSummaries(
+            owner,
+            from,
+            to,
+            this.connectionPool
+        )
     }
 
     // Blueprints

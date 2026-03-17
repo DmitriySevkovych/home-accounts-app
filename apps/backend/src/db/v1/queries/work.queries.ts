@@ -1,4 +1,10 @@
-import { ProjectInvoice, Transaction, dateFromString } from 'domain-model'
+import {
+    InputVATSummary,
+    OutputVATSummary,
+    ProjectInvoice,
+    Transaction,
+    dateFromString,
+} from 'domain-model'
 import type { Pool, PoolClient } from 'pg'
 
 export const getProjectInvoices = async (
@@ -92,4 +98,61 @@ export const insertTransactionVAT = async (
         values: [id, vat, country],
     }
     await client.query(query)
+}
+
+export const getOutputVATSummary = async (
+    owner: 'Dmitriy' | 'Ivanna',
+    from: string,
+    to: string,
+    connectionPool: Pool
+): Promise<OutputVATSummary> => {
+    const query = {
+        name: 'get-work.v_ustva(owner)',
+        text: `
+            SELECT year, month, declare_until, invoices, vat, sum_net_amount, sum_tax_amount
+            FROM work.v_ustva($1)
+            WHERE declare_until BETWEEN $2 AND $3;`,
+        values: [owner, from, to],
+    }
+    const queryResult = await connectionPool.query(query)
+    const row = queryResult.rows[0]
+    return {
+        year: row.year,
+        month: row.month,
+        declareUntil: row.declare_until,
+        invoices: row.invoices,
+        vat: row.vat,
+        netAmount: row.sum_net_amount,
+        taxAmount: row.sum_tax_amount,
+    } satisfies OutputVATSummary
+}
+
+export const getInputVATSummaries = async (
+    owner: 'Dmitriy' | 'Ivanna',
+    from: string,
+    to: string,
+    connectionPool: Pool
+): Promise<InputVATSummary[]> => {
+    const query = {
+        name: 'get-work.v_ustva_vorsteuer(owner)',
+        text: `
+            SELECT year, month, declare_until, country, expense_categories, expense_ids, gesamtausgaben, vorsteuer
+            FROM work.v_ustva_vorsteuer($1)
+            WHERE declare_until BETWEEN $2 AND $3;`,
+        values: [owner, from, to],
+    }
+    const queryResult = await connectionPool.query(query)
+    return queryResult.rows.map(
+        (row) =>
+            ({
+                year: row.year,
+                month: row.month,
+                declareUntil: row.declare_until,
+                country: row.country,
+                expenseCategories: row.expense_categories,
+                expenseIds: row.expense_ids,
+                expenseTotal: row.gesamtausgaben,
+                inputTaxAmount: row.vorsteuer,
+            } satisfies InputVATSummary)
+    )
 }

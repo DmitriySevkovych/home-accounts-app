@@ -1,7 +1,9 @@
 import type {
     BankAccount,
     BlueprintKey,
+    InputVATSummary,
     Investment,
+    OutputVATSummary,
     Paginated,
     PaginationOptions,
     PaymentMethod,
@@ -73,6 +75,16 @@ export interface Repository {
 
     // Work data
     getProjectInvoices: () => Promise<ProjectInvoice[]>
+    getOutputVATSummary: (
+        _owner: 'Dmitriy' | 'Ivanna',
+        _from: string,
+        _to: string
+    ) => Promise<OutputVATSummary>
+    getInputVATSummaries: (
+        _owner: 'Dmitriy' | 'Ivanna',
+        _from: string,
+        _to: string
+    ) => Promise<InputVATSummary[]>
 
     // Blueprints
     getActiveBlueprints: () => Promise<TransactionBlueprint[]>

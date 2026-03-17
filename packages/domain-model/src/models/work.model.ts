@@ -17,3 +17,31 @@ export type ProjectInvoice = {
     status: ProjectInvoiceStatus
     comment?: string
 }
+
+// Umsatzsteuer per month
+export type OutputVATSummary = {
+    year: number
+    month: number
+    declareUntil: string
+    invoices: string
+    vat: number
+    netAmount: number
+    taxAmount: number
+}
+
+// Vorsteuer per month
+export type InputVATSummary = {
+    year: number
+    month: number
+    declareUntil: string
+    country: string
+    expenseCategories: string
+    expenseIds: string
+    expenseTotal: number
+    inputTaxAmount: number
+}
+
+export type USTVA = {
+    output: OutputVATSummary
+    input: InputVATSummary[]
+}
