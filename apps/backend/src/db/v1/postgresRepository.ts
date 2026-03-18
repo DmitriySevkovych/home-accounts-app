@@ -251,7 +251,7 @@ export class PostgresRepository implements Repository {
         owner: 'Dmitriy' | 'Ivanna',
         from: string,
         to: string
-    ): Promise<OutputVATSummary> => {
+    ): Promise<OutputVATSummary | null> => {
         return await workQueries.getOutputVATSummary(
             owner,
             from,

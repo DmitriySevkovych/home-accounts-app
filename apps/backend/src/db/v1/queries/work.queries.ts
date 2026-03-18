@@ -105,7 +105,7 @@ export const getOutputVATSummary = async (
     from: string,
     to: string,
     connectionPool: Pool
-): Promise<OutputVATSummary> => {
+): Promise<OutputVATSummary | null> => {
     const query = {
         name: 'get-work.v_ustva(owner)',
         text: `
@@ -115,6 +115,9 @@ export const getOutputVATSummary = async (
         values: [owner, from, to],
     }
     const queryResult = await connectionPool.query(query)
+
+    if (queryResult.rowCount === 0) return null
+
     const row = queryResult.rows[0]
     return {
         year: row.year,

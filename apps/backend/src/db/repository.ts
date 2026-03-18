@@ -79,7 +79,7 @@ export interface Repository {
         _owner: 'Dmitriy' | 'Ivanna',
         _from: string,
         _to: string
-    ) => Promise<OutputVATSummary>
+    ) => Promise<OutputVATSummary | null>
     getInputVATSummaries: (
         _owner: 'Dmitriy' | 'Ivanna',
         _from: string,
