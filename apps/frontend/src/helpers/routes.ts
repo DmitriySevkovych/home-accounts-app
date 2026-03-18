@@ -41,6 +41,7 @@ export const PAGES = {
     analysis: {
         cashflow: '/analysis/cashflow',
         charts: '/analysis/charts',
+        tax: '/analysis/tax',
     },
     transactions: {
         index: '/transactions',
@@ -82,6 +83,9 @@ export const API = {
         },
         analysis: {
             aggregation: _getClientsideUrl(`/analysis/aggregation`),
+        },
+        taxes: {
+            ustva: _getClientsideUrl(`/work/ustva`),
         },
     },
     server: {

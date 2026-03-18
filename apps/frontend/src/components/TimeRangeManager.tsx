@@ -16,6 +16,7 @@ import { CalendarStandalone } from './Calendar'
 export type TimeRangeID =
     | 'lastThreeMonths'
     | 'lastYear'
+    | 'currentMonth'
     | 'currentYear'
     | 'custom'
 
@@ -27,6 +28,10 @@ const timeRangeSelectionOptions = {
     lastYear: {
         id: 'lastYear' satisfies TimeRangeID,
         label: 'Last year',
+    },
+    currentMonth: {
+        id: 'currentMonth' satisfies TimeRangeID,
+        label: 'Current month',
     },
     currentYear: {
         id: 'currentYear' satisfies TimeRangeID,
@@ -50,7 +55,7 @@ const _getAdjustedTimeRange = (
     return update
 }
 
-const _getTimeRange = (id: TimeRangeID): TimeRangeSelection => {
+export const getTimeRange = (id: TimeRangeID): TimeRangeSelection => {
     let timeRange
     switch (id) {
         case 'lastThreeMonths':
@@ -63,6 +68,11 @@ const _getTimeRange = (id: TimeRangeID): TimeRangeSelection => {
             timeRange = TimeRangeCalculator.fromEndOfLastYear()
                 .goBack(11, 'months')
                 .toBeginningOfMonth()
+                .get()
+            break
+        case 'currentMonth':
+            timeRange = TimeRangeCalculator.fromStartOfThisMonth()
+                .toEndOfMonth()
                 .get()
             break
         case 'currentYear':
@@ -83,7 +93,7 @@ const _getTimeRange = (id: TimeRangeID): TimeRangeSelection => {
 }
 
 export const getDefaultTimeRange = (): TimeRangeSelection => {
-    return _getTimeRange('lastThreeMonths')
+    return getTimeRange('lastThreeMonths')
 }
 
 type TimeRangeItemProps = {
@@ -127,7 +137,7 @@ const TimeRangeManager: React.FC<TimeRangeManagerProps> = ({
                     <RadioGroup
                         value={timeRange.id}
                         onValueChange={(id: TimeRangeID) =>
-                            setTimeRange(_getTimeRange(id))
+                            setTimeRange(getTimeRange(id))
                         }
                     >
                         {Object.values(timeRangeSelectionOptions)
